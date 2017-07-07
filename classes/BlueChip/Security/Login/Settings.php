@@ -38,6 +38,7 @@ class Settings extends \BlueChip\Security\Core\Settings
 	/**
 	 * Sanitize settings array: only return known keys, provide default values
      * for missing keys.
+     *
 	 * @param array $s
 	 * @return array
 	 */
@@ -88,5 +89,18 @@ class Settings extends \BlueChip\Security\Core\Settings
     public function getShortLockoutDuration()
     {
         return $this->data[self::SHORT_LOCKOUT_DURATION] * MINUTE_IN_SECONDS;
+    }
+
+
+    /**
+     * Get filtered list of usernames to be immediately locked out during login.
+     *
+     * @hook bc_security_login_username_blacklist
+     *
+     * @return array
+     */
+    public function getUsernameBlacklist()
+    {
+        return apply_filters(Hooks::USERNAME_BLACKLIST, $this->data[self::USERNAME_BLACKLIST]);
     }
 }

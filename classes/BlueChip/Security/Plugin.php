@@ -21,14 +21,14 @@ class Plugin
 
 
     /**
+     * Construct the plugin instance.
+     *
      * @param \wpdb $wpdb WordPress database access abstraction object
      */
 	public function __construct($wpdb)
     {
 		// Read plugin settings
 		$this->settings = [
-            // Note: when you add new settings object (key) below,
-            // do not forget to add them to uninstall.php as well!
             'hardening' => new Hardening\Settings('bc-security-hardening'),
             'login'     => new Login\Settings('bc-security-login'),
             'setup'     => new Setup\Settings('bc-security-setup'),
@@ -48,7 +48,7 @@ class Plugin
         $bl_manager = new IpBlacklist\Manager($wpdb);
         $bl_bouncer = new IpBlacklist\Bouncer($ip_address, $bl_manager);
         $bookkeeper = new Login\Bookkeeper($this->settings['login'], $wpdb);
-        $gatekeeper = new Login\Gatekeeper($this->settings['login'], $ip_address, $bookkeeper, $bl_manager, $bl_bouncer);
+        $gatekeeper = new Login\Gatekeeper($this->settings['login'], $ip_address, $bookkeeper, $bl_manager);
 
         // ... and store them for later.
         $this->modules = [
@@ -62,51 +62,86 @@ class Plugin
 
 
 	/**
-	 * Add hooks necessary for plugin interaction with WordPress
+	 * Load the plugin by hooking into WordPress actions and filters.
+     * Method should be invoked immediately on plugin load.
 	 */
-    public function init()
+    public function load()
     {
         // Installing?
         register_activation_hook(BC_SECURITY_PLUGIN_FILE, [$this, 'install']);
 
-        // Init all modules
+        // Load all modules that require immediate loading.
+        foreach ($this->modules as $module) {
+            if ($module instanceof Core\Module\Loadable) {
+                $module->load();
+            }
+        }
+
+        // Register initialization method.
+        add_action('init', [$this, 'init'], 10, 0);
+	}
+
+
+    /**
+     * Perform initialization tasks.
+     * Method should be run (early) in init hook.
+     */
+    public function init()
+    {
+        // Initialize all modules that require initialization.
         foreach ($this->modules as $module) {
             if ($module instanceof Core\Module\Initializable) {
                 $module->init();
             }
         }
 
-        // Init admin UI, if necessary.
         if ($this->admin) {
-            add_action('init', [$this, 'initAdmin'], 10, 0);
+            // Initialize admin interface.
+            $this->admin->init()
+                ->addPage(new Setup\AdminPage($this->settings['setup']))
+                ->addPage(new Checklist\AdminPage())
+                ->addPage(new Hardening\AdminPage($this->settings['hardening']))
+                ->addPage(new Login\AdminPage($this->settings['login']))
+                ->addPage(new IpBlacklist\AdminPage($this->modules['blacklist-manager']))
+            ;
         }
-	}
-
-
-	/**
-	 * Initialize admin menus.
-	 */
-	public function initAdmin()
-    {
-        // Init admin interface
-        $this->admin->init()
-            ->addPage(new Setup\AdminPage($this->settings['setup']))
-            ->addPage(new Checklist\AdminPage())
-            ->addPage(new Hardening\AdminPage($this->settings['hardening']))
-            ->addPage(new Login\AdminPage($this->settings['login']))
-            ->addPage(new IpBlacklist\AdminPage($this->modules['blacklist-manager']))
-        ;
-	}
+    }
 
 
     /**
      * Perform installation tasks.
+     * Method should be run on plugin activation.
+     *
+     * @link https://developer.wordpress.org/plugins/the-basics/activation-deactivation-hooks/
      */
     public function install()
     {
+        // Install every module that requires it.
         foreach ($this->modules as $module) {
             if ($module instanceof Core\Module\Installable) {
                 $module->install();
+            }
+        }
+    }
+
+
+    /**
+     * Perform uninstallation tasks.
+     * Method should be run on plugin uninstall.
+     *
+     * @link https://developer.wordpress.org/plugins/the-basics/uninstall-methods/
+     */
+    public function uninstall()
+    {
+        // Remove plugin settings.
+        foreach ($this->settings as $settings) {
+            delete_option($settings->getOptionName());
+        }
+
+        // Uninstall every module that requires it.
+        foreach ($this->modules as $module) {
+            if ($module instanceof Core\Module\Installable) {
+                $module->uninstall();
             }
         }
     }

@@ -64,8 +64,15 @@ class Manager implements \BlueChip\Security\Core\Module\Installable
     }
 
 
+    public function uninstall()
+    {
+        $this->wpdb->query(sprintf('DROP TABLE IF EXISTS %s', $this->blacklist_table));
+    }
+
+
     /**
      * Return number of all records on blacklist (active and expired).
+     *
      * @param int $scope
      * @return int
      */
@@ -82,6 +89,8 @@ class Manager implements \BlueChip\Security\Core\Module\Installable
 
 
     /**
+     * Fetch all items on blacklist that match provided arguments.
+     *
      * @param int $scope
      * @param int $from
      * @param int $limit
@@ -121,7 +130,9 @@ class Manager implements \BlueChip\Security\Core\Module\Installable
 
 
     /**
-     * @param int $scope
+     * Fetch all items on blacklist (optionally with given $scope).
+     *
+     * @param int $scope Blacklist scope [optional].
      * @return array
      */
     public function fetchAll($scope = LockScope::ANY)
@@ -141,14 +152,19 @@ class Manager implements \BlueChip\Security\Core\Module\Installable
 
     /**
      * Is $ip_address on blacklist with given $scope?
+     *
      * @param string $ip_address IP address to check.
-     * @param string $scope
-     * @return bool
+     * @param int $scope Blacklist scope.
+     * @return bool True, if IP address is on blacklist with given scope.
      */
     public function isLocked($ip_address, $scope)
     {
         // Prepare query
-        $query = $this->wpdb->prepare("SELECT release_time FROM {$this->blacklist_table} WHERE scope = %d AND ip_address = %s", $scope, $ip_address);
+        $query = $this->wpdb->prepare(
+            "SELECT release_time FROM {$this->blacklist_table} WHERE scope = %d AND ip_address = %s",
+            $scope,
+            $ip_address
+        );
         // Execute query
         $release_time = $this->wpdb->get_var($query);
         // Evaluate release time
@@ -164,7 +180,7 @@ class Manager implements \BlueChip\Security\Core\Module\Installable
      * @param int $duration
      * @param int $scope
      * @param int $reason
-     * @return bool
+     * @return bool True, if IP address has been locked, false otherwise.
      */
     public function lock($ip_address, $duration, $scope, $reason)
     {
@@ -196,6 +212,7 @@ class Manager implements \BlueChip\Security\Core\Module\Installable
 
     /**
      * Remove expired entries from blacklist table.
+     *
      * @return bool True on success, false on failure.
      */
     public function prune()
@@ -215,6 +232,7 @@ class Manager implements \BlueChip\Security\Core\Module\Installable
 
     /**
      * Remove record with primary key $id.
+     *
      * @param int $id
      * @return bool True, if record with $id has been removed, false otherwise.
      */
@@ -229,6 +247,7 @@ class Manager implements \BlueChip\Security\Core\Module\Installable
 
     /**
      * Remove records with given primary keys.
+     *
      * @param array $ids
      * @return int Number of deleted records.
      */
@@ -251,9 +270,11 @@ class Manager implements \BlueChip\Security\Core\Module\Installable
 
     /**
      * Unlock record with primary key $id. Unlocking sets release date to now.
+     *
+     * @todo Only unlock really active locks.
+     *
      * @param int $id
      * @return bool True, if record with $id has been unlocked, false otherwise.
-     * @todo Only unlock really active locks.
      */
     public function unlock($id)
     {
@@ -273,9 +294,11 @@ class Manager implements \BlueChip\Security\Core\Module\Installable
     /**
      * Unlock records with primary keys in $ids array. Unlocking sets release
      * date to now.
+     *
+     * @todo Only unlock really active locks.
+     * 
      * @param array $ids
      * @return int Number of unlocked records.
-     * @todo Only unlock really active locks.
      */
     public function unlockMany(array $ids)
     {
@@ -296,14 +319,20 @@ class Manager implements \BlueChip\Security\Core\Module\Installable
 
 
     /**
+     * Get primary key (id) for record with given $ip_address and $scope.
+     *
      * @param string $ip_address IP address to check.
-     * @param string $scope
+     * @param int $scope
      * @return int|null
      */
     protected function getId($ip_address, $scope)
     {
         // Prepare query
-        $query = $this->wpdb->prepare("SELECT id FROM {$this->blacklist_table} WHERE scope = %d AND ip_address = %s", $scope, $ip_address);
+        $query = $this->wpdb->prepare(
+            "SELECT id FROM {$this->blacklist_table} WHERE scope = %d AND ip_address = %s",
+            $scope,
+            $ip_address
+        );
         // Execute query
         $result = $this->wpdb->get_var($query);
         // Return result

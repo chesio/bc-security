@@ -10,7 +10,7 @@ use BlueChip\Security\IpBlacklist;
 /**
  * Gatekeeper keeps bots out of admin area
  */
-class Gatekeeper implements \BlueChip\Security\Core\Module\Initializable
+class Gatekeeper implements \BlueChip\Security\Core\Module\Initializable, \BlueChip\Security\Core\Module\Loadable
 {
     /** @var \BlueChip\Security\Login\Settings */
     private $settings;
@@ -24,24 +24,30 @@ class Gatekeeper implements \BlueChip\Security\Core\Module\Initializable
     /** @var \BlueChip\Security\IpBlacklist\Manager */
     private $bl_manager;
 
-    /** @var \BlueChip\Security\IpBlacklist\Bouncer */
-    private $bl_bouncer;
-
 
 	/**
 	 * @param \BlueChip\Security\Login\Settings $settings
      * @param string $ip_address
      * @param \BlueChip\Security\Login\Bookkeeper $bookkeeper
      * @param \BlueChip\Security\IpBlacklist\Manager $bl_manager
-     * @param \BlueChip\Security\IpBlacklist\Bouncer $bl_bouncer
 	 */
-	public function __construct(Settings $settings, $ip_address, Bookkeeper $bookkeeper, IpBlacklist\Manager $bl_manager, IpBlacklist\Bouncer $bl_bouncer)
+	public function __construct(Settings $settings, $ip_address, Bookkeeper $bookkeeper, IpBlacklist\Manager $bl_manager)
     {
         $this->settings = $settings;
         $this->ip_address = $ip_address;
         $this->bookkeeper = $bookkeeper;
         $this->bl_manager = $bl_manager;
-        $this->bl_bouncer = $bl_bouncer;
+    }
+
+
+    /**
+     * Check if IP is locked early on, but allow other plugins to interfere.
+     */
+    public function load()
+    {
+        if ($this->settings[Settings::CHECK_COOKIES]) {
+            add_action('plugins_loaded', [$this, 'removeAuthCookieIfIpIsLocked'], 5, 0);
+        }
     }
 
 
@@ -60,7 +66,6 @@ class Gatekeeper implements \BlueChip\Security\Core\Module\Initializable
         add_action('wp_login_failed', [$this, 'handleFailedLogin'], 100, 1);
 
         if ($this->settings[Settings::CHECK_COOKIES]) {
-            add_action('plugins_loaded', [$this, 'removeAuthCookieIfIpIsLocked'], 5, 0);
             add_action('auth_cookie_bad_username', [$this, 'handleBadCookie'], 10, 1);
             add_action('auth_cookie_bad_hash', [$this, 'handleBadCookie'], 10, 1);
         }
@@ -114,7 +119,7 @@ class Gatekeeper implements \BlueChip\Security\Core\Module\Initializable
         // Record failed login attempt, get total number of retries for IP
         $retries = $this->bookkeeper->recordFailedLoginAttempt($this->ip_address, $username);
 
-        // Determine, if it is the time for long or short lockout.
+        // Determine, if it is the lockout time:
         if ($retries % $this->settings[Settings::LONG_LOCKOUT_AFTER] === 0) {
             // Long lockout
             $this->lockOut($username, $this->settings->getLongLockoutDuration(), IpBlacklist\BanReason::LOGIN_LOCKOUT_LONG);
@@ -140,8 +145,7 @@ class Gatekeeper implements \BlueChip\Security\Core\Module\Initializable
         // When a non-existing username (or email)...
         if (is_wp_error($user) && ($user->get_error_code() === 'invalid_username' || $user->get_error_code() === 'invalid_email')) {
             // ...is found on black list...
-            $blacklist = apply_filters(Hooks::USERNAME_BLACKLIST, $this->settings[Settings::USERNAME_BLACKLIST]);
-            if (in_array($username, $blacklist, true)) {
+            if (in_array($username, $this->settings->getUsernameBlacklist(), true)) {
                 // ...lock IP out!
                 $this->lockOut($username, $this->settings->getLongLockoutDuration(), IpBlacklist\BanReason::USERNAME_BLACKLIST);
             }
@@ -155,6 +159,7 @@ class Gatekeeper implements \BlueChip\Security\Core\Module\Initializable
 	 * Return null instead of WP_Error when authentication fails because of
      * invalid username, email or password forcing WP to display generic error
      * message.
+     *
 	 * @param WP_Error|WP_User $user
 	 * @return WP_Error|WP_User
 	 */
@@ -208,6 +213,8 @@ class Gatekeeper implements \BlueChip\Security\Core\Module\Initializable
     /**
      * Lock out current IP address for $duration seconds
      *
+     * @hook bc_security_login_lockout_event
+     *
      * @param string $username Username that triggered the lockout
      * @param int $duration Duration (in secs) of lockout
      * @param int $reason Lockout reason
@@ -217,7 +224,10 @@ class Gatekeeper implements \BlueChip\Security\Core\Module\Initializable
         // Trigger lockout action
         do_action(Hooks::LOCKOUT_EVENT, $this->ip_address, $username, $duration, $reason);
 
+        // Lock IP address
         $this->bl_manager->lock($this->ip_address, $duration, IpBlacklist\LockScope::ADMIN, $reason);
-        $this->bl_bouncer->blockAccessTemporarily();
+
+        // Block access
+        IpBlacklist\Bouncer::blockAccessTemporarily($this->ip_address);
     }
 }

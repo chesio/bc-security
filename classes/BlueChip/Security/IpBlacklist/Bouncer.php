@@ -6,9 +6,11 @@
 namespace BlueChip\Security\IpBlacklist;
 
 /**
- * Bouncer takes care of bouncing uninvited guests.
+ * Bouncer takes care of bouncing uninvited guests by:
+ * 1) Blocking access to website, if remote IP address cannot be determined.
+ * 2) Blocking access to website, if remote IP address is on website blacklist.
  */
-class Bouncer implements \BlueChip\Security\Core\Module\Initializable
+class Bouncer implements \BlueChip\Security\Core\Module\Initializable, \BlueChip\Security\Core\Module\Loadable
 {
     /** @var \BlueChip\Security\IpBlacklist\Manager */
     private $bl_manager;
@@ -19,7 +21,7 @@ class Bouncer implements \BlueChip\Security\Core\Module\Initializable
 
     /**
      * @param string $ip_address
-     * @param \BlueChip\Security\IpBlacklist\Manager $bl_manager
+     * @param Manager $bl_manager
      */
     public function __construct($ip_address, Manager $bl_manager)
     {
@@ -29,20 +31,28 @@ class Bouncer implements \BlueChip\Security\Core\Module\Initializable
 
 
     /**
-     * Get ready for bounce!
+     * Load module.
      */
-    public function init()
+    public function load()
     {
         // If IP address is invalid, die immediately.
-        if (!is_string($this->ip_address)) {
-           $this->blockAccessTemporarily();
+        if (empty($this->ip_address)) {
+            self::blockAccessTemporarily();
         }
 
         // Check, if access to website is allowed as early as possible
         // (do not use priority 0 - leave it to website maintainers)
         add_filter('plugins_loaded', [$this, 'checkAccess'], 1, 0);
+    }
+
+
+    /**
+     * Initialize module.
+     */
+    public function init()
+    {
         // Check, if access to login is allowed as early as possible, but
-        // (do not use priority 0 - leave it to website maintainers)
+        // do not use priority 0 - leave it to website maintainers.
         add_filter('authenticate', [$this, 'checkLoginAttempt'], 1, 1);
     }
 
@@ -51,12 +61,14 @@ class Bouncer implements \BlueChip\Security\Core\Module\Initializable
      * Terminate script execution via wp_die(), pass 503 as return code.
      *
      * @link https://httpstatusdogs.com/503-service-unavailable
+     *
+     * @param string $ip_address Remote IP address to include in error message [optional].
      */
-    public function blockAccessTemporarily()
+    public static function blockAccessTemporarily($ip_address = '')
     {
-        $error_msg = $this->ip_address
-            ? sprintf(__('<strong>ERROR</strong>: Access from your IP address <em>%1$s</em> has been temporarily blocked for security reasons.', 'bc-security'), $this->ip_address)
-            : __('<strong>ERROR</strong>: Access from your device has been temporarily blocked for security reasons.', 'bc-security')
+        $error_msg = empty($ip_address)
+            ? esc_html__('Access from your device has been temporarily disabled for security reasons.', 'bc-security')
+            : sprintf(esc_html__('Access from your IP address %1$s has been temporarily disabled for security reasons.', 'bc-security'), sprintf('<em>%s</em>', $ip_address))
         ;
         //
         wp_die($error_msg, __('Service Temporarily Unavailable', 'bc-security'), 503);

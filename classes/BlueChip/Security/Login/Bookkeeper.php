@@ -57,18 +57,25 @@ class Bookkeeper implements \BlueChip\Security\Core\Module\Installable
     }
 
 
+    public function uninstall()
+    {
+        $this->wpdb->query(sprintf('DROP TABLE IF EXISTS %s', $this->failed_logins_table));
+    }
+
+
     /**
-     * Add failed login attempt from $ip_address.
+     * Add failed login attempt from $ip_address using $username.
+     *
      * @param string $ip_address
      * @param string $username
-     * @return int Number of total non-expired failed login attempts for $ip_address.
+     * @return int Number of non-expired failed login attempts for $ip_address.
      */
     public function recordFailedLoginAttempt($ip_address, $username)
     {
         $now = current_time('timestamp');
         $user = get_user_by(is_email($username) ? 'email' : 'login', $username);
 
-        // Insert new failed login attempt for given IP address
+        // Insert new failed login attempt for given IP address.
         $data = [
             'ip_address'    => $ip_address,
             'date_and_time' => date(self::MYSQL_DATETIME_FORMAT, $now),
@@ -78,7 +85,7 @@ class Bookkeeper implements \BlueChip\Security\Core\Module\Installable
 
         $this->wpdb->insert($this->failed_logins_table, $data, ['%s', '%s', '%s', '%d']);
 
-        // Get count of all unexpired failed login attempts for given IP address
+        // Get count of all unexpired failed login attempts for given IP address.
         $query = $this->wpdb->prepare(
             "SELECT COUNT(*) AS retries_count FROM {$this->failed_logins_table} WHERE ip_address = %s AND date_and_time > %s",
             $ip_address, date(self::MYSQL_DATETIME_FORMAT, $now - $this->settings->getResetTimeoutDuration())
@@ -89,6 +96,8 @@ class Bookkeeper implements \BlueChip\Security\Core\Module\Installable
 
 
     /**
+     * Remove all expired entries from table.
+     *
      * @return mixed
      */
     public function prune()

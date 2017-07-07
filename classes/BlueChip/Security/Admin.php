@@ -5,6 +5,9 @@
 
 namespace BlueChip\Security;
 
+/**
+ * Integration with WordPress admin area
+ */
 class Admin
 {
 	/**
@@ -26,21 +29,20 @@ class Admin
 
 	/**
 	 * Initialize admin area of the plugin.
+     *
      * @return \BlueChip\Security\Admin
 	 */
 	public function init()
     {
 		add_action('admin_menu', [$this, 'makeAdminMenu']);
-        // Only filter plugin action links if user has a capability to view them.
-        if (current_user_can(self::CAPABILITY)) {
-            add_filter('plugin_action_links_' . plugin_basename(BC_SECURITY_PLUGIN_FILE), [$this, 'filterActionLinks']);
-        }
+        add_filter('plugin_action_links_' . plugin_basename(BC_SECURITY_PLUGIN_FILE), [$this, 'filterActionLinks']);
         return $this;
 	}
 
 
     /**
      * Add a page to plugin dashboard menu.
+     *
      * @param \BlueChip\Security\Core\AdminPage $page
      * @return \BlueChip\Security\Admin
      */
@@ -93,13 +95,13 @@ class Admin
 
     /**
      * Filter plugin action links: append link to setup page only.
-     * Note: caller should ensure user has capability to view the page.
+     *
      * @param array $links
      * @return array
      */
-    public function filterActionLinks($links)
+    public function filterActionLinks(array $links)
     {
-        if (isset($this->pages['bc-security-setup'])) {
+        if (current_user_can(self::CAPABILITY) && isset($this->pages['bc-security-setup'])) {
             $links[] = sprintf(
                 '<a href="%s">%s</a>',
                 $this->pages['bc-security-setup']->getUrl(),

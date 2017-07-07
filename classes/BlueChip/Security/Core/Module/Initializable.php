@@ -8,7 +8,7 @@ namespace BlueChip\Security\Core\Module;
 interface Initializable
 {
     /**
-     * Initialize module (set hooks etc.)
+     * Initialize module (perform any tasks that should be done init hook)
      */
     public function init();
 }

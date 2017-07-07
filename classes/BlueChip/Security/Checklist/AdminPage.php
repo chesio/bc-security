@@ -42,10 +42,14 @@ class AdminPage extends \BlueChip\Security\Core\AdminPage
 		echo '</table>';
 
         echo '<p>';
-        // TODO: How to escape text with link?
         echo sprintf(
-            __('You might also want to enable some other <a href="%s">hardening options</a>.', 'bc-security'),
-            \BlueChip\Security\Core\AdminPage::getPageUrl(\BlueChip\Security\Hardening\AdminPage::SLUG)
+            /* translators: %s: link to hardening options */
+            esc_html__('You might also want to enable some other %s.', 'bc-security'),
+            sprintf(
+                '<a href="%s">%s</a>',
+                \BlueChip\Security\Core\AdminPage::getPageUrl(\BlueChip\Security\Hardening\AdminPage::SLUG),
+                esc_html__('hardening options', 'bc-security')
+            )
         );
         echo '</p>';
 
