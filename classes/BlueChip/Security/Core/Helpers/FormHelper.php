@@ -80,7 +80,7 @@ class FormHelper
 
         echo '<select ' . $this->printFieldProperties($properties) . '>';
         foreach ($args['options'] as $key => $value) {
-            echo '<option name="' . esc_attr($key) . '"' . selected($key, $args['value'], false) . '>' . esc_html($value) . '</option>';
+            echo '<option value="' . esc_attr($key) . '"' . selected($key, $args['value'], false) . '>' . esc_html($value) . '</option>';
         }
         echo '</select>';
     }
