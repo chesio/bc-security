@@ -18,7 +18,7 @@ class AdminPage extends \BlueChip\Security\Core\AdminSettingsPage
     {
         parent::__construct($settings);
 
-		$this->page_title = _x('Basic Settings', 'Dashboard page title', 'bc-security');
+		$this->page_title = _x('BC Security Setup', 'Dashboard page title', 'bc-security');
 		$this->menu_title = _x('Setup', 'Dashboard menu item name', 'bc-security');
 		$this->slug = self::SLUG;
 	}
