@@ -8,6 +8,12 @@ Helps keeping WordPress websites secure.
 
 ## Features
 
+### Checklist
+
+BC Security features a checklist of common security practices. In the moment, the list consists of only two checks:
+1. Is PHP editation of plugin and theme files disabled?
+1. Are there no common usernames like admin or administrator on the system?
+
 ### WordPress Hardening
 
 BC Security allows you to:
