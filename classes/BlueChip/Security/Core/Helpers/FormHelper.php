@@ -57,6 +57,7 @@ class FormHelper
             'value'     => $args['value'],
             'id'        => $args['label_for'],
             'name'      => $args['name'],
+            'class'     => 'small-text',
         ];
 
         echo '<input ' . $this->printFieldProperties($properties) . '>';
