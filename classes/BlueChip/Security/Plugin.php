@@ -16,8 +16,8 @@ class Plugin
     /** @var array Array with module objects for all plugin modules */
     private $modules;
 
-	/** @var array Array with setting objects for particular modules */
-	private $settings;
+    /** @var array Array with setting objects for particular modules */
+    private $settings;
 
 
     /**
@@ -25,10 +25,10 @@ class Plugin
      *
      * @param \wpdb $wpdb WordPress database access abstraction object
      */
-	public function __construct($wpdb)
+    public function __construct($wpdb)
     {
-		// Read plugin settings
-		$this->settings = [
+        // Read plugin settings
+        $this->settings = [
             'hardening' => new Hardening\Settings('bc-security-hardening'),
             'login'     => new Login\Settings('bc-security-login'),
             'setup'     => new Setup\Settings('bc-security-setup'),
@@ -61,10 +61,10 @@ class Plugin
     }
 
 
-	/**
-	 * Load the plugin by hooking into WordPress actions and filters.
+    /**
+     * Load the plugin by hooking into WordPress actions and filters.
      * Method should be invoked immediately on plugin load.
-	 */
+     */
     public function load()
     {
         // Load all modules that require immediate loading.
@@ -76,7 +76,7 @@ class Plugin
 
         // Register initialization method.
         add_action('init', [$this, 'init'], 10, 0);
-	}
+    }
 
 
     /**

@@ -11,47 +11,47 @@ class AdminPage extends \BlueChip\Security\Core\AdminSettingsPage
     const SLUG = 'bc-security-setup';
 
 
-	/**
-	 * @param Settings $settings Basic settings
-	 */
-	function __construct($settings)
+    /**
+     * @param Settings $settings Basic settings
+     */
+    function __construct($settings)
     {
         parent::__construct($settings);
 
-		$this->page_title = _x('BC Security Setup', 'Dashboard page title', 'bc-security');
-		$this->menu_title = _x('Setup', 'Dashboard menu item name', 'bc-security');
-		$this->slug = self::SLUG;
-	}
+        $this->page_title = _x('BC Security Setup', 'Dashboard page title', 'bc-security');
+        $this->menu_title = _x('Setup', 'Dashboard menu item name', 'bc-security');
+        $this->slug = self::SLUG;
+    }
 
 
-	/**
-	 * Render admin page
-	 */
-	public function render()
+    /**
+     * Render admin page
+     */
+    public function render()
     {
-		echo '<div class="wrap">';
-		echo '<h1>' . $this->page_title . '</h1>';
-		echo $this->settings_helper->renderForm();
-		echo '</div>';
-	}
+        echo '<div class="wrap">';
+        echo '<h1>' . $this->page_title . '</h1>';
+        echo $this->settings_helper->renderForm();
+        echo '</div>';
+    }
 
 
-	/**
-	 * Run on `admin_init` hook.
-	 */
-	public function admin_init()
+    /**
+     * Run on `admin_init` hook.
+     */
+    public function admin_init()
     {
-		// Form helper is going to be useful here
-		$form_helper = new \BlueChip\Security\Core\Helpers\FormHelper();
+        // Form helper is going to be useful here
+        $form_helper = new \BlueChip\Security\Core\Helpers\FormHelper();
 
         // Shortcut
         $settings_helper = $this->settings_helper;
 
-		// Register setting first
-		$settings_helper->register();
+        // Register setting first
+        $settings_helper->register();
 
-		// Set page as current
-		$settings_helper->setSettingsPage($this->slug);
+        // Set page as current
+        $settings_helper->setSettingsPage($this->slug);
 
         // Section: Site connection
         $settings_helper->addSettingsSection(

@@ -25,13 +25,13 @@ class Gatekeeper implements \BlueChip\Security\Core\Module\Initializable, \BlueC
     private $bl_manager;
 
 
-	/**
-	 * @param \BlueChip\Security\Login\Settings $settings
+    /**
+     * @param \BlueChip\Security\Login\Settings $settings
      * @param string $remote_address Remote IP address.
      * @param \BlueChip\Security\Login\Bookkeeper $bookkeeper
      * @param \BlueChip\Security\IpBlacklist\Manager $bl_manager
-	 */
-	public function __construct(Settings $settings, $remote_address, Bookkeeper $bookkeeper, IpBlacklist\Manager $bl_manager)
+     */
+    public function __construct(Settings $settings, $remote_address, Bookkeeper $bookkeeper, IpBlacklist\Manager $bl_manager)
     {
         $this->settings = $settings;
         $this->remote_address = $remote_address;
@@ -52,16 +52,16 @@ class Gatekeeper implements \BlueChip\Security\Core\Module\Initializable, \BlueC
 
 
     /**
-	 * Initialize login hardening.
+     * Initialize login hardening.
      */
     public function init()
     {
         add_filter('authenticate', [$this, 'lockIpIfUsernameOnBlacklist'], 25, 2); // should run after default authentication filters
 
-		if ($this->settings[Settings::GENERIC_LOGIN_ERROR_MESSAGE]) {
-			add_filter('authenticate', [$this, 'muteStandardErrorMessages'], 100, 1); // 100 ~ should run last
+        if ($this->settings[Settings::GENERIC_LOGIN_ERROR_MESSAGE]) {
+            add_filter('authenticate', [$this, 'muteStandardErrorMessages'], 100, 1); // 100 ~ should run last
             add_filter('shake_error_codes', [$this, 'filterShakeErrorCodes'], 10, 1);
-		}
+        }
 
         add_action('wp_login_failed', [$this, 'handleFailedLogin'], 100, 1);
 
@@ -69,7 +69,7 @@ class Gatekeeper implements \BlueChip\Security\Core\Module\Initializable, \BlueC
             add_action('auth_cookie_bad_username', [$this, 'handleBadCookie'], 10, 1);
             add_action('auth_cookie_bad_hash', [$this, 'handleBadCookie'], 10, 1);
         }
-	}
+    }
 
 
     //// Hookers - public methods that should in fact be private
@@ -155,17 +155,17 @@ class Gatekeeper implements \BlueChip\Security\Core\Module\Initializable, \BlueC
     }
 
 
-	/**
-	 * Return null instead of WP_Error when authentication fails because of
+    /**
+     * Return null instead of WP_Error when authentication fails because of
      * invalid username, email or password forcing WP to display generic error
      * message.
      *
-	 * @param WP_Error|WP_User $user
-	 * @return WP_Error|WP_User
-	 */
-	public function muteStandardErrorMessages($user)
+     * @param WP_Error|WP_User $user
+     * @return WP_Error|WP_User
+     */
+    public function muteStandardErrorMessages($user)
     {
-		if (is_wp_error($user)) {
+        if (is_wp_error($user)) {
             switch ($user->get_error_code()) {
                 case 'invalid_username':
                 case 'invalid_email':
@@ -174,7 +174,7 @@ class Gatekeeper implements \BlueChip\Security\Core\Module\Initializable, \BlueC
             }
         }
         return $user;
-	}
+    }
 
 
     /**

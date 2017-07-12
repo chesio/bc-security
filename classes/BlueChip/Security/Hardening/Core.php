@@ -16,45 +16,45 @@ class Core implements \BlueChip\Security\Core\Module\Initializable
     private $settings;
 
 
-	/**
-	 * @param \BlueChip\Security\Hardening\Settings $settings
-	 */
-	public function __construct(Settings $settings)
+    /**
+     * @param \BlueChip\Security\Hardening\Settings $settings
+     */
+    public function __construct(Settings $settings)
     {
         $this->settings = $settings;
     }
 
 
     /**
-	 * Initialize WP hardening.
+     * Initialize WP hardening.
      */
     public function init()
     {
-		if ($this->settings[Settings::DISABLE_PINGBACKS]) {
-			// Disable pingbacks
-			add_filter('xmlrpc_methods', [$this, 'disablePingbacks']);
-		}
-		if ($this->settings[Settings::DISABLE_XML_RPC]) {
-			// Disable all XML-RPC methods requiring authentication
-			add_filter('xmlrpc_enabled', '__return_false');
-		}
+        if ($this->settings[Settings::DISABLE_PINGBACKS]) {
+            // Disable pingbacks
+            add_filter('xmlrpc_methods', [$this, 'disablePingbacks']);
+        }
+        if ($this->settings[Settings::DISABLE_XML_RPC]) {
+            // Disable all XML-RPC methods requiring authentication
+            add_filter('xmlrpc_enabled', '__return_false');
+        }
         if ($this->settings[Settings::DISABLE_REST_API]) {
             // Disable REST API methods to anonymous users
             add_filter('rest_authentication_errors', [$this, 'requireAuthForRestAccess']);
         }
-	}
+    }
 
 
-	/**
-	 * Remove pingback.ping from allowed/supported XML-RPC methods.
-	 * @param array $methods
-	 * @return array
-	 */
-	public function disablePingbacks($methods)
+    /**
+     * Remove pingback.ping from allowed/supported XML-RPC methods.
+     * @param array $methods
+     * @return array
+     */
+    public function disablePingbacks($methods)
     {
-		unset($methods['pingback.ping']);
-		return $methods;
-	}
+        unset($methods['pingback.ping']);
+        return $methods;
+    }
 
 
     /**

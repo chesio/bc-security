@@ -32,16 +32,16 @@ class AdminPage extends \BlueChip\Security\Core\AdminPage
     /**
      * @param \BlueChip\Security\IpBlacklist\Manager $bl_manager
      */
-	function __construct(Manager $bl_manager)
+    function __construct(Manager $bl_manager)
     {
-		$this->page_title = _x('IP Blacklist', 'Dashboard page title', 'bc-security');
-		$this->menu_title = _x('IP Blacklist', 'Dashboard menu item name', 'bc-security');
-		$this->slug = self::SLUG;
+        $this->page_title = _x('IP Blacklist', 'Dashboard page title', 'bc-security');
+        $this->menu_title = _x('IP Blacklist', 'Dashboard menu item name', 'bc-security');
+        $this->slug = self::SLUG;
 
         $this->bl_manager = $bl_manager;
 
         add_filter('set-screen-option', [$this, 'setScreenOption'], 10, 3);
-	}
+    }
 
 
     public function loadPage()
@@ -52,14 +52,14 @@ class AdminPage extends \BlueChip\Security\Core\AdminPage
     }
 
 
-	/**
-	 * Render admin page
-	 */
-	public function render()
+    /**
+     * Render admin page.
+     */
+    public function render()
     {
-		echo '<div class="wrap">';
+        echo '<div class="wrap">';
         // Page heading
-		echo '<h1>' . esc_html($this->page_title) . '</h1>';
+        echo '<h1>' . esc_html($this->page_title) . '</h1>';
         // Table
         $this->list_table->views();
         echo '<form method="post">';
@@ -70,8 +70,8 @@ class AdminPage extends \BlueChip\Security\Core\AdminPage
         wp_nonce_field(self::PRUNE_NONCE_ACTION);
         submit_button(__('Prune IP blacklist', 'bc-security'), 'delete', self::PRUNE_SUBMIT);
         echo '</form>';
-		echo '</div>';
-	}
+        echo '</div>';
+    }
 
 
     /**
