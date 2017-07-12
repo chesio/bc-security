@@ -20,7 +20,7 @@ class AdminPage extends \BlueChip\Security\Core\AdminPage
 
 
 	/**
-	 * Render admin page
+	 * Render admin page.
 	 */
 	public function render()
     {
@@ -33,6 +33,10 @@ class AdminPage extends \BlueChip\Security\Core\AdminPage
 
         echo '<tr>';
 		$this->renderPhpFileEditationStatus();
+        echo '</tr>';
+
+        echo '<tr>';
+		$this->renderPhpFileBlockedInUploadsDir();
         echo '</tr>';
 
         echo '<tr>';
@@ -67,6 +71,26 @@ class AdminPage extends \BlueChip\Security\Core\AdminPage
 		echo '<th>' . __('PHP Files Editation Disabled', 'bc-security') . '</th>';
 		echo '<td>' . sprintf(__('It is generally recommended to <a href="%s">disable editation of PHP files</a>.', 'bc-security'), 'https://codex.wordpress.org/Hardening_WordPress#Disable_File_Editing') . '</td>';
 		echo '<td></td>';
+	}
+
+
+	/**
+	 * Render status info about php files being unaccessible from within uploads directory.
+	 */
+	private function renderPhpFileBlockedInUploadsDir()
+    {
+		$blocked = PhpUploads::areBlocked();
+
+		echo '<th>' . (!is_null($blocked) ? ('<span class="dashicons dashicons-' . ($blocked ? 'yes' : 'no') . '"></span>') : '' ) . '</th>';
+		echo '<th>' . __('PHP Files Blocked', 'bc-security') . '</th>';
+		echo '<td>' . sprintf(__('Vulnerable plugins may allow upload of arbitrary files into uploads directory. <a href="%s">Disabling access to PHP files</a> within uploads directory may help prevent successful exploitation of such vulnerabilities.', 'bc-security'), 'https://gist.github.com/chesio/8f83224840eccc1e80a17fc29babadf2') . '</td>';
+        if (is_null($blocked)) {
+            echo '<td>' . esc_html__('Unfortunately, BC Security has failed to determine whether PHP files can be executed from uploads directory.') . '</td>';
+        } elseif ($blocked) {
+            echo '<td>' . esc_html__('It seems that PHP files cannot be executed from uploads directory.', 'bc-security') . '</td>';
+        } else {
+            echo '<td>' . esc_html__('It seems that PHP files can be executed from uploads directory!', 'bc-security') . '</td>';
+        }
 	}
 
 
