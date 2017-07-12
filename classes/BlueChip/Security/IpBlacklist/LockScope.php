@@ -15,17 +15,17 @@ interface LockScope
     const ANY = 0;
 
     /**
-     * No access to admin (or login attempt) from IP is allowed
+     * No access to admin (or login attempt) from IP address is allowed.
      */
     const ADMIN = 1;
 
     /**
-     * No comments from IP are allowed
+     * No comments from IP address are allowed.
      */
     const COMMENTS = 2;
 
     /**
-     * No access to website from IP is allowed
+     * No access to website from IP address is allowed.
      */
     const WEBSITE = 3;
 }

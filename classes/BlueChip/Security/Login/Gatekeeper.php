@@ -8,7 +8,7 @@ namespace BlueChip\Security\Login;
 use BlueChip\Security\IpBlacklist;
 
 /**
- * Gatekeeper keeps bots out of admin area
+ * Gatekeeper keeps bots out of admin area.
  */
 class Gatekeeper implements \BlueChip\Security\Core\Module\Initializable, \BlueChip\Security\Core\Module\Loadable
 {
@@ -16,7 +16,7 @@ class Gatekeeper implements \BlueChip\Security\Core\Module\Initializable, \BlueC
     private $settings;
 
     /** @var string */
-    private $ip_address;
+    private $remote_address;
 
     /** @var \BlueChip\Security\Login\Bookkeeper */
     private $bookkeeper;
@@ -27,14 +27,14 @@ class Gatekeeper implements \BlueChip\Security\Core\Module\Initializable, \BlueC
 
 	/**
 	 * @param \BlueChip\Security\Login\Settings $settings
-     * @param string $ip_address
+     * @param string $remote_address Remote IP address.
      * @param \BlueChip\Security\Login\Bookkeeper $bookkeeper
      * @param \BlueChip\Security\IpBlacklist\Manager $bl_manager
 	 */
-	public function __construct(Settings $settings, $ip_address, Bookkeeper $bookkeeper, IpBlacklist\Manager $bl_manager)
+	public function __construct(Settings $settings, $remote_address, Bookkeeper $bookkeeper, IpBlacklist\Manager $bl_manager)
     {
         $this->settings = $settings;
-        $this->ip_address = $ip_address;
+        $this->remote_address = $remote_address;
         $this->bookkeeper = $bookkeeper;
         $this->bl_manager = $bl_manager;
     }
@@ -112,12 +112,12 @@ class Gatekeeper implements \BlueChip\Security\Core\Module\Initializable, \BlueC
     public function handleFailedLogin($username)
     {
         // If currently locked-out, bail (should not happen, but better safe than sorry)
-        if ($this->bl_manager->isLocked($this->ip_address, IpBlacklist\LockScope::ADMIN)) {
+        if ($this->bl_manager->isLocked($this->remote_address, IpBlacklist\LockScope::ADMIN)) {
             return;
         }
 
         // Record failed login attempt, get total number of retries for IP
-        $retries = $this->bookkeeper->recordFailedLoginAttempt($this->ip_address, $username);
+        $retries = $this->bookkeeper->recordFailedLoginAttempt($this->remote_address, $username);
 
         // Determine, if it is the lockout time:
         if ($retries % $this->settings[Settings::LONG_LOCKOUT_AFTER] === 0) {
@@ -183,7 +183,7 @@ class Gatekeeper implements \BlueChip\Security\Core\Module\Initializable, \BlueC
      */
     public function removeAuthCookieIfIpIsLocked()
     {
-        if ($this->bl_manager->isLocked($this->ip_address, IpBlacklist\LockScope::ADMIN)) {
+        if ($this->bl_manager->isLocked($this->remote_address, IpBlacklist\LockScope::ADMIN)) {
             $this->clearAuthCookie();
         }
     }
@@ -211,7 +211,7 @@ class Gatekeeper implements \BlueChip\Security\Core\Module\Initializable, \BlueC
 
 
     /**
-     * Lock out current IP address for $duration seconds
+     * Lock out remote IP address for $duration seconds
      *
      * @hook bc_security_login_lockout_event
      *
@@ -222,12 +222,12 @@ class Gatekeeper implements \BlueChip\Security\Core\Module\Initializable, \BlueC
     protected function lockOut($username, $duration, $reason)
     {
         // Trigger lockout action
-        do_action(Hooks::LOCKOUT_EVENT, $this->ip_address, $username, $duration, $reason);
+        do_action(Hooks::LOCKOUT_EVENT, $this->remote_address, $username, $duration, $reason);
 
         // Lock IP address
-        $this->bl_manager->lock($this->ip_address, $duration, IpBlacklist\LockScope::ADMIN, $reason);
+        $this->bl_manager->lock($this->remote_address, $duration, IpBlacklist\LockScope::ADMIN, $reason);
 
         // Block access
-        IpBlacklist\Bouncer::blockAccessTemporarily($this->ip_address);
+        IpBlacklist\Bouncer::blockAccessTemporarily($this->remote_address);
     }
 }

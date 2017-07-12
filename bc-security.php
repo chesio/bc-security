@@ -9,10 +9,9 @@
  * Requires at least: 4.7
  * Tested up to: 4.8
  * Text Domain: bc-security
- * Domain Path: /languages
  */
 
-// Throw in some constants
+// Throw in some constants.
 define('BC_SECURITY_PLUGIN_DIR', __DIR__);
 define('BC_SECURITY_PLUGIN_FILE', __FILE__);
 
@@ -39,9 +38,12 @@ if (version_compare(PHP_VERSION, '5.6', '<')) {
 }
 
 
-// Get autoloader
+// Get autoloader.
 require_once __DIR__ . '/includes/autoload.php';
 
-// Load the plugin
+// Construct plugin instance.
 $bc_security = new \BlueChip\Security\Plugin($GLOBALS['wpdb']);
+// Register activation hook.
+register_activation_hook(BC_SECURITY_PLUGIN_FILE, [$bc_security, 'install']);
+// Load the plugin.
 $bc_security->load();

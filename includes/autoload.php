@@ -2,8 +2,6 @@
 /**
  * Register autoloader for classes from BlueChip\Security namespace.
  *
- * This file requires PHP 5.3 or newer to run!
- *
  * @package BC_Security
  */
 

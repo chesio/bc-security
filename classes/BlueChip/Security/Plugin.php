@@ -38,7 +38,7 @@ class Plugin
         $setup = new Setup\Core($this->settings['setup']);
 
         // IP address is at core interest within this plugin :)
-        $ip_address = $setup->getRemoteAddress();
+        $remote_address = $setup->getRemoteAddress();
 
         // Init admin, if necessary.
         $this->admin = is_admin() ? new Admin() : null;
@@ -46,9 +46,9 @@ class Plugin
         // Construct modules...
         $hardening  = new Hardening\Core($this->settings['hardening']);
         $bl_manager = new IpBlacklist\Manager($wpdb);
-        $bl_bouncer = new IpBlacklist\Bouncer($ip_address, $bl_manager);
+        $bl_bouncer = new IpBlacklist\Bouncer($remote_address, $bl_manager);
         $bookkeeper = new Login\Bookkeeper($this->settings['login'], $wpdb);
-        $gatekeeper = new Login\Gatekeeper($this->settings['login'], $ip_address, $bookkeeper, $bl_manager);
+        $gatekeeper = new Login\Gatekeeper($this->settings['login'], $remote_address, $bookkeeper, $bl_manager);
 
         // ... and store them for later.
         $this->modules = [
@@ -67,9 +67,6 @@ class Plugin
 	 */
     public function load()
     {
-        // Installing?
-        register_activation_hook(BC_SECURITY_PLUGIN_FILE, [$this, 'install']);
-
         // Load all modules that require immediate loading.
         foreach ($this->modules as $module) {
             if ($module instanceof Core\Module\Loadable) {
