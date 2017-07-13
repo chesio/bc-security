@@ -10,12 +10,24 @@ class AdminPage extends \BlueChip\Security\Core\AdminPage
     /** @var string Page slug */
     const SLUG = 'bc-security-checklist';
 
+    /** @var string Prefix of default, MD5-based hashes */
+    const WP_OLD_HASH_PREFIX = '$P$';
 
-    function __construct()
+
+    /** @var \wpdb WordPress database access abstraction object */
+    private $wpdb;
+
+
+    /**
+     * @param \wpdb $wpdb WordPress database access abstraction object
+     */
+    function __construct($wpdb)
     {
         $this->page_title = _x('Security Checklist', 'Dashboard page title', 'bc-security');
         $this->menu_title = _x('Checklist', 'Dashboard menu item name', 'bc-security');
         $this->slug = self::SLUG;
+
+        $this->wpdb = $wpdb;
     }
 
 
@@ -41,6 +53,10 @@ class AdminPage extends \BlueChip\Security\Core\AdminPage
 
         echo '<tr>';
         $this->renderNoObviousUsernamesStatus();
+        echo '</tr>';
+
+        echo '<tr>';
+        $this->renderNoDefaultMd5HashedPasswords();
         echo '</tr>';
 
         echo '</table>';
@@ -113,6 +129,30 @@ class AdminPage extends \BlueChip\Security\Core\AdminPage
             echo '<td>' . esc_html__('None of the following usernames exists on the system:', 'bc-security') . ' <em>' . implode(', ', $obvious) . '</em></td>';
         } else {
             echo '<td>' . esc_html__('The following obvious usernames exists on the system:', 'bc-security') . ' <em>' . implode(', ', $existing) . '</em></td>';
+        }
+    }
+
+
+    /**
+     * Render status info about no default MD5-based password hashes being present in database.
+     */
+    private function renderNoDefaultMd5HashedPasswords()
+    {
+        // Get all users with old hash prefix
+        $result = $this->wpdb->get_results(sprintf(
+            "SELECT `user_login` FROM {$this->wpdb->users} WHERE `user_pass` LIKE '%s%%';",
+            self::WP_OLD_HASH_PREFIX
+        ));
+
+        echo '<th>' . (($result === false) ? '' : ('<span class="dashicons dashicons-' . (empty($result) ? 'yes' : 'no') . '"></span>')) . '</th>';
+        echo '<th>' . __('No Default MD5 Password Hashes', 'bc-security') . '</th>';
+        echo '<td>' . sprintf(__('WordPress by default uses an MD5 based password hashing scheme that is too cheap and fast to generate cryptographically secure hashes. For modern PHP versions, there are <a href="%s">more secure alternatives</a> available.', 'bc-security'), 'https://github.com/roots/wp-password-bcrypt') . '</td>';
+        if ($result === false) {
+            echo '<td>' . esc_html__('Unfortunately, BC Security has failed to determine whether there are any users with password hashed with default MD5-based algorithm.', 'bc-security') . '</td>';
+        } elseif (empty($result)) {
+            echo '<td>' . esc_html__('No users have password hashed with default MD5-based algorithm.', 'bc-security') . '</td>';
+        } else {
+            echo '<td>' . esc_html__('The following users have their password hashed with default MD5-based algorithm:', 'bc-security') . ' <em>' . implode(', ', wp_list_pluck($result, 'user_login')) . '</em></td>';
         }
     }
 }

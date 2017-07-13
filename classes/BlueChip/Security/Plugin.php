@@ -19,6 +19,8 @@ class Plugin
     /** @var array Array with setting objects for particular modules */
     private $settings;
 
+    /** @var \wpdb WordPress database access abstraction object */
+    private $wpdb;
 
     /**
      * Construct the plugin instance.
@@ -27,6 +29,8 @@ class Plugin
      */
     public function __construct($wpdb)
     {
+        $this->wpdb = $wpdb;
+
         // Read plugin settings
         $this->settings = [
             'hardening' => new Hardening\Settings('bc-security-hardening'),
@@ -96,7 +100,7 @@ class Plugin
             // Initialize admin interface.
             $this->admin->init()
                 ->addPage(new Setup\AdminPage($this->settings['setup']))
-                ->addPage(new Checklist\AdminPage())
+                ->addPage(new Checklist\AdminPage($this->wpdb))
                 ->addPage(new Hardening\AdminPage($this->settings['hardening']))
                 ->addPage(new Login\AdminPage($this->settings['login']))
                 ->addPage(new IpBlacklist\AdminPage($this->modules['blacklist-manager']))
