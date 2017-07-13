@@ -200,4 +200,4 @@ class SettingsHelper
         //
         echo '</form>';
     }
-    }
+}
