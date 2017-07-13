@@ -38,8 +38,11 @@ class AdminPage extends \BlueChip\Security\Core\AdminPage
     {
         echo '<div class="wrap">';
 
-        echo '<h1>' . $this->page_title . '</h1>';
-        echo '<p>The more <span class="dashicons dashicons-yes"></span> you have, the better!</p>';
+        echo '<h1>' . esc_html($this->page_title) . '</h1>';
+        echo '<p>';
+        /* translators: %s: tick icon */
+        echo sprintf(esc_html__('The more %s you have, the better!'), '<span class="dashicons dashicons-yes"></span>');
+        echo '</p>';
 
         echo '<table class="wp-list-table widefat striped">';
 
@@ -84,7 +87,7 @@ class AdminPage extends \BlueChip\Security\Core\AdminPage
     {
         $disabled = defined('DISALLOW_FILE_EDIT') && DISALLOW_FILE_EDIT;
         echo '<th><span class="dashicons dashicons-' . ($disabled ? 'yes' : 'no') . '"></span></th>';
-        echo '<th>' . __('PHP Files Editation Disabled', 'bc-security') . '</th>';
+        echo '<th>' . esc_html__('PHP Files Editation Disabled', 'bc-security') . '</th>';
         echo '<td>' . sprintf(__('It is generally recommended to <a href="%s">disable editation of PHP files</a>.', 'bc-security'), 'https://codex.wordpress.org/Hardening_WordPress#Disable_File_Editing') . '</td>';
         echo '<td></td>';
     }
@@ -98,7 +101,7 @@ class AdminPage extends \BlueChip\Security\Core\AdminPage
         $blocked = Helper::isAccessToPhpFilesInUploadsDirForbidden();
 
         echo '<th>' . (!is_null($blocked) ? ('<span class="dashicons dashicons-' . ($blocked ? 'yes' : 'no') . '"></span>') : '' ) . '</th>';
-        echo '<th>' . __('PHP Files Forbidden', 'bc-security') . '</th>';
+        echo '<th>' . esc_html__('PHP Files Forbidden', 'bc-security') . '</th>';
         echo '<td>' . sprintf(__('Vulnerable plugins may allow upload of arbitrary files into uploads directory. <a href="%s">Disabling access to PHP files</a> within uploads directory may help prevent successful exploitation of such vulnerabilities.', 'bc-security'), 'https://gist.github.com/chesio/8f83224840eccc1e80a17fc29babadf2') . '</td>';
         if (is_null($blocked)) {
             echo '<td>' . esc_html__('Unfortunately, BC Security has failed to determine whether PHP files can be executed from uploads directory.', 'bc-security') . '</td>';
@@ -123,7 +126,7 @@ class AdminPage extends \BlueChip\Security\Core\AdminPage
         $existing = array_filter($obvious, function ($username) { return get_user_by('login', $username); });
 
         echo '<th><span class="dashicons dashicons-' . (empty($existing) ? 'yes' : 'no') . '"></span></th>';
-        echo '<th>' . __('No Obvious Usernames', 'bc-security') . '</th>';
+        echo '<th>' . esc_html__('No Obvious Usernames', 'bc-security') . '</th>';
         echo '<td>' . sprintf(__('Usernames like "admin" and "administrator" are often used in brute force attacks and <a href="%s">should be avoided</a>.', 'bc-security'), 'https://codex.wordpress.org/Hardening_WordPress#Security_through_obscurity') . '</td>';
         if (empty($existing)) {
             echo '<td>' . esc_html__('None of the following usernames exists on the system:', 'bc-security') . ' <em>' . implode(', ', $obvious) . '</em></td>';
@@ -145,7 +148,7 @@ class AdminPage extends \BlueChip\Security\Core\AdminPage
         ));
 
         echo '<th>' . (($result === false) ? '' : ('<span class="dashicons dashicons-' . (empty($result) ? 'yes' : 'no') . '"></span>')) . '</th>';
-        echo '<th>' . __('No Default MD5 Password Hashes', 'bc-security') . '</th>';
+        echo '<th>' . esc_html__('No Default MD5 Password Hashes', 'bc-security') . '</th>';
         echo '<td>' . sprintf(__('WordPress by default uses an MD5 based password hashing scheme that is too cheap and fast to generate cryptographically secure hashes. For modern PHP versions, there are <a href="%s">more secure alternatives</a> available.', 'bc-security'), 'https://github.com/roots/wp-password-bcrypt') . '</td>';
         if ($result === false) {
             echo '<td>' . esc_html__('Unfortunately, BC Security has failed to determine whether there are any users with password hashed with default MD5-based algorithm.', 'bc-security') . '</td>';

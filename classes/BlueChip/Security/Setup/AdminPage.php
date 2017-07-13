@@ -30,7 +30,7 @@ class AdminPage extends \BlueChip\Security\Core\AdminSettingsPage
     public function render()
     {
         echo '<div class="wrap">';
-        echo '<h1>' . $this->page_title . '</h1>';
+        echo '<h1>' . esc_html($this->page_title) . '</h1>';
         echo $this->settings_helper->renderForm();
         echo '</div>';
     }

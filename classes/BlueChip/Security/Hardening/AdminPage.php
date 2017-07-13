@@ -29,7 +29,7 @@ class AdminPage extends \BlueChip\Security\Core\AdminSettingsPage
     public function render()
     {
         echo '<div class="wrap">';
-        echo '<h1>' . $this->page_title . '</h1>';
+        echo '<h1>' . esc_html($this->page_title) . '</h1>';
         echo '<p>' . esc_html__('All security features below are applied through WordPress filters.', 'bc-security') . '</p>';
         echo $this->settings_helper->renderForm();
         echo '</div>';
