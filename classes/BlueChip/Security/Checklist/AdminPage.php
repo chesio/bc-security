@@ -79,10 +79,10 @@ class AdminPage extends \BlueChip\Security\Core\AdminPage
      */
     private function renderPhpFileBlockedInUploadsDir()
     {
-        $blocked = PhpUploads::areBlocked();
+        $blocked = Helper::isAccessToPhpFilesInUploadsDirForbidden();
 
         echo '<th>' . (!is_null($blocked) ? ('<span class="dashicons dashicons-' . ($blocked ? 'yes' : 'no') . '"></span>') : '' ) . '</th>';
-        echo '<th>' . __('PHP Files Blocked', 'bc-security') . '</th>';
+        echo '<th>' . __('PHP Files Forbidden', 'bc-security') . '</th>';
         echo '<td>' . sprintf(__('Vulnerable plugins may allow upload of arbitrary files into uploads directory. <a href="%s">Disabling access to PHP files</a> within uploads directory may help prevent successful exploitation of such vulnerabilities.', 'bc-security'), 'https://gist.github.com/chesio/8f83224840eccc1e80a17fc29babadf2') . '</td>';
         if (is_null($blocked)) {
             echo '<td>' . esc_html__('Unfortunately, BC Security has failed to determine whether PHP files can be executed from uploads directory.') . '</td>';
