@@ -35,3 +35,4 @@ BC Security maintains a list of IP addresses with limited access to the website.
 ## Credits
 
 1. Login Security feature has been inspired by [Limit Login Attempts](https://wordpress.org/plugins/limit-login-attempts/) plugin by Johan Eenfeldt.
+1. Part of [psr/log](https://packagist.org/packages/psr/log) package codebase is shipped with the plugin.
