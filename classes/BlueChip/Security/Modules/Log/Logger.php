@@ -1,5 +1,5 @@
 <?php
-/*
+/**
  * @package BC_Security
  */
 
@@ -74,15 +74,15 @@ class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\
     {
         // Expose log methods via do_action() - inspired by Wonolog:
         // https://github.com/inpsyde/Wonolog/blob/master/docs/02-basic-wonolog-concepts.md#level-rich-log-hooks
-        add_action('bc-security.log.emergency', [$this, 'emergency'], 10, 2);
-        add_action('bc-security.log.alert', [$this, 'alert'], 10, 2);
-        add_action('bc-security.log.critical', [$this, 'critical'], 10, 2);
-        add_action('bc-security.log.error', [$this, 'error'], 10, 2);
-        add_action('bc-security.log.warning', [$this, 'warning'], 10, 2);
-        add_action('bc-security.log.notice', [$this, 'notice'], 10, 2);
-        add_action('bc-security.log.info', [$this, 'info'], 10, 2);
-        add_action('bc-security.log.debug', [$this, 'debug'], 10, 2);
-        add_action('bc-security.log', [$this, 'log'], 10, 3);
+        add_action(Action::EMERGENCY, [$this, 'emergency'], 10, 2);
+        add_action(Action::ALERT, [$this, 'alert'], 10, 2);
+        add_action(Action::CRITICAL, [$this, 'critical'], 10, 2);
+        add_action(Action::ERROR, [$this, 'error'], 10, 2);
+        add_action(Action::WARNING, [$this, 'warning'], 10, 2);
+        add_action(Action::NOTICE, [$this, 'notice'], 10, 2);
+        add_action(Action::INFO, [$this, 'info'], 10, 2);
+        add_action(Action::DEBUG, [$this, 'debug'], 10, 2);
+        add_action(Action::LOG, [$this, 'log'], 10, 3);
     }
 
 
