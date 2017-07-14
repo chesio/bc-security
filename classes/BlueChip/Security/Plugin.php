@@ -48,6 +48,7 @@ class Plugin
         $this->admin = is_admin() ? new Admin() : null;
 
         // Construct modules...
+        $logger     = new Log\Logger($wpdb, $remote_address);
         $hardening  = new Hardening\Core($this->settings['hardening']);
         $bl_manager = new IpBlacklist\Manager($wpdb);
         $bl_bouncer = new IpBlacklist\Bouncer($remote_address, $bl_manager);
@@ -56,6 +57,7 @@ class Plugin
 
         // ... and store them for later.
         $this->modules = [
+            'logger'            => $logger,
             'hardening-core'    => $hardening,
             'blacklist-manager' => $bl_manager,
             'blacklist-bouncer' => $bl_bouncer,
