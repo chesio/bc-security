@@ -29,3 +29,7 @@ BC Security allows you to:
 ### IP Blacklist
 
 BC Security maintains a list of IP addresses with limited access to the website. Currently, this list is only populated by [Login Security](#login-security) module.
+
+## Credits
+
+1. Login Security feature has been inspired by [Limit Login Attempts](https://wordpress.org/plugins/limit-login-attempts/) plugin by Johan Eenfeldt.
