@@ -10,26 +10,26 @@ namespace BlueChip\Security\Core;
  */
 abstract class AdminPage
 {
-	/**
-	 * @var string
-	 */
-	public $menu_title;
+    /**
+     * @var string
+     */
+    public $menu_title;
 
-	/**
-	 * @var string
-	 */
-	public $page_title;
+    /**
+     * @var string
+     */
+    public $page_title;
 
-	/**
-	 * @var string
-	 */
-	public $slug;
+    /**
+     * @var string
+     */
+    public $slug;
 
 
-	/**
-	 * Output page content
-	 */
-	abstract public function render();
+    /**
+     * Output page content
+     */
+    abstract public function render();
 
 
     /**

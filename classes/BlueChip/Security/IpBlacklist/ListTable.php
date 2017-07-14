@@ -215,9 +215,9 @@ class ListTable extends \WP_List_Table
      * @todo Better labels for scopes.
      * @return array
      */
-	protected function get_views()
+    protected function get_views()
     {
-		return [
+        return [
             'any' => sprintf(
                 '<a href="%s" class="%s">%s</a> (%d)',
                 remove_query_arg([self::VIEW_SCOPE], $this->url),
@@ -247,7 +247,7 @@ class ListTable extends \WP_List_Table
                 $this->bl_manager->countAll(LockScope::WEBSITE)
             ),
         ];
-	}
+    }
 
 
     /**

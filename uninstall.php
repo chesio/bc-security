@@ -1,6 +1,6 @@
 <?php
 /**
- * Perform uninstall tasks.
+ * Perform plugin uninstall.
  *
  * @package BC_Security
  */
@@ -10,12 +10,13 @@ if (!defined('WP_UNINSTALL_PLUGIN')) {
     exit;
 }
 
-// Define path to plugin directory for autoloader
+// Throw in some constants.
 define('BC_SECURITY_PLUGIN_DIR', __DIR__);
 
-// Get autoloader
+// Get autoloader.
 require_once __DIR__ . '/includes/autoload.php';
 
-// Uninstall the plugin
+// Construct plugin instance.
 $bc_security = new \BlueChip\Security\Plugin($GLOBALS['wpdb']);
+// Run uninstall actions.
 $bc_security->uninstall();

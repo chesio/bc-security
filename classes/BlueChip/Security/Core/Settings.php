@@ -15,37 +15,37 @@ abstract class Settings implements \ArrayAccess
      */
     private $option_name;
 
-	/**
-	 * @var array Cache for get_option() result.
-	 */
-	protected $data;
+    /**
+     * @var array Cache for get_option() result.
+     */
+    protected $data;
 
 
-	/**
+    /**
      * @param string $option_name
-	 */
-	public function __construct($option_name)
+     */
+    public function __construct($option_name)
     {
-		// Read settings from wp_options table and sanitize them right away.
+        // Read settings from wp_options table and sanitize them right away.
         $this->option_name = $option_name;
-		$this->data = $this->sanitize(get_option($option_name));
-	}
+        $this->data = $this->sanitize(get_option($option_name));
+    }
 
 
-	/**
-	 * Get value of setting under key $name.
-	 * @param string $name
-	 * @return mixed A null value is returned if $name is not a valid key.
-	 */
-	public function __get($name)
+    /**
+     * Get value of setting under key $name.
+     * @param string $name
+     * @return mixed A null value is returned if $name is not a valid key.
+     */
+    public function __get($name)
     {
-		if (isset($this->data[$name])) {
+        if (isset($this->data[$name])) {
             return $this->data[$name];
-		} else {
-			_doing_it_wrong(__METHOD__, sprintf('Unknown settings key "%s"', $name), '0.1.0');
-			return null;
+        } else {
+            _doing_it_wrong(__METHOD__, sprintf('Unknown settings key "%s"', $name), '0.1.0');
+            return null;
         }
-	}
+    }
 
 
     /**
@@ -55,65 +55,65 @@ abstract class Settings implements \ArrayAccess
      */
     public function __set($name, $value)
     {
-		if (isset($this->data[$name])) {
+        if (isset($this->data[$name])) {
             $this->update($name, $value);
-		} else {
-			_doing_it_wrong(__METHOD__, sprintf('Unknown settings key "%s"', $name), '0.1.0');
+        } else {
+            _doing_it_wrong(__METHOD__, sprintf('Unknown settings key "%s"', $name), '0.1.0');
         }
     }
 
 
-	//// ArrayAccess API ///////////////////////////////////////////////////////
+    //// ArrayAccess API ///////////////////////////////////////////////////////
 
-	/**
-	 * Return true, if there is any setting available under key $offset.
+    /**
+     * Return true, if there is any setting available under key $offset.
      *
-	 * @internal Implements ArrayAccess interface.
-	 * @param string $offset
-	 * @return bool
-	 */
-	public function offsetExists($offset)
+     * @internal Implements ArrayAccess interface.
+     * @param string $offset
+     * @return bool
+     */
+    public function offsetExists($offset)
     {
-		return isset($this->data[$offset]);
-	}
+        return isset($this->data[$offset]);
+    }
 
 
-	/**
-	 * Retrieve setting under key $offset.
+    /**
+     * Retrieve setting under key $offset.
      *
-	 * @internal Implements ArrayAccess interface.
-	 * @param string $offset
-	 * @return mixed A null value is returned if $offset is not a valid key.
-	 */
-	public function offsetGet($offset)
+     * @internal Implements ArrayAccess interface.
+     * @param string $offset
+     * @return mixed A null value is returned if $offset is not a valid key.
+     */
+    public function offsetGet($offset)
     {
-		return isset($this->data[$offset]) ? $this->data[$offset] : null;
-	}
+        return isset($this->data[$offset]) ? $this->data[$offset] : null;
+    }
 
 
-	/**
-	 * Update setting under key $offset with $value.
-	 *
-	 * @internal Implements ArrayAccess interface.
-	 * @param string $offset
-	 * @param mixed $value
-	 */
-	public function offsetSet($offset, $value)
+    /**
+     * Update setting under key $offset with $value.
+     *
+     * @internal Implements ArrayAccess interface.
+     * @param string $offset
+     * @param mixed $value
+     */
+    public function offsetSet($offset, $value)
     {
         $this->update($offset, $value);
-	}
+    }
 
 
-	/**
-	 * Reset setting under key $offset to its default value.
-	 *
-	 * @internal Implements ArrayAccess interface.
-	 * @param string $offset
-	 */
-	public function offsetUnset($offset)
+    /**
+     * Reset setting under key $offset to its default value.
+     *
+     * @internal Implements ArrayAccess interface.
+     * @param string $offset
+     */
+    public function offsetUnset($offset)
     {
-		$this->update($offset, null);
-	}
+        $this->update($offset, null);
+    }
 
 
     /**
@@ -127,12 +127,12 @@ abstract class Settings implements \ArrayAccess
     }
 
 
-	/**
-	 * Sanitize $settings array: only return known keys, provide default values
+    /**
+     * Sanitize $settings array: only return known keys, provide default values
      * for missing keys.
-	 * @param array $settings
-	 * @return array
-	 */
+     * @param array $settings
+     * @return array
+     */
     abstract public function sanitize($settings);
 
 

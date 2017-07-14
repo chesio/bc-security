@@ -11,20 +11,20 @@ namespace BlueChip\Security\Setup;
 class Settings extends \BlueChip\Security\Core\Settings
 {
     /** string: What is server connection type? [REMOTE_ADDR] */
-	const CONNECTION_TYPE = 'connection-type';
+    const CONNECTION_TYPE = 'connection-type';
 
 
-	/**
-	 * Sanitize settings array: only return known keys, provide default values
+    /**
+     * Sanitize settings array: only return known keys, provide default values
      * for missing keys.
-	 * @param array $s
-	 * @return array
-	 */
-	public function sanitize($s)
+     * @param array $s
+     * @return array
+     */
+    public function sanitize($s)
     {
-		return [
-			self::CONNECTION_TYPE
-				=> isset($s[self::CONNECTION_TYPE]) && in_array($s[self::CONNECTION_TYPE], \BlueChip\Security\Setup\IpAddress::enlist(), true) ? $s[self::CONNECTION_TYPE] : IpAddress::REMOTE_ADDR,
-		];
-	}
+        return [
+            self::CONNECTION_TYPE
+                => isset($s[self::CONNECTION_TYPE]) && in_array($s[self::CONNECTION_TYPE], \BlueChip\Security\Setup\IpAddress::enlist(), true) ? $s[self::CONNECTION_TYPE] : IpAddress::REMOTE_ADDR,
+        ];
+    }
 }

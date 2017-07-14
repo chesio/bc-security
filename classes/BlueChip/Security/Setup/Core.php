@@ -12,13 +12,13 @@ class Core
      */
     private $connection_type = IpAddress::REMOTE_ADDR;
 
-	/**
-	 * @param \BlueChip\Security\Setup\Settings $settings
-	 */
-	public function __construct($settings)
+    /**
+     * @param \BlueChip\Security\Setup\Settings $settings
+     */
+    public function __construct($settings)
     {
         $this->connection_type = $settings[Settings::CONNECTION_TYPE];
-	}
+    }
 
     /**
      * Get remote IP address according to configured connection type.

@@ -16,8 +16,8 @@ class Plugin
     /** @var array Array with module objects for all plugin modules */
     private $modules;
 
-	/** @var array Array with setting objects for particular modules */
-	private $settings;
+    /** @var array Array with setting objects for particular modules */
+    private $settings;
 
 
     /**
@@ -25,10 +25,10 @@ class Plugin
      *
      * @param \wpdb $wpdb WordPress database access abstraction object
      */
-	public function __construct($wpdb)
+    public function __construct($wpdb)
     {
-		// Read plugin settings
-		$this->settings = [
+        // Read plugin settings
+        $this->settings = [
             'hardening' => new Hardening\Settings('bc-security-hardening'),
             'login'     => new Login\Settings('bc-security-login'),
             'setup'     => new Setup\Settings('bc-security-setup'),
@@ -38,7 +38,7 @@ class Plugin
         $setup = new Setup\Core($this->settings['setup']);
 
         // IP address is at core interest within this plugin :)
-        $ip_address = $setup->getRemoteAddress();
+        $remote_address = $setup->getRemoteAddress();
 
         // Init admin, if necessary.
         $this->admin = is_admin() ? new Admin() : null;
@@ -46,9 +46,9 @@ class Plugin
         // Construct modules...
         $hardening  = new Hardening\Core($this->settings['hardening']);
         $bl_manager = new IpBlacklist\Manager($wpdb);
-        $bl_bouncer = new IpBlacklist\Bouncer($ip_address, $bl_manager);
+        $bl_bouncer = new IpBlacklist\Bouncer($remote_address, $bl_manager);
         $bookkeeper = new Login\Bookkeeper($this->settings['login'], $wpdb);
-        $gatekeeper = new Login\Gatekeeper($this->settings['login'], $ip_address, $bookkeeper, $bl_manager);
+        $gatekeeper = new Login\Gatekeeper($this->settings['login'], $remote_address, $bookkeeper, $bl_manager);
 
         // ... and store them for later.
         $this->modules = [
@@ -61,15 +61,12 @@ class Plugin
     }
 
 
-	/**
-	 * Load the plugin by hooking into WordPress actions and filters.
+    /**
+     * Load the plugin by hooking into WordPress actions and filters.
      * Method should be invoked immediately on plugin load.
-	 */
+     */
     public function load()
     {
-        // Installing?
-        register_activation_hook(BC_SECURITY_PLUGIN_FILE, [$this, 'install']);
-
         // Load all modules that require immediate loading.
         foreach ($this->modules as $module) {
             if ($module instanceof Core\Module\Loadable) {
@@ -79,7 +76,7 @@ class Plugin
 
         // Register initialization method.
         add_action('init', [$this, 'init'], 10, 0);
-	}
+    }
 
 
     /**

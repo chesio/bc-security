@@ -16,17 +16,17 @@ class Bouncer implements \BlueChip\Security\Core\Module\Initializable, \BlueChip
     private $bl_manager;
 
     /** @var string Remote IP address */
-    private $ip_address;
+    private $remote_address;
 
 
     /**
-     * @param string $ip_address
+     * @param string $remote_address Remote IP address.
      * @param Manager $bl_manager
      */
-    public function __construct($ip_address, Manager $bl_manager)
+    public function __construct($remote_address, Manager $bl_manager)
     {
         $this->bl_manager = $bl_manager;
-        $this->ip_address = $ip_address;
+        $this->remote_address = $remote_address;
     }
 
 
@@ -35,13 +35,13 @@ class Bouncer implements \BlueChip\Security\Core\Module\Initializable, \BlueChip
      */
     public function load()
     {
-        // If IP address is invalid, die immediately.
-        if (empty($this->ip_address)) {
+        // If remote IP address is invalid, die immediately.
+        if (empty($this->remote_address)) {
             self::blockAccessTemporarily();
         }
 
-        // Check, if access to website is allowed as early as possible
-        // (do not use priority 0 - leave it to website maintainers)
+        // Check, if access to website is allowed as early as possible, but
+        // leave priority 0 to website maintainers.
         add_filter('plugins_loaded', [$this, 'checkAccess'], 1, 0);
     }
 
@@ -52,7 +52,7 @@ class Bouncer implements \BlueChip\Security\Core\Module\Initializable, \BlueChip
     public function init()
     {
         // Check, if access to login is allowed as early as possible, but
-        // do not use priority 0 - leave it to website maintainers.
+        // leave priority 0 to website maintainers.
         add_filter('authenticate', [$this, 'checkLoginAttempt'], 1, 1);
     }
 
@@ -78,26 +78,26 @@ class Bouncer implements \BlueChip\Security\Core\Module\Initializable, \BlueChip
     //// Hookers - public methods that should in fact be private
 
     /**
-     * Immediately wp_die(), if current IP has restricted access to website.
+     * Block access to the website, if remote IP address is locked.
      */
     public function checkAccess()
     {
-        if ($this->bl_manager->isLocked($this->ip_address, LockScope::WEBSITE)) {
-            self::blockAccessTemporarily($this->ip_address);
+        if ($this->bl_manager->isLocked($this->remote_address, LockScope::WEBSITE)) {
+            self::blockAccessTemporarily($this->remote_address);
         }
     }
 
 
     /**
-     * Immediately wp_die(), if current IP has restricted access to login.
+     * Block access to the login, if remote IP address is locked.
      *
      * @param WP_Error|WP_User $user
      * @return WP_Error|WP_User
      */
     public function checkLoginAttempt($user)
     {
-        if ($this->bl_manager->isLocked($this->ip_address, LockScope::ADMIN)) {
-            self::blockAccessTemporarily($this->ip_address);
+        if ($this->bl_manager->isLocked($this->remote_address, LockScope::ADMIN)) {
+            self::blockAccessTemporarily($this->remote_address);
         }
 
         return $user;

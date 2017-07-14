@@ -26,11 +26,11 @@ class Bookkeeper implements \BlueChip\Security\Core\Module\Installable
     private $wpdb;
 
 
-	/**
+    /**
      * @param \BlueChip\Security\Login\Settings $settings
      * @param \wpdb $wpdb
-	 */
-	public function __construct(Settings $settings, \wpdb $wpdb)
+     */
+    public function __construct(Settings $settings, \wpdb $wpdb)
     {
         $this->failed_logins_table = $wpdb->prefix . self::FAILED_LOGINS_TABLE;
         $this->settings = $settings;
