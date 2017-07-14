@@ -95,14 +95,25 @@ class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\
      */
     public function log($level, $message, array $context = [])
     {
-        $this->wpdb->insert($this->log_table, [
-            'date_and_time' => date(self::MYSQL_DATETIME_FORMAT, current_time('timestamp')),
-            'ip_address' => isset($context['ip_address']) ? $context['ip_address'] : $this->remote_address, // Allow overriding of IP address.
-            'component' => isset($context['component']) ? $context['component'] : null, // Component is optional.
-            'level' => $this->translateLogLevel($level),
-            'message' => $message,
-            'context' => serialize($context),
-        ]);
+        $this->wpdb->insert(
+            $this->log_table,
+            [
+                'date_and_time' => date(self::MYSQL_DATETIME_FORMAT, current_time('timestamp')),
+                'ip_address' => isset($context['ip_address']) ? $context['ip_address'] : $this->remote_address, // Allow overriding of IP address.
+                'component' => isset($context['component']) ? $context['component'] : null, // Component is optional.
+                'level' => $this->translateLogLevel($level),
+                'message' => $message,
+                'context' => serialize($context),
+            ],
+            [
+                '%s',
+                '%s',
+                '%s',
+                '%d', // level is represented with integer code
+                '%s',
+                '%s',
+            ]
+        );
     }
 
 
