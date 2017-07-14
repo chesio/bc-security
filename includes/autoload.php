@@ -1,6 +1,6 @@
 <?php
 /**
- * Register autoloader for classes from BlueChip\Security namespace.
+ * Register autoloader for classes shipped with the plugin.
  *
  * @package BC_Security
  */
@@ -9,8 +9,8 @@ defined('BC_SECURITY_PLUGIN_DIR') or die('Das past schon nicht!');
 
 // Register autoload function
 spl_autoload_register(function ($class) {
-    // Only autoload classes from project namespace
-    if (strpos($class, 'BlueChip\\Security') !== 0) {
+    // Only autoload classes shipped with the plugin.
+    if ((strpos($class, 'BlueChip\\Security') !== 0) && (strpos($class, 'Psr\\Log') !== 0)) {
         return;
     }
 
