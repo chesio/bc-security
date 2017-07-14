@@ -128,7 +128,7 @@ class SettingsHelper
     public function addSettingsSection($section, $title, $callback = null)
     {
         if (!is_string($this->recent_page)) {
-            _doing_it_wrong(__METHOD__, __('No recent page set yet!', 'bc-security'), '0.1');
+            _doing_it_wrong(__METHOD__, 'No recent page set yet!', '0.1.0');
             return;
         }
 
@@ -151,12 +151,12 @@ class SettingsHelper
     public function addSettingsField($key, $title, $callback, $args = array())
     {
         if (!is_string($this->recent_page)) {
-            _doing_it_wrong(__METHOD__, __('No recent page set yet!', 'bc-security'), '0.1');
+            _doing_it_wrong(__METHOD__, 'No recent page set yet!', '0.1.0');
             return;
         }
 
         if (!is_string($this->recent_section)) {
-            _doing_it_wrong(__METHOD__, __('No recent section added yet!', 'bc-security'), '0.1');
+            _doing_it_wrong(__METHOD__, 'No recent section added yet!', '0.1.0');
             return;
         }
 
@@ -186,7 +186,7 @@ class SettingsHelper
     public function renderForm()
     {
         if (!is_string($this->recent_page)) {
-            _doing_it_wrong(__METHOD__, __('No recent page set!', 'bc-security'), '0.1');
+            _doing_it_wrong(__METHOD__, 'No recent page set!', '0.1.0');
             return;
         }
 
