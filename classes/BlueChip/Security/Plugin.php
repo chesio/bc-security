@@ -33,8 +33,8 @@ class Plugin
 
         // Read plugin settings
         $this->settings = [
-            'hardening' => new Hardening\Settings('bc-security-hardening'),
-            'login'     => new Login\Settings('bc-security-login'),
+            'hardening' => new Modules\Hardening\Settings('bc-security-hardening'),
+            'login'     => new Modules\Login\Settings('bc-security-login'),
             'setup'     => new Setup\Settings('bc-security-setup'),
         ];
 
@@ -48,12 +48,12 @@ class Plugin
         $this->admin = is_admin() ? new Admin() : null;
 
         // Construct modules...
-        $logger     = new Log\Logger($wpdb, $remote_address);
-        $hardening  = new Hardening\Core($this->settings['hardening']);
-        $bl_manager = new IpBlacklist\Manager($wpdb);
-        $bl_bouncer = new IpBlacklist\Bouncer($remote_address, $bl_manager);
-        $bookkeeper = new Login\Bookkeeper($this->settings['login'], $wpdb);
-        $gatekeeper = new Login\Gatekeeper($this->settings['login'], $remote_address, $bookkeeper, $bl_manager);
+        $logger     = new Modules\Log\Logger($wpdb, $remote_address);
+        $hardening  = new Modules\Hardening\Core($this->settings['hardening']);
+        $bl_manager = new Modules\IpBlacklist\Manager($wpdb);
+        $bl_bouncer = new Modules\IpBlacklist\Bouncer($remote_address, $bl_manager);
+        $bookkeeper = new Modules\Login\Bookkeeper($this->settings['login'], $wpdb);
+        $gatekeeper = new Modules\Login\Gatekeeper($this->settings['login'], $remote_address, $bookkeeper, $bl_manager);
 
         // ... and store them for later.
         $this->modules = [
@@ -75,7 +75,7 @@ class Plugin
     {
         // Load all modules that require immediate loading.
         foreach ($this->modules as $module) {
-            if ($module instanceof Core\Module\Loadable) {
+            if ($module instanceof Modules\Loadable) {
                 $module->load();
             }
         }
@@ -93,7 +93,7 @@ class Plugin
     {
         // Initialize all modules that require initialization.
         foreach ($this->modules as $module) {
-            if ($module instanceof Core\Module\Initializable) {
+            if ($module instanceof Modules\Initializable) {
                 $module->init();
             }
         }
@@ -101,11 +101,13 @@ class Plugin
         if ($this->admin) {
             // Initialize admin interface.
             $this->admin->init()
+                // Setup comes first...
                 ->addPage(new Setup\AdminPage($this->settings['setup']))
-                ->addPage(new Checklist\AdminPage($this->wpdb))
-                ->addPage(new Hardening\AdminPage($this->settings['hardening']))
-                ->addPage(new Login\AdminPage($this->settings['login']))
-                ->addPage(new IpBlacklist\AdminPage($this->modules['blacklist-manager']))
+                // ...then comes modules pages.
+                ->addPage(new Modules\Checklist\AdminPage($this->wpdb))
+                ->addPage(new Modules\Hardening\AdminPage($this->settings['hardening']))
+                ->addPage(new Modules\Login\AdminPage($this->settings['login']))
+                ->addPage(new Modules\IpBlacklist\AdminPage($this->modules['blacklist-manager']))
             ;
         }
     }
@@ -121,7 +123,7 @@ class Plugin
     {
         // Install every module that requires it.
         foreach ($this->modules as $module) {
-            if ($module instanceof Core\Module\Installable) {
+            if ($module instanceof Modules\Installable) {
                 $module->install();
             }
         }
@@ -143,7 +145,7 @@ class Plugin
 
         // Uninstall every module that requires it.
         foreach ($this->modules as $module) {
-            if ($module instanceof Core\Module\Installable) {
+            if ($module instanceof Modules\Installable) {
                 $module->uninstall();
             }
         }
