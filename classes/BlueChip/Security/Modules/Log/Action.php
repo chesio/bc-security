@@ -20,7 +20,7 @@ interface Action
     /** @var string Log action with error log level */
     const ERROR     = 'bc-security.log.error';
     /** @var string Log action with critical log level */
-    const CRITICAL      = 'bc-security.log.critical';
+    const CRITICAL  = 'bc-security.log.critical';
     /** @var string Log action with alert log level */
     const ALERT     = 'bc-security.log.alert';
     /** @var string Log action with emergency log level */
