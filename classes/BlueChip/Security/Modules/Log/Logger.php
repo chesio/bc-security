@@ -15,13 +15,16 @@ use Psr\Log;
  */
 class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\Installable, Modules\Loadable
 {
-    /** @var string Name of DB table where events are stored */
+    /** @var string Name of default channel for log records */
+    const DEFAULT_CHANNEL = 'bc-security';
+
+    /** @var string Name of DB table where logs are stored */
     const LOG_TABLE = 'bc_security_log';
 
     /** @var string Date format accepted by MySQL */
     const MYSQL_DATETIME_FORMAT = 'Y-m-d H:i:s';
 
-    /** @var string Name of DB table where failed logins are stored (including table prefix) */
+    /** @var string Name of DB table where logs are stored (including table prefix) */
     private $log_table;
 
     /** @var string Remote IP address */
@@ -53,12 +56,13 @@ class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\
             "id int unsigned NOT NULL AUTO_INCREMENT,",
             "date_and_time datetime NOT NULL,",
             "ip_address char(128) NOT NULL,",
-            "component char(128) NULL,",
+            "channel char(64) NULL,",
+            "event char(64) NULL,",
             "level tinyint(3) NULL,",
             "message text NULL,",
             "context text NULL,",
             "PRIMARY KEY  (id),", // 2 spaces seems to be necessary
-            "INDEX component (component)",
+            "INDEX channel_and_event (channel, event)",
             ");",
         ]));
     }
@@ -100,12 +104,14 @@ class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\
             [
                 'date_and_time' => date(self::MYSQL_DATETIME_FORMAT, current_time('timestamp')),
                 'ip_address' => isset($context['ip_address']) ? $context['ip_address'] : $this->remote_address, // Allow overriding of IP address.
-                'component' => isset($context['component']) ? $context['component'] : null, // Component is optional.
+                'channel' => isset($context['channel']) ? $context['channel'] : self::DEFAULT_CHANNEL, // Use default channel, if none provided.
+                'event' => isset($context['event']) ? $context['event'] : null, // Event is optional.
                 'level' => $this->translateLogLevel($level),
                 'message' => $message,
                 'context' => serialize($context),
             ],
             [
+                '%s',
                 '%s',
                 '%s',
                 '%s',
