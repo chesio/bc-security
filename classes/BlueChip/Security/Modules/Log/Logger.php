@@ -126,21 +126,21 @@ class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\
     public function translateLogLevel($level) {
         switch($level) {
             case Log\LogLevel::EMERGENCY:
-                return 7;
-            case Log\LogLevel::ALERT:
-                return 6;
-            case Log\LogLevel::CRITICAL:
-                return 5;
-            case Log\LogLevel::ERROR:
-                return 4;
-            case Log\LogLevel::WARNING:
-                return 3;
-            case Log\LogLevel::NOTICE:
-                return 2;
-            case Log\LogLevel::INFO:
-                return 1;
-            case Log\LogLevel::DEBUG:
                 return 0;
+            case Log\LogLevel::ALERT:
+                return 1;
+            case Log\LogLevel::CRITICAL:
+                return 2;
+            case Log\LogLevel::ERROR:
+                return 3;
+            case Log\LogLevel::WARNING:
+                return 4;
+            case Log\LogLevel::NOTICE:
+                return 5;
+            case Log\LogLevel::INFO:
+                return 6;
+            case Log\LogLevel::DEBUG:
+                return 7;
             default:
                 _doing_it_wrong(__METHOD__, sprintf('Unknown log level: %s', $level), '0.2.0');
                 return null;
