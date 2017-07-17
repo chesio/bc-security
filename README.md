@@ -40,7 +40,7 @@ Both short and long lockout events (see [Login Security](#login-security) featur
 1. Failed and successful login attempts
 1. Requests that result in 404 page
 
-Logs are stored in database and can be viewed on backend, As a safety measure, there is no built-in way to delete them from backend.
+Logs are stored in database and can be viewed on backend. As a safety measure, there is no built-in way to delete log records from backend.
 
 ## Credits
 
