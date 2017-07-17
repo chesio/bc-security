@@ -32,7 +32,17 @@ BC Security allows you to:
 
 BC Security maintains a list of IP addresses with limited access to the website. Currently, this list is only populated by [Login Security](#login-security) module.
 
+### Events logging
+
+Both short and long lockout events (see [Login Security](#login-security) feature) and the following events triggered by WordPress core are automatically logged:
+
+1. Attempts to authenticate with bad cookie
+1. Failed and successful login attempts
+1. Requests that result in 404 page
+
+Logs are stored in database and can be viewed on backend, As a safety measure, there is no built-in way to delete them from backend.
+
 ## Credits
 
-1. Login Security feature has been inspired by [Limit Login Attempts](https://wordpress.org/plugins/limit-login-attempts/) plugin by Johan Eenfeldt.
+1. [Login Security](#login-security) feature has been inspired by [Limit Login Attempts](https://wordpress.org/plugins/limit-login-attempts/) plugin by Johan Eenfeldt.
 1. Part of [psr/log](https://packagist.org/packages/psr/log) package codebase is shipped with the plugin.
