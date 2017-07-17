@@ -7,14 +7,11 @@ namespace BlueChip\Security\Modules\IpBlacklist;
 
 use BlueChip\Security\Helpers\AdminNotices;
 
-if (!class_exists('WP_List_Table')) {
-    require_once(ABSPATH . 'wp-admin/includes/class-wp-list-table.php');
-}
 
 /**
  * IP blacklist table
  */
-class ListTable extends \WP_List_Table
+class ListTable extends \BlueChip\Security\Core\ListTable
 {
     /** @var string Name of remove action query argument */
     const ACTION_REMOVE = 'remove';
@@ -50,70 +47,21 @@ class ListTable extends \WP_List_Table
     /** @var int */
     private $scope;
 
-    /** @var string */
-    private $url;
-
-    /** @var string */
-    private $order = 'desc';
-
-    /** @var string */
-    private $order_by = 'id';
-
 
     /**
-     * @param \BlueChip\Security\Modules\IpBlacklist\Manager $bl_manager
      * @param string $url
+     * @param \BlueChip\Security\Modules\IpBlacklist\Manager $bl_manager
      */
-    public function __construct(Manager $bl_manager, $url)
+    public function __construct($url, Manager $bl_manager)
     {
-        parent::__construct([
-            'singular' => __('Record', 'bc-security'),
-            'plural' => __('Records', 'bc-security'),
-            'ajax' => false,
-        ]);
+        parent::__construct($url);
 
         $this->bl_manager = $bl_manager;
-        $this->url = $url;
 
         $this->scope = filter_input(INPUT_GET, self::VIEW_SCOPE, FILTER_VALIDATE_INT, ['options' => ['default' => LockScope::ANY]]);
         if ($this->scope !== LockScope::ANY) {
             $this->url = add_query_arg(self::VIEW_SCOPE, $this->scope, $this->url);
         }
-
-        $order_by = filter_input(INPUT_GET, 'orderby', FILTER_SANITIZE_STRING);
-        if (in_array($order_by, $this->get_sortable_columns(), true)) {
-            $this->order_by = $order_by;
-            $this->url = add_query_arg('orderby', $order_by, $this->url);
-        }
-
-        $order = filter_input(INPUT_GET, 'order', FILTER_SANITIZE_STRING);
-        if ($order === 'asc' || $order === 'desc') {
-            $this->order = $order;
-            $this->url = add_query_arg('order', $order, $this->url);
-        }
-    }
-
-
-    /**
-     * Return content for "checkbox" column.
-     * @param array $item
-     * @return string
-     */
-    public function column_cb($item)
-    {
-        return sprintf('<input type="checkbox" name="ids[]" value="%d" />', $item['id']);
-    }
-
-
-    /**
-     * Return value for default columns (with no extra value processing).
-     * @param array $item
-     * @param string $column_name
-     * @return string
-     */
-    public function column_default($item, $column_name)
-    {
-        return isset($item[$column_name]) ? $item[$column_name] : '';
     }
 
 
@@ -266,12 +214,6 @@ class ListTable extends \WP_List_Table
         ]);
 
         $this->items = $this->bl_manager->fetch($this->scope, ($current_page - 1) * $per_page, $per_page, $this->order_by, $this->order);
-    }
-
-
-    public function no_items()
-    {
-       _e('No records to display.', 'bc-security');
     }
 
 

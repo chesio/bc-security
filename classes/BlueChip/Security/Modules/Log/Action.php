@@ -5,8 +5,13 @@
 
 namespace BlueChip\Security\Modules\Log;
 
+/**
+ * Actions (meant for do_action() calls) to which logger listens to.
+ */
 interface Action
 {
+    /** @var string Log action with event object */
+    const EVENT     = 'bc-security.log.event';
     /** @var string Log action without explicit log level */
     const LOG       = 'bc-security.log';
     /** @var string Log action with debug log level */

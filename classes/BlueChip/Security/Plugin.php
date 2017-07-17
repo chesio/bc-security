@@ -49,6 +49,7 @@ class Plugin
 
         // Construct modules...
         $logger     = new Modules\Log\Logger($wpdb, $remote_address);
+        $monitor    = new Modules\Events\Monitor();
         $hardening  = new Modules\Hardening\Core($this->settings['hardening']);
         $bl_manager = new Modules\IpBlacklist\Manager($wpdb);
         $bl_bouncer = new Modules\IpBlacklist\Bouncer($remote_address, $bl_manager);
@@ -58,6 +59,7 @@ class Plugin
         // ... and store them for later.
         $this->modules = [
             'logger'            => $logger,
+            'events-monitor'    => $monitor,
             'hardening-core'    => $hardening,
             'blacklist-manager' => $bl_manager,
             'blacklist-bouncer' => $bl_bouncer,
@@ -108,6 +110,7 @@ class Plugin
                 ->addPage(new Modules\Hardening\AdminPage($this->settings['hardening']))
                 ->addPage(new Modules\Login\AdminPage($this->settings['login']))
                 ->addPage(new Modules\IpBlacklist\AdminPage($this->modules['blacklist-manager']))
+                ->addPage(new Modules\Log\AdminPage($this->modules['logger']))
             ;
         }
     }
