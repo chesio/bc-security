@@ -22,10 +22,10 @@ class AdminPage extends \BlueChip\Security\Core\AdminPage
     const PRUNE_SUBMIT = 'prune-ip-blacklist-submit';
 
 
-    /** @var \BlueChip\Security\IpBlacklist\Manager */
+    /** @var \BlueChip\Security\Modules\IpBlacklist\Manager */
     private $bl_manager;
 
-    /** @var \BlueChip\Security\IpBlacklist\ListTable */
+    /** @var \BlueChip\Security\Modules\IpBlacklist\ListTable */
     private $list_table;
 
 
@@ -101,7 +101,7 @@ class AdminPage extends \BlueChip\Security\Core\AdminPage
      */
     private function initListTable()
     {
-        $this->list_table = new ListTable($this->bl_manager, $this->getUrl());
+        $this->list_table = new ListTable($this->getUrl(), $this->bl_manager);
         $this->list_table->processActions(); // may trigger wp_redirect()
         $this->list_table->displayNotices();
         $this->list_table->prepare_items();

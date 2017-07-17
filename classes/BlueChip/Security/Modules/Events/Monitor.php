@@ -43,11 +43,7 @@ class Monitor implements \BlueChip\Security\Modules\Initializable
         global $wp_query;
 
         if ($wp_query->is_404()) {
-            do_action(
-                Log\Action::INFO,
-                'Main query returned no results (404) for request {request}.',
-                ['request' => $wp->request, 'event' => EventType::QUERY_404]
-            );
+            do_action(Log\Action::EVENT, Log\Event::QUERY_404, ['request' => $wp->request]);
         }
     }
 
@@ -58,54 +54,41 @@ class Monitor implements \BlueChip\Security\Modules\Initializable
      */
     public function logBadCookie(array $cookie_elements)
     {
-        do_action(
-            Log\Action::NOTICE,
-            'Bad authentication cookie used with {username}.',
-            ['username' => $cookie_elements['username'], 'event' => EventType::AUTH_BAD_COOKIE]
-        );
+        do_action(Log\Action::EVENT, Log\Event::AUTH_BAD_COOKIE, ['username' => $cookie_elements['username']]);
     }
 
 
     /**
      * Log failed login.
+     *
      * @param string $username
      */
     public function logFailedLogin($username)
     {
-        do_action(
-            Log\Action::NOTICE,
-            'Login attempt with username {username} failed.',
-            ['username' => $username, 'event' => EventType::LOGIN_FAILURE]
-        );
+        do_action(Log\Action::EVENT, Log\Event::LOGIN_FAILURE, ['username' => $username]);
     }
 
 
     /**
      * Log successful login.
+     *
      * @param string $username
      */
     public function logSuccessfulLogin($username)
     {
-        do_action(
-            Log\Action::INFO,
-            'User {username} logged in successfully.',
-            ['username' => $username, 'event' => EventType::LOGIN_SUCCESSFUL]
-        );
+        do_action(Log\Action::EVENT, Log\Event::LOGIN_SUCCESSFUL, ['username' => $username]);
     }
 
 
     /**
      * Log lockout event.
+     *
      * @param string $remote_address
      * @param string $username
      * @param int $duration
      */
     public function logLockoutEvent($remote_address, $username, $duration)
     {
-        do_action(
-            Log\Action::WARNING,
-            'Remote IP address {ip_address} has been locked out from login for {duration} seconds. Last username used for login was {username}.',
-            ['ip_address' => $remote_address, 'duration' => $duration, 'username' => $username, 'event' => EventType::LOGIN_LOCKOUT]
-        );
+        do_action(Log\Action::EVENT, Log\Event::LOGIN_LOCKOUT, ['ip_address' => $remote_address, 'duration' => $duration, 'username' => $username]);
     }
 }

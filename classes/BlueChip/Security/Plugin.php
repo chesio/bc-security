@@ -110,6 +110,7 @@ class Plugin
                 ->addPage(new Modules\Hardening\AdminPage($this->settings['hardening']))
                 ->addPage(new Modules\Login\AdminPage($this->settings['login']))
                 ->addPage(new Modules\IpBlacklist\AdminPage($this->modules['blacklist-manager']))
+                ->addPage(new Modules\Log\AdminPage($this->modules['logger']))
             ;
         }
     }
