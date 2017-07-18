@@ -30,8 +30,8 @@ class AdminPage extends \BlueChip\Security\Core\AdminSettingsPage
     public function render()
     {
         echo '<div class="wrap">';
-        echo '<h1>' . $this->page_title . '</h1>';
-        echo $this->settings_helper->renderForm();
+        echo '<h1>' . esc_html($this->page_title) . '</h1>';
+        echo $this->settings_api_helper->renderForm();
         echo '</div>';
     }
 
@@ -42,24 +42,24 @@ class AdminPage extends \BlueChip\Security\Core\AdminSettingsPage
     public function admin_init()
     {
         // Form helper is going to be useful here
-        $form_helper = new \BlueChip\Security\Core\Helpers\FormHelper();
+        $form_helper = new \BlueChip\Security\Helpers\FormHelper();
 
         // Shortcut
-        $settings_helper = $this->settings_helper;
+        $settings_api_helper = $this->settings_api_helper;
 
         // Register setting first
-        $settings_helper->register();
+        $settings_api_helper->register();
 
         // Set page as current
-        $settings_helper->setSettingsPage($this->slug);
+        $settings_api_helper->setSettingsPage($this->slug);
 
         // Section: Site connection
-        $settings_helper->addSettingsSection(
+        $settings_api_helper->addSettingsSection(
             'site-connection',
             _x('Site connection', 'Settings section title', 'bc-security'),
             [$this, 'renderSiteConnectionHint']
         );
-        $settings_helper->addSettingsField(
+        $settings_api_helper->addSettingsField(
             Settings::CONNECTION_TYPE,
             __('Connection type', 'bc-security'),
             [$form_helper, 'renderSelect'],

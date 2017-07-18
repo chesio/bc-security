@@ -11,9 +11,9 @@ namespace BlueChip\Security\Core;
 abstract class AdminSettingsPage extends AdminPage
 {
     /**
-     * @var \BlueChip\Security\Core\Helpers\SettingsHelper
+     * @var \BlueChip\Security\Helpers\SettingsApiHelper
      */
-    protected $settings_helper;
+    protected $settings_api_helper;
 
 
     /**
@@ -21,7 +21,7 @@ abstract class AdminSettingsPage extends AdminPage
      */
     function __construct($settings)
     {
-        $this->settings_helper = new Helpers\SettingsHelper($settings);
+        $this->settings_api_helper = new \BlueChip\Security\Helpers\SettingsApiHelper($settings);
 
         add_action('admin_init', [$this, 'admin_init']);
     }
