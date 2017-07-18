@@ -27,7 +27,7 @@ abstract class AdminPage
 
 
     /**
-     * Output page content
+     * Output page content.
      */
     abstract public function render();
 

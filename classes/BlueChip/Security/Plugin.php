@@ -13,10 +13,10 @@ class Plugin
     /** @var \BlueChip\Security\Admin */
     public $admin;
 
-    /** @var array Array with module objects for all plugin modules */
+    /** @var array Plugin module objects */
     private $modules;
 
-    /** @var array Array with setting objects for particular modules */
+    /** @var \BlueChip\Security\Core\Settings[] Plugin setting objects */
     private $settings;
 
     /** @var \wpdb WordPress database access abstraction object */
