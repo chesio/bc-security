@@ -25,6 +25,9 @@ class Settings extends \BlueChip\Security\Core\Settings
     /** bool: Notify when there is a theme update available [Yes] */
     const THEME_UPDATE_AVAILABLE = 'theme_update_available';
 
+    /** bool: Notify when BC Security is deactivated [Yes] */
+    const PLUGIN_DEACTIVATED = 'plugin_deactivated';
+
     /** bool: Send notification to email address of site administrator [No] */
     const NOTIFY_SITE_ADMIN = 'notify_site_admin';
 
@@ -52,6 +55,8 @@ class Settings extends \BlueChip\Security\Core\Settings
                 => isset($s[self::PLUGIN_UPDATE_AVAILABLE]) ? boolval($s[self::PLUGIN_UPDATE_AVAILABLE]) : true,
             self::THEME_UPDATE_AVAILABLE
                 => isset($s[self::THEME_UPDATE_AVAILABLE]) ? boolval($s[self::THEME_UPDATE_AVAILABLE]) : true,
+            self::PLUGIN_DEACTIVATED
+                => isset($s[self::PLUGIN_DEACTIVATED]) ? boolval($s[self::PLUGIN_DEACTIVATED]) : true,
             self::NOTIFY_SITE_ADMIN
                 => isset($s[self::NOTIFY_SITE_ADMIN]) ? boolval($s[self::NOTIFY_SITE_ADMIN]) : false,
             self::NOTIFICATION_RECIPIENTS

@@ -9,7 +9,7 @@ use BlueChip\Security\Helpers\Is;
 use BlueChip\Security\Modules\Log\Logger;
 use BlueChip\Security\Modules\Login\Hooks;
 
-class Watchman implements \BlueChip\Security\Modules\Initializable
+class Watchman implements \BlueChip\Security\Modules\Initializable, \BlueChip\Security\Modules\Deactivateable
 {
     /** @var string */
     private $remote_address;
@@ -44,6 +44,26 @@ class Watchman implements \BlueChip\Security\Modules\Initializable
         }
         if ($this->settings[Settings::KNOWN_IP_LOCKOUT]) {
             add_action(Hooks::LOCKOUT_EVENT, [$this, 'watchLockoutEvents'], 10, 3);
+        }
+    }
+
+
+    /**
+     * Run on plugin deactivation.
+     */
+    public function deactivate()
+    {
+        if ($this->settings[Settings::PLUGIN_DEACTIVATED]) {
+            // Get the bastard that turned us off!
+            $user = wp_get_current_user();
+
+            $subject = __('BC Security deactivated', 'bc-security');
+            $message = sprintf(
+                __('User "%s" had just deactivated BC Security plugin on your website!', 'bc-security'),
+                $user->user_login
+            );
+
+            $this->notify($subject, $message);
         }
     }
 
