@@ -6,12 +6,13 @@
 namespace BlueChip\Security\Modules\Notifications;
 
 use BlueChip\Security\Helpers\Is;
+use BlueChip\Security\Modules;
 use BlueChip\Security\Modules\Log\Logger;
 use BlueChip\Security\Modules\Login\Hooks;
 
-class Watchman implements \BlueChip\Security\Modules\Initializable, \BlueChip\Security\Modules\Deactivateable
+class Watchman implements Modules\Loadable, Modules\Initializable, Modules\Deactivateable
 {
-    /** @var string */
+    /** @var string Remote IP address */
     private $remote_address;
 
     /** @var \BlueChip\Security\Modules\Notifications\Settings */
@@ -19,6 +20,9 @@ class Watchman implements \BlueChip\Security\Modules\Initializable, \BlueChip\Se
 
     /** @var \BlueChip\Security\Modules\Log\Logger */
     private $logger;
+
+    /** @var array List of notifications recipients */
+    private $recipients;
 
 
     /**
@@ -31,6 +35,31 @@ class Watchman implements \BlueChip\Security\Modules\Initializable, \BlueChip\Se
         $this->remote_address = $remote_address;
         $this->settings = $settings;
         $this->logger = $logger;
+
+        // Get recipients.
+        $this->recipients = $settings[Settings::NOTIFICATION_RECIPIENTS];
+        // If site admin should be notified to, include him as well.
+        if ($settings[Settings::NOTIFY_SITE_ADMIN]) {
+            array_unshift($this->recipients, get_option('admin_email'));
+        }
+    }
+
+
+    public function load() {
+        // Bail early, if no recipients are set.
+        if (empty($this->recipients)) {
+            return;
+        }
+
+        if ($this->settings[Settings::CORE_UPDATE_AVAILABLE]) {
+            add_action('set_site_transient_update_core', [$this, 'watchCoreUpdateAvailable'], 10, 1);
+        }
+        if ($this->settings[Settings::PLUGIN_UPDATE_AVAILABLE]) {
+            add_action('set_site_transient_update_plugins', [$this, 'watchPluginUpdatesAvailable'], 10, 1);
+        }
+        if ($this->settings[Settings::THEME_UPDATE_AVAILABLE]) {
+            add_action('set_site_transient_update_themes', [$this, 'watchThemeUpdatesAvailable'], 10, 1);
+        }
     }
 
 
@@ -39,6 +68,11 @@ class Watchman implements \BlueChip\Security\Modules\Initializable, \BlueChip\Se
      */
     public function init()
     {
+        // Bail early, if no recipients are set.
+        if (empty($this->recipients)) {
+            return;
+        }
+
         if ($this->settings[Settings::ADMIN_USER_LOGIN]) {
             add_action('wp_login', [$this, 'watchWpLogin'], 10, 2);
         }
@@ -53,6 +87,11 @@ class Watchman implements \BlueChip\Security\Modules\Initializable, \BlueChip\Se
      */
     public function deactivate()
     {
+        // Bail early, if no recipients are set.
+        if (empty($this->recipients)) {
+            return;
+        }
+
         if ($this->settings[Settings::PLUGIN_DEACTIVATED]) {
             // Get the bastard that turned us off!
             $user = wp_get_current_user();
@@ -64,6 +103,153 @@ class Watchman implements \BlueChip\Security\Modules\Initializable, \BlueChip\Se
             );
 
             $this->notify($subject, $message);
+        }
+    }
+
+
+    /**
+     * @see get_preferred_from_update_core()
+     * @see get_core_updates()
+     *
+     * @param object $update_transient
+     */
+    public function watchCoreUpdateAvailable($update_transient)
+    {
+        if (!isset($update_transient->updates) || !is_array($update_transient->updates) || empty($update_transient->updates)) {
+            return;
+        }
+
+        // Get first update item (should be "upgrade" response).
+        $update = isset($update_transient['updates'][0]);
+        if (!isset($update->response) || ($update->response !== 'upgrade')) {
+            // Not the expected response.
+            return;
+        }
+
+        // Already notified about this update?
+        $last_version = get_site_transient($this->makeUpdateCheckTransientName('core'));
+        if (!empty($last_version) && version_compare($last_version, $update->current, '>=')) {
+            return;
+        }
+
+        $subject = __('WordPress update available', 'bc-security');
+        $message = sprintf(
+            __('WordPress has an update to version %s available.', 'bc-security'),
+            $update->current
+        );
+
+        // Now it is time to make sure the method is not invoked anymore.
+        remove_action('set_site_transient_update_core', [$this, 'watchCoreUpdateAvailable'], 10, 1);
+
+        // Send notification.
+        if ($this->notify($subject, $message) !== false) {
+            // No further notifications for this update until transient expires (or gets deleted).
+            set_site_transient(
+                $this->makeUpdateCheckTransientName('core'),
+                $update->current,
+                current_time('timestamp') + MONTH_IN_SECONDS
+            );
+        }
+    }
+
+
+    /**
+     * @internal The hook can be called several times per request each time
+     * with different data, so one cannot assume after first call that given
+     * $update_transient data are definitive...
+     *
+     * @param object $update_transient
+     */
+    public function watchPluginUpdatesAvailable($update_transient)
+    {
+        // Any updates that are available are hold in response property.
+        if (!isset($update_transient->response) || !is_array($update_transient->response)) {
+            return;
+        }
+
+        // Filter out any updates for which notification has been sent already.
+        $plugin_updates = array_filter($update_transient->response, function($plugin_update_data, $plugin_file) {
+            $last_version = get_site_transient($this->makeUpdateCheckTransientName('plugin', $plugin_file));
+            return empty($last_version) || version_compare($last_version, $plugin_update_data->new_version, '<');
+        }, ARRAY_FILTER_USE_BOTH);
+
+        if (empty($plugin_updates)) {
+            return;
+        }
+
+        $subject = __('Plugin updates available', 'bc-security');
+        $message = [];
+
+        foreach ($plugin_updates as $plugin_file => $plugin_update_data) {
+            // Note: get_plugin_data() function is only defined in admin,
+            // but it seems that it is always available in this context...
+            $plugin_data = get_plugin_data(WP_PLUGIN_DIR . '/' . $plugin_file);
+            $message[] = sprintf(
+                __('Plugin "%1$s" has an update to version %2$s available.', 'bc-security'),
+                $plugin_data['Name'],
+                $plugin_update_data->new_version
+            );
+        }
+
+        // Now it is time to make sure the method is not invoked anymore.
+        remove_action('set_site_transient_update_plugins', [$this, 'watchPluginUpdatesAvailable'], 10, 1);
+
+        // Send notification.
+        if ($this->notify($subject, $message) !== false) {
+            foreach ($plugin_updates as $plugin_file => $plugin_update_data) {
+                // No further notifications for this plugin version until transient expires (or gets deleted).
+                set_site_transient(
+                    $this->makeUpdateCheckTransientName('plugin', $plugin_file),
+                    $plugin_update_data->new_version,
+                    current_time('timestamp') + MONTH_IN_SECONDS
+                );
+            }
+        }
+    }
+
+
+    public function watchThemeUpdatesAvailable($update_transient)
+    {
+        // Any updates that are available are hold in response property.
+        if (!isset($update_transient->response) || !is_array($update_transient->response)) {
+            return;
+        }
+
+        // Filter out any updates for which notification has been sent already.
+        $theme_updates = array_filter($update_transient->response, function($theme_update_data, $theme_slug) {
+            $last_version = get_site_transient($this->makeUpdateCheckTransientName('theme', $theme_slug));
+            return empty($last_version) || version_compare($last_version, $theme_update_data->new_version, '<');
+        }, ARRAY_FILTER_USE_BOTH);
+
+        if (empty($theme_updates)) {
+            return;
+        }
+
+        $subject = __('Theme updates available', 'bc-security');
+        $message = [];
+
+        foreach ($theme_updates as $theme_slug => $theme_update_data) {
+            $theme = wp_get_theme($theme_slug);
+            $message[] = sprintf(
+                __('Theme "%1$s" has an update to version %2$s available.', 'bc-security'),
+                $theme,
+                $theme_update_data['new_version']
+            );
+        }
+
+        // Now it is time to make sure the method is not invoked anymore.
+        remove_action('set_site_transient_update_themes', [$this, 'watchThemeUpdatesAvailable'], 10, 1);
+
+        // Send notification.
+        if ($this->notify($subject, $message) !== false) {
+            foreach ($theme_updates as $theme_slug => $theme_update_data) {
+                // No further notifications for this theme version until transient expires (or gets deleted).
+                set_site_transient(
+                    $this->makeUpdateCheckTransientName('theme', $theme_slug),
+                    $theme_update_data['new_version'],
+                    current_time('timestamp') + MONTH_IN_SECONDS
+                );
+            }
         }
     }
 
@@ -114,19 +300,30 @@ class Watchman implements \BlueChip\Security\Modules\Initializable, \BlueChip\Se
      *
      * @param string $subject
      * @param array|string $message
+     * @return null|false|true Null, if there are no recipients configured.
+     *   True, if email has been sent, false otherwise.
      */
     private function notify($subject, $message)
     {
-        // Get recipients.
-        $to = $this->settings[Settings::NOTIFICATION_RECIPIENTS];
+        return empty($this->recipients) ? null : Mailman::send($this->recipients, $subject, $message);
+    }
 
-        // If site admin should be notified to, include him as well.
-        if ($this->settings[Settings::NOTIFY_SITE_ADMIN]) {
-            array_unshift($to, get_option('admin_email'));
+
+    /**
+     * Get name for update check transient.
+     *
+     * @param string $type Should be one of: core, plugin or theme.
+     * @param string $key
+     * @return string
+     */
+    private function makeUpdateCheckTransientName($type, $key = null)
+    {
+        $items = ['bc-security', 'update-notifications', $type];
+
+        if ($key) {
+            $items[] = $key;
         }
 
-        if (!empty($to)) {
-            Mailman::send($to, $subject, $message);
-        }
+        return md5(implode(':', $items));
     }
 }
