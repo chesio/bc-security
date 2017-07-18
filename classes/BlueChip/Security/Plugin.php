@@ -33,9 +33,10 @@ class Plugin
 
         // Read plugin settings
         $this->settings = [
-            'hardening' => new Modules\Hardening\Settings('bc-security-hardening'),
-            'login'     => new Modules\Login\Settings('bc-security-login'),
-            'setup'     => new Setup\Settings('bc-security-setup'),
+            'hardening'     => new Modules\Hardening\Settings('bc-security-hardening'),
+            'login'         => new Modules\Login\Settings('bc-security-login'),
+            'notifications' => new Modules\Notifications\Settings('bc-security-notifications'),
+            'setup'         => new Setup\Settings('bc-security-setup'),
         ];
 
         // Get setup info
@@ -110,6 +111,7 @@ class Plugin
                 ->addPage(new Modules\Hardening\AdminPage($this->settings['hardening']))
                 ->addPage(new Modules\Login\AdminPage($this->settings['login']))
                 ->addPage(new Modules\IpBlacklist\AdminPage($this->modules['blacklist-manager']))
+                ->addPage(new Modules\Notifications\AdminPage($this->settings['notifications']))
                 ->addPage(new Modules\Log\AdminPage($this->modules['logger']))
             ;
         }

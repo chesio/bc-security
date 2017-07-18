@@ -25,7 +25,7 @@ class AdminPage extends \BlueChip\Security\Core\AdminSettingsPage
 
 
     /**
-     * Render admin page
+     * Render admin page.
      */
     public function render()
     {
