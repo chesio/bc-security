@@ -122,17 +122,34 @@ class Plugin
 
 
     /**
-     * Perform installation tasks.
+     * Perform activation (installation) tasks.
      * Method should be run on plugin activation.
      *
      * @link https://developer.wordpress.org/plugins/the-basics/activation-deactivation-hooks/
      */
-    public function install()
+    public function activate()
     {
-        // Install every module that requires it.
+        // Activate (install) every module that requires it.
         foreach ($this->modules as $module) {
             if ($module instanceof Modules\Installable) {
                 $module->install();
+            }
+        }
+    }
+
+
+    /**
+     * Perform deactivation tasks.
+     * Method should be run on plugin deactivation.
+     *
+     * @link https://developer.wordpress.org/plugins/the-basics/activation-deactivation-hooks/
+     */
+    public function deactivate()
+    {
+        // Deactivate every module that requires it.
+        foreach ($this->modules as $module) {
+            if ($module instanceof Modules\Deactiveable) { // Ugh, what a word...
+                $module->deactivate();
             }
         }
     }
