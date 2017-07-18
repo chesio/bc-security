@@ -32,6 +32,19 @@ BC Security allows you to:
 
 BC Security maintains a list of IP addresses with limited access to the website. Currently, this list is only populated by [Login Security](#login-security) module.
 
+### Notifications
+
+BC Security allows to send automatic email notification to configured recipients on following occasions:
+
+1. WordPress update is available.
+1. Plugin update is available.
+1. Theme update is available.
+1. User with administrator privileges has logged in.
+1. Known IP address has been locked out (see note below).
+1. BC Security plugin has been deactivated.
+
+Note: _Known IP address_ is an IP address from which a successful login attempt had been previously made. Information about successful login attempts is fetched from [event logs](#events-logging).
+
 ### Events logging
 
 BC Security logs both short and long lockout events (see [Login Security](#login-security) feature) and the following events triggered by WordPress core:
