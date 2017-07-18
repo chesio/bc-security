@@ -86,8 +86,13 @@ class AdminPage extends \BlueChip\Security\Core\AdminSettingsPage
             __('Theme update is available', 'bc-security'),
             [$form_helper, 'renderCheckbox']
         );
+        $settings_api_helper->addSettingsField(
+            Settings::PLUGIN_DEACTIVATED,
+            __('BC Security is deactivated', 'bc-security'),
+            [$form_helper, 'renderCheckbox']
+        );
 
-        // Section: Who to notfy?
+        // Section: Who to notify?
         $settings_api_helper->addSettingsSection(
             'who-to-notify',
             _x('Whom to send notification?', 'Settings section title', 'bc-security')
