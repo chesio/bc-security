@@ -11,18 +11,18 @@ namespace BlueChip\Security;
 class Admin
 {
     /**
-     * To use Settings API, user has to have manage_options capability.
+     * @var string To use Settings API, user has to have manage_options capability.
      */
     const CAPABILITY = 'manage_options';
 
     /**
-     * Plugin dashboard menu icon
+     * @var string Plugin dashboard menu icon
      */
     const ICON = 'dashicons-shield-alt';
 
 
     /**
-     * @var array
+     * @var \BlueChip\Security\Core\AdminPage[]
      */
     private $pages = [];
 
