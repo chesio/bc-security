@@ -34,7 +34,7 @@ BC Security maintains a list of IP addresses with limited access to the website.
 
 ### Events logging
 
-Both short and long lockout events (see [Login Security](#login-security) feature) and the following events triggered by WordPress core are automatically logged:
+BC Security logs both short and long lockout events (see [Login Security](#login-security) feature) and the following events triggered by WordPress core:
 
 1. Attempts to authenticate with bad cookie
 1. Failed and successful login attempts
