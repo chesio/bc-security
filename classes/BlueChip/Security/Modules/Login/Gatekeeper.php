@@ -12,11 +12,11 @@ use BlueChip\Security\Modules\IpBlacklist;
  */
 class Gatekeeper implements \BlueChip\Security\Modules\Initializable, \BlueChip\Security\Modules\Loadable
 {
-    /** @var \BlueChip\Security\Modules\Login\Settings */
-    private $settings;
-
     /** @var string */
     private $remote_address;
+
+    /** @var \BlueChip\Security\Modules\Login\Settings */
+    private $settings;
 
     /** @var \BlueChip\Security\Modules\Login\Bookkeeper */
     private $bookkeeper;
@@ -33,8 +33,8 @@ class Gatekeeper implements \BlueChip\Security\Modules\Initializable, \BlueChip\
      */
     public function __construct(Settings $settings, $remote_address, Bookkeeper $bookkeeper, IpBlacklist\Manager $bl_manager)
     {
-        $this->settings = $settings;
         $this->remote_address = $remote_address;
+        $this->settings = $settings;
         $this->bookkeeper = $bookkeeper;
         $this->bl_manager = $bl_manager;
     }
