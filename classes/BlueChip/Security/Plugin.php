@@ -22,6 +22,7 @@ class Plugin
     /** @var \wpdb WordPress database access abstraction object */
     private $wpdb;
 
+
     /**
      * Construct the plugin instance.
      *
@@ -51,6 +52,7 @@ class Plugin
         // Construct modules...
         $logger     = new Modules\Log\Logger($wpdb, $remote_address);
         $monitor    = new Modules\Events\Monitor();
+        $notifier   = new Modules\Notifications\Watchman($this->settings['notifications'], $remote_address, $logger);
         $hardening  = new Modules\Hardening\Core($this->settings['hardening']);
         $bl_manager = new Modules\IpBlacklist\Manager($wpdb);
         $bl_bouncer = new Modules\IpBlacklist\Bouncer($remote_address, $bl_manager);
@@ -61,6 +63,7 @@ class Plugin
         $this->modules = [
             'logger'            => $logger,
             'events-monitor'    => $monitor,
+            'notifier'          => $notifier,
             'hardening-core'    => $hardening,
             'blacklist-manager' => $bl_manager,
             'blacklist-bouncer' => $bl_bouncer,
