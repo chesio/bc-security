@@ -15,9 +15,9 @@ abstract class Mailman
      *
      * @see wp_mail()
      *
-     * @param array|string $to
-     * @param string $subject
-     * @param array|string $message
+     * @param array|string $to Email address(es) of notification recipient(s).
+     * @param string $subject Subject of notification.
+     * @param array|string $message Body of notification.
      * @return bool True, if notifications was sent successfully, false otherwise.
      */
     public static function send($to, $subject, $message)
@@ -31,9 +31,9 @@ abstract class Mailman
 
 
     /**
-     * Add plugin boilerplate to message.
+     * Add plugin boilerplate to $message.
      *
-     * @param array $message
+     * @param array $message Message body as list of lines.
      * @return string
      */
     private static function formatMessage(array $message)

@@ -10,6 +10,7 @@ use BlueChip\Security\Modules;
 use BlueChip\Security\Modules\Log\Logger;
 use BlueChip\Security\Modules\Login\Hooks;
 
+
 class Watchman implements Modules\Loadable, Modules\Initializable, Modules\Deactivateable
 {
     /** @var string Remote IP address */
@@ -84,7 +85,7 @@ class Watchman implements Modules\Loadable, Modules\Initializable, Modules\Deact
 
 
     /**
-     * Run on plugin deactivation.
+     * Send notification that plugin has been deactivated.
      */
     public function deactivate()
     {
@@ -109,6 +110,8 @@ class Watchman implements Modules\Loadable, Modules\Initializable, Modules\Deact
 
 
     /**
+     * Send notification when WordPress update is available.
+     *
      * @see get_preferred_from_update_core()
      * @see get_core_updates()
      *
@@ -116,6 +119,7 @@ class Watchman implements Modules\Loadable, Modules\Initializable, Modules\Deact
      */
     public function watchCoreUpdateAvailable($update_transient)
     {
+        // Check, if update transient has the data we are interested in.
         if (!isset($update_transient->updates) || !is_array($update_transient->updates) || empty($update_transient->updates)) {
             return;
         }
@@ -127,16 +131,18 @@ class Watchman implements Modules\Loadable, Modules\Initializable, Modules\Deact
             return;
         }
 
+        // Get latest WP version available.
+        $latest_version = $update->current;
+
         // Already notified about this update?
-        $last_version = get_site_transient($this->makeUpdateCheckTransientName('core'));
-        if (!empty($last_version) && version_compare($last_version, $update->current, '>=')) {
+        if ($latest_version === get_site_transient($this->makeUpdateCheckTransientName('core'))) {
             return;
         }
 
         $subject = __('WordPress update available', 'bc-security');
         $message = sprintf(
             __('WordPress has an update to version %s available.', 'bc-security'),
-            $update->current
+            $latest_version
         );
 
         // Now it is time to make sure the method is not invoked anymore.
@@ -147,7 +153,7 @@ class Watchman implements Modules\Loadable, Modules\Initializable, Modules\Deact
             // No further notifications for this update until transient expires (or gets deleted).
             set_site_transient(
                 $this->makeUpdateCheckTransientName('core'),
-                $update->current,
+                $latest_version,
                 current_time('timestamp') + MONTH_IN_SECONDS
             );
         }
@@ -155,23 +161,21 @@ class Watchman implements Modules\Loadable, Modules\Initializable, Modules\Deact
 
 
     /**
-     * @internal The hook can be called several times per request each time
-     * with different data, so one cannot assume after first call that given
-     * $update_transient data are definitive...
+     * Send notification if there are plugin updates available.
      *
      * @param object $update_transient
      */
     public function watchPluginUpdatesAvailable($update_transient)
     {
-        // Any updates that are available are hold in response property.
+        // Check, if update transient has the data we are interested in.
         if (!isset($update_transient->response) || !is_array($update_transient->response)) {
             return;
         }
 
         // Filter out any updates for which notification has been sent already.
         $plugin_updates = array_filter($update_transient->response, function($plugin_update_data, $plugin_file) {
-            $last_version = get_site_transient($this->makeUpdateCheckTransientName('plugin', $plugin_file));
-            return empty($last_version) || version_compare($last_version, $plugin_update_data->new_version, '<');
+            $notified_version = get_site_transient($this->makeUpdateCheckTransientName('plugin' . ':' . $plugin_file));
+            return empty($notified_version) || version_compare($notified_version, $plugin_update_data->new_version, '<');
         }, ARRAY_FILTER_USE_BOTH);
 
         if (empty($plugin_updates)) {
@@ -200,7 +204,7 @@ class Watchman implements Modules\Loadable, Modules\Initializable, Modules\Deact
             foreach ($plugin_updates as $plugin_file => $plugin_update_data) {
                 // No further notifications for this plugin version until transient expires (or gets deleted).
                 set_site_transient(
-                    $this->makeUpdateCheckTransientName('plugin', $plugin_file),
+                    $this->makeUpdateCheckTransientName('plugin' . ':' . $plugin_file),
                     $plugin_update_data->new_version,
                     current_time('timestamp') + MONTH_IN_SECONDS
                 );
@@ -209,16 +213,21 @@ class Watchman implements Modules\Loadable, Modules\Initializable, Modules\Deact
     }
 
 
+    /**
+     * Send notification if there are theme updates available.
+     *
+     * @param object $update_transient
+     */
     public function watchThemeUpdatesAvailable($update_transient)
     {
-        // Any updates that are available are hold in response property.
+        // Check, if update transient has the data we are interested in.
         if (!isset($update_transient->response) || !is_array($update_transient->response)) {
             return;
         }
 
         // Filter out any updates for which notification has been sent already.
         $theme_updates = array_filter($update_transient->response, function($theme_update_data, $theme_slug) {
-            $last_version = get_site_transient($this->makeUpdateCheckTransientName('theme', $theme_slug));
+            $last_version = get_site_transient($this->makeUpdateCheckTransientName('theme' . ':' . $theme_slug));
             return empty($last_version) || version_compare($last_version, $theme_update_data->new_version, '<');
         }, ARRAY_FILTER_USE_BOTH);
 
@@ -246,7 +255,7 @@ class Watchman implements Modules\Loadable, Modules\Initializable, Modules\Deact
             foreach ($theme_updates as $theme_slug => $theme_update_data) {
                 // No further notifications for this theme version until transient expires (or gets deleted).
                 set_site_transient(
-                    $this->makeUpdateCheckTransientName('theme', $theme_slug),
+                    $this->makeUpdateCheckTransientName('theme' . ':' . $theme_slug),
                     $theme_update_data['new_version'],
                     current_time('timestamp') + MONTH_IN_SECONDS
                 );
@@ -256,6 +265,8 @@ class Watchman implements Modules\Loadable, Modules\Initializable, Modules\Deact
 
 
     /**
+     * Send notification if known IP has been locked out.
+     *
      * @param string $remote_address
      * @param string $username
      * @param int $duration
@@ -277,6 +288,8 @@ class Watchman implements Modules\Loadable, Modules\Initializable, Modules\Deact
 
 
     /**
+     * Send notification if user with admin privileges logged in.
+     *
      * @param string $username
      * @param \WP_User $user
      */
@@ -296,7 +309,7 @@ class Watchman implements Modules\Loadable, Modules\Initializable, Modules\Deact
 
 
     /**
-     * Send the notification with given $subject and $message to recipients
+     * Send email notification with given $subject and $message to recipients
      * configured in plugin settings.
      *
      * @param string $subject
@@ -311,20 +324,13 @@ class Watchman implements Modules\Loadable, Modules\Initializable, Modules\Deact
 
 
     /**
-     * Get name for update check transient.
+     * Get name for update check transient based on $key.
      *
-     * @param string $type Should be one of: core, plugin or theme.
      * @param string $key
      * @return string
      */
-    private function makeUpdateCheckTransientName($type, $key = null)
+    private function makeUpdateCheckTransientName($key)
     {
-        $items = ['bc-security', 'update-notifications', $type];
-
-        if ($key) {
-            $items[] = $key;
-        }
-
-        return md5(implode(':', $items));
+        return md5(implode(':', ['bc-security', 'update-notifications', $key]));
     }
 }
