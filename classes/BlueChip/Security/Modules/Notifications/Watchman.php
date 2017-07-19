@@ -45,7 +45,8 @@ class Watchman implements Modules\Loadable, Modules\Initializable, Modules\Deact
     }
 
 
-    public function load() {
+    public function load()
+    {
         // Bail early, if no recipients are set.
         if (empty($this->recipients)) {
             return;
@@ -120,7 +121,7 @@ class Watchman implements Modules\Loadable, Modules\Initializable, Modules\Deact
         }
 
         // Get first update item (should be "upgrade" response).
-        $update = isset($update_transient['updates'][0]);
+        $update = $update_transient->updates[0];
         if (!isset($update->response) || ($update->response !== 'upgrade')) {
             // Not the expected response.
             return;
