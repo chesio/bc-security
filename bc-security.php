@@ -44,6 +44,8 @@ require_once __DIR__ . '/includes/autoload.php';
 // Construct plugin instance.
 $bc_security = new \BlueChip\Security\Plugin($GLOBALS['wpdb']);
 // Register activation hook.
-register_activation_hook(BC_SECURITY_PLUGIN_FILE, [$bc_security, 'install']);
+register_activation_hook(BC_SECURITY_PLUGIN_FILE, [$bc_security, 'activate']);
+// Register deactivation hook.
+register_deactivation_hook(BC_SECURITY_PLUGIN_FILE, [$bc_security, 'deactivate']);
 // Load the plugin.
 $bc_security->load();
