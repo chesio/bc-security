@@ -139,6 +139,7 @@ class ListTable extends \BlueChip\Security\Core\ListTable
             'ban_time' => __('Ban date and time', 'bc-security'),
             'release_time' => __('Release date and time', 'bc-security'),
             'reason' => __('Ban reason', 'bc-security'),
+            'comment' => __('Comment', 'bc-security'),
         ];
     }
 
