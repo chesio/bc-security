@@ -21,6 +21,12 @@ class AdminPage extends \BlueChip\Security\Core\AdminPage
     /** @var Name for prune action (used for both nonce action and submit name) */
     const PRUNE_ACTION = 'prune-ip-blacklist';
 
+    /** @var Name for query argument that prefills IP address in the form */
+    const DEFAULT_IP_ADDRESS = 'default-ip-address';
+
+    /** @var Name for query argument that prefills lock scope in the form */
+    const DEFAULT_SCOPE = 'default-scope';
+
 
     /** @var \BlueChip\Security\Modules\IpBlacklist\Manager */
     private $bl_manager;
@@ -85,8 +91,8 @@ class AdminPage extends \BlueChip\Security\Core\AdminPage
         // Accept the following values as "pre-fill"
         // Note: the "add-" prefix is especially important for scope, because
         // there is "scope" GET argument used for list table views already.
-        $ip_address = filter_input(INPUT_GET, 'add-ip-address', FILTER_VALIDATE_IP);
-        $scope = filter_input(INPUT_GET, 'add-scope', FILTER_VALIDATE_INT);
+        $ip_address = filter_input(INPUT_GET, self::DEFAULT_IP_ADDRESS, FILTER_VALIDATE_IP);
+        $scope = filter_input(INPUT_GET, self::DEFAULT_SCOPE, FILTER_VALIDATE_INT);
 
         // Default lock duration is 1 month, unless different value is provided by filter.
         $duration = apply_filters(Hooks::DEFAULT_MANUAL_LOCK_DURATION, 1 * MONTH_IN_SECONDS);
