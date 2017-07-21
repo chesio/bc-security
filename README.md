@@ -30,7 +30,7 @@ BC Security allows you to:
 
 ### IP Blacklist
 
-BC Security maintains a list of IP addresses with limited access to the website. Currently, this list is only populated by [Login Security](#login-security) module.
+BC Security maintains a list of IP addresses with limited access to the website. This list is automatically populated by [Login Security](#login-security) module, but manual addition of IP addresses is also possible.
 
 ### Notifications
 
