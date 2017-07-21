@@ -10,6 +10,9 @@ use BlueChip\Security\Modules\Notifications\AdminPage;
 
 abstract class Mailman
 {
+    /** @var string End-of-line character for email body. */
+    const EOL = "\r\n";
+
     /**
      * Add some boilerplate to $subject and $message and send notification via wp_mail().
      *
@@ -56,7 +59,7 @@ abstract class Mailman
             ),
         ];
 
-        return implode(PHP_EOL, array_merge($boilerplate_intro, $message, $boilerplate_outro)); // TODO: PHP_EOL is maybe not the optimal glue here.
+        return implode(self::EOL, array_merge($boilerplate_intro, $message, $boilerplate_outro));
     }
 
 
