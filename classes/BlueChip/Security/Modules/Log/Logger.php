@@ -242,4 +242,20 @@ class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\
 
         return is_array($result) ? wp_list_pluck($result, 'event') : [];
     }
+
+
+    /**
+     * Return list of distinct IP addresses from which a successful login has
+     * been made.
+     *
+     * @return array
+     */
+    public function getKnownIps()
+    {
+        $result = $this->wpdb->get_results(
+            $this->wpdb->prepare("SELECT DISTINCT(ip_address) FROM {$this->log_table} WHERE event = %s", Event::LOGIN_SUCCESSFUL)
+        );
+
+        return is_array($result) ? wp_list_pluck($result, 'ip_address') : [];
+    }
 }

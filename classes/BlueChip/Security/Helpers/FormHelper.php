@@ -42,6 +42,8 @@ class FormHelper
             echo '<input ' . $this->printFieldProperties($hidden_properties) . '>';
         }
         echo '<input ' . $this->printFieldProperties($properties) . '>';
+
+        $this->printAppendix($args, true);
     }
 
 
@@ -62,9 +64,7 @@ class FormHelper
 
         echo '<input ' . $this->printFieldProperties($properties) . '>';
 
-        if (isset($args['append'])) {
-            echo ' ' . esc_html($args['append']);
-        }
+        $this->printAppendix($args, true);
     }
 
 
@@ -84,6 +84,8 @@ class FormHelper
             echo '<option value="' . esc_attr($key) . '"' . selected($key, $args['value'], false) . '>' . esc_html($value) . '</option>';
         }
         echo '</select>';
+
+        $this->printAppendix($args, true);
     }
 
 
@@ -105,9 +107,7 @@ class FormHelper
 
         echo '<textarea ' . $this->printFieldProperties($properties) . '>' . esc_html(implode(PHP_EOL, $args['value'])) . '</textarea>';
 
-        if (isset($args['append'])) {
-            echo '<br>' . esc_html($args['append']);
-        }
+        $this->printAppendix($args, false);
     }
 
 
@@ -137,5 +137,21 @@ class FormHelper
         );
         // Join all properties into single string
         return implode(' ', $mapped);
+    }
+
+
+    /**
+     * Print optional appendix information provided by "description" or "append"
+     * keys in $args. Note that "description" takes precedence over "append".
+     * @param array $args
+     * @param bool $inline
+     */
+    protected function printAppendix(array $args, $inline)
+    {
+        if (isset($args['description'])) {
+            echo sprintf('<%1$s class="description">%2$s</%1$s>', $inline ? 'span' : 'p', esc_html($args['description']));
+        } elseif (isset($args['append'])) {
+            echo ($inline ? ' ' : '<br>') . esc_html($args['append']);
+        }
     }
 }
