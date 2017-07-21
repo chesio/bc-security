@@ -59,3 +59,8 @@ Logs are stored in database and can be viewed on backend. As a safety measure, t
 
 1. [Login Security](#login-security) feature has been inspired by [Limit Login Attempts](https://wordpress.org/plugins/limit-login-attempts/) plugin by Johan Eenfeldt.
 1. Part of [psr/log](https://packagist.org/packages/psr/log) package codebase is shipped with the plugin.
+
+## Alternatives (and why I do not use them)
+
+1. [Wordfence Security](https://wordpress.org/plugins/wordfence/) - probably the current number one plugin for WordPress Security. My problem with Wordfence is that _"[...] when you use [Wordfence], statistics about your website visitors are automatically collected"_ (see the full [Terms of Use and Privacy Policy](https://www.wordfence.com/terms-of-use-and-privacy-policy/)). In other words, in order to offer some of its great features, Wordfence is [phoning home](https://en.wikipedia.org/wiki/Phoning_home).
+1. [All In One WP Security & Firewall](https://wordpress.org/plugins/all-in-one-wp-security-and-firewall/) - another very popular security plugin for WordPress. I have used AIOWPSF for quite some time; it has a lot of features, but also lot of small bugs. I [used to contribute](https://github.com/Arsenal21/all-in-one-wordpress-security/commits?author=chesio) to the plugin, but the codebase is rather messy and after some time I get tired struggling with it. Also, one simple feels dissapointment when his [clean up attempts](https://github.com/Arsenal21/all-in-one-wordpress-security/pull/34) got ignored...
