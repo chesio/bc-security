@@ -340,7 +340,7 @@ class Manager implements \BlueChip\Security\Modules\Installable
      *
      * @param string $ip_address IP address to check.
      * @param int $scope
-     * @parm int $reason
+     * @param int $reason
      * @return int|null
      */
     protected function getId($ip_address, $scope, $reason)
