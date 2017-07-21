@@ -47,5 +47,7 @@ $bc_security = new \BlueChip\Security\Plugin($GLOBALS['wpdb']);
 register_activation_hook(BC_SECURITY_PLUGIN_FILE, [$bc_security, 'activate']);
 // Register deactivation hook.
 register_deactivation_hook(BC_SECURITY_PLUGIN_FILE, [$bc_security, 'deactivate']);
+// Register uninstall hook.
+register_uninstall_hook(BC_SECURITY_PLUGIN_FILE, [$bc_security, 'uninstall']);
 // Load the plugin.
 $bc_security->load();
