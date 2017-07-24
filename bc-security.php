@@ -43,11 +43,12 @@ require_once __DIR__ . '/includes/autoload.php';
 
 // Construct plugin instance.
 $bc_security = new \BlueChip\Security\Plugin($GLOBALS['wpdb']);
+
 // Register activation hook.
 register_activation_hook(BC_SECURITY_PLUGIN_FILE, [$bc_security, 'activate']);
 // Register deactivation hook.
 register_deactivation_hook(BC_SECURITY_PLUGIN_FILE, [$bc_security, 'deactivate']);
-// Register uninstall hook.
-register_uninstall_hook(BC_SECURITY_PLUGIN_FILE, [$bc_security, 'uninstall']);
+// Ideally, uninstall hook would be registered here, but WordPress allows only static method in uninstall hook...
+
 // Load the plugin.
 $bc_security->load();
