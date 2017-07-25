@@ -21,6 +21,12 @@ class AdminPage extends \BlueChip\Security\Core\AdminPage
     /** @var Name for prune action (used for both nonce action and submit name) */
     const PRUNE_ACTION = 'prune-ip-blacklist';
 
+    /** @var Name for cron activation action (used for both nonce action and submit name) */
+    const CRON_ACTION_ON = 'auto-ip-blacklist-pruning-on';
+
+    /** @var Name for cron deactivation action (used for both nonce action and submit name) */
+    const CRON_ACTION_OFF = 'auto-ip-blacklist-pruning-off';
+
     /** @var Name for query argument that prefills IP address in the form */
     const DEFAULT_IP_ADDRESS = 'default-ip-address';
 
@@ -74,11 +80,8 @@ class AdminPage extends \BlueChip\Security\Core\AdminPage
         echo '<form method="post">';
         $this->list_table->display();
         echo '</form>';
-        // Table actions
-        echo '<form method="post">';
-        wp_nonce_field(self::PRUNE_ACTION, self::NONCE_NAME);
-        submit_button(__('Prune IP blacklist', 'bc-security'), 'delete', self::PRUNE_ACTION);
-        echo '</form>';
+        // Table pruning actions
+        $this->renderPruningActions();
         echo '</div>';
     }
 
@@ -160,6 +163,36 @@ class AdminPage extends \BlueChip\Security\Core\AdminPage
         submit_button(__('Add to blacklist', 'bc-security'), 'primary', self::BLACKLIST_ACTION, false);
         echo '</span>';
 
+        echo '</form>';
+    }
+
+
+    /**
+     * Render forms for IP blacklist pruning (including cron job activation and
+     * deactivation).
+     */
+    private function renderPruningActions()
+    {
+        $scheduled = false; // TODO
+
+        echo '<h2>' . esc_html__('Blacklist pruning', 'bc-security') . '</h2>';
+
+        echo '<form method="post">';
+        wp_nonce_field(self::PRUNE_ACTION, self::NONCE_NAME);
+        echo '<p>' . esc_html__('You can remove all out-dated records from the IP blacklist manually:', 'bc-security') . '</p>';
+        submit_button(__('Prune IP blacklist', 'bc-security'), 'delete', self::PRUNE_ACTION, false);
+        echo '</form>';
+
+        echo '<form method="post">';
+        if ($scheduled) {
+            wp_nonce_field(self::CRON_ACTION_OFF, self::NONCE_NAME);
+            echo '<p>' . esc_html__('You have automatic removal of out-dated records active.', 'bc-security') . '</p>';
+            submit_button(__('Deactivate auto-pruning', 'bc-security'), 'delete', self::CRON_ACTION_OFF, false);
+        } else {
+            wp_nonce_field(self::CRON_ACTION_ON, self::NONCE_NAME);
+            echo '<p>' . esc_html__('You can activate automatic removal of out-dated records via WP-Cron:', 'bc-security') . '</p>';
+            submit_button(__('Activate auto-pruning', 'bc-security'), 'primary', self::CRON_ACTION_ON, false);
+        }
         echo '</form>';
     }
 
