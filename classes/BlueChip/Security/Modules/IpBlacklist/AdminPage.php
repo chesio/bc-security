@@ -37,20 +37,25 @@ class AdminPage extends \BlueChip\Security\Core\AdminPage
     /** @var \BlueChip\Security\Modules\IpBlacklist\Manager */
     private $bl_manager;
 
+    /** @var \BlueChip\Security\Core\CronJob */
+    private $bl_cleaner;
+
     /** @var \BlueChip\Security\Modules\IpBlacklist\ListTable */
     private $list_table;
 
 
     /**
      * @param \BlueChip\Security\Modules\IpBlacklist\Manager $bl_manager
+     * @param \BlueChip\Security\Core\CronJob $bl_cleaner
      */
-    function __construct(Manager $bl_manager)
+    function __construct(Manager $bl_manager, \BlueChip\Security\Core\CronJob $bl_cleaner)
     {
         $this->page_title = _x('IP Blacklist', 'Dashboard page title', 'bc-security');
         $this->menu_title = _x('IP Blacklist', 'Dashboard menu item name', 'bc-security');
         $this->slug = self::SLUG;
 
         $this->bl_manager = $bl_manager;
+        $this->bl_cleaner = $bl_cleaner;
 
         add_filter('set-screen-option', [$this, 'setScreenOption'], 10, 3);
     }
@@ -173,24 +178,22 @@ class AdminPage extends \BlueChip\Security\Core\AdminPage
      */
     private function renderPruningActions()
     {
-        $scheduled = false; // TODO
-
         echo '<h2>' . esc_html__('Blacklist pruning', 'bc-security') . '</h2>';
 
         echo '<form method="post">';
         wp_nonce_field(self::PRUNE_ACTION, self::NONCE_NAME);
-        echo '<p>' . esc_html__('You can remove all out-dated records from the IP blacklist manually:', 'bc-security') . '</p>';
+        echo '<p>' . esc_html__('You can clean up all out-dated records from the IP blacklist manually:', 'bc-security') . '</p>';
         submit_button(__('Prune IP blacklist', 'bc-security'), 'delete', self::PRUNE_ACTION, false);
         echo '</form>';
 
         echo '<form method="post">';
-        if ($scheduled) {
+        if ($this->bl_cleaner->isScheduled()) {
             wp_nonce_field(self::CRON_ACTION_OFF, self::NONCE_NAME);
-            echo '<p>' . esc_html__('You have automatic removal of out-dated records active.', 'bc-security') . '</p>';
+            echo '<p>' . esc_html__('Automatic clean up of out-dated records is active.', 'bc-security') . '</p>';
             submit_button(__('Deactivate auto-pruning', 'bc-security'), 'delete', self::CRON_ACTION_OFF, false);
         } else {
             wp_nonce_field(self::CRON_ACTION_ON, self::NONCE_NAME);
-            echo '<p>' . esc_html__('You can activate automatic removal of out-dated records via WP-Cron:', 'bc-security') . '</p>';
+            echo '<p>' . esc_html__('You can activate automatic clean up of out-dated records via WP-Cron:', 'bc-security') . '</p>';
             submit_button(__('Activate auto-pruning', 'bc-security'), 'primary', self::CRON_ACTION_ON, false);
         }
         echo '</form>';
@@ -251,6 +254,16 @@ class AdminPage extends \BlueChip\Security\Core\AdminPage
             // Prune blacklist.
             $this->processPruneAction();
         }
+
+        if (isset($_POST[self::CRON_ACTION_OFF]) && wp_verify_nonce($nonce, self::CRON_ACTION_OFF)) {
+            // Deactivate automatic pruning.
+            $this->processCronOffAction();
+        }
+
+        if (isset($_POST[self::CRON_ACTION_ON]) && wp_verify_nonce($nonce, self::CRON_ACTION_ON)) {
+            // Activate automatic pruning.
+            $this->processCronOnAction();
+        }
     }
 
 
@@ -301,6 +314,37 @@ class AdminPage extends \BlueChip\Security\Core\AdminPage
         } else {
             AdminNotices::add(
                __('Failed to remove expired entries from IP blacklist.', 'bc-security'), AdminNotices::ERROR
+            );
+        }
+    }
+
+
+    /**
+     * Deactivate cron job for blacklist table pruning. Display notice about
+     * action outcome.
+     */
+    private function processCronOffAction()
+    {
+        $this->bl_cleaner->deactivate();
+        AdminNotices::add(
+            __('Automatic pruning of IP blacklist table has been deactivated.', 'bc-security'), AdminNotices::SUCCESS
+        );
+    }
+
+
+    /**
+     * Activate cron job for blacklist table pruning. Display notice about
+     * action outcome.
+     */
+    private function processCronOnAction()
+    {
+        if ($this->bl_cleaner->activate()) {
+            AdminNotices::add(
+                __('Automatic pruning of IP blacklist table has been activated.', 'bc-security'), AdminNotices::SUCCESS
+            );
+        } else {
+            AdminNotices::add(
+               __('Failed to activate automatic pruning of IP blacklist table.', 'bc-security'), AdminNotices::ERROR
             );
         }
     }

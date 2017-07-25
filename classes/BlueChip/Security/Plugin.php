@@ -59,6 +59,9 @@ class Plugin
         $bookkeeper = new Modules\Login\Bookkeeper($this->settings['login'], $wpdb);
         $gatekeeper = new Modules\Login\Gatekeeper($this->settings['login'], $remote_address, $bookkeeper, $bl_manager);
 
+        // ... including cron jobs ...
+        $bl_cleaner = new Core\CronJob('01:02:03', Core\CronJob::RECUR_DAILY, 'bc-security/ip-blacklist-clean-up', [$bl_manager, 'prune']);
+
         // ... and store them for later.
         $this->modules = [
             'logger'            => $logger,
@@ -66,6 +69,7 @@ class Plugin
             'notifier'          => $notifier,
             'hardening-core'    => $hardening,
             'blacklist-manager' => $bl_manager,
+            'blacklist-cleaner' => $bl_cleaner,
             'blacklist-bouncer' => $bl_bouncer,
             'login-bookkeeper'  => $bookkeeper,
             'login-gatekeeper'  => $gatekeeper,
@@ -113,7 +117,7 @@ class Plugin
                 ->addPage(new Modules\Checklist\AdminPage($this->wpdb))
                 ->addPage(new Modules\Hardening\AdminPage($this->settings['hardening']))
                 ->addPage(new Modules\Login\AdminPage($this->settings['login']))
-                ->addPage(new Modules\IpBlacklist\AdminPage($this->modules['blacklist-manager']))
+                ->addPage(new Modules\IpBlacklist\AdminPage($this->modules['blacklist-manager'], $this->modules['blacklist-cleaner']))
                 ->addPage(new Modules\Notifications\AdminPage($this->settings['notifications']))
                 ->addPage(new Modules\Log\AdminPage($this->modules['logger']))
             ;
@@ -122,17 +126,24 @@ class Plugin
 
 
     /**
-     * Perform activation (installation) tasks.
+     * Perform activation and installation tasks.
      * Method should be run on plugin activation.
      *
      * @link https://developer.wordpress.org/plugins/the-basics/activation-deactivation-hooks/
      */
     public function activate()
     {
-        // Activate (install) every module that requires it.
+        // Install every module that requires it.
         foreach ($this->modules as $module) {
             if ($module instanceof Modules\Installable) {
                 $module->install();
+            }
+        }
+
+        // Activate every module that requires it.
+        foreach ($this->modules as $module) {
+            if ($module instanceof Modules\Activable) {
+                $module->activate();
             }
         }
     }
@@ -148,7 +159,7 @@ class Plugin
     {
         // Deactivate every module that requires it.
         foreach ($this->modules as $module) {
-            if ($module instanceof Modules\Deactiveable) { // Ugh, what a word...
+            if ($module instanceof Modules\Activable) {
                 $module->deactivate();
             }
         }

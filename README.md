@@ -32,6 +32,8 @@ BC Security allows you to:
 
 BC Security maintains a list of IP addresses with limited access to the website. This list is automatically populated by [Login Security](#login-security) module, but manual addition of IP addresses is also possible.
 
+Out-dated records are automatically removed from the list by WP-Cron job that runs every night at 01:02:03 of local time. The job can be deactivated in backend, if desired.
+
 ### Notifications
 
 BC Security allows to send automatic email notification to configured recipients on following occasions:

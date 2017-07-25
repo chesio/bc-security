@@ -11,7 +11,7 @@ use BlueChip\Security\Modules\Log\Logger;
 use BlueChip\Security\Modules\Login\Hooks;
 
 
-class Watchman implements Modules\Loadable, Modules\Initializable, Modules\Deactivateable
+class Watchman implements Modules\Loadable, Modules\Initializable, Modules\Activable
 {
     /** @var string Remote IP address */
     private $remote_address;
@@ -81,6 +81,12 @@ class Watchman implements Modules\Loadable, Modules\Initializable, Modules\Deact
         if ($this->settings[Settings::KNOWN_IP_LOCKOUT]) {
             add_action(Hooks::LOCKOUT_EVENT, [$this, 'watchLockoutEvents'], 10, 3);
         }
+    }
+
+
+    public function activate()
+    {
+        // Do nothing.
     }
 
 
