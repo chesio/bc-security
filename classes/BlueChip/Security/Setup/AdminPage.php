@@ -7,14 +7,16 @@ namespace BlueChip\Security\Setup;
 
 class AdminPage extends \BlueChip\Security\Core\AdminSettingsPage
 {
-    /** @var string Page slug */
+    /**
+     * @var string Page slug
+     */
     const SLUG = 'bc-security-setup';
 
 
     /**
-     * @param Settings $settings Basic settings
+     * @param \BlueChip\Security\Setup\Settings $settings Basic settings
      */
-    function __construct($settings)
+    function __construct(Settings $settings)
     {
         parent::__construct($settings);
 

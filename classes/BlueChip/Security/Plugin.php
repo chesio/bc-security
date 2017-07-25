@@ -10,16 +10,24 @@ namespace BlueChip\Security;
  */
 class Plugin
 {
-    /** @var \BlueChip\Security\Admin */
+    /**
+     * @var \BlueChip\Security\Admin
+     */
     public $admin;
 
-    /** @var array Plugin module objects */
+    /**
+     * @var array Plugin module objects
+     */
     private $modules;
 
-    /** @var \BlueChip\Security\Core\Settings[] Plugin setting objects */
+    /**
+     * @var \BlueChip\Security\Core\Settings[] Plugin setting objects
+     */
     private $settings;
 
-    /** @var \wpdb WordPress database access abstraction object */
+    /**
+     * @var \wpdb WordPress database access abstraction object
+     */
     private $wpdb;
 
 
