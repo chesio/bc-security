@@ -32,6 +32,11 @@ class CronJob implements \BlueChip\Security\Modules\Activable, \BlueChip\Securit
     private $action;
 
     /**
+     * @var array Arguments to pass to the hook's callback function.
+     */
+    private $args;
+
+    /**
      * @var string Action hook to execute when cron job is run.
      */
     private $hook;
@@ -52,10 +57,12 @@ class CronJob implements \BlueChip\Security\Modules\Activable, \BlueChip\Securit
      * @param string $recurrence
      * @param string $hook
      * @param callback $action
+     * @param array $args
      */
-    public function __construct($time, $recurrence, $hook, $action)
+    public function __construct($time, $recurrence, $hook, $action, array $args = [])
     {
         $this->action = $action;
+        $this->args = $args;
         $this->hook = $hook;
         $this->recurrence = $recurrence;
         $this->timestamp = is_int($time) ? $time : self::getTimestamp($time);
@@ -72,7 +79,7 @@ class CronJob implements \BlueChip\Security\Modules\Activable, \BlueChip\Securit
     {
         return $this->isScheduled()
             ? true
-            : (wp_schedule_event($this->timestamp, $this->recurrence, $this->hook) !== false)
+            : (wp_schedule_event($this->timestamp, $this->recurrence, $this->hook, $this->args) !== false)
         ;
     }
 
@@ -82,7 +89,7 @@ class CronJob implements \BlueChip\Security\Modules\Activable, \BlueChip\Securit
      */
     public function deactivate()
     {
-        wp_clear_scheduled_hook($this->hook);
+        wp_clear_scheduled_hook($this->hook, $this->args);
     }
 
 
@@ -100,7 +107,7 @@ class CronJob implements \BlueChip\Security\Modules\Activable, \BlueChip\Securit
      */
     public function isScheduled()
     {
-        return is_int(wp_next_scheduled($this->hook));
+        return is_int(wp_next_scheduled($this->hook, $this->args));
     }
 
 
