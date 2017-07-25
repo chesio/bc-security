@@ -28,7 +28,7 @@ abstract class Settings implements \ArrayAccess
     {
         // Read settings from wp_options table and sanitize them right away.
         $this->option_name = $option_name;
-        $this->data = $this->sanitize(get_option($option_name));
+        $this->data = $this->sanitize(get_option($option_name, []));
     }
 
 
@@ -133,7 +133,7 @@ abstract class Settings implements \ArrayAccess
      * @param array $settings
      * @return array
      */
-    abstract public function sanitize($settings);
+    abstract public function sanitize(array $settings);
 
 
     /**
