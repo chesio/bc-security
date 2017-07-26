@@ -232,7 +232,7 @@ class Plugin
     {
         // Deactivate cron jobs.
         foreach ($this->cron_jobs as $cron_job) {
-            $cron_job->activate();
+            $cron_job->deactivate();
         }
 
         // Deactivate every module that requires it.
