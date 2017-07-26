@@ -50,6 +50,11 @@ class AdminPage extends \BlueChip\Security\Core\AdminPage
 
         $this->renderPhpFileBlockedInUploadsDir();
 
+        if (WP_DEBUG && WP_DEBUG_LOG) {
+            // Only check, if there is a chance that debug.log is present.
+            $this->renderNoPublicAccessToErrorLog();
+        }
+
         $this->renderNoObviousUsernamesStatus();
 
         $this->renderNoDefaultMd5HashedPasswords();
@@ -122,6 +127,24 @@ class AdminPage extends \BlueChip\Security\Core\AdminPage
                 null => esc_html__('BC Security has failed to determine whether PHP files can be executed from uploads directory.', 'bc-security'),
                 true => esc_html__('It seems that PHP files cannot be executed from uploads directory.', 'bc-security'),
                 false => esc_html__('It seems that PHP files can be executed from uploads directory!', 'bc-security'),
+            ]
+        );
+    }
+
+
+    /**
+     * Render status info about error log being publicly unaccessible.
+     */
+    private function renderNoPublicAccessToErrorLog()
+    {
+        $this->renderCheckRow(
+            __('Error log not publicly accessible', 'bc-security'),
+            sprintf(__('Both <code>WP_DEBUG</code> and <code>WP_DEBUG_LOG</code> constants are set to true, therefore <a href="%s">WordPress saves all errors</a> to a <code>debug.log</code> log file inside the <code>/wp-content/</code> directory. This file can contain sensitive information and therefore should not be publicly accessible.', 'bc-security'), 'https://codex.wordpress.org/Debugging_in_WordPress'),
+            Helper::isAccessToErrorLogForbidden(),
+            [
+                null => esc_html__('BC Security has failed to determine whether error log is publicly accessible.', 'bc-security'),
+                true => esc_html__('It seems that error log is not publicly accessible.', 'bc-security'),
+                false => esc_html__('It seems that error log is publicly accessible!', 'bc-security'),
             ]
         );
     }

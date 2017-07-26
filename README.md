@@ -10,9 +10,10 @@ Helps keeping WordPress websites secure.
 
 ### Checklist
 
-BC Security features a checklist of common security practices. In the moment, the list consists of only four checks:
+BC Security features a checklist of common security practices. In the moment, the list consists of following checks:
 1. Is PHP editation of plugin and theme files disabled?
 1. Is execution of PHP files from uploads directory forbidden?
+1. Is error log file not publicly available (only done if `WP_DEBUG` and `WP_DEBUG_LOG` are enabled).
 1. Are there no common usernames like admin or administrator on the system?
 1. Are user passwords hashed with some non-default hashing algorithm?
 
