@@ -78,7 +78,7 @@ class SettingsApiHelper
      */
     public function __construct(\BlueChip\Security\Core\Settings $settings)
     {
-        // Remember the settings
+        // Remember the settings.
         $this->settings = $settings;
         $this->option_name = $settings->getOptionName();
         $this->option_group = md5($this->option_name);
@@ -86,7 +86,7 @@ class SettingsApiHelper
 
 
     /**
-     * Register setting
+     * Register setting.
      */
     public function register()
     {
@@ -95,7 +95,7 @@ class SettingsApiHelper
 
 
     /**
-     * Unregister setting
+     * Unregister setting.
      */
     public function unregister()
     {
@@ -132,9 +132,9 @@ class SettingsApiHelper
             return;
         }
 
-        // Remember the most recent section
+        // Remember the most recent section.
         $this->recent_section = $section;
-        // Add new section to most recent page
+        // Add new section to most recent page.
         add_settings_section($section, $title, $callback, $this->recent_page);
     }
 
@@ -191,13 +191,14 @@ class SettingsApiHelper
         }
 
         echo '<form method="post" action="' . admin_url('options.php') .'">';
-        // Nonce, action and other hidden fields...
+
+        // Render nonce, action and other hidden fields...
         settings_fields($this->option_group);
-        // Visible fields
+        // ... visible fields ...
         do_settings_sections($this->recent_page);
-        // :)
+        // ... and finally the submit button :)
         submit_button();
-        //
+
         echo '</form>';
     }
 }
