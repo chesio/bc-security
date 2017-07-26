@@ -55,7 +55,7 @@ BC Security logs both short and long lockout events (see [Login Security](#login
 1. Failed and successful login attempts
 1. Requests that result in 404 page
 
-Logs are stored in database and can be viewed on backend. As a safety measure, there is no built-in way to delete log records from backend. However logs are automatically deleted based on their age and overall size. By default log records older than 365 days are automatically removed and no more than 20 thousand of log records is kept.
+Logs are stored in database and can be viewed on backend. Logs are automatically deleted based on their age and overall size: by default no more than 20 thousands of records are kept and any log records older than 365 days are removed, but these limits can be configured.
 
 ## Credits
 
