@@ -190,7 +190,7 @@ class SettingsApiHelper
             return;
         }
 
-        echo '<form method="post" action="options.php">';
+        echo '<form method="post" action="' . admin_url('options.php') .'">';
         // Nonce, action and other hidden fields...
         settings_fields($this->option_group);
         // Visible fields
