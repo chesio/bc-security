@@ -272,9 +272,9 @@ class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\
 
 
     /**
-     * Remove all log records that are older than $max_age days.
+     * Remove all log records that are older than $max_age seconds.
      *
-     * @param int $max_age
+     * @param int $max_age Maximum age of logs to keep in seconds.
      * @return bool True on success, false on failure.
      */
     public function pruneByAge($max_age)
@@ -282,7 +282,7 @@ class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\
         // Note: $wpdb->delete cannot be used as it does not support "<=" comparison)
         $query = $this->wpdb->prepare(
             "DELETE FROM {$this->log_table} WHERE date_and_time <= %s",
-            date(self::MYSQL_DATETIME_FORMAT, current_time('timestamp') - ($max_age * DAY_IN_SECONDS))
+            date(self::MYSQL_DATETIME_FORMAT, current_time('timestamp') - $max_age)
         );
         // Execute query and return true/false status.
         return $this->wpdb->query($query) !== false;
@@ -292,7 +292,7 @@ class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\
     /**
      * Remove all but recent $max_size records from the table.
      *
-     * @param int $max_size
+     * @param int $max_size Maximum number of log records to keep.
      * @return bool True on success, false on failure.
      */
     public function pruneBySize($max_size)

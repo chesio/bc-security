@@ -132,14 +132,14 @@ class Plugin
                 Core\CronJob::RECUR_DAILY,
                 'bc-security/logs-clean-up-by-age',
                 [$modules['logger'], 'pruneByAge'],
-                [$settings['log'][Modules\Log\Settings::LOG_MAX_AGE]]
+                [$settings['log']->getMaxAge()]
             ),
             'log-cleaner-by-size' => new Core\CronJob(
                 '03:04:05',
                 Core\CronJob::RECUR_DAILY,
                 'bc-security/logs-clean-up-by-size',
                 [$modules['logger'], 'pruneBySize'],
-                [$settings['log'][Modules\Log\Settings::LOG_MAX_SIZE]]
+                [$settings['log']->getMaxSize()]
             ),
         ];
     }
@@ -187,7 +187,7 @@ class Plugin
                 ->addPage(new Modules\Login\AdminPage($this->settings['login']))
                 ->addPage(new Modules\IpBlacklist\AdminPage($this->modules['blacklist-manager'], $this->cron_jobs['blacklist-cleaner']))
                 ->addPage(new Modules\Notifications\AdminPage($this->settings['notifications']))
-                ->addPage(new Modules\Log\AdminPage($this->modules['logger']))
+                ->addPage(new Modules\Log\AdminPage($this->settings['log'], $this->modules['logger']))
             ;
         }
     }
