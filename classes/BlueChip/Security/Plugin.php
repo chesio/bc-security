@@ -91,7 +91,7 @@ class Plugin
     private function constructModules($wpdb, $remote_address, $settings)
     {
         $logger     = new Modules\Log\Logger($wpdb, $remote_address);
-        $monitor    = new Modules\Events\Monitor();
+        $monitor    = new Modules\Events\Monitor($remote_address);
         $notifier   = new Modules\Notifications\Watchman($settings['notifications'], $remote_address, $logger);
         $hardening  = new Modules\Hardening\Core($settings['hardening']);
         $bl_manager = new Modules\IpBlacklist\Manager($wpdb);
