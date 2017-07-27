@@ -83,25 +83,22 @@ abstract class Helper
      */
     public static function isAccessToUrlForbidden($url, $body = null)
     {
-        // Try to access provided URL.
-        $response = wp_remote_get($url);
+        // Try to get provided URL. Use HEAD request for simplicity, if response body is of no interest.
+        $response = is_string($body) ? wp_remote_get($url) : wp_remote_head($url);
 
-        if (is_wp_error($response)) {
-            // Assume nothing on error.
-            return null;
-        } else {
-            switch ($response['response']['code']) {
-                case 200:
-                    // Status suggest URL can be accessed, check response body too, if given.
-                    return is_string($body) ? (($response['body'] === $body) ? false : null) : false;
-                case 403:
-                    return true;
-                case 404:
-                    return false;
-                default:
-                    // Otherwise assume nothing.
-                    return null;
-            }
+        switch (wp_remote_retrieve_response_code($response)) {
+            case 200:
+                // Status suggests that URL can be accessed, but check response body too, if given.
+                return is_string($body) ? ((wp_remote_retrieve_body($response) === $body) ? false : null) : false;
+            case 403:
+                // Status suggests that access to URL is forbidden.
+                return true;
+            case 404:
+                // Status suggests that no resource has been found, but access to URL is not forbidden.
+                return false;
+            default:
+                // Otherwise assume nothing.
+                return null;
         }
     }
 }
