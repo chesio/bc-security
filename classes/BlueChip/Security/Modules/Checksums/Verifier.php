@@ -21,9 +21,18 @@ class Verifier
      */
     public function runCheck()
     {
-        // Get checksums via API.
-        if (empty($checksums = $this->getChecksums())) {
-            do_action(Hooks::CHECKSUMS_RETRIEVAL_FAILED);
+        // Add necessary arguments to request URL.
+        $url = add_query_arg(
+            [
+                'version' => get_bloginfo('version'),
+                'locale'  => get_locale(), // TODO: What about multilanguage sites?
+            ],
+            self::CHECKSUMS_API_URL
+        );
+
+        // Get checksums via WordPress.org API.
+        if (empty($checksums = $this->getChecksums($url))) {
+            do_action(Hooks::CHECKSUMS_RETRIEVAL_FAILED, $url);
             return;
         }
 
@@ -35,20 +44,13 @@ class Verifier
 
 
     /**
+     * @param string $url
      * @return array|null
      */
-    private function getChecksums()
+    private function getChecksums($url)
     {
         // Make request to Checksums API.
-        $response = wp_remote_get(
-            add_query_arg(
-                [
-                    'version' => get_bloginfo('version'),
-                    'locale'  => get_locale(), // TODO: What about multilanguage sites?,
-                ],
-                self::CHECKSUMS_API_URL
-            )
-        );
+        $response = wp_remote_get($url);
 
         // Check response code.
         if (wp_remote_retrieve_response_code($response) !== 200) {
@@ -87,10 +89,10 @@ class Verifier
             ]
         );
 
-        // Init array for files that has no match.
+        // Init array for files that have no match.
         $matches = [];
 
-        // Loop files.
+        // Loop through all files in list.
         foreach ($checksums as $file => $checksum) {
             // Skip ignored files.
             if (in_array($file, $ignore_files, true)) {

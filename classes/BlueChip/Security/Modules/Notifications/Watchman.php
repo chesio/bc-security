@@ -8,7 +8,8 @@ namespace BlueChip\Security\Modules\Notifications;
 use BlueChip\Security\Helpers\Is;
 use BlueChip\Security\Modules;
 use BlueChip\Security\Modules\Log\Logger;
-use BlueChip\Security\Modules\Login\Hooks;
+use BlueChip\Security\Modules\Checksums\Hooks as ChecksumsHooks;
+use BlueChip\Security\Modules\Login\Hooks as LoginHooks;
 
 
 class Watchman implements Modules\Loadable, Modules\Initializable, Modules\Activable
@@ -79,7 +80,11 @@ class Watchman implements Modules\Loadable, Modules\Initializable, Modules\Activ
             add_action('wp_login', [$this, 'watchWpLogin'], 10, 2);
         }
         if ($this->settings[Settings::KNOWN_IP_LOCKOUT]) {
-            add_action(Hooks::LOCKOUT_EVENT, [$this, 'watchLockoutEvents'], 10, 3);
+            add_action(LoginHooks::LOCKOUT_EVENT, [$this, 'watchLockoutEvents'], 10, 3);
+        }
+        if ($this->settings[Settings::CHECKSUMS_VERIFICATION_ERROR]) {
+            add_action(ChecksumsHooks::CHECKSUMS_RETRIEVAL_FAILED, [$this, 'watchChecksumsRetrieval'], 10, 1);
+            add_action(ChecksumsHooks::CHECKSUMS_VERIFICATION_MATCHES, [$this, 'watchChecksumsMatches'], 10, 1);
         }
     }
 
@@ -311,6 +316,40 @@ class Watchman implements Modules\Loadable, Modules\Initializable, Modules\Activ
 
             $this->notify($subject, $message);
         }
+    }
+
+
+    /**
+     * Send notification if checksums verification found files with non-matching checksum.
+     *
+     * @param array $matches Files for which official checksums do not match.
+     */
+    public function watchChecksumsMatches(array $matches)
+    {
+        $subject = __('Checksums verification alert', 'bc-security');
+        $message = [
+            __('Official checksums do not match for the following files:', 'bc-security'),
+        ];
+
+        // Append list of matched files to the message and send email.
+        $this->notify($subject, array_merge($message, $matches));
+    }
+
+
+    /**
+     * Send notification if checksums retrieval from WordPress.org API failed.
+     *
+     * @param string $url
+     */
+    public function watchChecksumsRetrieval($url)
+    {
+        $subject = __('Checksums verification failed', 'bc-security');
+        $message = sprintf(
+            __('Checksums verification has been aborted, because official checksums could not be read from %s.', 'bc-security'),
+            $url
+        );
+
+        $this->notify($subject, $message);
     }
 
 
