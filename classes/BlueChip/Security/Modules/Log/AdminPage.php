@@ -119,7 +119,7 @@ class AdminPage extends \BlueChip\Security\Core\AdminSettingsPage
     public function renderCleanupConfigurationHint()
     {
         echo '<p>';
-        echo esc_html__('Logs are cleaned automatically based on the configuration below.', 'bc-security');
+        echo esc_html__('Logs are cleaned automatically once a day based on the configuration below.', 'bc-security');
         echo '</p>';
     }
 
