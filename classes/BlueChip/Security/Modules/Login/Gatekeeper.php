@@ -213,7 +213,7 @@ class Gatekeeper implements \BlueChip\Security\Modules\Initializable, \BlueChip\
     /**
      * Lock out remote IP address for $duration seconds
      *
-     * @hook bc_security_login_lockout_event
+     * @hook \BlueChip\Security\Modules\Login\Hooks::LOCKOUT_EVENT
      *
      * @param string $username Username that triggered the lockout
      * @param int $duration Duration (in secs) of lockout

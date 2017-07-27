@@ -153,7 +153,7 @@ class AdminPage extends \BlueChip\Security\Core\AdminPage
     /**
      * Render status info about no obvious usernames being present on the system.
      *
-     * @hook bc_security_status_obvious_usernames Filters list of obvious usernames to check and report.
+     * @hook \BlueChip\Security\Modules\Checklist\Hooks::OBVIOUS_USERNAMES Filters list of obvious usernames to check and report.
      */
     private function renderNoObviousUsernamesStatus()
     {

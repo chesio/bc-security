@@ -93,6 +93,8 @@ class AdminPage extends \BlueChip\Security\Core\AdminPage
 
     /**
      * Render form for manual addition of IP addresses to blacklist.
+     *
+     * @hook \BlueChip\Security\Modules\IpBlacklist\Hooks::DEFAULT_MANUAL_LOCK_DURATION
      */
     private function renderBlacklistingForm()
     {
