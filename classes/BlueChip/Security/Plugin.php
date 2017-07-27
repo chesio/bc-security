@@ -91,6 +91,7 @@ class Plugin
     private function constructModules($wpdb, $remote_address, $settings)
     {
         $logger     = new Modules\Log\Logger($wpdb, $remote_address);
+        $verifier   = new Modules\Checksums\Verifier();
         $monitor    = new Modules\Events\Monitor();
         $notifier   = new Modules\Notifications\Watchman($settings['notifications'], $remote_address, $logger);
         $hardening  = new Modules\Hardening\Core($settings['hardening']);
@@ -101,6 +102,7 @@ class Plugin
 
         return [
             'logger'            => $logger,
+            'checksum-verifier' => $verifier,
             'events-monitor'    => $monitor,
             'notifier'          => $notifier,
             'hardening-core'    => $hardening,
@@ -140,6 +142,12 @@ class Plugin
                 'bc-security/logs-clean-up-by-size',
                 [$modules['logger'], 'pruneBySize'],
                 [$settings['log']->getMaxSize()]
+            ),
+            'checksum-verifier' => new Core\CronJob(
+                '04:05:06',
+                Core\CronJob::RECUR_DAILY,
+                'bc-security/checksum-verifier',
+                [$modules['checksum-verifier'], 'runCheck']
             ),
         ];
     }

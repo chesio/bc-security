@@ -58,10 +58,15 @@ BC Security logs both short and long lockout events (see [Login Security](#login
 
 Logs are stored in database and can be viewed on backend. Logs are automatically deleted based on their age and overall size: by default no more than 20 thousands of records are kept and any log records older than 365 days are removed, but these limits can be configured.
 
+### Checksums verification
+
+BC Security once a day performs integrity check of WordPress core files by comparing their checksums with MD5 checksums downloaded from WordPress.org.
+
 ## Credits
 
 1. [Login Security](#login-security) feature has been inspired by [Limit Login Attempts](https://wordpress.org/plugins/limit-login-attempts/) plugin by Johan Eenfeldt.
 1. Part of [psr/log](https://packagist.org/packages/psr/log) package codebase is shipped with the plugin.
+1. [Checksums verification](#checksums-verification) feature is almost verbatim taken from [Checksum Verifier](https://github.com/pluginkollektiv/checksum-verifier) plugin by Sergej Müller.
 
 ## Alternatives (and why I do not use them)
 
