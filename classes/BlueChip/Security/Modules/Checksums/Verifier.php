@@ -73,6 +73,9 @@ class Verifier
     /**
      * Check MD5 hashes of files on local filesystem against $checksums.
      *
+     * Files in wp-content directory are automatically excluded, see:
+     * https://github.com/pluginkollektiv/checksum-verifier/pull/11
+     *
      * @hook \BlueChip\Security\Modules\Checksums\Hooks::IGNORED_FILES
      *
      * @param array $checksums
@@ -94,8 +97,8 @@ class Verifier
 
         // Loop through all files in list.
         foreach ($checksums as $file => $checksum) {
-            // Skip ignored files.
-            if (in_array($file, $ignore_files, true)) {
+            // Skip any files in wp-content directory or any ignored files.
+            if ((strpos($file, 'wp-content/') === 0) || in_array($file, $ignore_files, true)) {
                 continue;
             }
 
