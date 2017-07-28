@@ -10,6 +10,21 @@ use BlueChip\Security\Modules\Login;
 
 class Monitor implements \BlueChip\Security\Modules\Initializable
 {
+    /**
+     * @var string Remote IP address
+     */
+    private $remote_address;
+
+
+    /**
+     * @param string $remote_address Remote IP address.
+     */
+    public function __construct($remote_address)
+    {
+        $this->remote_address = $remote_address;
+    }
+
+
     public function init()
     {
         // Log the following WordPress events:
@@ -20,8 +35,10 @@ class Monitor implements \BlueChip\Security\Modules\Initializable
         add_action('wp_login_failed', [$this, 'logFailedLogin'], 5, 1);
         // - successful login
         add_action('wp_login', [$this, 'logSuccessfulLogin'], 5, 1);
-        // - 404 query
-        add_action('wp', [$this, 'log404Queries'], 20, 1);
+        // - 404 query (only if request did not originate from the webserver itself)
+        if ($this->remote_address !== $_SERVER['SERVER_ADDR']) {
+            add_action('wp', [$this, 'log404Queries'], 20, 1);
+        }
 
         // Log the following BC Security events:
         // - lockout event
