@@ -24,6 +24,10 @@ BC Security allows you to:
 1. Disable XML RPC methods that require authentication
 1. Disable access to REST API to anonymous users
 
+### Checksums verification
+
+BC Security once a day performs integrity check of WordPress core files by comparing their checksums with MD5 checksums downloaded from WordPress.org. Any files with md5 checksum, that does not match its official checksum, are (optionally) reported via [email notification](#notifications).
+
 ### Login Security
 
 1. BC Security allows you to limit number of login attempts from single IP address. Implementation of this feature is heavily inspired by popular [Limit Login Attempts](https://wordpress.org/plugins/limit-login-attempts/) plugin with an extra feature of immediate blocking of specific usernames (like _admin_ or _administrator_).
@@ -44,6 +48,7 @@ BC Security allows to send automatic email notification to configured recipients
 1. Theme update is available.
 1. User with administrator privileges has logged in.
 1. Known IP address has been locked out (see note below).
+1. [Checksums verification](#checksums-verification) fails or there are files with non-matching checksum.
 1. BC Security plugin has been deactivated.
 
 Note: _Known IP address_ is an IP address from which a successful login attempt had been previously made. Information about successful login attempts is fetched from [event logs](#events-logging).
@@ -57,10 +62,6 @@ BC Security logs both short and long lockout events (see [Login Security](#login
 1. Requests that result in 404 page
 
 Logs are stored in database and can be viewed on backend. Logs are automatically deleted based on their age and overall size: by default no more than 20 thousands of records are kept and any log records older than 365 days are removed, but these limits can be configured.
-
-### Checksums verification
-
-BC Security once a day performs integrity check of WordPress core files by comparing their checksums with MD5 checksums downloaded from WordPress.org.
 
 ## Credits
 
