@@ -258,4 +258,59 @@ class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\
 
         return is_array($result) ? wp_list_pluck($result, 'ip_address') : [];
     }
+
+
+    /**
+     * Remove all log records (truncate logs table).
+     *
+     * @return bool True on success, false on failure.
+     */
+    public function pruneAll()
+    {
+        return $this->wpdb->query("TRUNCATE {$this->log_table}") !== false;
+    }
+
+
+    /**
+     * Remove all log records that are older than $max_age seconds.
+     *
+     * @param int $max_age Maximum age of logs to keep in seconds.
+     * @return bool True on success, false on failure.
+     */
+    public function pruneByAge($max_age)
+    {
+        // Note: $wpdb->delete cannot be used as it does not support "<=" comparison)
+        $query = $this->wpdb->prepare(
+            "DELETE FROM {$this->log_table} WHERE date_and_time <= %s",
+            date(self::MYSQL_DATETIME_FORMAT, current_time('timestamp') - $max_age)
+        );
+        // Execute query and return true/false status.
+        return $this->wpdb->query($query) !== false;
+    }
+
+
+    /**
+     * Remove all but recent $max_size records from the table.
+     *
+     * @param int $max_size Maximum number of log records to keep.
+     * @return bool True on success, false on failure.
+     */
+    public function pruneBySize($max_size)
+    {
+        // First check, if pruning makes sense at all.
+        if ($this->countAll() <= $max_size) {
+            return true;
+        }
+
+        // Find the biggest ID from all records that should be pruned.
+        $query_id = $this->wpdb->prepare("SELECT id FROM {$this->log_table} ORDER BY id DESC LIMIT %d, 1", $max_size);
+        if (empty($id = intval($this->wpdb->get_var($query_id)))) {
+            return false;
+        }
+
+        // Note: $wpdb->delete cannot be used as it does not support "<=" comparison)
+        $query = $this->wpdb->prepare("DELETE FROM {$this->log_table} WHERE id <= %d", $id);
+        // Execute query and return true/false status.
+        return $this->wpdb->query($query) !== false;
+    }
 }

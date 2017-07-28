@@ -5,12 +5,17 @@
 
 namespace BlueChip\Security\Modules\Log;
 
+use BlueChip\Security\Modules\IpBlacklist;
+
 
 /**
  * Logs table
  */
 class ListTable extends \BlueChip\Security\Core\ListTable
 {
+    /** @var string Name of blacklist action query argument */
+    const ACTION_BLACKLIST = 'blacklist';
+
     /** @var string Name of option holding records per page value */
     const RECORDS_PER_PAGE = 'log_table_records_per_page';
 
@@ -41,6 +46,17 @@ class ListTable extends \BlueChip\Security\Core\ListTable
             $this->event = Event::create($event_id);
             $this->url = add_query_arg(self::VIEW_EVENT, $event_id, $this->url);
         }
+    }
+
+
+    /**
+     * Return content for first column (date and time) including row actions.
+     * @param array $item
+     * @return string
+     */
+    public function column_date_and_time($item)
+    {
+        return $item['date_and_time'] . $this->row_actions($this->getRowActions($item));
     }
 
 
@@ -186,6 +202,55 @@ class ListTable extends \BlueChip\Security\Core\ListTable
         ]);
 
         $this->items = $this->logger->fetch($event_id, ($current_page - 1) * $per_page, $per_page, $this->order_by, $this->order);
+    }
+
+
+    /**
+     * @param array $item
+     * @return array
+     */
+    private function getRowActions(array $item)
+    {
+        if (empty($scope = $this->getLockScopeFromEvent($item['event']))) {
+            // No scope, no action.
+            return [];
+        }
+
+        return [
+            self::ACTION_BLACKLIST => sprintf(
+                '<span class="delete"><a href="%s">%s</a></span>',
+                add_query_arg(
+                    [
+                        IpBlacklist\AdminPage::DEFAULT_IP_ADDRESS => $item['ip_address'],
+                        IpBlacklist\AdminPage::DEFAULT_SCOPE => $scope,
+                    ],
+                    IpBlacklist\AdminPage::getPageUrl(IpBlacklist\AdminPage::SLUG)
+                ),
+                esc_html__('Add to blacklist', 'bc-security')
+            ),
+        ];
+    }
+
+
+    /**
+     * Return appropriate lock scope for $event type.
+     *
+     * @param int $event
+     * @return int|null Return null, if given $event does not warrant blacklisting,
+     * otherwise return lock scope code.
+     */
+    private function getLockScopeFromEvent($event)
+    {
+        switch ($event) {
+            case Event::QUERY_404:
+                return IpBlacklist\LockScope::WEBSITE;
+            case Event::AUTH_BAD_COOKIE:
+            case Event::LOGIN_FAILURE:
+            case Event::LOGIN_LOCKOUT:
+                return IpBlacklist\LockScope::ADMIN;
+            default:
+                return null;
+        }
     }
 
 

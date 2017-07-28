@@ -10,9 +10,10 @@ Helps keeping WordPress websites secure.
 
 ### Checklist
 
-BC Security features a checklist of common security practices. In the moment, the list consists of only four checks:
+BC Security features a checklist of common security practices. In the moment, the list consists of following checks:
 1. Is PHP editation of plugin and theme files disabled?
 1. Is execution of PHP files from uploads directory forbidden?
+1. Is error log file not publicly available (only done if `WP_DEBUG` and `WP_DEBUG_LOG` are enabled).
 1. Are there no common usernames like admin or administrator on the system?
 1. Are user passwords hashed with some non-default hashing algorithm?
 
@@ -30,7 +31,9 @@ BC Security allows you to:
 
 ### IP Blacklist
 
-BC Security maintains a list of IP addresses with limited access to the website. Currently, this list is only populated by [Login Security](#login-security) module.
+BC Security maintains a list of IP addresses with limited access to the website. This list is automatically populated by [Login Security](#login-security) module, but manual addition of IP addresses is also possible.
+
+Out-dated records are automatically removed from the list by WP-Cron job that runs every night at 01:02:03 of local time. The job can be deactivated in backend, if desired.
 
 ### Notifications
 
@@ -53,9 +56,14 @@ BC Security logs both short and long lockout events (see [Login Security](#login
 1. Failed and successful login attempts
 1. Requests that result in 404 page
 
-Logs are stored in database and can be viewed on backend. As a safety measure, there is no built-in way to delete log records from backend.
+Logs are stored in database and can be viewed on backend. Logs are automatically deleted based on their age and overall size: by default no more than 20 thousands of records are kept and any log records older than 365 days are removed, but these limits can be configured.
 
 ## Credits
 
 1. [Login Security](#login-security) feature has been inspired by [Limit Login Attempts](https://wordpress.org/plugins/limit-login-attempts/) plugin by Johan Eenfeldt.
 1. Part of [psr/log](https://packagist.org/packages/psr/log) package codebase is shipped with the plugin.
+
+## Alternatives (and why I do not use them)
+
+1. [Wordfence Security](https://wordpress.org/plugins/wordfence/) - probably the current number one plugin for WordPress Security. My problem with Wordfence is that _"when you use [Wordfence], statistics about your website visitors are automatically collected"_ (see the full [Terms of Use and Privacy Policy](https://www.wordfence.com/terms-of-use-and-privacy-policy/)). In other words, in order to offer some of its great features, Wordfence is [phoning home](https://en.wikipedia.org/wiki/Phoning_home).
+1. [All In One WP Security & Firewall](https://wordpress.org/plugins/all-in-one-wp-security-and-firewall/) - another very popular security plugin for WordPress. I have used AIOWPSF for quite some time; it has a lot of features, but also lot of small bugs (sometimes [not that small](https://sumofpwn.nl/advisory/2016/cross_site_scripting_in_all_in_one_wp_security___firewall_wordpress_plugin.html)). I [used to contribute](https://github.com/Arsenal21/all-in-one-wordpress-security/commits?author=chesio) to the plugin, but the codebase is rather messy and after some time I get tired struggling with it. Also, one simple feels dissapointment when his [clean up attempts](https://github.com/Arsenal21/all-in-one-wordpress-security/pull/34) got ignored...

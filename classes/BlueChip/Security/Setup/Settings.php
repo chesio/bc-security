@@ -17,14 +17,15 @@ class Settings extends \BlueChip\Security\Core\Settings
     /**
      * Sanitize settings array: only return known keys, provide default values
      * for missing keys.
+     *
      * @param array $s
      * @return array
      */
-    public function sanitize($s)
+    public function sanitize(array $s)
     {
         return [
             self::CONNECTION_TYPE
-                => isset($s[self::CONNECTION_TYPE]) && in_array($s[self::CONNECTION_TYPE], \BlueChip\Security\Setup\IpAddress::enlist(), true) ? $s[self::CONNECTION_TYPE] : IpAddress::REMOTE_ADDR,
+                => isset($s[self::CONNECTION_TYPE]) && in_array($s[self::CONNECTION_TYPE], IpAddress::enlist(), true) ? $s[self::CONNECTION_TYPE] : IpAddress::REMOTE_ADDR,
         ];
     }
 }

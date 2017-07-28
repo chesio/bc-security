@@ -46,21 +46,18 @@ class AdminPage extends \BlueChip\Security\Core\AdminPage
 
         echo '<table class="wp-list-table widefat striped">';
 
-        echo '<tr>';
         $this->renderPhpFileEditationStatus();
-        echo '</tr>';
 
-        echo '<tr>';
         $this->renderPhpFileBlockedInUploadsDir();
-        echo '</tr>';
 
-        echo '<tr>';
+        if (WP_DEBUG && WP_DEBUG_LOG) {
+            // Only check, if there is a chance that debug.log is present.
+            $this->renderNoPublicAccessToErrorLog();
+        }
+
         $this->renderNoObviousUsernamesStatus();
-        echo '</tr>';
 
-        echo '<tr>';
         $this->renderNoDefaultMd5HashedPasswords();
-        echo '</tr>';
 
         echo '</table>';
 
@@ -81,15 +78,39 @@ class AdminPage extends \BlueChip\Security\Core\AdminPage
 
 
     /**
+     * Render single table row.
+     * @param string $name
+     * @param string $description
+     * @param bool|null $status
+     * @param array $detail
+     */
+    private function renderCheckRow($name, $description, $status, array $detail = [])
+    {
+        echo '<tr>';
+
+        // Status may be undetermined, in such case render no icon.
+        echo '<th>' . (is_bool($status) ? ('<span class="dashicons dashicons-' . ($status ? 'yes' : 'no') . '"></span>') : '' ) . '</th>';
+        // Name should be short and descriptive and without HTML tags.
+        echo '<th>' . esc_html($name) . '</th>';
+        // Allow for HTML tags in $description.
+        echo '<td>' . $description . '</td>';
+        // Detail depends on $status. Any field may be empty or a string or a callable that returns a string.
+        echo '<td>' . (isset($detail[$status]) ? (is_callable($detail[$status]) ? call_user_func($detail[$status]) : $detail[$status]) : '') . '</td>';
+
+        echo '</tr>';
+    }
+
+
+    /**
      * Render status info about php file editation.
      */
     private function renderPhpFileEditationStatus()
     {
-        $disabled = defined('DISALLOW_FILE_EDIT') && DISALLOW_FILE_EDIT;
-        echo '<th><span class="dashicons dashicons-' . ($disabled ? 'yes' : 'no') . '"></span></th>';
-        echo '<th>' . esc_html__('PHP Files Editation Disabled', 'bc-security') . '</th>';
-        echo '<td>' . sprintf(__('It is generally recommended to <a href="%s">disable editation of PHP files</a>.', 'bc-security'), 'https://codex.wordpress.org/Hardening_WordPress#Disable_File_Editing') . '</td>';
-        echo '<td></td>';
+        $this->renderCheckRow(
+            __('PHP Files Editation Disabled', 'bc-security'),
+            sprintf(__('It is generally recommended to <a href="%s">disable editation of PHP files</a>.', 'bc-security'), 'https://codex.wordpress.org/Hardening_WordPress#Disable_File_Editing'),
+            defined('DISALLOW_FILE_EDIT') && DISALLOW_FILE_EDIT
+        );
     }
 
 
@@ -98,18 +119,34 @@ class AdminPage extends \BlueChip\Security\Core\AdminPage
      */
     private function renderPhpFileBlockedInUploadsDir()
     {
-        $blocked = Helper::isAccessToPhpFilesInUploadsDirForbidden();
+        $this->renderCheckRow(
+            __('PHP Files Forbidden', 'bc-security'),
+            sprintf(__('Vulnerable plugins may allow upload of arbitrary files into uploads directory. <a href="%s">Disabling access to PHP files</a> within uploads directory may help prevent successful exploitation of such vulnerabilities.', 'bc-security'), 'https://gist.github.com/chesio/8f83224840eccc1e80a17fc29babadf2'),
+            Helper::isAccessToPhpFilesInUploadsDirForbidden(),
+            [
+                null => esc_html__('BC Security has failed to determine whether PHP files can be executed from uploads directory.', 'bc-security'),
+                true => esc_html__('It seems that PHP files cannot be executed from uploads directory.', 'bc-security'),
+                false => esc_html__('It seems that PHP files can be executed from uploads directory!', 'bc-security'),
+            ]
+        );
+    }
 
-        echo '<th>' . (!is_null($blocked) ? ('<span class="dashicons dashicons-' . ($blocked ? 'yes' : 'no') . '"></span>') : '' ) . '</th>';
-        echo '<th>' . esc_html__('PHP Files Forbidden', 'bc-security') . '</th>';
-        echo '<td>' . sprintf(__('Vulnerable plugins may allow upload of arbitrary files into uploads directory. <a href="%s">Disabling access to PHP files</a> within uploads directory may help prevent successful exploitation of such vulnerabilities.', 'bc-security'), 'https://gist.github.com/chesio/8f83224840eccc1e80a17fc29babadf2') . '</td>';
-        if (is_null($blocked)) {
-            echo '<td>' . esc_html__('Unfortunately, BC Security has failed to determine whether PHP files can be executed from uploads directory.', 'bc-security') . '</td>';
-        } elseif ($blocked) {
-            echo '<td>' . esc_html__('It seems that PHP files cannot be executed from uploads directory.', 'bc-security') . '</td>';
-        } else {
-            echo '<td>' . esc_html__('It seems that PHP files can be executed from uploads directory!', 'bc-security') . '</td>';
-        }
+
+    /**
+     * Render status info about error log being publicly unaccessible.
+     */
+    private function renderNoPublicAccessToErrorLog()
+    {
+        $this->renderCheckRow(
+            __('Error log not publicly accessible', 'bc-security'),
+            sprintf(__('Both <code>WP_DEBUG</code> and <code>WP_DEBUG_LOG</code> constants are set to true, therefore <a href="%s">WordPress saves all errors</a> to a <code>debug.log</code> log file inside the <code>/wp-content/</code> directory. This file can contain sensitive information and therefore should not be publicly accessible.', 'bc-security'), 'https://codex.wordpress.org/Debugging_in_WordPress'),
+            Helper::isAccessToErrorLogForbidden(),
+            [
+                null => esc_html__('BC Security has failed to determine whether error log is publicly accessible.', 'bc-security'),
+                true => esc_html__('It seems that error log is not publicly accessible.', 'bc-security'),
+                false => esc_html__('It seems that error log is publicly accessible!', 'bc-security'),
+            ]
+        );
     }
 
 
@@ -125,14 +162,19 @@ class AdminPage extends \BlueChip\Security\Core\AdminPage
         // Check for existing usernames.
         $existing = array_filter($obvious, function ($username) { return get_user_by('login', $username); });
 
-        echo '<th><span class="dashicons dashicons-' . (empty($existing) ? 'yes' : 'no') . '"></span></th>';
-        echo '<th>' . esc_html__('No Obvious Usernames', 'bc-security') . '</th>';
-        echo '<td>' . sprintf(__('Usernames like "admin" and "administrator" are often used in brute force attacks and <a href="%s">should be avoided</a>.', 'bc-security'), 'https://codex.wordpress.org/Hardening_WordPress#Security_through_obscurity') . '</td>';
-        if (empty($existing)) {
-            echo '<td>' . esc_html__('None of the following usernames exists on the system:', 'bc-security') . ' <em>' . implode(', ', $obvious) . '</em></td>';
-        } else {
-            echo '<td>' . esc_html__('The following obvious usernames exists on the system:', 'bc-security') . ' <em>' . implode(', ', $existing) . '</em></td>';
-        }
+        $this->renderCheckRow(
+            __('No Obvious Usernames', 'bc-security'),
+            sprintf(__('Usernames like "admin" and "administrator" are often used in brute force attacks and <a href="%s">should be avoided</a>.', 'bc-security'), 'https://codex.wordpress.org/Hardening_WordPress#Security_through_obscurity'),
+            empty($existing),
+            [
+                true => function () use ($obvious) {
+                    return esc_html__('None of the following usernames exists on the system:', 'bc-security') . ' <em>' . implode(', ', $obvious) . '</em>';
+                },
+                false => function () use ($existing) {
+                    return esc_html__('The following obvious usernames exists on the system:', 'bc-security') . ' <em>' . implode(', ', $existing) . '</em>';
+                },
+            ]
+        );
     }
 
 
@@ -147,15 +189,18 @@ class AdminPage extends \BlueChip\Security\Core\AdminPage
             self::WP_OLD_HASH_PREFIX
         ));
 
-        echo '<th>' . (($result === false) ? '' : ('<span class="dashicons dashicons-' . (empty($result) ? 'yes' : 'no') . '"></span>')) . '</th>';
-        echo '<th>' . esc_html__('No Default MD5 Password Hashes', 'bc-security') . '</th>';
-        echo '<td>' . sprintf(__('WordPress by default uses an MD5 based password hashing scheme that is too cheap and fast to generate cryptographically secure hashes. For modern PHP versions, there are <a href="%s">more secure alternatives</a> available.', 'bc-security'), 'https://github.com/roots/wp-password-bcrypt') . '</td>';
-        if ($result === false) {
-            echo '<td>' . esc_html__('Unfortunately, BC Security has failed to determine whether there are any users with password hashed with default MD5-based algorithm.', 'bc-security') . '</td>';
-        } elseif (empty($result)) {
-            echo '<td>' . esc_html__('No users have password hashed with default MD5-based algorithm.', 'bc-security') . '</td>';
-        } else {
-            echo '<td>' . esc_html__('The following users have their password hashed with default MD5-based algorithm:', 'bc-security') . ' <em>' . implode(', ', wp_list_pluck($result, 'user_login')) . '</em></td>';
-        }
+        $this->renderCheckRow(
+            __('No Default MD5 Password Hashes', 'bc-security'),
+            sprintf(__('WordPress by default uses an MD5 based password hashing scheme that is too cheap and fast to generate cryptographically secure hashes. For modern PHP versions, there are <a href="%s">more secure alternatives</a> available.', 'bc-security'), 'https://github.com/roots/wp-password-bcrypt'),
+            ($result === false) ? null : empty($result),
+            [
+                null => esc_html__('BC Security has failed to determine whether there are any users with password hashed with default MD5-based algorithm.', 'bc-security'),
+                true => esc_html__('No users have password hashed with default MD5-based algorithm.', 'bc-security'),
+                false => function () use ($result) {
+                    // If this function gets called, than result is non-empty array.
+                    return esc_html__('The following users have their password hashed with default MD5-based algorithm:', 'bc-security') . ' <em>' . implode(', ', wp_list_pluck($result, 'user_login')) . '</em>';
+                },
+            ]
+        );
     }
 }

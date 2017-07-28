@@ -10,16 +10,29 @@ namespace BlueChip\Security;
  */
 class Plugin
 {
-    /** @var \BlueChip\Security\Admin */
+    /**
+     * @var \BlueChip\Security\Admin
+     */
     public $admin;
 
-    /** @var array Plugin module objects */
+    /**
+     * @var \BlueChip\Security\Core\CronJob[] Plugin cron jobs
+     */
+    private $cron_jobs;
+
+    /**
+     * @var array Plugin module objects
+     */
     private $modules;
 
-    /** @var \BlueChip\Security\Core\Settings[] Plugin setting objects */
+    /**
+     * @var \BlueChip\Security\Core\Settings[] Plugin setting objects
+     */
     private $settings;
 
-    /** @var \wpdb WordPress database access abstraction object */
+    /**
+     * @var \wpdb WordPress database access abstraction object
+     */
     private $wpdb;
 
 
@@ -32,15 +45,10 @@ class Plugin
     {
         $this->wpdb = $wpdb;
 
-        // Read plugin settings
-        $this->settings = [
-            'hardening'     => new Modules\Hardening\Settings('bc-security-hardening'),
-            'login'         => new Modules\Login\Settings('bc-security-login'),
-            'notifications' => new Modules\Notifications\Settings('bc-security-notifications'),
-            'setup'         => new Setup\Settings('bc-security-setup'),
-        ];
+        // Read plugin settings.
+        $this->settings = $this->constructSettings();
 
-        // Get setup info
+        // Get setup info.
         $setup = new Setup\Core($this->settings['setup']);
 
         // IP address is at core interest within this plugin :)
@@ -49,18 +57,49 @@ class Plugin
         // Init admin, if necessary.
         $this->admin = is_admin() ? new Admin() : null;
 
-        // Construct modules...
+        // Construct modules.
+        $this->modules = $this->constructModules($wpdb, $remote_address, $this->settings);
+
+        // Construct cron jobs.
+        $this->cron_jobs = $this->constructCronJobs($this->settings, $this->modules);
+    }
+
+
+    /**
+     * Construct plugin settings.
+     * @return array
+     */
+    private function constructSettings()
+    {
+        return [
+            'hardening'     => new Modules\Hardening\Settings('bc-security-hardening'),
+            'log'           => new Modules\Log\Settings('bc-security-log'),
+            'login'         => new Modules\Login\Settings('bc-security-login'),
+            'notifications' => new Modules\Notifications\Settings('bc-security-notifications'),
+            'setup'         => new Setup\Settings('bc-security-setup'),
+        ];
+    }
+
+
+    /**
+     * Construct plugin modules.
+     * @param \wpdb $wpdb
+     * @param string $remote_address
+     * @param array $settings
+     * @return array
+     */
+    private function constructModules($wpdb, $remote_address, $settings)
+    {
         $logger     = new Modules\Log\Logger($wpdb, $remote_address);
-        $monitor    = new Modules\Events\Monitor();
-        $notifier   = new Modules\Notifications\Watchman($this->settings['notifications'], $remote_address, $logger);
-        $hardening  = new Modules\Hardening\Core($this->settings['hardening']);
+        $monitor    = new Modules\Events\Monitor($remote_address);
+        $notifier   = new Modules\Notifications\Watchman($settings['notifications'], $remote_address, $logger);
+        $hardening  = new Modules\Hardening\Core($settings['hardening']);
         $bl_manager = new Modules\IpBlacklist\Manager($wpdb);
         $bl_bouncer = new Modules\IpBlacklist\Bouncer($remote_address, $bl_manager);
-        $bookkeeper = new Modules\Login\Bookkeeper($this->settings['login'], $wpdb);
-        $gatekeeper = new Modules\Login\Gatekeeper($this->settings['login'], $remote_address, $bookkeeper, $bl_manager);
+        $bookkeeper = new Modules\Login\Bookkeeper($settings['login'], $wpdb);
+        $gatekeeper = new Modules\Login\Gatekeeper($settings['login'], $remote_address, $bookkeeper, $bl_manager);
 
-        // ... and store them for later.
-        $this->modules = [
+        return [
             'logger'            => $logger,
             'events-monitor'    => $monitor,
             'notifier'          => $notifier,
@@ -69,6 +108,39 @@ class Plugin
             'blacklist-bouncer' => $bl_bouncer,
             'login-bookkeeper'  => $bookkeeper,
             'login-gatekeeper'  => $gatekeeper,
+        ];
+    }
+
+
+    /**
+     * Construct plugin cron jobs.
+     * @param array $settings
+     * @param array $modules
+     * @return array
+     */
+    private function constructCronJobs(array $settings, array $modules)
+    {
+        return [
+            'blacklist-cleaner' => new Core\CronJob(
+                '01:02:03',
+                Core\CronJob::RECUR_DAILY,
+                'bc-security/ip-blacklist-clean-up',
+                [$modules['blacklist-manager'], 'prune']
+            ),
+            'log-cleaner-by-age' => new Core\CronJob(
+                '02:03:04',
+                Core\CronJob::RECUR_DAILY,
+                'bc-security/logs-clean-up-by-age',
+                [$modules['logger'], 'pruneByAge'],
+                [$settings['log']->getMaxAge()]
+            ),
+            'log-cleaner-by-size' => new Core\CronJob(
+                '03:04:05',
+                Core\CronJob::RECUR_DAILY,
+                'bc-security/logs-clean-up-by-size',
+                [$modules['logger'], 'pruneBySize'],
+                [$settings['log']->getMaxSize()]
+            ),
         ];
     }
 
@@ -113,27 +185,39 @@ class Plugin
                 ->addPage(new Modules\Checklist\AdminPage($this->wpdb))
                 ->addPage(new Modules\Hardening\AdminPage($this->settings['hardening']))
                 ->addPage(new Modules\Login\AdminPage($this->settings['login']))
-                ->addPage(new Modules\IpBlacklist\AdminPage($this->modules['blacklist-manager']))
+                ->addPage(new Modules\IpBlacklist\AdminPage($this->modules['blacklist-manager'], $this->cron_jobs['blacklist-cleaner']))
                 ->addPage(new Modules\Notifications\AdminPage($this->settings['notifications']))
-                ->addPage(new Modules\Log\AdminPage($this->modules['logger']))
+                ->addPage(new Modules\Log\AdminPage($this->settings['log'], $this->modules['logger']))
             ;
         }
     }
 
 
     /**
-     * Perform activation (installation) tasks.
+     * Perform activation and installation tasks.
      * Method should be run on plugin activation.
      *
      * @link https://developer.wordpress.org/plugins/the-basics/activation-deactivation-hooks/
      */
     public function activate()
     {
-        // Activate (install) every module that requires it.
+        // Install every module that requires it.
         foreach ($this->modules as $module) {
             if ($module instanceof Modules\Installable) {
                 $module->install();
             }
+        }
+
+        // Activate every module that requires it.
+        foreach ($this->modules as $module) {
+            if ($module instanceof Modules\Activable) {
+                $module->activate();
+            }
+        }
+
+        // Activate cron jobs.
+        foreach ($this->cron_jobs as $cron_job) {
+            $cron_job->activate();
         }
     }
 
@@ -146,9 +230,14 @@ class Plugin
      */
     public function deactivate()
     {
+        // Deactivate cron jobs.
+        foreach ($this->cron_jobs as $cron_job) {
+            $cron_job->deactivate();
+        }
+
         // Deactivate every module that requires it.
         foreach ($this->modules as $module) {
-            if ($module instanceof Modules\Deactiveable) { // Ugh, what a word...
+            if ($module instanceof Modules\Activable) {
                 $module->deactivate();
             }
         }

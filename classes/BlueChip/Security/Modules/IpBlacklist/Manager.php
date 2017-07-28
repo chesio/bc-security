@@ -12,6 +12,13 @@ namespace BlueChip\Security\Modules\IpBlacklist;
  * current time: item is locked (lock is active), if release time is in the
  * future, in other words: release_time > current_time. Otherwise, the item is
  * not locked (lock is expired).
+ *
+ * Another important note to make is that single IP address can be blacklisted
+ * several times because of different scope, but also because of different
+ * reason. Unlike the scope, the reason is not important for actual application
+ * of lock, so practical approach is to use the most restrictive lock (ie. the
+ * release date that is the most future one), if single IP is locked multiple
+ * times in the same scope.
  */
 class Manager implements \BlueChip\Security\Modules\Installable
 {
@@ -38,7 +45,7 @@ class Manager implements \BlueChip\Security\Modules\Installable
     {
         $this->blacklist_table = $wpdb->prefix . self::BLACKLIST_TABLE;
         $this->columns = [
-            'id', 'scope', 'ip_address', 'ban_time', 'release_time', 'reason',
+            'id', 'scope', 'ip_address', 'ban_time', 'release_time', 'reason', 'comment',
         ];
         $this->wpdb = $wpdb;
     }
@@ -57,8 +64,9 @@ class Manager implements \BlueChip\Security\Modules\Installable
             "ban_time datetime NOT NULL,",
             "release_time datetime NOT NULL,",
             "reason tinyint unsigned NOT NULL,",
+            "comment char(255) NOT NULL,",
             "PRIMARY KEY  (id),", // 2 spaces seems to be necessary
-            "UNIQUE KEY ip_in_scope (scope, ip_address)",
+            "UNIQUE KEY ip_in_scope_for_reason (scope, ip_address, reason)",
             ");",
         ]));
     }
@@ -159,9 +167,10 @@ class Manager implements \BlueChip\Security\Modules\Installable
      */
     public function isLocked($ip_address, $scope)
     {
-        // Prepare query
+        // Prepare query. Because of different ban reasons, multiple records may
+        // match the where condition, so pick up the most future release time.
         $query = $this->wpdb->prepare(
-            "SELECT release_time FROM {$this->blacklist_table} WHERE scope = %d AND ip_address = %s",
+            "SELECT MAX(release_time) FROM {$this->blacklist_table} WHERE scope = %d AND ip_address = %s",
             $scope,
             $ip_address
         );
@@ -180,30 +189,36 @@ class Manager implements \BlueChip\Security\Modules\Installable
      * @param int $duration
      * @param int $scope
      * @param int $reason
+     * @param string $comment [optional]
      * @return bool True, if IP address has been locked, false otherwise.
      */
-    public function lock($ip_address, $duration, $scope, $reason)
+    public function lock($ip_address, $duration, $scope, $reason, $comment = '')
     {
         $now = current_time('timestamp');
 
         $data = [
             'ban_time'      => date(self::MYSQL_DATETIME_FORMAT, $now),
             'release_time'  => date(self::MYSQL_DATETIME_FORMAT, $now + $duration),
+            'comment'       => $comment,
+        ];
+
+        $format = ['%s', '%s', '%s'];
+
+        $where = [
+            'scope'         => $scope,
+            'ip_address'    => $ip_address,
             'reason'        => $reason,
         ];
 
-        $where = [
-            'ip_address' => $ip_address,
-            'scope' => $scope,
-        ];
+        $where_format = ['%d', '%s', '%d'];
 
-        // Determine, whether IP needs to be inserted or updated
-        if ($this->getId($ip_address, $scope)) {
+        // Determine, whether IP needs to be inserted or updated.
+        if ($this->getId($ip_address, $scope, $reason)) {
             // Update
-            $result = $this->wpdb->update($this->blacklist_table, $data, $where, ['%s', '%s', '%d'], ['%s', '%d']);
+            $result = $this->wpdb->update($this->blacklist_table, $data, $where, $format, $where_format);
         } else {
-            // Insert: merge $data with $where
-            $result = $this->wpdb->insert($this->blacklist_table, array_merge($data, $where), ['%s', '%s', '%d', '%s', '%d']);
+            // Insert: merge $data with $where, $format with $where_format.
+            $result = $this->wpdb->insert($this->blacklist_table, array_merge($data, $where), array_merge($format, $where_format));
         }
 
         return $result !== false;
@@ -239,7 +254,7 @@ class Manager implements \BlueChip\Security\Modules\Installable
     public function remove($id)
     {
         // Execute query
-        $result = $this->wpdb->delete($this->blacklist_table, ['id' => $id], '%d');
+        $result = $this->wpdb->delete($this->blacklist_table, ['id' => $id], ['%d']);
         // Return
         return $result !== false;
     }
@@ -283,8 +298,8 @@ class Manager implements \BlueChip\Security\Modules\Installable
             $this->blacklist_table,
             ['release_time' => date(self::MYSQL_DATETIME_FORMAT, current_time('timestamp'))],
             ['id' => $id],
-            '%s',
-            '%d'
+            ['%s'],
+            ['%d']
         );
         // Return
         return $result !== false;
@@ -319,19 +334,23 @@ class Manager implements \BlueChip\Security\Modules\Installable
 
 
     /**
-     * Get primary key (id) for record with given $ip_address and $scope.
+     * Get primary key (id) for record with given $ip_address, $scope and ban
+     * $reason. Because of UNIQUE database key restriction, there should be
+     * either one or none matching key.
      *
      * @param string $ip_address IP address to check.
      * @param int $scope
+     * @param int $reason
      * @return int|null
      */
-    protected function getId($ip_address, $scope)
+    protected function getId($ip_address, $scope, $reason)
     {
         // Prepare query
         $query = $this->wpdb->prepare(
-            "SELECT id FROM {$this->blacklist_table} WHERE scope = %d AND ip_address = %s",
+            "SELECT id FROM {$this->blacklist_table} WHERE scope = %d AND ip_address = %s AND reason = %d",
             $scope,
-            $ip_address
+            $ip_address,
+            $reason
         );
         // Execute query
         $result = $this->wpdb->get_var($query);

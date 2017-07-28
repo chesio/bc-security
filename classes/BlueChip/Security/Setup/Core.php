@@ -12,6 +12,7 @@ class Core
      */
     private $connection_type = IpAddress::REMOTE_ADDR;
 
+
     /**
      * @param \BlueChip\Security\Setup\Settings $settings
      */
@@ -19,6 +20,7 @@ class Core
     {
         $this->connection_type = $settings[Settings::CONNECTION_TYPE];
     }
+
 
     /**
      * Get remote IP address according to configured connection type.

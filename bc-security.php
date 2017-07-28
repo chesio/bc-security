@@ -3,7 +3,7 @@
  * Plugin Name: BC Security
  * Plugin URI: https://github.com/chesio/bc-security
  * Description: Helps keeping WordPress websites secure. Plugin requires PHP 5.6 or newer to run.
- * Version: 0.3.0
+ * Version: 0.4.0
  * Author: Česlav Przywara <ceslav@przywara.cz>
  * Author URI: https://www.chesio.com
  * Requires at least: 4.7
@@ -43,9 +43,12 @@ require_once __DIR__ . '/includes/autoload.php';
 
 // Construct plugin instance.
 $bc_security = new \BlueChip\Security\Plugin($GLOBALS['wpdb']);
+
 // Register activation hook.
 register_activation_hook(BC_SECURITY_PLUGIN_FILE, [$bc_security, 'activate']);
 // Register deactivation hook.
 register_deactivation_hook(BC_SECURITY_PLUGIN_FILE, [$bc_security, 'deactivate']);
+// Ideally, uninstall hook would be registered here, but WordPress allows only static method in uninstall hook...
+
 // Load the plugin.
 $bc_security->load();
