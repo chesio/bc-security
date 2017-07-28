@@ -26,7 +26,7 @@ BC Security allows you to:
 
 ### Checksums verification
 
-BC Security once a day performs integrity check of WordPress core files by comparing their checksums with MD5 checksums downloaded from WordPress.org. Any files with md5 checksum, that does not match its official checksum, are (optionally) reported via [email notification](#notifications).
+BC Security once a day performs integrity check of WordPress core files by comparing their checksums with MD5 checksums downloaded from WordPress.org. Any file with md5 checksum, that does not match its official checksum, is [logged](#events-logging) and (optionally) reported via [email notification](#notifications).
 
 ### Login Security
 
@@ -55,7 +55,9 @@ Note: _Known IP address_ is an IP address from which a successful login attempt 
 
 ### Events logging
 
-BC Security logs both short and long lockout events (see [Login Security](#login-security) feature) and the following events triggered by WordPress core:
+BC Security logs both short and long lockout events (see [Login Security](#login-security) feature) and [checksums verification](#checksums-verification) alerts.
+
+Also, the following events triggered by WordPress core are logged:
 
 1. Attempts to authenticate with bad cookie
 1. Failed and successful login attempts

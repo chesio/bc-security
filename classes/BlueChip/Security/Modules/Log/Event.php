@@ -19,6 +19,7 @@ class Event
     const LOGIN_LOCKOUT = 'login_lockdown';
     const LOGIN_SUCCESSFUL = 'login_success';
     const QUERY_404 = 'query_404';
+    const CHECKSUMS_VERIFICATION_ALERT = 'checksums_verification_alert';
 
 
     /** @var string Unique ID */
@@ -141,6 +142,14 @@ class Event
                     __('Main query returned no results (404 page) for request {request}.', 'bc-security'),
                     ['request' => __('Request URI', 'bc-security')]
                 );
+            case self::CHECKSUMS_VERIFICATION_ALERT:
+                return new self(
+                    $id,
+                    __('Checksums verification alert', 'bc-security'),
+                    LogLevel::WARNING,
+                    __('Official checksums do not match for the following files: {files}.', 'bc-security'),
+                    ['files' => __('Files with non-matching checksum', 'bc-security')]
+                );
             default:
                 return null;
         }
@@ -155,6 +164,7 @@ class Event
             self::LOGIN_SUCCESSFUL,
             self::LOGIN_LOCKOUT,
             self::QUERY_404,
+            self::CHECKSUMS_VERIFICATION_ALERT,
         ];
     }
 }
