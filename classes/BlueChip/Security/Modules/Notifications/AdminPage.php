@@ -87,6 +87,11 @@ class AdminPage extends \BlueChip\Security\Core\AdminSettingsPage
             [$form_helper, 'renderCheckbox']
         );
         $settings_api_helper->addSettingsField(
+            Settings::CHECKSUMS_VERIFICATION_ERROR,
+            __('Checksums verification results in error', 'bc-security'),
+            [$form_helper, 'renderCheckbox']
+        );
+        $settings_api_helper->addSettingsField(
             Settings::PLUGIN_DEACTIVATED,
             __('BC Security is deactivated', 'bc-security'),
             [$form_helper, 'renderCheckbox']

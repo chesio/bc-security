@@ -5,6 +5,7 @@
 
 namespace BlueChip\Security\Modules\Events;
 
+use BlueChip\Security\Modules\Checksums;
 use BlueChip\Security\Modules\Log;
 use BlueChip\Security\Modules\Login;
 
@@ -43,6 +44,8 @@ class Monitor implements \BlueChip\Security\Modules\Initializable
         // Log the following BC Security events:
         // - lockout event
         add_action(Login\Hooks::LOCKOUT_EVENT, [$this, 'logLockoutEvent'], 10, 3);
+        // - checksum verification alert
+        add_action(Checksums\Hooks::CHECKSUMS_VERIFICATION_ALERT, [$this, 'logChecksumsVerificationAlert'], 10, 1);
     }
 
 
@@ -107,5 +110,15 @@ class Monitor implements \BlueChip\Security\Modules\Initializable
     public function logLockoutEvent($remote_address, $username, $duration)
     {
         do_action(Log\Action::EVENT, Log\Event::LOGIN_LOCKOUT, ['ip_address' => $remote_address, 'duration' => $duration, 'username' => $username]);
+    }
+
+
+    /**
+     * Log checksum verification alert.
+     * @param array $files
+     */
+    public function logChecksumsVerificationAlert(array $files)
+    {
+        do_action(Log\Action::EVENT, Log\Event::CHECKSUMS_VERIFICATION_ALERT, ['files' => $files]);
     }
 }
