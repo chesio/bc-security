@@ -38,7 +38,7 @@ class Verifier
 
         // Check checksums.
         if (!empty($matches = $this->matchChecksums($checksums))) {
-            do_action(Hooks::CHECKSUMS_VERIFICATION_MATCHES, $matches);
+            do_action(Hooks::CHECKSUMS_VERIFICATION_ALERT, $matches);
         }
     }
 

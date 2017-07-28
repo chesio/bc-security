@@ -83,8 +83,8 @@ class Watchman implements Modules\Loadable, Modules\Initializable, Modules\Activ
             add_action(LoginHooks::LOCKOUT_EVENT, [$this, 'watchLockoutEvents'], 10, 3);
         }
         if ($this->settings[Settings::CHECKSUMS_VERIFICATION_ERROR]) {
-            add_action(ChecksumsHooks::CHECKSUMS_RETRIEVAL_FAILED, [$this, 'watchChecksumsRetrieval'], 10, 1);
-            add_action(ChecksumsHooks::CHECKSUMS_VERIFICATION_MATCHES, [$this, 'watchChecksumsMatches'], 10, 1);
+            add_action(ChecksumsHooks::CHECKSUMS_RETRIEVAL_FAILED, [$this, 'watchChecksumsRetrievalFailed'], 10, 1);
+            add_action(ChecksumsHooks::CHECKSUMS_VERIFICATION_ALERT, [$this, 'watchChecksumsVerificationAlert'], 10, 1);
         }
     }
 
@@ -324,7 +324,7 @@ class Watchman implements Modules\Loadable, Modules\Initializable, Modules\Activ
      *
      * @param array $matches Files for which official checksums do not match.
      */
-    public function watchChecksumsMatches(array $matches)
+    public function watchChecksumsVerificationAlert(array $matches)
     {
         $subject = __('Checksums verification alert', 'bc-security');
         $message = [
@@ -341,7 +341,7 @@ class Watchman implements Modules\Loadable, Modules\Initializable, Modules\Activ
      *
      * @param string $url
      */
-    public function watchChecksumsRetrieval($url)
+    public function watchChecksumsRetrievalFailed($url)
     {
         $subject = __('Checksums verification failed', 'bc-security');
         $message = sprintf(

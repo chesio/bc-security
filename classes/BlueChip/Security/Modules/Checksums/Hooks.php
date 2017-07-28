@@ -18,7 +18,7 @@ interface Hooks
     /**
      * Action: triggers when checksums verification found files with non-matching checksum.
      */
-    const CHECKSUMS_VERIFICATION_MATCHES = 'bc-security/action:checksums-retrieval-failed';
+    const CHECKSUMS_VERIFICATION_ALERT = 'bc-security/action:checksums-verification-alert';
 
     /**
      * Filter: filters list of files that should be ignored during checksums verification.
