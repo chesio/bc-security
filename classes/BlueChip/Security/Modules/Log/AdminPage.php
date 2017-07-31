@@ -72,13 +72,13 @@ class AdminPage extends \BlueChip\Security\Core\AdminSettingsPage
             Settings::LOG_MAX_AGE,
             __('Maximum age', 'bc-security'),
             [$form_helper, 'renderNumberInput'],
-            [ 'append' => __('in days', 'bc-security'), ]
+            [ 'append' => __('days', 'bc-security'), ]
         );
         $settings_api_helper->addSettingsField(
             Settings::LOG_MAX_SIZE,
             __('Maximum size', 'bc-security'),
             [$form_helper, 'renderNumberInput'],
-            [ 'append' => __('in thousands', 'bc-security'), ]
+            [ 'append' => __('thousands', 'bc-security'), ]
         );
     }
 
