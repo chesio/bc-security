@@ -54,6 +54,8 @@ class AdminPage extends \BlueChip\Security\Core\AdminPage
 
         $this->renderPhpFileEditationStatus();
 
+        $this->renderDirectoryListingDisabled();
+
         $this->renderPhpFileBlockedInUploadsDir();
 
         if (defined('WP_ENV') && (WP_ENV === 'production')) {
@@ -122,6 +124,24 @@ class AdminPage extends \BlueChip\Security\Core\AdminPage
             __('PHP Files Editation Disabled', 'bc-security'),
             sprintf(__('It is generally recommended to <a href="%s">disable editation of PHP files</a>.', 'bc-security'), 'https://codex.wordpress.org/Hardening_WordPress#Disable_File_Editing'),
             defined('DISALLOW_FILE_EDIT') && DISALLOW_FILE_EDIT
+        );
+    }
+
+
+    /**
+     * Render status info about directory listings being disabled.
+     */
+    private function renderDirectoryListingDisabled()
+    {
+        $this->renderCheckRow(
+            __('Directory Listing Disabled', 'bc-security'),
+            sprintf(__('A common security practice is to disable <a href="%s">directory listings</a>.', 'bc-security'), 'https://wiki.apache.org/httpd/DirectoryListings'),
+            Helper::isDirectoryListingDisabled(),
+            [
+                null => esc_html__('BC Security has failed to determine whether directory listing is disabled.', 'bc-security'),
+                true => esc_html__('It seems that directory listing is disabled.', 'bc-security'),
+                false => esc_html__('It seems that directory listing is not disabled!', 'bc-security'),
+            ]
         );
     }
 

@@ -102,6 +102,27 @@ abstract class Helper
 
 
     /**
+     * Check, if directory listing is disabled.
+     *
+     * @internal Credits for the check go to Wordfence Security.
+     *
+     * @return null|bool True, if directore listings are disabled, false otherwise. Null return value means test failed to determine valid result.
+     */
+    public static function isDirectoryListingDisabled()
+    {
+        $upload_paths = wp_upload_dir();
+        if (!isset($upload_paths['baseurl'])) {
+            return null;
+        }
+
+        $response = wp_remote_get($upload_paths['baseurl']);
+        $response_body = wp_remote_retrieve_body($response);
+
+        return stripos($response_body, '<title>Index of') === false;
+    }
+
+
+    /**
      * Check, if display of PHP errors is off by default.
      *
      * Method operates by creating temporary PHP file in wp-content directory that only run ini_get('display_errors')
