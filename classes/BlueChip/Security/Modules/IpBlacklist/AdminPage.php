@@ -9,38 +9,60 @@ use BlueChip\Security\Helpers\AdminNotices;
 
 class AdminPage extends \BlueChip\Security\Core\AdminPage
 {
-    /** @var string Page slug */
+    /**
+     * @var string Page slug
+     */
     const SLUG = 'bc-security-ip-blacklist';
 
-    /** @var string Name of nonce used for any action on this page */
+    /**
+     * @var string Name of nonce used for any action on this page
+     */
     const NONCE_NAME = '_wpnonce';
 
-    /** @var Name for blacklist action (used for both nonce action and submit name) */
+    /**
+     * @var Name for blacklist action (used for both nonce action and submit name)
+     */
     const BLACKLIST_ACTION = 'add-to-ip-blacklist';
 
-    /** @var Name for prune action (used for both nonce action and submit name) */
+    /**
+     * @var Name for prune action (used for both nonce action and submit name)
+     */
     const PRUNE_ACTION = 'prune-ip-blacklist';
 
-    /** @var Name for cron activation action (used for both nonce action and submit name) */
+    /**
+     * @var Name for cron activation action (used for both nonce action and submit name)
+     */
     const CRON_ACTION_ON = 'auto-ip-blacklist-pruning-on';
 
-    /** @var Name for cron deactivation action (used for both nonce action and submit name) */
+    /**
+     * @var Name for cron deactivation action (used for both nonce action and submit name)
+     */
     const CRON_ACTION_OFF = 'auto-ip-blacklist-pruning-off';
 
-    /** @var Name for query argument that prefills IP address in the form */
+    /**
+     * @var Name for query argument that prefills IP address in the form
+     */
     const DEFAULT_IP_ADDRESS = 'default-ip-address';
 
-    /** @var Name for query argument that prefills lock scope in the form */
+    /**
+     * @var Name for query argument that prefills lock scope in the form
+     */
     const DEFAULT_SCOPE = 'default-scope';
 
 
-    /** @var \BlueChip\Security\Modules\IpBlacklist\Manager */
+    /**
+     * @var \BlueChip\Security\Modules\IpBlacklist\Manager
+     */
     private $bl_manager;
 
-    /** @var \BlueChip\Security\Core\CronJob */
+    /**
+     * @var \BlueChip\Security\Core\CronJob
+     */
     private $bl_cleaner;
 
-    /** @var \BlueChip\Security\Modules\IpBlacklist\ListTable */
+    /**
+     * @var \BlueChip\Security\Modules\IpBlacklist\ListTable
+     */
     private $list_table;
 
 
@@ -175,8 +197,7 @@ class AdminPage extends \BlueChip\Security\Core\AdminPage
 
 
     /**
-     * Render forms for IP blacklist pruning (including cron job activation and
-     * deactivation).
+     * Render forms for IP blacklist pruning (including cron job activation and deactivation).
      */
     private function renderPruningActions()
     {
@@ -225,7 +246,7 @@ class AdminPage extends \BlueChip\Security\Core\AdminPage
 
 
     /**
-     * Initialize list table instance
+     * Initialize list table instance.
      */
     private function initListTable()
     {
@@ -270,8 +291,7 @@ class AdminPage extends \BlueChip\Security\Core\AdminPage
 
 
     /**
-     * Read POST data and attempt to add IP address to blacklist. Display notice
-     * about action outcome.
+     * Read POST data and attempt to add IP address to blacklist. Display notice about action outcome.
      */
     private function processBlacklistAction()
     {
@@ -322,8 +342,7 @@ class AdminPage extends \BlueChip\Security\Core\AdminPage
 
 
     /**
-     * Deactivate cron job for blacklist table pruning. Display notice about
-     * action outcome.
+     * Deactivate cron job for blacklist table pruning. Display notice about action outcome.
      */
     private function processCronOffAction()
     {
@@ -335,8 +354,7 @@ class AdminPage extends \BlueChip\Security\Core\AdminPage
 
 
     /**
-     * Activate cron job for blacklist table pruning. Display notice about
-     * action outcome.
+     * Activate cron job for blacklist table pruning. Display notice about action outcome.
      */
     private function processCronOnAction()
     {
@@ -353,12 +371,10 @@ class AdminPage extends \BlueChip\Security\Core\AdminPage
 
 
     /**
-     * Return the first value from $units_in_seconds that produces an integer
-     * quotient when used as divisor with $seconds being the dividend.
+     * Return the first value from $units_in_seconds that produces an integer quotient when used as divisor with $seconds being the dividend.
      *
-     * In layman terms: for given number of seconds find the biggest time unit
-     * (year, month, week, day, hour etc.) that can be used to represent the
-     * number of seconds without fractional component.
+     * In layman terms: for given number of seconds find the biggest time unit (year, month, week, day, hour etc.) that
+     * can be used to represent the number of seconds without fractional component.
      *
      * @param int $seconds
      * @param array $units_in_seconds

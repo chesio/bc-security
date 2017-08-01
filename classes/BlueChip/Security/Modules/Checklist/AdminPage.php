@@ -7,21 +7,27 @@ namespace BlueChip\Security\Modules\Checklist;
 
 class AdminPage extends \BlueChip\Security\Core\AdminPage
 {
-    /** @var string Page slug */
+    /**
+     * @var string Page slug
+     */
     const SLUG = 'bc-security-checklist';
 
-    /** @var string Prefix of default, MD5-based hashes */
+    /**
+     * @var string Prefix of default, MD5-based hashes
+     */
     const WP_OLD_HASH_PREFIX = '$P$';
 
 
-    /** @var \wpdb WordPress database access abstraction object */
+    /**
+     * @var \wpdb WordPress database access abstraction object
+     */
     private $wpdb;
 
 
     /**
      * @param \wpdb $wpdb WordPress database access abstraction object
      */
-    function __construct($wpdb)
+    function __construct(\wpdb $wpdb)
     {
         $this->page_title = _x('Security Checklist', 'Dashboard page title', 'bc-security');
         $this->menu_title = _x('Checklist', 'Dashboard menu item name', 'bc-security');
@@ -79,6 +85,7 @@ class AdminPage extends \BlueChip\Security\Core\AdminPage
 
     /**
      * Render single table row.
+     *
      * @param string $name
      * @param string $description
      * @param bool|null $status

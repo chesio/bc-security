@@ -147,7 +147,7 @@ class AdminPage extends \BlueChip\Security\Core\AdminSettingsPage
 
 
     /**
-     * Initialize list table instance
+     * Initialize list table instance.
      */
     private function initListTable()
     {

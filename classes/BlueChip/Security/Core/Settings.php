@@ -34,6 +34,7 @@ abstract class Settings implements \ArrayAccess
 
     /**
      * Get value of setting under key $name.
+     *
      * @param string $name
      * @return mixed A null value is returned if $name is not a valid key.
      */
@@ -50,6 +51,7 @@ abstract class Settings implements \ArrayAccess
 
     /**
      * Set value of setting under key $name to $value.
+     *
      * @param string $name
      * @param mixed $value
      */
@@ -69,6 +71,7 @@ abstract class Settings implements \ArrayAccess
      * Return true, if there is any setting available under key $offset.
      *
      * @internal Implements ArrayAccess interface.
+     *
      * @param string $offset
      * @return bool
      */
@@ -82,6 +85,7 @@ abstract class Settings implements \ArrayAccess
      * Retrieve setting under key $offset.
      *
      * @internal Implements ArrayAccess interface.
+     *
      * @param string $offset
      * @return mixed A null value is returned if $offset is not a valid key.
      */
@@ -95,6 +99,7 @@ abstract class Settings implements \ArrayAccess
      * Update setting under key $offset with $value.
      *
      * @internal Implements ArrayAccess interface.
+     *
      * @param string $offset
      * @param mixed $value
      */
@@ -128,8 +133,8 @@ abstract class Settings implements \ArrayAccess
 
 
     /**
-     * Sanitize $settings array: only return known keys, provide default values
-     * for missing keys.
+     * Sanitize $settings array: only return known keys, provide default values for missing keys.
+     *
      * @param array $settings
      * @return array
      */
@@ -137,8 +142,8 @@ abstract class Settings implements \ArrayAccess
 
 
     /**
-     * Parse a list of items separated by EOL character into array. Trim any
-     * empty lines (items).
+     * Parse a list of items separated by EOL character into array. Trim any empty lines (items).
+     *
      * @param array|string $list
      * @return array
      */
@@ -150,6 +155,7 @@ abstract class Settings implements \ArrayAccess
 
     /**
      * Update setting under $name with $value. Store update values in DB.
+     *
      * @param string $name
      * @param mixed $value
      * @return bool

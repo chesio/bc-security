@@ -17,7 +17,9 @@ abstract class AdminNotices
 
     /**
      * Add dismissible admin notice with given $message of given $type.
+     *
      * @link https://make.wordpress.org/core/2015/04/23/spinners-and-dismissible-admin-notices-in-4-2/
+     *
      * @param array|string $message Single message or array of messages.
      * @param string $type Type: error, warning, success or info.
      * @param bool $escape_html

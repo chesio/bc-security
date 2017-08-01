@@ -8,22 +8,30 @@ namespace BlueChip\Security\Modules\Notifications;
 use BlueChip\Security\Helpers\Is;
 use BlueChip\Security\Modules;
 use BlueChip\Security\Modules\Log\Logger;
-use BlueChip\Security\Modules\Checksums\Hooks as ChecksumsHooks;
-use BlueChip\Security\Modules\Login\Hooks as LoginHooks;
+use BlueChip\Security\Modules\Checksums;
+use BlueChip\Security\Modules\Login;
 
 
 class Watchman implements Modules\Loadable, Modules\Initializable, Modules\Activable
 {
-    /** @var string Remote IP address */
+    /**
+     * @var string Remote IP address
+     */
     private $remote_address;
 
-    /** @var \BlueChip\Security\Modules\Notifications\Settings */
+    /**
+     * @var \BlueChip\Security\Modules\Notifications\Settings
+     */
     private $settings;
 
-    /** @var \BlueChip\Security\Modules\Log\Logger */
+    /**
+     * @var \BlueChip\Security\Modules\Log\Logger
+     */
     private $logger;
 
-    /** @var array List of notifications recipients */
+    /**
+     * @var array List of notifications recipients
+     */
     private $recipients;
 
 
@@ -80,11 +88,11 @@ class Watchman implements Modules\Loadable, Modules\Initializable, Modules\Activ
             add_action('wp_login', [$this, 'watchWpLogin'], 10, 2);
         }
         if ($this->settings[Settings::KNOWN_IP_LOCKOUT]) {
-            add_action(LoginHooks::LOCKOUT_EVENT, [$this, 'watchLockoutEvents'], 10, 3);
+            add_action(Login\Hooks::LOCKOUT_EVENT, [$this, 'watchLockoutEvents'], 10, 3);
         }
         if ($this->settings[Settings::CHECKSUMS_VERIFICATION_ERROR]) {
-            add_action(ChecksumsHooks::CHECKSUMS_RETRIEVAL_FAILED, [$this, 'watchChecksumsRetrievalFailed'], 10, 1);
-            add_action(ChecksumsHooks::CHECKSUMS_VERIFICATION_ALERT, [$this, 'watchChecksumsVerificationAlert'], 10, 1);
+            add_action(Checksums\Hooks::CHECKSUMS_RETRIEVAL_FAILED, [$this, 'watchChecksumsRetrievalFailed'], 10, 1);
+            add_action(Checksums\Hooks::CHECKSUMS_VERIFICATION_ALERT, [$this, 'watchChecksumsVerificationAlert'], 10, 1);
         }
     }
 
@@ -354,13 +362,11 @@ class Watchman implements Modules\Loadable, Modules\Initializable, Modules\Activ
 
 
     /**
-     * Send email notification with given $subject and $message to recipients
-     * configured in plugin settings.
+     * Send email notification with given $subject and $message to recipients configured in plugin settings.
      *
      * @param string $subject
      * @param array|string $message
-     * @return null|false|true Null, if there are no recipients configured.
-     *   True, if email has been sent, false otherwise.
+     * @return null|false|true Null, if there are no recipients configured. True, if email has been sent, false otherwise.
      */
     private function notify($subject, $message)
     {

@@ -24,6 +24,7 @@ class Core
 
     /**
      * Get remote IP address according to configured connection type.
+     *
      * @return string
      */
     public function getRemoteAddress()

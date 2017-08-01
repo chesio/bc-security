@@ -47,6 +47,7 @@ class Core implements \BlueChip\Security\Modules\Initializable
 
     /**
      * Remove pingback.ping from allowed/supported XML-RPC methods.
+     *
      * @param array $methods
      * @return array
      */
@@ -58,15 +59,19 @@ class Core implements \BlueChip\Security\Modules\Initializable
 
 
     /**
-     * Return an authentication error if a user who is not logged in tries to
-     * query the REST API.
+     * Return an authentication error if a user who is not logged in tries to query the REST API.
+     *
      * @param mixed $access
      * @return WP_Error
      */
     public function requireAuthForRestAccess($access)
     {
         if (!is_user_logged_in()) {
-            return new \WP_Error('rest_cannot_access', __('Only authenticated users can access the REST API.', 'bc-security'), ['status' => rest_authorization_required_code()]);
+            return new \WP_Error(
+                'rest_cannot_access',
+                __('Only authenticated users can access the REST API.', 'bc-security'),
+                ['status' => rest_authorization_required_code()]
+            );
         }
 
         return $access;

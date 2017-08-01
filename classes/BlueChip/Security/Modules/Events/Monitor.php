@@ -59,8 +59,9 @@ class Monitor implements \BlueChip\Security\Modules\Initializable
     /**
      * Log 404 event (main queries that returned no results).
      *
-     * Note: `parse_query` action cannot be used for 404 detection, because 404
-     * state can be set later (see WP::main() method).
+     * Note: `parse_query` action cannot be used for 404 detection, because 404 state can be set as late as in WP::main().
+     *
+     * @see WP::main()
      *
      * @param \WP $wp
      */
@@ -77,6 +78,7 @@ class Monitor implements \BlueChip\Security\Modules\Initializable
 
     /**
      * Log when bad cookie is used for authentication.
+     *
      * @param array $cookie_elements
      */
     public function logBadCookie(array $cookie_elements)
@@ -122,6 +124,7 @@ class Monitor implements \BlueChip\Security\Modules\Initializable
 
     /**
      * Log checksum verification alert.
+     *
      * @param array $files
      */
     public function logChecksumsVerificationAlert(array $files)

@@ -13,38 +13,60 @@ use BlueChip\Security\Helpers\AdminNotices;
  */
 class ListTable extends \BlueChip\Security\Core\ListTable
 {
-    /** @var string Name of remove action query argument */
+    /**
+     * @var string Name of remove action query argument
+     */
     const ACTION_REMOVE = 'remove';
 
-    /** @var string Name of unlock action query argument */
+    /**
+     * @var string Name of unlock action query argument
+     */
     const ACTION_UNLOCK = 'unlock';
 
-    /** @var string Name of bulk remove action */
+    /**
+     * @var string Name of bulk remove action
+     */
     const BULK_ACTION_REMOVE = 'bulk-remove';
 
-    /** @var string Name of bulk unlock action */
+    /**
+     * @var string Name of bulk unlock action
+     */
     const BULK_ACTION_UNLOCK = 'bulk-unlock';
 
-    /** @var string Name of removed notice query argument */
+    /**
+     * @var string Name of removed notice query argument
+     */
     const NOTICE_RECORD_REMOVED = 'removed';
 
-    /** @var string Name of unlocked notice query argument */
+    /**
+     * @var string Name of unlocked notice query argument
+     */
     const NOTICE_RECORD_UNLOCKED = 'unlocked';
 
-    /** @var string Nonce name used for actions in this table */
+    /**
+     * @var string Nonce name used for actions in this table
+     */
     const NONCE_NAME = '_wpnonce';
 
-    /** @var string Name of option holding records per page value */
+    /**
+     * @var string Name of option holding records per page value
+     */
     const RECORDS_PER_PAGE = 'ip_blacklist_records_per_page';
 
-    /** @var string Name of view query argument */
+    /**
+     * @var string Name of view query argument
+     */
     const VIEW_SCOPE = 'scope';
 
 
-    /** @var \BlueChip\Security\IpBlacklist\Manager */
+    /**
+     * @var \BlueChip\Security\IpBlacklist\Manager
+     */
     private $bl_manager;
 
-    /** @var int */
+    /**
+     * @var int
+     */
     private $scope;
 
 
@@ -67,6 +89,7 @@ class ListTable extends \BlueChip\Security\Core\ListTable
 
     /**
      * Return content for first column (IP address) including row actions.
+     *
      * @param array $item
      * @return string
      */
@@ -78,6 +101,7 @@ class ListTable extends \BlueChip\Security\Core\ListTable
 
     /**
      * Return human readable value for ban reason table column.
+     *
      * @param array $item
      * @return string
      */
@@ -88,8 +112,7 @@ class ListTable extends \BlueChip\Security\Core\ListTable
 
 
     /**
-     * Display (dismissible) admin notices informing user that an action has
-     * been performed successfully.
+     * Display (dismissible) admin notices informing user that an action has been performed successfully.
      */
     public function displayNotices()
     {
@@ -118,6 +141,9 @@ class ListTable extends \BlueChip\Security\Core\ListTable
     }
 
 
+    /**
+     * @return array
+     */
     public function get_bulk_actions()
     {
         return [
@@ -128,7 +154,8 @@ class ListTable extends \BlueChip\Security\Core\ListTable
 
 
     /**
-     * Define table columns
+     * Define table columns.
+     *
      * @return array
      */
     public function get_columns()
@@ -145,7 +172,8 @@ class ListTable extends \BlueChip\Security\Core\ListTable
 
 
     /**
-     * Define sortable columns
+     * Define sortable columns.
+     *
      * @return array
      */
     public function get_sortable_columns()
@@ -161,7 +189,9 @@ class ListTable extends \BlueChip\Security\Core\ListTable
 
     /**
      * Define available views for this table.
+     *
      * @todo Better labels for scopes.
+     *
      * @return array
      */
     protected function get_views()
@@ -220,6 +250,7 @@ class ListTable extends \BlueChip\Security\Core\ListTable
 
     /**
      * Process any actions like unlocking etc.
+     *
      * @return void
      */
     public function processActions()
@@ -270,6 +301,7 @@ class ListTable extends \BlueChip\Security\Core\ListTable
 
     /**
      * Translate integer code for ban reason into something human can read.
+     *
      * @param int $banReason
      * @return string
      */

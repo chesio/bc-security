@@ -12,8 +12,7 @@ abstract class Helper
      *
      * @see wp_debug_mode()
      *
-     * @return bool|null False, if error log can be accessed, true otherwise.
-     *                   Null return value means test failed to determine valid result.
+     * @return bool|null False, if error log can be accessed, true otherwise. Null return value means test failed to determine valid result.
      */
     public static function isAccessToErrorLogForbidden()
     {
@@ -28,8 +27,7 @@ abstract class Helper
     /**
      * Check, whether it is possible to access a temporary PHP file added to uploads directory.
      *
-     * @return mixed False, if PHP file can be accessed, true otherwise.
-     *               Null return value means test failed to determine valid result.
+     * @return mixed False, if PHP file can be accessed, true otherwise. Null return value means test failed to determine valid result.
      */
     public static function isAccessToPhpFilesInUploadsDirForbidden()
     {

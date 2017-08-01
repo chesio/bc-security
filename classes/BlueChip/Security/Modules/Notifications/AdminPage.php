@@ -7,7 +7,9 @@ namespace BlueChip\Security\Modules\Notifications;
 
 class AdminPage extends \BlueChip\Security\Core\AdminSettingsPage
 {
-    /** @var string Page slug */
+    /**
+     * @var string Page slug
+     */
     const SLUG = 'bc-security-notifications';
 
 

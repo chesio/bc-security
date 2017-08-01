@@ -22,26 +22,37 @@ namespace BlueChip\Security\Modules\IpBlacklist;
  */
 class Manager implements \BlueChip\Security\Modules\Installable
 {
-    /** @var string Name of DB table where IP blacklist is stored */
+    /**
+     * @var string Name of DB table where IP blacklist is stored
+     */
     const BLACKLIST_TABLE = 'bc_security_ip_blacklist';
 
-    /** @var string Date format accepted by MySQL */
+    /**
+     * @var string Date format accepted by MySQL
+     */
     const MYSQL_DATETIME_FORMAT = 'Y-m-d H:i:s';
 
-    /** @var string Name of DB table where blacklist is stored (including table prefix) */
+
+    /**
+     * @var string Name of DB table where blacklist is stored (including table prefix)
+     */
     private $blacklist_table;
 
-    /** @var array */
+    /**
+     * @var array List of table columns
+     */
     private $columns;
 
-    /** @var \wpdb */
+    /**
+     * @var \wpdb WordPress database access abstraction object
+     */
     private $wpdb;
 
 
     /**
      * @param \wpdb $wpdb WordPress database access abstraction object
      */
-    public function __construct($wpdb)
+    public function __construct(\wpdb $wpdb)
     {
         $this->blacklist_table = $wpdb->prefix . self::BLACKLIST_TABLE;
         $this->columns = [
@@ -182,8 +193,7 @@ class Manager implements \BlueChip\Security\Modules\Installable
 
 
     /**
-     * Lock access from $ip_address to $scope for $duration seconds because of
-     * $reason.
+     * Lock access from $ip_address to $scope for $duration seconds because of $reason.
      *
      * @param string $ip_address IP address to lock.
      * @param int $duration
@@ -253,9 +263,9 @@ class Manager implements \BlueChip\Security\Modules\Installable
      */
     public function remove($id)
     {
-        // Execute query
+        // Execute query.
         $result = $this->wpdb->delete($this->blacklist_table, ['id' => $id], ['%d']);
-        // Return
+        // Return status.
         return $result !== false;
     }
 
@@ -271,14 +281,14 @@ class Manager implements \BlueChip\Security\Modules\Installable
         if (empty($ids)) {
             return 0;
         }
-        // Prepare query
+        // Prepare query.
         $query = sprintf(
             "DELETE FROM {$this->blacklist_table} WHERE %s",
             implode(' OR ', array_map(function ($id) { return sprintf('id = %d', $id); }, $ids))
         );
-        // Execute
+        // Execute query.
         $result = $this->wpdb->query($query);
-        // Return int
+        // Return number of affected (unlocked) rows.
         return $result ?: 0;
     }
 
@@ -293,7 +303,7 @@ class Manager implements \BlueChip\Security\Modules\Installable
      */
     public function unlock($id)
     {
-        // Execute query
+        // Execute query.
         $result = $this->wpdb->update(
             $this->blacklist_table,
             ['release_time' => date(self::MYSQL_DATETIME_FORMAT, current_time('timestamp'))],
@@ -301,14 +311,13 @@ class Manager implements \BlueChip\Security\Modules\Installable
             ['%s'],
             ['%d']
         );
-        // Return
+        // Return status.
         return $result !== false;
     }
 
 
     /**
-     * Unlock records with primary keys in $ids array. Unlocking sets release
-     * date to now.
+     * Unlock records with primary keys in $ids array. Unlocking sets release date to now.
      *
      * @todo Only unlock really active locks.
      *
@@ -320,23 +329,22 @@ class Manager implements \BlueChip\Security\Modules\Installable
         if (empty($ids)) {
             return 0;
         }
-        // Prepare query
+        // Prepare query.
         $query = sprintf(
             "UDPATE {$this->blacklist_table} SET release_time = '%s' WHERE %s",
             date(self::MYSQL_DATETIME_FORMAT, current_time('timestamp')),
             implode(' OR ', array_map(function ($id) { return sprintf('id = %d', $id); }, $ids))
         );
-        // Execute
+        // Execute query.
         $result = $this->wpdb->query($query);
-        // Return int
+        // Return number of affected (unlocked) rows.
         return $result ?: 0;
     }
 
 
     /**
-     * Get primary key (id) for record with given $ip_address, $scope and ban
-     * $reason. Because of UNIQUE database key restriction, there should be
-     * either one or none matching key.
+     * Get primary key (id) for record with given $ip_address, $scope and ban $reason.
+     * Because of UNIQUE database key restriction, there should be either one or none matching key.
      *
      * @param string $ip_address IP address to check.
      * @param int $scope
@@ -345,16 +353,16 @@ class Manager implements \BlueChip\Security\Modules\Installable
      */
     protected function getId($ip_address, $scope, $reason)
     {
-        // Prepare query
+        // Prepare query.
         $query = $this->wpdb->prepare(
             "SELECT id FROM {$this->blacklist_table} WHERE scope = %d AND ip_address = %s AND reason = %d",
             $scope,
             $ip_address,
             $reason
         );
-        // Execute query
+        // Execute query.
         $result = $this->wpdb->get_var($query);
-        // Return result
+        // Return result.
         return is_null($result) ? $result : intval($result);
     }
 }

@@ -7,10 +7,8 @@ namespace BlueChip\Security\Modules\Log;
 
 use Psr\Log\LogLevel;
 
-
 /**
- * Every event must be constructed using event ID. All other event properties
- * can be inferred from event ID.
+ * Every event must be constructed using event ID. All other event properties can be inferred from event ID.
  */
 class Event
 {
@@ -22,19 +20,29 @@ class Event
     const CHECKSUMS_VERIFICATION_ALERT = 'checksums_verification_alert';
 
 
-    /** @var string Unique ID */
+    /**
+     * @var string Unique ID
+     */
     private $id;
 
-    /** @var string Human readable name */
+    /**
+     * @var string Human readable name
+     */
     private $name;
 
-    /** @var string Log level */
+    /**
+     * @var string Log level
+     */
     private $level;
 
-    /** @var string Log message */
+    /**
+     * @var string Log message
+     */
     private $message;
 
-    /** @var array Required context keys */
+    /**
+     * @var array Required context keys
+     */
     private $context;
 
 
@@ -156,6 +164,11 @@ class Event
     }
 
 
+    /**
+     * Return a list of all declared events.
+     *
+     * @return array
+     */
     public static function enlist()
     {
         return [

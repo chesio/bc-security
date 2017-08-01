@@ -36,8 +36,7 @@ class Settings extends \BlueChip\Security\Core\Settings
 
 
     /**
-     * Sanitize settings array: only return known keys, provide default values
-     * for missing keys.
+     * Sanitize settings array: only return known keys, provide default values for missing keys.
      *
      * @param array $s
      * @return array

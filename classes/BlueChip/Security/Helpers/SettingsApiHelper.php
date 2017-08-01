@@ -55,12 +55,12 @@ class SettingsApiHelper
     protected $option_name;
 
     /**
-     * @var string Most recently set page serves as $page value for add_settings_section() and add_settings_field() functions
+     * @var string Most recently set page serves as default $page value for add_settings_section() and add_settings_field() functions.
      */
     protected $recent_page;
 
     /**
-     * @var string Most recently added section serves as $section value for add_settings_field() function
+     * @var string Most recently added section serves as default $section value for add_settings_field() function.
      */
     protected $recent_section;
 
@@ -72,9 +72,10 @@ class SettingsApiHelper
 
     /**
      * Settings helper needs to know the settings only.
-     * @param \BlueChip\Security\Core\Settings $settings
      *
      * @link https://codex.wordpress.org/Settings_API
+     *
+     * @param \BlueChip\Security\Core\Settings $settings
      */
     public function __construct(\BlueChip\Security\Core\Settings $settings)
     {
@@ -120,10 +121,12 @@ class SettingsApiHelper
 
     /**
      * Helper function that wraps call to add_settings_section().
+     *
+     * @see add_settings_section()
+     *
      * @param string $section
      * @param string $title
      * @param callback $callback
-     * @see add_settings_section()
      */
     public function addSettingsSection($section, $title, $callback = null)
     {
@@ -140,15 +143,16 @@ class SettingsApiHelper
 
 
     /**
-     * Helper function that wraps call(s) to add_settings_field()
+     * Helper function that wraps call(s) to add_settings_field().
+     *
+     * @see add_settings_field()
      *
      * @param string $key Key of the field (must be proper key from Settings)
      * @param string $title Title of the field
      * @param callback $callback Function that fills the field with the desired form inputs
      * @param array $args [Optional] Any extra arguments for $callback function
-     * @see add_settings_field()
      */
-    public function addSettingsField($key, $title, $callback, $args = array())
+    public function addSettingsField($key, $title, $callback, $args = [])
     {
         if (!is_string($this->recent_page)) {
             _doing_it_wrong(__METHOD__, 'No recent page set yet!', '0.1.0');
@@ -180,8 +184,7 @@ class SettingsApiHelper
     //// Printers //////////////////////////////////////////////////////////////
 
     /**
-     * Print settings form with settings from recent page (ie. $page that has
-     * been set as last via set_settings_page()).
+     * Print settings form with settings from recent page (ie. $page that has been set as last via set_settings_page()).
      */
     public function renderForm()
     {
