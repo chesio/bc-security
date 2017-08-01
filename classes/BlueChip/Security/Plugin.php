@@ -51,14 +51,15 @@ class Plugin
         // Get setup info.
         $setup = new Setup\Core($this->settings['setup']);
 
-        // IP address is at core interest within this plugin :)
+        // IP addresses are at core interest within this plugin :)
         $remote_address = $setup->getRemoteAddress();
+        $server_address = $setup->getServerAddress();
 
         // Init admin, if necessary.
         $this->admin = is_admin() ? new Admin() : null;
 
         // Construct modules.
-        $this->modules = $this->constructModules($wpdb, $remote_address, $this->settings);
+        $this->modules = $this->constructModules($wpdb, $remote_address, $server_address, $this->settings);
 
         // Construct cron jobs.
         $this->cron_jobs = $this->constructCronJobs($this->settings, $this->modules);
@@ -85,13 +86,14 @@ class Plugin
      * Construct plugin modules.
      * @param \wpdb $wpdb
      * @param string $remote_address
+     * @param string $server_address
      * @param array $settings
      * @return array
      */
-    private function constructModules($wpdb, $remote_address, $settings)
+    private function constructModules($wpdb, $remote_address, $server_address, $settings)
     {
         $logger     = new Modules\Log\Logger($wpdb, $remote_address);
-        $monitor    = new Modules\Events\Monitor($remote_address);
+        $monitor    = new Modules\Events\Monitor($remote_address, $server_address);
         $notifier   = new Modules\Notifications\Watchman($settings['notifications'], $remote_address, $logger);
         $hardening  = new Modules\Hardening\Core($settings['hardening']);
         $bl_manager = new Modules\IpBlacklist\Manager($wpdb);

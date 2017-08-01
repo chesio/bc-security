@@ -30,4 +30,15 @@ class Core
     {
         return IpAddress::get($this->connection_type);
     }
+
+
+    /**
+     * Get server IP address. In the moment, there is no way to "configure" it.
+     *
+     * @return string
+     */
+    public function getServerAddress()
+    {
+        return IpAddress::getServer();
+    }
 }
