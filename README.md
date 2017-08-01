@@ -44,7 +44,7 @@ BC Security once a day performs integrity check of WordPress core files by compa
 
 BC Security maintains a list of IP addresses with limited access to the website. This list is automatically populated by [Login Security](#login-security) module, but manual addition of IP addresses is also possible.
 
-Out-dated records are automatically removed from the list by WP-Cron job that runs every night at 01:02:03 of local time. The job can be deactivated in backend, if desired.
+Out-dated records are automatically removed from the list by WP-Cron job scheduled to run every night. The job can be deactivated in backend, if desired.
 
 ### Notifications
 
@@ -80,5 +80,5 @@ Logs are stored in database and can be viewed on backend. Logs are automatically
 
 ## Alternatives (and why I do not use them)
 
-1. [Wordfence Security](https://wordpress.org/plugins/wordfence/) - probably the current number one plugin for WordPress Security. My problem with Wordfence is that _"when you use [Wordfence], statistics about your website visitors are automatically collected"_ (see the full [Terms of Use and Privacy Policy](https://www.wordfence.com/terms-of-use-and-privacy-policy/)). In other words, in order to offer some of its great features, Wordfence is [phoning home](https://en.wikipedia.org/wiki/Phoning_home).
-1. [All In One WP Security & Firewall](https://wordpress.org/plugins/all-in-one-wp-security-and-firewall/) - another very popular security plugin for WordPress. I have used AIOWPSF for quite some time; it has a lot of features, but also lot of small bugs (sometimes [not that small](https://sumofpwn.nl/advisory/2016/cross_site_scripting_in_all_in_one_wp_security___firewall_wordpress_plugin.html)). I [used to contribute](https://github.com/Arsenal21/all-in-one-wordpress-security/commits?author=chesio) to the plugin, but the codebase is rather messy and after some time I get tired struggling with it. Also, one simple feels dissapointment when his [clean up attempts](https://github.com/Arsenal21/all-in-one-wordpress-security/pull/34) got ignored...
+1. [Wordfence Security](https://wordpress.org/plugins/wordfence/) - likely the current number one plugin for WordPress Security. My problem with Wordfence is that _"when you use [Wordfence], statistics about your website visitors are automatically collected"_ (see the full [Terms of Use and Privacy Policy](https://www.wordfence.com/terms-of-use-and-privacy-policy/)). In other words, in order to offer some of its great features, Wordfence is [phoning home](https://en.wikipedia.org/wiki/Phoning_home).
+1. [All In One WP Security & Firewall](https://wordpress.org/plugins/all-in-one-wp-security-and-firewall/) - another very popular security plugin for WordPress. I have used AIOWPSF for quite some time; it has a lot of features, but also lot of small bugs (sometimes [not that small](https://sumofpwn.nl/advisory/2016/cross_site_scripting_in_all_in_one_wp_security___firewall_wordpress_plugin.html)). I [used to contribute](https://github.com/Arsenal21/all-in-one-wordpress-security/commits?author=chesio) to the plugin, but the codebase is [rather messy](https://github.com/Arsenal21/all-in-one-wordpress-security/pull/34) and after some time I got tired struggling with it.
