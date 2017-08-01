@@ -16,13 +16,20 @@ class Monitor implements \BlueChip\Security\Modules\Initializable
      */
     private $remote_address;
 
+    /**
+     * @var string Server IP address
+     */
+    private $server_address;
+
 
     /**
      * @param string $remote_address Remote IP address.
+     * @param string $server_address Server IP address.
      */
-    public function __construct($remote_address)
+    public function __construct($remote_address, $server_address)
     {
         $this->remote_address = $remote_address;
+        $this->server_address = $server_address;
     }
 
 
@@ -37,7 +44,7 @@ class Monitor implements \BlueChip\Security\Modules\Initializable
         // - successful login
         add_action('wp_login', [$this, 'logSuccessfulLogin'], 5, 1);
         // - 404 query (only if request did not originate from the webserver itself)
-        if ($this->remote_address !== $_SERVER['SERVER_ADDR']) {
+        if ($this->remote_address !== $this->server_address) {
             add_action('wp', [$this, 'log404Queries'], 20, 1);
         }
 

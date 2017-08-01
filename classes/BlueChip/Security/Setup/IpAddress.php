@@ -6,7 +6,7 @@
 namespace BlueChip\Security\Setup;
 
 /**
- * Remote IP address retrieval
+ * IP address retrieval (both remote and server)
  */
 abstract class IpAddress
 {
@@ -82,6 +82,17 @@ abstract class IpAddress
     public static function getRaw($type)
     {
         return (in_array($type, self::enlist(), true) && isset($_SERVER[$type])) ? $_SERVER[$type] : '';
+    }
+
+
+    /**
+     * Get IP address of webserver.
+     *
+     * @return string IP address of webserver or empty string if none provided (typically when running via PHP-CLI).
+     */
+    public static function getServer()
+    {
+        return isset($_SERVER['SERVER_ADDR']) ? self::getFirst($_SERVER['SERVER_ADDR']) : '';
     }
 
 
