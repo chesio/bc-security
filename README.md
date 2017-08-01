@@ -6,6 +6,11 @@ Helps keeping WordPress websites secure.
 * [PHP](https://secure.php.net/) 5.6 or newer
 * [WordPress](https://wordpress.org/) 4.7 or newer
 
+## Limitations
+
+* BC Security has not been tested on WordPress multisite installation.
+* BC Security is primarily being developed for Apache webserver environment.
+
 ## Features
 
 ### Checklist
