@@ -129,7 +129,7 @@ class Verifier
 
 
     /**
-     * Report any unknown files in root directory and in wp-admin and wp-content directories (including subdirectories).
+     * Report any unknown files in root directory and in wp-admin and wp-includes directories (including subdirectories).
      *
      * @hook \BlueChip\Security\Modules\Checksums\Hooks::IGNORED_UNKNOWN_FILES
      *
