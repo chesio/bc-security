@@ -156,7 +156,7 @@ class Event
                     __('Checksums verification alert', 'bc-security'),
                     LogLevel::WARNING,
                     __('Official checksums do not match for the following files: {files}.', 'bc-security'),
-                    ['files' => __('Files with non-matching checksum', 'bc-security')]
+                    ['modified_files' => __('Modified files', 'bc-security'), 'unknown_files' => __('Unknown files', 'bc-security')]
                 );
             default:
                 return null;

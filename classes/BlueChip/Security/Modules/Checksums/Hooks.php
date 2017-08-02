@@ -21,7 +21,12 @@ interface Hooks
     const CHECKSUMS_VERIFICATION_ALERT = 'bc-security/action:checksums-verification-alert';
 
     /**
-     * Filter: filters list of files that should be ignored during checksums verification.
+     * Filter: filters list of files that should be ignored during check for modified files.
      */
-    const IGNORED_FILES = 'bc-security/filter:files-ignored-in-checksum-verification';
+    const IGNORED_MODIFIED_FILES = 'bc-security/filter:modified-files-ignored-in-checksum-verification';
+
+    /**
+     * Filter: filters list of files that should be ignored during check for unknown files.
+     */
+    const IGNORED_UNKNOWN_FILES = 'bc-security/filter:unknown-files-ignored-in-checksum-verification';
 }
