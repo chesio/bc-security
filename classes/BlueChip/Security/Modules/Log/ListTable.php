@@ -264,9 +264,9 @@ class ListTable extends \BlueChip\Security\Core\ListTable
     private static function formatMessage($message, array $context)
     {
         foreach ($context as $key => $value) {
-            // Format array as comma separated list.
+            // Format array as comma separated list (indicate empty array with "-")
             // Convert all other values to string (and make the value stand out in bold in such case).
-            $formatted = is_array($value) ? implode(', ', $value) : sprintf('<strong>%s</strong>', $value);
+            $formatted = is_array($value) ? (empty($value) ? '-' : implode(', ', $value)) : sprintf('<strong>%s</strong>', $value);
             // Inject formatted values into message.
             $message = str_replace("{{$key}}", $formatted, $message);
         }

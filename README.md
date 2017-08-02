@@ -33,7 +33,11 @@ BC Security allows you to:
 
 ### Checksums verification
 
-BC Security once a day performs integrity check of WordPress core files by comparing their checksums with MD5 checksums downloaded from WordPress.org. Any file with md5 checksum, that does not match its official checksum, is [logged](#events-logging) and (optionally) reported via [email notification](#notifications).
+BC Security once a day performs integrity check of WordPress core files. This check is done in two phases:
+1. Official md5 checksums from WordPress.org are used to determine if any of core files have been modified.
+1. All files in root directory, `wp-admin` directory (including subdirectories) and `wp-content` directory (including subdirectories) are checked against official checksums list to determine if the file is official (known) file.
+
+Any file that is evaluated as modified or unknown is [logged](#events-logging) and (optionally) reported via [email notification](#notifications).
 
 ### Login Security
 

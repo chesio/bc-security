@@ -52,7 +52,7 @@ class Monitor implements \BlueChip\Security\Modules\Initializable
         // - lockout event
         add_action(Login\Hooks::LOCKOUT_EVENT, [$this, 'logLockoutEvent'], 10, 3);
         // - checksum verification alert
-        add_action(Checksums\Hooks::CHECKSUMS_VERIFICATION_ALERT, [$this, 'logChecksumsVerificationAlert'], 10, 1);
+        add_action(Checksums\Hooks::CHECKSUMS_VERIFICATION_ALERT, [$this, 'logChecksumsVerificationAlert'], 10, 2);
     }
 
 
@@ -123,12 +123,13 @@ class Monitor implements \BlueChip\Security\Modules\Initializable
 
 
     /**
-     * Log checksum verification alert.
+     * Log checksums verification alert.
      *
-     * @param array $files
+     * @param array $modified_files Files for which official checksums do not match.
+     * @param array $unknown_files Files that are present on file system but not in official checksums.
      */
-    public function logChecksumsVerificationAlert(array $files)
+    public function logChecksumsVerificationAlert(array $modified_files, array $unknown_files)
     {
-        do_action(Log\Action::EVENT, Log\Event::CHECKSUMS_VERIFICATION_ALERT, ['files' => $files]);
+        do_action(Log\Action::EVENT, Log\Event::CHECKSUMS_VERIFICATION_ALERT, ['modified_files' => $modified_files, 'unknown_files' => $unknown_files]);
     }
 }

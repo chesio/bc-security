@@ -92,7 +92,7 @@ class Watchman implements Modules\Loadable, Modules\Initializable, Modules\Activ
         }
         if ($this->settings[Settings::CHECKSUMS_VERIFICATION_ERROR]) {
             add_action(Checksums\Hooks::CHECKSUMS_RETRIEVAL_FAILED, [$this, 'watchChecksumsRetrievalFailed'], 10, 1);
-            add_action(Checksums\Hooks::CHECKSUMS_VERIFICATION_ALERT, [$this, 'watchChecksumsVerificationAlert'], 10, 1);
+            add_action(Checksums\Hooks::CHECKSUMS_VERIFICATION_ALERT, [$this, 'watchChecksumsVerificationAlert'], 10, 2);
         }
     }
 
@@ -330,17 +330,32 @@ class Watchman implements Modules\Loadable, Modules\Initializable, Modules\Activ
     /**
      * Send notification if checksums verification found files with non-matching checksum.
      *
-     * @param array $matches Files for which official checksums do not match.
+     * @param array $modified_files Files for which official checksums do not match.
+     * @param array $unknown_files Files that are present on file system but not in official checksums.
      */
-    public function watchChecksumsVerificationAlert(array $matches)
+    public function watchChecksumsVerificationAlert(array $modified_files, array $unknown_files)
     {
         $subject = __('Checksums verification alert', 'bc-security');
-        $message = [
-            __('Official checksums do not match for the following files:', 'bc-security'),
-        ];
+        $message = [];
 
-        // Append list of matched files to the message and send email.
-        $this->notify($subject, array_merge($message, $matches));
+        if (!empty($modified_files)) {
+            $message = array_merge(
+                $message,
+                __('Official checksums do not match for the following files:', 'bc-security'),
+                $modified_files
+            );
+        }
+
+        if (!empty($unknown_files)) {
+            $message = array_merge(
+                $message,
+                __('Following files are present on the file system, but not in official checksums:', 'bc-security'),
+                $unknown_files
+            );
+        }
+
+        // Append list of matched files to the message and send an email.
+        $this->notify($subject, $message);
     }
 
 
