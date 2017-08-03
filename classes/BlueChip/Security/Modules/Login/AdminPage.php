@@ -18,7 +18,7 @@ class AdminPage extends \BlueChip\Security\Core\AdminSettingsPage
     /**
      * @param \BlueChip\Security\Modules\Login\Settings $settings Login security settings
      */
-    function __construct($settings)
+    function __construct(Settings $settings)
     {
         parent::__construct($settings);
 

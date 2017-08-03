@@ -15,9 +15,9 @@ class AdminPage extends \BlueChip\Security\Core\AdminSettingsPage
     const SLUG = 'bc-security-hardening';
 
     /**
-     * @param Settings $settings Hardening settings
+     * @param \BlueChip\Security\Modules\Hardening\Settings $settings Hardening settings
      */
-    function __construct($settings)
+    function __construct(Settings $settings)
     {
         parent::__construct($settings);
 
