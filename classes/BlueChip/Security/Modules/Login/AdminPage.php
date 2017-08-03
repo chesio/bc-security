@@ -5,6 +5,8 @@
 
 namespace BlueChip\Security\Modules\Login;
 
+use BlueChip\Security\Helpers\FormHelper;
+
 class AdminPage extends \BlueChip\Security\Core\AdminSettingsPage
 {
     /**
@@ -16,7 +18,7 @@ class AdminPage extends \BlueChip\Security\Core\AdminSettingsPage
     /**
      * @param \BlueChip\Security\Modules\Login\Settings $settings Login security settings
      */
-    function __construct($settings)
+    function __construct(Settings $settings)
     {
         parent::__construct($settings);
 
@@ -65,9 +67,6 @@ class AdminPage extends \BlueChip\Security\Core\AdminSettingsPage
      */
     public function admin_init()
     {
-        // Form helper is going to be useful here
-        $form_helper = new \BlueChip\Security\Helpers\FormHelper();
-
         // Shortcut
         $settings_api_helper = $this->settings_api_helper;
 
@@ -86,37 +85,37 @@ class AdminPage extends \BlueChip\Security\Core\AdminSettingsPage
         $settings_api_helper->addSettingsField(
             Settings::SHORT_LOCKOUT_AFTER,
             __('Short lockout after', 'bc-security'),
-            [$form_helper, 'renderNumberInput'],
+            [FormHelper::class, 'renderNumberInput'],
             [ 'append' => __('failed attempt(s)', 'bc-security'), ]
         );
         $settings_api_helper->addSettingsField(
             Settings::SHORT_LOCKOUT_DURATION,
             __('Short lockout duration', 'bc-security'),
-            [$form_helper, 'renderNumberInput'],
+            [FormHelper::class, 'renderNumberInput'],
             [ 'append' => __('minutes', 'bc-security'), ]
         );
         $settings_api_helper->addSettingsField(
             Settings::LONG_LOCKOUT_AFTER,
             __('Long lockout after', 'bc-security'),
-            [$form_helper, 'renderNumberInput'],
+            [FormHelper::class, 'renderNumberInput'],
             [ 'append' => __('failed attempt(s)', 'bc-security'), ]
         );
         $settings_api_helper->addSettingsField(
             Settings::LONG_LOCKOUT_DURATION,
             __('Long lockout duration', 'bc-security'),
-            [$form_helper, 'renderNumberInput'],
+            [FormHelper::class, 'renderNumberInput'],
             [ 'append' => __('hours', 'bc-security'), ]
         );
         $settings_api_helper->addSettingsField(
             Settings::RESET_TIMEOUT,
             __('Reset retries after', 'bc-security'),
-            [$form_helper, 'renderNumberInput'],
+            [FormHelper::class, 'renderNumberInput'],
             [ 'append' => __('days', 'bc-security'), ]
         );
         $settings_api_helper->addSettingsField(
             Settings::USERNAME_BLACKLIST,
             __('Immediately (long) lock out specific usernames', 'bc-security'),
-            [$form_helper, 'renderTextArea'],
+            [FormHelper::class, 'renderTextArea'],
             [ 'append' => __('Existing usernames are not locked even if present on the list.', 'bc-security'), ]
         );
 
@@ -129,7 +128,7 @@ class AdminPage extends \BlueChip\Security\Core\AdminSettingsPage
         $settings_api_helper->addSettingsField(
             Settings::CHECK_COOKIES,
             __('Check auth cookies', 'bc-security'),
-            [$form_helper, 'renderCheckbox']
+            [FormHelper::class, 'renderCheckbox']
         );
 
         // Section: Display generic error message on failed login
@@ -147,7 +146,7 @@ class AdminPage extends \BlueChip\Security\Core\AdminSettingsPage
         $settings_api_helper->addSettingsField(
             Settings::GENERIC_LOGIN_ERROR_MESSAGE,
             __('Display generic error message', 'bc-security'),
-            [$form_helper, 'renderCheckbox']
+            [FormHelper::class, 'renderCheckbox']
         );
     }
 }

@@ -5,6 +5,8 @@
 
 namespace BlueChip\Security\Modules\Hardening;
 
+use BlueChip\Security\Helpers\FormHelper;
+
 class AdminPage extends \BlueChip\Security\Core\AdminSettingsPage
 {
     /**
@@ -13,9 +15,9 @@ class AdminPage extends \BlueChip\Security\Core\AdminSettingsPage
     const SLUG = 'bc-security-hardening';
 
     /**
-     * @param Settings $settings Hardening settings
+     * @param \BlueChip\Security\Modules\Hardening\Settings $settings Hardening settings
      */
-    function __construct($settings)
+    function __construct(Settings $settings)
     {
         parent::__construct($settings);
 
@@ -43,9 +45,6 @@ class AdminPage extends \BlueChip\Security\Core\AdminSettingsPage
      */
     public function admin_init()
     {
-        // Form helper is going to be useful here
-        $form_helper = new \BlueChip\Security\Helpers\FormHelper();
-
         // Register setting first
         $this->settings_api_helper->register();
 
@@ -66,7 +65,7 @@ class AdminPage extends \BlueChip\Security\Core\AdminSettingsPage
         $this->settings_api_helper->addSettingsField(
             Settings::DISABLE_PINGBACKS,
             __('Disable pingbacks', 'bc-security'),
-            [$form_helper, 'renderCheckbox']
+            [FormHelper::class, 'renderCheckbox']
         );
 
         // Section: Disable XML-RPC methods that require authentication
@@ -83,7 +82,7 @@ class AdminPage extends \BlueChip\Security\Core\AdminSettingsPage
         $this->settings_api_helper->addSettingsField(
             Settings::DISABLE_XML_RPC,
             __('Disable XML-RPC methods', 'bc-security'),
-            [$form_helper, 'renderCheckbox']
+            [FormHelper::class, 'renderCheckbox']
         );
 
         // Section: Disable REST API to anonymous users
@@ -101,7 +100,7 @@ class AdminPage extends \BlueChip\Security\Core\AdminSettingsPage
         $this->settings_api_helper->addSettingsField(
             Settings::DISABLE_REST_API,
             __('Disable REST API access', 'bc-security'),
-            [$form_helper, 'renderCheckbox']
+            [FormHelper::class, 'renderCheckbox']
         );
     }
 }

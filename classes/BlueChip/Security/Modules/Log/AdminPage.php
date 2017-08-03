@@ -5,6 +5,8 @@
 
 namespace BlueChip\Security\Modules\Log;
 
+use BlueChip\Security\Helpers\FormHelper;
+
 /**
  * Admin page that displays log records.
  */
@@ -50,9 +52,6 @@ class AdminPage extends \BlueChip\Security\Core\AdminSettingsPage
      */
     public function admin_init()
     {
-        // Form helper is going to be useful here.
-        $form_helper = new \BlueChip\Security\Helpers\FormHelper();
-
         // Shortcut
         $settings_api_helper = $this->settings_api_helper;
 
@@ -71,13 +70,13 @@ class AdminPage extends \BlueChip\Security\Core\AdminSettingsPage
         $settings_api_helper->addSettingsField(
             Settings::LOG_MAX_AGE,
             __('Maximum age', 'bc-security'),
-            [$form_helper, 'renderNumberInput'],
+            [FormHelper::class, 'renderNumberInput'],
             [ 'append' => __('days', 'bc-security'), ]
         );
         $settings_api_helper->addSettingsField(
             Settings::LOG_MAX_SIZE,
             __('Maximum size', 'bc-security'),
-            [$form_helper, 'renderNumberInput'],
+            [FormHelper::class, 'renderNumberInput'],
             [ 'append' => __('thousands', 'bc-security'), ]
         );
     }

@@ -5,6 +5,8 @@
 
 namespace BlueChip\Security\Modules\Notifications;
 
+use BlueChip\Security\Helpers\FormHelper;
+
 class AdminPage extends \BlueChip\Security\Core\AdminSettingsPage
 {
     /**
@@ -14,9 +16,9 @@ class AdminPage extends \BlueChip\Security\Core\AdminSettingsPage
 
 
     /**
-     * @param \BlueChip\Security\Modules\Login\Settings $settings Notifications settings
+     * @param \BlueChip\Security\Modules\Notifications\Settings $settings Notifications settings
      */
-    function __construct($settings)
+    function __construct(Settings $settings)
     {
         parent::__construct($settings);
 
@@ -43,9 +45,6 @@ class AdminPage extends \BlueChip\Security\Core\AdminSettingsPage
      */
     public function admin_init()
     {
-        // Form helper is going to be useful here.
-        $form_helper = new \BlueChip\Security\Helpers\FormHelper();
-
         // Shortcut
         $settings_api_helper = $this->settings_api_helper;
 
@@ -66,37 +65,37 @@ class AdminPage extends \BlueChip\Security\Core\AdminSettingsPage
         $settings_api_helper->addSettingsField(
             Settings::ADMIN_USER_LOGIN,
             __('User with admin privileges logs in', 'bc-security'),
-            [$form_helper, 'renderCheckbox']
+            [FormHelper::class, 'renderCheckbox']
         );
         $settings_api_helper->addSettingsField(
             Settings::KNOWN_IP_LOCKOUT,
             __('Known IP address is locked out', 'bc-security'),
-            [$form_helper, 'renderCheckbox']
+            [FormHelper::class, 'renderCheckbox']
         );
         $settings_api_helper->addSettingsField(
             Settings::CORE_UPDATE_AVAILABLE,
             __('WordPress update is available', 'bc-security'),
-            [$form_helper, 'renderCheckbox']
+            [FormHelper::class, 'renderCheckbox']
         );
         $settings_api_helper->addSettingsField(
             Settings::PLUGIN_UPDATE_AVAILABLE,
             __('Plugin update is available', 'bc-security'),
-            [$form_helper, 'renderCheckbox']
+            [FormHelper::class, 'renderCheckbox']
         );
         $settings_api_helper->addSettingsField(
             Settings::THEME_UPDATE_AVAILABLE,
             __('Theme update is available', 'bc-security'),
-            [$form_helper, 'renderCheckbox']
+            [FormHelper::class, 'renderCheckbox']
         );
         $settings_api_helper->addSettingsField(
             Settings::CHECKSUMS_VERIFICATION_ERROR,
             __('Checksums verification results in error', 'bc-security'),
-            [$form_helper, 'renderCheckbox']
+            [FormHelper::class, 'renderCheckbox']
         );
         $settings_api_helper->addSettingsField(
             Settings::PLUGIN_DEACTIVATED,
             __('BC Security is deactivated', 'bc-security'),
-            [$form_helper, 'renderCheckbox']
+            [FormHelper::class, 'renderCheckbox']
         );
 
         // Section: Who to notify?
@@ -107,13 +106,13 @@ class AdminPage extends \BlueChip\Security\Core\AdminSettingsPage
         $settings_api_helper->addSettingsField(
             Settings::NOTIFY_SITE_ADMIN,
             __('Notify site admin', 'bc-security'),
-            [$form_helper, 'renderCheckbox'],
+            [FormHelper::class, 'renderCheckbox'],
             [ 'description' => sprintf(__('Currently: %s', 'bc-security'), get_option('admin_email')), ]
         );
         $settings_api_helper->addSettingsField(
             Settings::NOTIFICATION_RECIPIENTS,
             __('Send notifications to:', 'bc-security'),
-            [$form_helper, 'renderTextArea'],
+            [FormHelper::class, 'renderTextArea'],
             [ 'description' => __('Enter one email per line.', 'bc-security'), ]
         );
     }

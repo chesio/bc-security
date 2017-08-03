@@ -5,6 +5,8 @@
 
 namespace BlueChip\Security\Setup;
 
+use BlueChip\Security\Helpers\FormHelper;
+
 class AdminPage extends \BlueChip\Security\Core\AdminSettingsPage
 {
     /**
@@ -43,9 +45,6 @@ class AdminPage extends \BlueChip\Security\Core\AdminSettingsPage
      */
     public function admin_init()
     {
-        // Form helper is going to be useful here
-        $form_helper = new \BlueChip\Security\Helpers\FormHelper();
-
         // Shortcut
         $settings_api_helper = $this->settings_api_helper;
 
@@ -64,7 +63,7 @@ class AdminPage extends \BlueChip\Security\Core\AdminSettingsPage
         $settings_api_helper->addSettingsField(
             Settings::CONNECTION_TYPE,
             __('Connection type', 'bc-security'),
-            [$form_helper, 'renderSelect'],
+            [FormHelper::class, 'renderSelect'],
             ['options' => $this->getConnectionOptions()]
         );
     }
