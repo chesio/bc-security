@@ -5,8 +5,7 @@
 
 namespace BlueChip\Security\Helpers;
 
-
-class FormHelper
+abstract class FormHelper
 {
     /**
      * Render <input type="checkbox" /> element.
@@ -22,7 +21,7 @@ class FormHelper
      *
      * @param array $args Required: label_for, name, value. Optional: plain.
      */
-    public function renderCheckbox(array $args)
+    public static function renderCheckbox(array $args)
     {
         // Field properties
         $properties = [
@@ -39,11 +38,11 @@ class FormHelper
                 // no value necessary - empty value is interpreted as false by PHP
                 'name' => $args['name'],
             ];
-            echo '<input ' . $this->printFieldProperties($hidden_properties) . '>';
+            echo '<input ' . self::printFieldProperties($hidden_properties) . '>';
         }
-        echo '<input ' . $this->printFieldProperties($properties) . '>';
+        echo '<input ' . self::printFieldProperties($properties) . '>';
 
-        $this->printAppendix($args, true);
+        self::printAppendix($args, true);
     }
 
 
@@ -52,7 +51,7 @@ class FormHelper
      *
      * @param array $args
      */
-    public function renderNumberInput(array $args)
+    public static function renderNumberInput(array $args)
     {
         // Field properties
         $properties = [
@@ -63,9 +62,9 @@ class FormHelper
             'class'     => 'small-text',
         ];
 
-        echo '<input ' . $this->printFieldProperties($properties) . '>';
+        echo '<input ' . self::printFieldProperties($properties) . '>';
 
-        $this->printAppendix($args, true);
+        self::printAppendix($args, true);
     }
 
 
@@ -74,20 +73,20 @@ class FormHelper
      *
      * @param array $args
      */
-    public function renderSelect(array $args)
+    public static function renderSelect(array $args)
     {
         $properties = [
             'id'        => $args['label_for'],
             'name'      => $args['name'],
         ];
 
-        echo '<select ' . $this->printFieldProperties($properties) . '>';
+        echo '<select ' . self::printFieldProperties($properties) . '>';
         foreach ($args['options'] as $key => $value) {
             echo '<option value="' . esc_attr($key) . '"' . selected($key, $args['value'], false) . '>' . esc_html($value) . '</option>';
         }
         echo '</select>';
 
-        $this->printAppendix($args, true);
+        self::printAppendix($args, true);
     }
 
 
@@ -99,7 +98,7 @@ class FormHelper
      *
      * @param array $args
      */
-    public function renderTextArea(array $args)
+    public static function renderTextArea(array $args)
     {
         // Field properties
         $properties = [
@@ -107,9 +106,9 @@ class FormHelper
             'name'      => $args['name'],
         ];
 
-        echo '<textarea ' . $this->printFieldProperties($properties) . '>' . esc_html(implode(PHP_EOL, $args['value'])) . '</textarea>';
+        echo '<textarea ' . self::printFieldProperties($properties) . '>' . esc_html(implode(PHP_EOL, $args['value'])) . '</textarea>';
 
-        $this->printAppendix($args, false);
+        self::printAppendix($args, false);
     }
 
 
@@ -122,7 +121,7 @@ class FormHelper
      * @param array $properties
      * @return string
      */
-    protected function printFieldProperties(array $properties)
+    protected static function printFieldProperties(array $properties)
     {
         $filtered = array_filter($properties,
             // Remove any false-like values (empty strings and false booleans) except for integers.
@@ -149,7 +148,7 @@ class FormHelper
      * @param array $args
      * @param bool $inline
      */
-    protected function printAppendix(array $args, $inline)
+    protected static function printAppendix(array $args, $inline)
     {
         if (isset($args['description'])) {
             echo sprintf('<%1$s class="description">%2$s</%1$s>', $inline ? 'span' : 'p', esc_html($args['description']));
