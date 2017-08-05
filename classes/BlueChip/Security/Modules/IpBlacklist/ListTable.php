@@ -7,7 +7,6 @@ namespace BlueChip\Security\Modules\IpBlacklist;
 
 use BlueChip\Security\Helpers\AdminNotices;
 
-
 /**
  * IP blacklist table
  */
@@ -123,8 +122,8 @@ class ListTable extends \BlueChip\Security\Core\ListTable
                 AdminNotices::SUCCESS
             );
             add_filter('removable_query_args', function ($removable_query_args) {
-               $removable_query_args[] = self::NOTICE_RECORD_REMOVED;
-               return $removable_query_args;
+                $removable_query_args[] = self::NOTICE_RECORD_REMOVED;
+                return $removable_query_args;
             });
         }
         $unlocked = filter_input(INPUT_GET, self::NOTICE_RECORD_UNLOCKED, FILTER_VALIDATE_INT);
@@ -134,8 +133,8 @@ class ListTable extends \BlueChip\Security\Core\ListTable
                 AdminNotices::SUCCESS
             );
             add_filter('removable_query_args', function ($removable_query_args) {
-               $removable_query_args[] = self::NOTICE_RECORD_UNLOCKED;
-               return $removable_query_args;
+                $removable_query_args[] = self::NOTICE_RECORD_UNLOCKED;
+                return $removable_query_args;
             });
         }
     }
@@ -257,10 +256,9 @@ class ListTable extends \BlueChip\Security\Core\ListTable
     {
         // Unlock single record?
         if (($action = filter_input(INPUT_GET, 'action'))) {
-
+            // Get ID of record to act upon.
             $id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
             if (!is_int($id)) {
-                // No record to act upon
                 return;
             }
 
@@ -307,7 +305,7 @@ class ListTable extends \BlueChip\Security\Core\ListTable
      */
     private function explainBanReason($banReason)
     {
-        switch($banReason) {
+        switch ($banReason) {
             case BanReason::LOGIN_LOCKOUT_SHORT:
             case BanReason::LOGIN_LOCKOUT_LONG:
                 return _x('Too many failed login attempts', 'Ban reason', 'bc-security');

@@ -8,7 +8,6 @@ namespace BlueChip\Security\Modules\Log;
 use BlueChip\Security\Modules;
 use Psr\Log;
 
-
 /**
  * Simple PSR-3 compliant logger with database backend.
  *
@@ -144,8 +143,9 @@ class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\
      * @param string $level Log level constant: emergency, alert, critical, error, warning, notice, info or debug.
      * @return mixed Integer code for given log level or null, if unknown level given.
      */
-    public function translateLogLevel($level) {
-        switch($level) {
+    public function translateLogLevel($level)
+    {
+        switch ($level) {
             case Log\LogLevel::EMERGENCY:
                 return 0;
             case Log\LogLevel::ALERT:

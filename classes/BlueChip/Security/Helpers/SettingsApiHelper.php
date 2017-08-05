@@ -55,12 +55,12 @@ class SettingsApiHelper
     protected $option_name;
 
     /**
-     * @var string Most recently set page serves as default $page value for add_settings_section() and add_settings_field() functions.
+     * @var string Recent page serves as default $page for add_settings_field() and add_settings_section() functions.
      */
     protected $recent_page;
 
     /**
-     * @var string Most recently added section serves as default $section value for add_settings_field() function.
+     * @var string Recent section serves as default $section for add_settings_field() function.
      */
     protected $recent_section;
 
@@ -117,7 +117,7 @@ class SettingsApiHelper
     }
 
 
-	//// WP wrappers ///////////////////////////////////////////////////////////
+    //// WP wrappers ///////////////////////////////////////////////////////////
 
     /**
      * Helper function that wraps call to add_settings_section().
@@ -177,7 +177,6 @@ class SettingsApiHelper
                 'value' => $this->settings[$key],
             ])
         );
-
     }
 
 

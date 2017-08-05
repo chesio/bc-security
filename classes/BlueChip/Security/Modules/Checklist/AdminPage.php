@@ -27,7 +27,7 @@ class AdminPage extends \BlueChip\Security\Core\AdminPage
     /**
      * @param \wpdb $wpdb WordPress database access abstraction object
      */
-    function __construct(\wpdb $wpdb)
+    public function __construct(\wpdb $wpdb)
     {
         $this->page_title = _x('Security Checklist', 'Dashboard page title', 'bc-security');
         $this->menu_title = _x('Checklist', 'Dashboard menu item name', 'bc-security');
@@ -214,7 +214,9 @@ class AdminPage extends \BlueChip\Security\Core\AdminPage
         // Get (filtered) list of obvious usernames to test.
         $obvious = apply_filters(Hooks::OBVIOUS_USERNAMES, ['admin', 'administrator']);
         // Check for existing usernames.
-        $existing = array_filter($obvious, function ($username) { return get_user_by('login', $username); });
+        $existing = array_filter($obvious, function ($username) {
+            return get_user_by('login', $username);
+        });
 
         $this->renderCheckRow(
             __('No Obvious Usernames', 'bc-security'),

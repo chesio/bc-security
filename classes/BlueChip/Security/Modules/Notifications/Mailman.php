@@ -7,7 +7,6 @@ namespace BlueChip\Security\Modules\Notifications;
 
 use BlueChip\Security\Modules\Notifications\AdminPage;
 
-
 abstract class Mailman
 {
     /**

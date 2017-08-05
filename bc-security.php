@@ -20,7 +20,12 @@ if (version_compare(PHP_VERSION, '5.6', '<')) {
     // Warn user that his/her PHP version is too low for this plugin to function.
     add_action('admin_notices', function () {
         echo '<div class="error"><p>';
-        echo esc_html('BC Security requires PHP 5.6 to function properly. Please upgrade your PHP version. The plugin has been auto-deactivated.', 'bc-security');
+        echo esc_html(
+            sprintf(
+                __('BC Security plugin requires PHP 5.6 to function properly, but you have version %s installed. The plugin has been auto-deactivated.', 'bc-security'),
+                PHP_VERSION
+            )
+        );
         echo '</p></div>';
         // https://make.wordpress.org/plugins/2015/06/05/policy-on-php-versions/
         if (isset($_GET['activate'])) {

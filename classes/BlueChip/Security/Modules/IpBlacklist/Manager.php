@@ -284,7 +284,9 @@ class Manager implements \BlueChip\Security\Modules\Installable
         // Prepare query.
         $query = sprintf(
             "DELETE FROM {$this->blacklist_table} WHERE %s",
-            implode(' OR ', array_map(function ($id) { return sprintf('id = %d', $id); }, $ids))
+            implode(' OR ', array_map(function ($id) {
+                return sprintf('id = %d', $id);
+            }, $ids))
         );
         // Execute query.
         $result = $this->wpdb->query($query);
@@ -333,7 +335,9 @@ class Manager implements \BlueChip\Security\Modules\Installable
         $query = sprintf(
             "UDPATE {$this->blacklist_table} SET release_time = '%s' WHERE %s",
             date(self::MYSQL_DATETIME_FORMAT, current_time('timestamp')),
-            implode(' OR ', array_map(function ($id) { return sprintf('id = %d', $id); }, $ids))
+            implode(' OR ', array_map(function ($id) {
+                return sprintf('id = %d', $id);
+            }, $ids))
         );
         // Execute query.
         $result = $this->wpdb->query($query);

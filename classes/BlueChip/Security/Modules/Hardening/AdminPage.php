@@ -17,7 +17,7 @@ class AdminPage extends \BlueChip\Security\Core\AdminSettingsPage
     /**
      * @param \BlueChip\Security\Modules\Hardening\Settings $settings Hardening settings
      */
-    function __construct(Settings $settings)
+    public function __construct(Settings $settings)
     {
         parent::__construct($settings);
 

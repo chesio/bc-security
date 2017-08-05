@@ -19,7 +19,7 @@ abstract class AdminSettingsPage extends AdminPage
     /**
      * @param \BlueChip\Security\Core\Settings $settings
      */
-    function __construct($settings)
+    public function __construct($settings)
     {
         $this->settings_api_helper = new \BlueChip\Security\Helpers\SettingsApiHelper($settings);
 

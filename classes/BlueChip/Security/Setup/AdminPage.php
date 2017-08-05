@@ -18,7 +18,7 @@ class AdminPage extends \BlueChip\Security\Core\AdminSettingsPage
     /**
      * @param \BlueChip\Security\Setup\Settings $settings Basic settings
      */
-    function __construct(Settings $settings)
+    public function __construct(Settings $settings)
     {
         parent::__construct($settings);
 
@@ -72,7 +72,11 @@ class AdminPage extends \BlueChip\Security\Core\AdminSettingsPage
     public function renderSiteConnectionHint()
     {
         $list = IpAddress::enlist(true);
-        echo '<p>' . esc_html__('Your server provides following information about remote addresses:', 'bc-security') . '</p>';
+        
+        echo '<p>';
+        echo esc_html__('Your server provides following information about remote addresses:', 'bc-security');
+        echo '</p>';
+
         echo '<ol>';
         foreach ($list as $type => $explanation) {
             if (($ip_address = IpAddress::getRaw($type))) {

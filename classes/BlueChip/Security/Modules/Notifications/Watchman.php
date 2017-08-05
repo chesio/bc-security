@@ -11,7 +11,6 @@ use BlueChip\Security\Modules\Log\Logger;
 use BlueChip\Security\Modules\Checksums;
 use BlueChip\Security\Modules\Login;
 
-
 class Watchman implements Modules\Loadable, Modules\Initializable, Modules\Activable
 {
     /**
@@ -192,7 +191,7 @@ class Watchman implements Modules\Loadable, Modules\Initializable, Modules\Activ
         }
 
         // Filter out any updates for which notification has been sent already.
-        $plugin_updates = array_filter($update_transient->response, function($plugin_update_data, $plugin_file) {
+        $plugin_updates = array_filter($update_transient->response, function ($plugin_update_data, $plugin_file) {
             $notified_version = get_site_transient($this->makeUpdateCheckTransientName('plugin' . ':' . $plugin_file));
             return empty($notified_version) || version_compare($notified_version, $plugin_update_data->new_version, '<');
         }, ARRAY_FILTER_USE_BOTH);
@@ -245,7 +244,7 @@ class Watchman implements Modules\Loadable, Modules\Initializable, Modules\Activ
         }
 
         // Filter out any updates for which notification has been sent already.
-        $theme_updates = array_filter($update_transient->response, function($theme_update_data, $theme_slug) {
+        $theme_updates = array_filter($update_transient->response, function ($theme_update_data, $theme_slug) {
             $last_version = get_site_transient($this->makeUpdateCheckTransientName('theme' . ':' . $theme_slug));
             return empty($last_version) || version_compare($last_version, $theme_update_data->new_version, '<');
         }, ARRAY_FILTER_USE_BOTH);

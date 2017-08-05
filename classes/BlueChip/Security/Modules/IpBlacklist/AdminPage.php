@@ -70,7 +70,7 @@ class AdminPage extends \BlueChip\Security\Core\AdminPage
      * @param \BlueChip\Security\Modules\IpBlacklist\Manager $bl_manager
      * @param \BlueChip\Security\Core\CronJob $bl_cleaner
      */
-    function __construct(Manager $bl_manager, \BlueChip\Security\Core\CronJob $bl_cleaner)
+    public function __construct(Manager $bl_manager, \BlueChip\Security\Core\CronJob $bl_cleaner)
     {
         $this->page_title = _x('IP Blacklist', 'Dashboard page title', 'bc-security');
         $this->menu_title = _x('IP Blacklist', 'Dashboard menu item name', 'bc-security');
@@ -315,11 +315,13 @@ class AdminPage extends \BlueChip\Security\Core\AdminPage
 
         if ($this->bl_manager->lock($ip_address, $duration, $scope, BanReason::MANUALLY_BLACKLISTED, $comment)) {
             AdminNotices::add(
-                sprintf(__('IP address %s has been added to blacklist.', 'bc-security'), $ip_address), AdminNotices::SUCCESS
+                sprintf(__('IP address %s has been added to blacklist.', 'bc-security'), $ip_address),
+                AdminNotices::SUCCESS
             );
         } else {
             AdminNotices::add(
-               __('Failed to add IP address to blacklist.', 'bc-security'), AdminNotices::ERROR
+                __('Failed to add IP address to blacklist.', 'bc-security'),
+                AdminNotices::ERROR
             );
         }
     }
@@ -331,11 +333,13 @@ class AdminPage extends \BlueChip\Security\Core\AdminPage
     {
         if ($this->bl_manager->prune()) {
             AdminNotices::add(
-                __('Expired entries have been removed from IP blacklist.', 'bc-security'), AdminNotices::SUCCESS
+                __('Expired entries have been removed from IP blacklist.', 'bc-security'),
+                AdminNotices::SUCCESS
             );
         } else {
             AdminNotices::add(
-               __('Failed to remove expired entries from IP blacklist.', 'bc-security'), AdminNotices::ERROR
+                __('Failed to remove expired entries from IP blacklist.', 'bc-security'),
+                AdminNotices::ERROR
             );
         }
     }
@@ -348,7 +352,8 @@ class AdminPage extends \BlueChip\Security\Core\AdminPage
     {
         $this->bl_cleaner->deactivate();
         AdminNotices::add(
-            __('Automatic pruning of IP blacklist table has been deactivated.', 'bc-security'), AdminNotices::SUCCESS
+            __('Automatic pruning of IP blacklist table has been deactivated.', 'bc-security'),
+            AdminNotices::SUCCESS
         );
     }
 
@@ -360,11 +365,13 @@ class AdminPage extends \BlueChip\Security\Core\AdminPage
     {
         if ($this->bl_cleaner->activate()) {
             AdminNotices::add(
-                __('Automatic pruning of IP blacklist table has been activated.', 'bc-security'), AdminNotices::SUCCESS
+                __('Automatic pruning of IP blacklist table has been activated.', 'bc-security'),
+                AdminNotices::SUCCESS
             );
         } else {
             AdminNotices::add(
-               __('Failed to activate automatic pruning of IP blacklist table.', 'bc-security'), AdminNotices::ERROR
+                __('Failed to activate automatic pruning of IP blacklist table.', 'bc-security'),
+                AdminNotices::ERROR
             );
         }
     }

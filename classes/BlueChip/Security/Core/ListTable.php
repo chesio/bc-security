@@ -86,6 +86,6 @@ class ListTable extends \WP_List_Table
      */
     public function no_items() // @codingStandardsIgnoreLine
     {
-       esc_html_e('No records to display.', 'bc-security');
+        esc_html_e('No records to display.', 'bc-security');
     }
 }

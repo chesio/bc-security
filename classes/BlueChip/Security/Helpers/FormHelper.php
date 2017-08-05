@@ -25,11 +25,11 @@ abstract class FormHelper
     {
         // Field properties
         $properties = [
-            'type'		=> 'checkbox',
-            'value'		=> 'true',
-            'id'		=> $args['label_for'],
-            'name'		=> $args['name'],
-            'checked'	=> boolval($args['value']),
+            'type'      => 'checkbox',
+            'value'     => 'true',
+            'id'        => $args['label_for'],
+            'name'      => $args['name'],
+            'checked'   => boolval($args['value']),
         ];
 
         if (!isset($args['plain'])) {
@@ -82,7 +82,9 @@ abstract class FormHelper
 
         echo '<select ' . self::printFieldProperties($properties) . '>';
         foreach ($args['options'] as $key => $value) {
-            echo '<option value="' . esc_attr($key) . '"' . selected($key, $args['value'], false) . '>' . esc_html($value) . '</option>';
+            echo '<option value="' . esc_attr($key) . '"' . selected($key, $args['value'], false) . '>';
+            echo esc_html($value);
+            echo '</option>';
         }
         echo '</select>';
 
@@ -106,7 +108,9 @@ abstract class FormHelper
             'name'      => $args['name'],
         ];
 
-        echo '<textarea ' . self::printFieldProperties($properties) . '>' . esc_html(implode(PHP_EOL, $args['value'])) . '</textarea>';
+        echo '<textarea ' . self::printFieldProperties($properties) . '>';
+        echo esc_html(implode(PHP_EOL, $args['value']));
+        echo '</textarea>';
 
         self::printAppendix($args, false);
     }
@@ -123,13 +127,16 @@ abstract class FormHelper
      */
     protected static function printFieldProperties(array $properties)
     {
-        $filtered = array_filter($properties,
+        $filtered = array_filter(
+            $properties,
             // Remove any false-like values (empty strings and false booleans) except for integers.
-            function($value) { return is_int($value) || (is_string($value) && !empty($value)) || (is_bool($value) && $value); }
+            function ($value) {
+                return is_int($value) || (is_string($value) && !empty($value)) || (is_bool($value) && $value);
+            }
         );
         // Map keys and values together as key=value
         $mapped = array_map(
-            function($key, $value) {
+            function ($key, $value) {
                 // Boolean values are replaced with key name: checked => true ---> checked="checked"
                 return sprintf('%s="%s"', $key, esc_attr(is_bool($value) ? $key : $value));
             },
@@ -151,7 +158,11 @@ abstract class FormHelper
     protected static function printAppendix(array $args, $inline)
     {
         if (isset($args['description'])) {
-            echo sprintf('<%1$s class="description">%2$s</%1$s>', $inline ? 'span' : 'p', esc_html($args['description']));
+            echo sprintf(
+                '<%1$s class="description">%2$s</%1$s>',
+                $inline ? 'span' : 'p',
+                esc_html($args['description'])
+            );
         } elseif (isset($args['append'])) {
             echo ($inline ? ' ' : '<br>') . esc_html($args['append']);
         }

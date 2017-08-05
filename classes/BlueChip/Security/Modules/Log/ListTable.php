@@ -7,7 +7,6 @@ namespace BlueChip\Security\Modules\Log;
 
 use BlueChip\Security\Modules\IpBlacklist;
 
-
 /**
  * Logs table
  */

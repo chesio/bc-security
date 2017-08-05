@@ -33,7 +33,7 @@ class AdminPage extends \BlueChip\Security\Core\AdminSettingsPage
      * @param \BlueChip\Security\Modules\Log\Settings $settings
      * @param \BlueChip\Security\Modules\Log\Logger $logger
      */
-    function __construct(Settings $settings, Logger $logger)
+    public function __construct(Settings $settings, Logger $logger)
     {
         parent::__construct($settings);
 
