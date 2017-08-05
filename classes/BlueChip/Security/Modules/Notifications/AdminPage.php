@@ -7,7 +7,9 @@ namespace BlueChip\Security\Modules\Notifications;
 
 class AdminPage extends \BlueChip\Security\Core\AdminSettingsPage
 {
-    /** @var string Page slug */
+    /**
+     * @var string Page slug
+     */
     const SLUG = 'bc-security-notifications';
 
 
@@ -84,6 +86,11 @@ class AdminPage extends \BlueChip\Security\Core\AdminSettingsPage
         $settings_api_helper->addSettingsField(
             Settings::THEME_UPDATE_AVAILABLE,
             __('Theme update is available', 'bc-security'),
+            [$form_helper, 'renderCheckbox']
+        );
+        $settings_api_helper->addSettingsField(
+            Settings::CHECKSUMS_VERIFICATION_ERROR,
+            __('Checksums verification results in error', 'bc-security'),
             [$form_helper, 'renderCheckbox']
         );
         $settings_api_helper->addSettingsField(

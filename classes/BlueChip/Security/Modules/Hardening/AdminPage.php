@@ -7,7 +7,9 @@ namespace BlueChip\Security\Modules\Hardening;
 
 class AdminPage extends \BlueChip\Security\Core\AdminSettingsPage
 {
-    /** @var string Page slug */
+    /**
+     * @var string Page slug
+     */
     const SLUG = 'bc-security-hardening';
 
     /**
@@ -24,7 +26,7 @@ class AdminPage extends \BlueChip\Security\Core\AdminSettingsPage
 
 
     /**
-     * Render admin page
+     * Render admin page.
      */
     public function render()
     {

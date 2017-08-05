@@ -36,8 +36,7 @@ class Settings extends \BlueChip\Security\Core\Settings
 
 
     /**
-     * Sanitize settings array: only return known keys, provide default values
-     * for missing keys.
+     * Sanitize settings array: only return known keys, provide default values for missing keys.
      *
      * @param array $s
      * @return array
@@ -95,7 +94,7 @@ class Settings extends \BlueChip\Security\Core\Settings
     /**
      * Get filtered list of usernames to be immediately locked out during login.
      *
-     * @hook bc_security_login_username_blacklist
+     * @hook \BlueChip\Security\Modules\Login\Hooks::USERNAME_BLACKLIST
      *
      * @return array
      */

@@ -27,7 +27,7 @@ class AdminPage extends \BlueChip\Security\Core\AdminSettingsPage
 
 
     /**
-     * Render admin page
+     * Render admin page.
      */
     public function render()
     {
@@ -84,6 +84,11 @@ class AdminPage extends \BlueChip\Security\Core\AdminSettingsPage
     }
 
 
+    /**
+     * Return available connection options in format suitable for <select> field.
+     *
+     * @return array
+     */
     private function getConnectionOptions()
     {
         $list = IpAddress::enlist(true);

@@ -10,7 +10,9 @@ use BlueChip\Security\Modules\Notifications\AdminPage;
 
 abstract class Mailman
 {
-    /** @var string End-of-line character for email body. */
+    /**
+     * @var string End-of-line character for email body.
+     */
     const EOL = "\r\n";
 
     /**

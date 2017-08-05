@@ -15,13 +15,19 @@ if (!class_exists('WP_List_Table')) {
  */
 class ListTable extends \WP_List_Table
 {
-    /** @var string URL of admin page where the list table is displayed */
+    /**
+     * @var string URL of admin page where the list table is displayed
+     */
     protected $url;
 
-    /** @var string Sorting direction (asc or desc) */
+    /**
+     * @var string Sorting direction (asc or desc)
+     */
     protected $order = 'desc';
 
-    /** @var string Sorting column */
+    /**
+     * @var string Sorting column
+     */
     protected $order_by = 'id';
 
 
@@ -57,6 +63,7 @@ class ListTable extends \WP_List_Table
 
     /**
      * Return content for "checkbox" column.
+     *
      * @param array $item
      * @return string
      */
@@ -68,6 +75,7 @@ class ListTable extends \WP_List_Table
 
     /**
      * Return value for default columns (with no extra value processing).
+     *
      * @param array $item
      * @param string $column_name
      * @return string

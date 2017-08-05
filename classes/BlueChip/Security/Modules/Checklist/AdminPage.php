@@ -7,21 +7,27 @@ namespace BlueChip\Security\Modules\Checklist;
 
 class AdminPage extends \BlueChip\Security\Core\AdminPage
 {
-    /** @var string Page slug */
+    /**
+     * @var string Page slug
+     */
     const SLUG = 'bc-security-checklist';
 
-    /** @var string Prefix of default, MD5-based hashes */
+    /**
+     * @var string Prefix of default, MD5-based hashes
+     */
     const WP_OLD_HASH_PREFIX = '$P$';
 
 
-    /** @var \wpdb WordPress database access abstraction object */
+    /**
+     * @var \wpdb WordPress database access abstraction object
+     */
     private $wpdb;
 
 
     /**
      * @param \wpdb $wpdb WordPress database access abstraction object
      */
-    function __construct($wpdb)
+    function __construct(\wpdb $wpdb)
     {
         $this->page_title = _x('Security Checklist', 'Dashboard page title', 'bc-security');
         $this->menu_title = _x('Checklist', 'Dashboard menu item name', 'bc-security');
@@ -48,7 +54,14 @@ class AdminPage extends \BlueChip\Security\Core\AdminPage
 
         $this->renderPhpFileEditationStatus();
 
+        $this->renderDirectoryListingDisabled();
+
         $this->renderPhpFileBlockedInUploadsDir();
+
+        if (defined('WP_ENV') && (WP_ENV === 'production')) {
+            // Only check in production environment, as in other environments error display might be active on purpose.
+            $this->renderDisplayOfErrorsIsOff();
+        }
 
         if (WP_DEBUG && WP_DEBUG_LOG) {
             // Only check, if there is a chance that debug.log is present.
@@ -79,10 +92,11 @@ class AdminPage extends \BlueChip\Security\Core\AdminPage
 
     /**
      * Render single table row.
-     * @param string $name
-     * @param string $description
-     * @param bool|null $status
-     * @param array $detail
+     *
+     * @param string $name Check name.
+     * @param string $description Check description.
+     * @param bool|null $status Check status.
+     * @param array $detail Explanation for any particular status [optional].
      */
     private function renderCheckRow($name, $description, $status, array $detail = [])
     {
@@ -115,6 +129,24 @@ class AdminPage extends \BlueChip\Security\Core\AdminPage
 
 
     /**
+     * Render status info about directory listings being disabled.
+     */
+    private function renderDirectoryListingDisabled()
+    {
+        $this->renderCheckRow(
+            __('Directory Listing Disabled', 'bc-security'),
+            sprintf(__('A common security practice is to disable <a href="%s">directory listings</a>.', 'bc-security'), 'https://wiki.apache.org/httpd/DirectoryListings'),
+            Helper::isDirectoryListingDisabled(),
+            [
+                null => esc_html__('BC Security has failed to determine whether directory listing is disabled.', 'bc-security'),
+                true => esc_html__('It seems that directory listing is disabled.', 'bc-security'),
+                false => esc_html__('It seems that directory listing is not disabled!', 'bc-security'),
+            ]
+        );
+    }
+
+
+    /**
      * Render status info about php files being unaccessible from within uploads directory.
      */
     private function renderPhpFileBlockedInUploadsDir()
@@ -127,6 +159,28 @@ class AdminPage extends \BlueChip\Security\Core\AdminPage
                 null => esc_html__('BC Security has failed to determine whether PHP files can be executed from uploads directory.', 'bc-security'),
                 true => esc_html__('It seems that PHP files cannot be executed from uploads directory.', 'bc-security'),
                 false => esc_html__('It seems that PHP files can be executed from uploads directory!', 'bc-security'),
+            ]
+        );
+    }
+
+
+    /**
+     * Render status info about whether display_errors PHP config is off by default.
+     */
+    public function renderDisplayOfErrorsIsOff()
+    {
+        $this->renderCheckRow(
+            __('Display of PHP errors is off', 'bc-security'),
+            sprintf(
+                __('<a href="%1$s">Errors should never be printed</a> to the screen as part of the output on production systems. In WordPress environment, <a href="%2$s">display of errors can lead to path disclosures</a> when directly loading certain files.', 'bc-security'),
+                'http://php.net/manual/en/errorfunc.configuration.php#ini.display-errors',
+                'https://make.wordpress.org/core/handbook/testing/reporting-security-vulnerabilities/#why-are-there-path-disclosures-when-directly-loading-certain-files'
+            ),
+            Helper::isErrorsDisplayOff(),
+            [
+                null => esc_html__('BC Security has failed to determine whether display of errors is turned off by default.', 'bc-security'),
+                true => esc_html__('It seems that display of errors is turned off by default.', 'bc-security'),
+                false => esc_html__('It seems that display of errors is turned on by default!', 'bc-security'),
             ]
         );
     }
@@ -153,7 +207,7 @@ class AdminPage extends \BlueChip\Security\Core\AdminPage
     /**
      * Render status info about no obvious usernames being present on the system.
      *
-     * @hook bc_security_status_obvious_usernames Filters list of obvious usernames to check and report.
+     * @hook \BlueChip\Security\Modules\Checklist\Hooks::OBVIOUS_USERNAMES Filters list of obvious usernames to check and report.
      */
     private function renderNoObviousUsernamesStatus()
     {

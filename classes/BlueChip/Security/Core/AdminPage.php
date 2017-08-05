@@ -34,6 +34,7 @@ abstract class AdminPage
 
     /**
      * Helper method to get URL of admin page identified by $slug.
+     *
      * @param string $slug
      * @return string
      */

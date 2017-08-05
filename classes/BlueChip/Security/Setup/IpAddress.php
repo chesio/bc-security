@@ -39,12 +39,10 @@ abstract class IpAddress
 
 
     /**
-     * Get remote address according to provided $type (with fallback to
-     * REMOTE_ADDR).
+     * Get remote address according to provided $type (with fallback to REMOTE_ADDR).
      *
      * @param string $type
-     * @return string Remote IP or empty string, if remote IP could not been
-     * determined.
+     * @return string Remote IP or empty string, if remote IP could not been determined.
      */
     public static function get($type)
     {
@@ -98,6 +96,7 @@ abstract class IpAddress
 
     /**
      * Get the first from possibly multiple $ip_addresses.
+     *
      * @param string $ip_addresses
      * @return string
      */

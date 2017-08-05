@@ -5,6 +5,7 @@
 
 namespace BlueChip\Security\Modules\Events;
 
+use BlueChip\Security\Modules\Checksums;
 use BlueChip\Security\Modules\Log;
 use BlueChip\Security\Modules\Login;
 
@@ -50,14 +51,17 @@ class Monitor implements \BlueChip\Security\Modules\Initializable
         // Log the following BC Security events:
         // - lockout event
         add_action(Login\Hooks::LOCKOUT_EVENT, [$this, 'logLockoutEvent'], 10, 3);
+        // - checksum verification alert
+        add_action(Checksums\Hooks::CHECKSUMS_VERIFICATION_ALERT, [$this, 'logChecksumsVerificationAlert'], 10, 2);
     }
 
 
     /**
      * Log 404 event (main queries that returned no results).
      *
-     * Note: `parse_query` action cannot be used for 404 detection, because 404
-     * state can be set later (see WP::main() method).
+     * Note: `parse_query` action cannot be used for 404 detection, because 404 state can be set as late as in WP::main().
+     *
+     * @see WP::main()
      *
      * @param \WP $wp
      */
@@ -74,6 +78,7 @@ class Monitor implements \BlueChip\Security\Modules\Initializable
 
     /**
      * Log when bad cookie is used for authentication.
+     *
      * @param array $cookie_elements
      */
     public function logBadCookie(array $cookie_elements)
@@ -114,5 +119,17 @@ class Monitor implements \BlueChip\Security\Modules\Initializable
     public function logLockoutEvent($remote_address, $username, $duration)
     {
         do_action(Log\Action::EVENT, Log\Event::LOGIN_LOCKOUT, ['ip_address' => $remote_address, 'duration' => $duration, 'username' => $username]);
+    }
+
+
+    /**
+     * Log checksums verification alert.
+     *
+     * @param array $modified_files Files for which official checksums do not match.
+     * @param array $unknown_files Files that are present on file system but not in official checksums.
+     */
+    public function logChecksumsVerificationAlert(array $modified_files, array $unknown_files)
+    {
+        do_action(Log\Action::EVENT, Log\Event::CHECKSUMS_VERIFICATION_ALERT, ['modified_files' => $modified_files, 'unknown_files' => $unknown_files]);
     }
 }

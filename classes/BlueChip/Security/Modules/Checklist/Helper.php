@@ -12,8 +12,7 @@ abstract class Helper
      *
      * @see wp_debug_mode()
      *
-     * @return bool|null False, if error log can be accessed, true otherwise.
-     *                   Null return value means test failed to determine valid result.
+     * @return bool|null False, if error log can be accessed, true otherwise. Null return value means test failed to determine valid result.
      */
     public static function isAccessToErrorLogForbidden()
     {
@@ -28,8 +27,7 @@ abstract class Helper
     /**
      * Check, whether it is possible to access a temporary PHP file added to uploads directory.
      *
-     * @return mixed False, if PHP file can be accessed, true otherwise.
-     *               Null return value means test failed to determine valid result.
+     * @return bool|null False, if PHP file can be accessed, true otherwise. Null return value means test failed to determine valid result.
      */
     public static function isAccessToPhpFilesInUploadsDirForbidden()
     {
@@ -83,25 +81,89 @@ abstract class Helper
      */
     public static function isAccessToUrlForbidden($url, $body = null)
     {
-        // Try to access provided URL.
-        $response = wp_remote_get($url);
+        // Try to get provided URL. Use HEAD request for simplicity, if response body is of no interest.
+        $response = is_string($body) ? wp_remote_get($url) : wp_remote_head($url);
 
-        if (is_wp_error($response)) {
-            // Assume nothing on error.
-            return null;
-        } else {
-            switch ($response['response']['code']) {
-                case 200:
-                    // Status suggest URL can be accessed, check response body too, if given.
-                    return is_string($body) ? (($response['body'] === $body) ? false : null) : false;
-                case 403:
-                    return true;
-                case 404:
-                    return false;
-                default:
-                    // Otherwise assume nothing.
-                    return null;
-            }
+        switch (wp_remote_retrieve_response_code($response)) {
+            case 200:
+                // Status suggests that URL can be accessed, but check response body too, if given.
+                return is_string($body) ? ((wp_remote_retrieve_body($response) === $body) ? false : null) : false;
+            case 403:
+                // Status suggests that access to URL is forbidden.
+                return true;
+            case 404:
+                // Status suggests that no resource has been found, but access to URL is not forbidden.
+                return false;
+            default:
+                // Otherwise assume nothing.
+                return null;
         }
+    }
+
+
+    /**
+     * Check, if directory listing is disabled.
+     *
+     * @internal Credits for the check go to Wordfence Security.
+     *
+     * @return null|bool True, if directore listings are disabled, false otherwise. Null return value means test failed to determine valid result.
+     */
+    public static function isDirectoryListingDisabled()
+    {
+        $upload_paths = wp_upload_dir();
+        if (!isset($upload_paths['baseurl'])) {
+            return null;
+        }
+
+        $response = wp_remote_get($upload_paths['baseurl']);
+        $response_body = wp_remote_retrieve_body($response);
+
+        return stripos($response_body, '<title>Index of') === false;
+    }
+
+
+    /**
+     * Check, if display of PHP errors is off by default.
+     *
+     * Method operates by creating temporary PHP file in wp-content directory that only run ini_get('display_errors')
+     * and prints either "OK" or "KO" as response based on the configuration value.
+     *
+     * @return null|bool True, if display_errors is off, false otherwise. Null return value means test failed to determine valid result.
+     */
+    public static function isErrorsDisplayOff()
+    {
+        // Craft temporary file name.
+        $name = sprintf('bc-security-checklist-test-error-display-%s.php', md5(rand()));
+
+        // The file is going to be created in wp-content directory.
+        $path = WP_CONTENT_DIR . '/' . $name;
+        $url = WP_CONTENT_URL . '/' . $name;
+
+        // Note: we rely on the fact that empty('0') is true here.
+        $php_snippet = "<?php echo empty(ini_get('display_errors')) ? 'OK' : 'KO';";
+
+        // Write temporary file...
+        if (file_put_contents($path, $php_snippet) === false) {
+            // ...bail on failure.
+            return null;
+        }
+
+        $status = null;
+
+        // Attempt to fetch the temporary PHP file and retrieve the body.
+        switch (wp_remote_retrieve_body(wp_remote_get($url))) {
+            case 'OK':
+                $status = true;
+                break;
+            case 'KO':
+                $status = false;
+                break;
+        }
+
+        // Remove temporary PHP file.
+        unlink($path);
+
+        // Report on status.
+        return $status;
     }
 }

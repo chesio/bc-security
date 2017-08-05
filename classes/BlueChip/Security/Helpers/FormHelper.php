@@ -49,6 +49,7 @@ class FormHelper
 
     /**
      * Render <input type="number> element.
+     *
      * @param array $args
      */
     public function renderNumberInput(array $args)
@@ -70,6 +71,7 @@ class FormHelper
 
     /**
      * Render <select /> element.
+     *
      * @param array $args
      */
     public function renderSelect(array $args)
@@ -141,8 +143,9 @@ class FormHelper
 
 
     /**
-     * Print optional appendix information provided by "description" or "append"
-     * keys in $args. Note that "description" takes precedence over "append".
+     * Print optional appendix information provided by "description" or "append" keys in $args.
+     * Note that "description" takes precedence over "append".
+     *
      * @param array $args
      * @param bool $inline
      */

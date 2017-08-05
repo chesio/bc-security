@@ -8,21 +8,30 @@ namespace BlueChip\Security\Modules\Notifications;
 use BlueChip\Security\Helpers\Is;
 use BlueChip\Security\Modules;
 use BlueChip\Security\Modules\Log\Logger;
-use BlueChip\Security\Modules\Login\Hooks;
+use BlueChip\Security\Modules\Checksums;
+use BlueChip\Security\Modules\Login;
 
 
 class Watchman implements Modules\Loadable, Modules\Initializable, Modules\Activable
 {
-    /** @var string Remote IP address */
+    /**
+     * @var string Remote IP address
+     */
     private $remote_address;
 
-    /** @var \BlueChip\Security\Modules\Notifications\Settings */
+    /**
+     * @var \BlueChip\Security\Modules\Notifications\Settings
+     */
     private $settings;
 
-    /** @var \BlueChip\Security\Modules\Log\Logger */
+    /**
+     * @var \BlueChip\Security\Modules\Log\Logger
+     */
     private $logger;
 
-    /** @var array List of notifications recipients */
+    /**
+     * @var array List of notifications recipients
+     */
     private $recipients;
 
 
@@ -79,7 +88,11 @@ class Watchman implements Modules\Loadable, Modules\Initializable, Modules\Activ
             add_action('wp_login', [$this, 'watchWpLogin'], 10, 2);
         }
         if ($this->settings[Settings::KNOWN_IP_LOCKOUT]) {
-            add_action(Hooks::LOCKOUT_EVENT, [$this, 'watchLockoutEvents'], 10, 3);
+            add_action(Login\Hooks::LOCKOUT_EVENT, [$this, 'watchLockoutEvents'], 10, 3);
+        }
+        if ($this->settings[Settings::CHECKSUMS_VERIFICATION_ERROR]) {
+            add_action(Checksums\Hooks::CHECKSUMS_RETRIEVAL_FAILED, [$this, 'watchChecksumsRetrievalFailed'], 10, 1);
+            add_action(Checksums\Hooks::CHECKSUMS_VERIFICATION_ALERT, [$this, 'watchChecksumsVerificationAlert'], 10, 2);
         }
     }
 
@@ -315,13 +328,60 @@ class Watchman implements Modules\Loadable, Modules\Initializable, Modules\Activ
 
 
     /**
-     * Send email notification with given $subject and $message to recipients
-     * configured in plugin settings.
+     * Send notification if checksums verification found files with non-matching checksum.
+     *
+     * @param array $modified_files Files for which official checksums do not match.
+     * @param array $unknown_files Files that are present on file system but not in official checksums.
+     */
+    public function watchChecksumsVerificationAlert(array $modified_files, array $unknown_files)
+    {
+        $subject = __('Checksums verification alert', 'bc-security');
+        $message = [];
+
+        if (!empty($modified_files)) {
+            $message = array_merge(
+                $message,
+                __('Official checksums do not match for the following files:', 'bc-security'),
+                $modified_files
+            );
+        }
+
+        if (!empty($unknown_files)) {
+            $message = array_merge(
+                $message,
+                __('Following files are present on the file system, but not in official checksums:', 'bc-security'),
+                $unknown_files
+            );
+        }
+
+        // Append list of matched files to the message and send an email.
+        $this->notify($subject, $message);
+    }
+
+
+    /**
+     * Send notification if checksums retrieval from WordPress.org API failed.
+     *
+     * @param string $url
+     */
+    public function watchChecksumsRetrievalFailed($url)
+    {
+        $subject = __('Checksums verification failed', 'bc-security');
+        $message = sprintf(
+            __('Checksums verification has been aborted, because official checksums could not be read from %s.', 'bc-security'),
+            $url
+        );
+
+        $this->notify($subject, $message);
+    }
+
+
+    /**
+     * Send email notification with given $subject and $message to recipients configured in plugin settings.
      *
      * @param string $subject
      * @param array|string $message
-     * @return null|false|true Null, if there are no recipients configured.
-     *   True, if email has been sent, false otherwise.
+     * @return null|false|true Null, if there are no recipients configured. True, if email has been sent, false otherwise.
      */
     private function notify($subject, $message)
     {

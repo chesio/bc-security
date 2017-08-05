@@ -72,13 +72,13 @@ class AdminPage extends \BlueChip\Security\Core\AdminSettingsPage
             Settings::LOG_MAX_AGE,
             __('Maximum age', 'bc-security'),
             [$form_helper, 'renderNumberInput'],
-            [ 'append' => __('in days', 'bc-security'), ]
+            [ 'append' => __('days', 'bc-security'), ]
         );
         $settings_api_helper->addSettingsField(
             Settings::LOG_MAX_SIZE,
             __('Maximum size', 'bc-security'),
             [$form_helper, 'renderNumberInput'],
-            [ 'append' => __('in thousands', 'bc-security'), ]
+            [ 'append' => __('thousands', 'bc-security'), ]
         );
     }
 
@@ -119,7 +119,7 @@ class AdminPage extends \BlueChip\Security\Core\AdminSettingsPage
     public function renderCleanupConfigurationHint()
     {
         echo '<p>';
-        echo esc_html__('Logs are cleaned automatically based on the configuration below.', 'bc-security');
+        echo esc_html__('Logs are cleaned automatically once a day based on the configuration below.', 'bc-security');
         echo '</p>';
     }
 
@@ -147,7 +147,7 @@ class AdminPage extends \BlueChip\Security\Core\AdminSettingsPage
 
 
     /**
-     * Initialize list table instance
+     * Initialize list table instance.
      */
     private function initListTable()
     {

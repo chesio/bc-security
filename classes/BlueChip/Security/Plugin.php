@@ -41,7 +41,7 @@ class Plugin
      *
      * @param \wpdb $wpdb WordPress database access abstraction object
      */
-    public function __construct($wpdb)
+    public function __construct(\wpdb $wpdb)
     {
         $this->wpdb = $wpdb;
 
@@ -68,6 +68,7 @@ class Plugin
 
     /**
      * Construct plugin settings.
+     *
      * @return array
      */
     private function constructSettings()
@@ -84,15 +85,17 @@ class Plugin
 
     /**
      * Construct plugin modules.
+     *
      * @param \wpdb $wpdb
      * @param string $remote_address
      * @param string $server_address
      * @param array $settings
      * @return array
      */
-    private function constructModules($wpdb, $remote_address, $server_address, $settings)
+    private function constructModules(\wpdb $wpdb, $remote_address, $server_address, array $settings)
     {
         $logger     = new Modules\Log\Logger($wpdb, $remote_address);
+        $verifier   = new Modules\Checksums\Verifier();
         $monitor    = new Modules\Events\Monitor($remote_address, $server_address);
         $notifier   = new Modules\Notifications\Watchman($settings['notifications'], $remote_address, $logger);
         $hardening  = new Modules\Hardening\Core($settings['hardening']);
@@ -103,6 +106,7 @@ class Plugin
 
         return [
             'logger'            => $logger,
+            'checksum-verifier' => $verifier,
             'events-monitor'    => $monitor,
             'notifier'          => $notifier,
             'hardening-core'    => $hardening,
@@ -116,6 +120,7 @@ class Plugin
 
     /**
      * Construct plugin cron jobs.
+     *
      * @param array $settings
      * @param array $modules
      * @return array
@@ -142,6 +147,12 @@ class Plugin
                 'bc-security/logs-clean-up-by-size',
                 [$modules['logger'], 'pruneBySize'],
                 [$settings['log']->getMaxSize()]
+            ),
+            'checksum-verifier' => new Core\CronJob(
+                '04:05:06',
+                Core\CronJob::RECUR_DAILY,
+                'bc-security/checksum-verifier',
+                [$modules['checksum-verifier'], 'runCheck']
             ),
         ];
     }

@@ -12,16 +12,24 @@ use BlueChip\Security\Modules\IpBlacklist;
  */
 class Gatekeeper implements \BlueChip\Security\Modules\Initializable, \BlueChip\Security\Modules\Loadable
 {
-    /** @var string */
+    /**
+     * @var string
+     */
     private $remote_address;
 
-    /** @var \BlueChip\Security\Modules\Login\Settings */
+    /**
+     * @var \BlueChip\Security\Modules\Login\Settings
+     */
     private $settings;
 
-    /** @var \BlueChip\Security\Modules\Login\Bookkeeper */
+    /**
+     * @var \BlueChip\Security\Modules\Login\Bookkeeper
+     */
     private $bookkeeper;
 
-    /** @var \BlueChip\Security\Modules\IpBlacklist\Manager */
+    /**
+     * @var \BlueChip\Security\Modules\IpBlacklist\Manager
+     */
     private $bl_manager;
 
 
@@ -76,6 +84,7 @@ class Gatekeeper implements \BlueChip\Security\Modules\Initializable, \BlueChip\
 
     /**
      * Let generic `authentication_failed` error shake the login form.
+     *
      * @param array $error_codes
      * @return array
      */
@@ -213,7 +222,7 @@ class Gatekeeper implements \BlueChip\Security\Modules\Initializable, \BlueChip\
     /**
      * Lock out remote IP address for $duration seconds
      *
-     * @hook bc_security_login_lockout_event
+     * @hook \BlueChip\Security\Modules\Login\Hooks::LOCKOUT_EVENT
      *
      * @param string $username Username that triggered the lockout
      * @param int $duration Duration (in secs) of lockout

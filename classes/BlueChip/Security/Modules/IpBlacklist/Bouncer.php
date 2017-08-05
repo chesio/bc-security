@@ -12,10 +12,14 @@ namespace BlueChip\Security\Modules\IpBlacklist;
  */
 class Bouncer implements \BlueChip\Security\Modules\Initializable, \BlueChip\Security\Modules\Loadable
 {
-    /** @var \BlueChip\Security\Modules\IpBlacklist\Manager */
+    /**
+     * @var \BlueChip\Security\Modules\IpBlacklist\Manager
+     */
     private $bl_manager;
 
-    /** @var string Remote IP address */
+    /**
+     * @var string Remote IP address
+     */
     private $remote_address;
 
 

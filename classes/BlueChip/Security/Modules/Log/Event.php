@@ -7,10 +7,8 @@ namespace BlueChip\Security\Modules\Log;
 
 use Psr\Log\LogLevel;
 
-
 /**
- * Every event must be constructed using event ID. All other event properties
- * can be inferred from event ID.
+ * Every event must be constructed using event ID. All other event properties can be inferred from event ID.
  */
 class Event
 {
@@ -19,21 +17,32 @@ class Event
     const LOGIN_LOCKOUT = 'login_lockdown';
     const LOGIN_SUCCESSFUL = 'login_success';
     const QUERY_404 = 'query_404';
+    const CHECKSUMS_VERIFICATION_ALERT = 'checksums_verification_alert';
 
 
-    /** @var string Unique ID */
+    /**
+     * @var string Unique ID
+     */
     private $id;
 
-    /** @var string Human readable name */
+    /**
+     * @var string Human readable name
+     */
     private $name;
 
-    /** @var string Log level */
+    /**
+     * @var string Log level
+     */
     private $level;
 
-    /** @var string Log message */
+    /**
+     * @var string Log message
+     */
     private $message;
 
-    /** @var array Required context keys */
+    /**
+     * @var array Required context keys
+     */
     private $context;
 
 
@@ -141,12 +150,25 @@ class Event
                     __('Main query returned no results (404 page) for request {request}.', 'bc-security'),
                     ['request' => __('Request URI', 'bc-security')]
                 );
+            case self::CHECKSUMS_VERIFICATION_ALERT:
+                return new self(
+                    $id,
+                    __('Checksums verification alert', 'bc-security'),
+                    LogLevel::WARNING,
+                    __('Official checksums do not match for the following files: {files}.', 'bc-security'),
+                    ['modified_files' => __('Modified files', 'bc-security'), 'unknown_files' => __('Unknown files', 'bc-security')]
+                );
             default:
                 return null;
         }
     }
 
 
+    /**
+     * Return a list of all declared events.
+     *
+     * @return array
+     */
     public static function enlist()
     {
         return [
@@ -155,6 +177,7 @@ class Event
             self::LOGIN_SUCCESSFUL,
             self::LOGIN_LOCKOUT,
             self::QUERY_404,
+            self::CHECKSUMS_VERIFICATION_ALERT,
         ];
     }
 }

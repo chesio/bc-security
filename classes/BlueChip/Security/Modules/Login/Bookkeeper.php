@@ -10,25 +10,35 @@ namespace BlueChip\Security\Modules\Login;
  */
 class Bookkeeper implements \BlueChip\Security\Modules\Installable
 {
-    /** @var string Name of DB table where failed logins are stored */
+    /**
+     * @var string Name of DB table where failed logins are stored
+     */
     const FAILED_LOGINS_TABLE = 'bc_security_failed_logins';
 
-    /** @var string Date format accepted by MySQL */
+    /**
+     * @var string Date format accepted by MySQL
+     */
     const MYSQL_DATETIME_FORMAT = 'Y-m-d H:i:s';
 
-    /** @var string Name of DB table where failed logins are stored (including table prefix) */
+    /**
+     * @var string Name of DB table where failed logins are stored (including table prefix)
+     */
     private $failed_logins_table;
 
-    /** @var \BlueChip\Security\Modules\Login\Settings */
+    /**
+     * @var \BlueChip\Security\Modules\Login\Settings
+     */
     private $settings;
 
-    /** @var \wpdb */
+    /**
+     * @var \wpdb WordPress database access abstraction object
+     */
     private $wpdb;
 
 
     /**
      * @param \BlueChip\Security\Modules\Login\Settings $settings
-     * @param \wpdb $wpdb
+     * @param \wpdb $wpdb WordPress database access abstraction object
      */
     public function __construct(Settings $settings, \wpdb $wpdb)
     {
@@ -102,15 +112,15 @@ class Bookkeeper implements \BlueChip\Security\Modules\Installable
      */
     public function prune()
     {
-        // Remove all expired entries (older than threshold)
+        // Remove all expired entries (older than threshold).
         $threshold = current_time('timestamp') - $this->settings->getResetTimeoutDuration();
-        // Prepare query
+        // Prepare query.
         // Note: $wpdb->delete cannot be used as it does not support "<" comparison)
         $query = $this->wpdb->prepare(
             "DELETE FROM {$this->failed_logins_table} WHERE date_and_time <= %s",
             date(self::MYSQL_DATETIME_FORMAT, $threshold)
         );
-        // Execute query
+        // Execute query.
         return $this->wpdb->query($query);
     }
 }
