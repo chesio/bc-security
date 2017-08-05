@@ -5,8 +5,6 @@
  * @package BC_Security
  */
 
-defined('BC_SECURITY_PLUGIN_DIR') or die('Das past schon nicht!');
-
 // Register autoload function
 spl_autoload_register(function ($class) {
     // Only autoload classes shipped with the plugin.
@@ -15,7 +13,7 @@ spl_autoload_register(function ($class) {
     }
 
     // Get absolute name of class file
-    $file = BC_SECURITY_PLUGIN_DIR . '/classes/' . str_replace('\\', '/', $class) . '.php';
+    $file = __DIR__ . '/classes/' . str_replace('\\', '/', $class) . '.php';
 
     // If the class file is readable, load it!
     if (is_readable($file)) {

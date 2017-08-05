@@ -30,12 +30,13 @@ class Admin
     /**
      * Initialize admin area of the plugin.
      *
+     * @param string $plugin_basename
      * @return \BlueChip\Security\Admin
      */
-    public function init()
+    public function init($plugin_basename)
     {
         add_action('admin_menu', [$this, 'makeAdminMenu']);
-        add_filter('plugin_action_links_' . plugin_basename(BC_SECURITY_PLUGIN_FILE), [$this, 'filterActionLinks']);
+        add_filter('plugin_action_links_' . $plugin_basename, [$this, 'filterActionLinks']);
         return $this;
     }
 

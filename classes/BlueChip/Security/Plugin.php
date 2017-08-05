@@ -31,6 +31,11 @@ class Plugin
     private $settings;
 
     /**
+     * @var string Plugin basename
+     */
+    private $basename;
+
+    /**
      * @var \wpdb WordPress database access abstraction object
      */
     private $wpdb;
@@ -39,10 +44,12 @@ class Plugin
     /**
      * Construct the plugin instance.
      *
+     * @param string $basename Plugin basename
      * @param \wpdb $wpdb WordPress database access abstraction object
      */
-    public function __construct(\wpdb $wpdb)
+    public function __construct($basename, \wpdb $wpdb)
     {
+        $this->basename = $basename;
         $this->wpdb = $wpdb;
 
         // Read plugin settings.
@@ -191,7 +198,7 @@ class Plugin
 
         if ($this->admin) {
             // Initialize admin interface.
-            $this->admin->init()
+            $this->admin->init($this->basename)
                 // Setup comes first...
                 ->addPage(new Setup\AdminPage($this->settings['setup']))
                 // ...then comes modules pages.
