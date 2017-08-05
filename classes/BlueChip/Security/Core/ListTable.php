@@ -5,11 +5,6 @@
 
 namespace BlueChip\Security\Core;
 
-if (!class_exists('WP_List_Table')) {
-    require_once(ABSPATH . 'wp-admin/includes/class-wp-list-table.php');
-}
-
-
 /**
  * Base class for all list tables in plugin.
  */
@@ -67,7 +62,7 @@ class ListTable extends \WP_List_Table
      * @param array $item
      * @return string
      */
-    public function column_cb($item)
+    public function column_cb($item) // @codingStandardsIgnoreLine
     {
         return sprintf('<input type="checkbox" name="ids[]" value="%d" />', $item['id']);
     }
@@ -80,7 +75,7 @@ class ListTable extends \WP_List_Table
      * @param string $column_name
      * @return string
      */
-    public function column_default($item, $column_name)
+    public function column_default($item, $column_name) // @codingStandardsIgnoreLine
     {
         return isset($item[$column_name]) ? $item[$column_name] : '';
     }
@@ -89,7 +84,7 @@ class ListTable extends \WP_List_Table
     /**
      * Output "no items" message.
      */
-    public function no_items()
+    public function no_items() // @codingStandardsIgnoreLine
     {
        esc_html_e('No records to display.', 'bc-security');
     }

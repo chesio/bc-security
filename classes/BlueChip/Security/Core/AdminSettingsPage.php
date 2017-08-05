@@ -23,11 +23,11 @@ abstract class AdminSettingsPage extends AdminPage
     {
         $this->settings_api_helper = new \BlueChip\Security\Helpers\SettingsApiHelper($settings);
 
-        add_action('admin_init', [$this, 'admin_init']);
+        add_action('admin_init', [$this, 'initAdmin']);
     }
 
 
-    abstract public function admin_init();
+    abstract public function initAdmin();
 
 
     public function loadPage()

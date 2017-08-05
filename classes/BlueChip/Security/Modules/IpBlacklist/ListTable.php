@@ -93,7 +93,7 @@ class ListTable extends \BlueChip\Security\Core\ListTable
      * @param array $item
      * @return string
      */
-    public function column_ip_address($item)
+    public function column_ip_address($item) // @codingStandardsIgnoreLine
     {
         return $item['ip_address'] . $this->row_actions($this->getRowActions($item));
     }
@@ -105,7 +105,7 @@ class ListTable extends \BlueChip\Security\Core\ListTable
      * @param array $item
      * @return string
      */
-    public function column_reason($item)
+    public function column_reason($item) // @codingStandardsIgnoreLine
     {
         return $this->explainBanReason($item['reason']);
     }
@@ -144,7 +144,7 @@ class ListTable extends \BlueChip\Security\Core\ListTable
     /**
      * @return array
      */
-    public function get_bulk_actions()
+    public function get_bulk_actions() // @codingStandardsIgnoreLine
     {
         return [
             self::BULK_ACTION_UNLOCK => __('Unlock', 'bc-security'),
@@ -158,7 +158,7 @@ class ListTable extends \BlueChip\Security\Core\ListTable
      *
      * @return array
      */
-    public function get_columns()
+    public function get_columns() // @codingStandardsIgnoreLine
     {
         return [
             'cb' => '<input type="checkbox">',
@@ -176,7 +176,7 @@ class ListTable extends \BlueChip\Security\Core\ListTable
      *
      * @return array
      */
-    public function get_sortable_columns()
+    public function get_sortable_columns() // @codingStandardsIgnoreLine
     {
         return [
             'ip_address' => 'ip_address',
@@ -194,7 +194,7 @@ class ListTable extends \BlueChip\Security\Core\ListTable
      *
      * @return array
      */
-    protected function get_views()
+    protected function get_views() // @codingStandardsIgnoreLine
     {
         return [
             'any' => sprintf(
@@ -232,7 +232,7 @@ class ListTable extends \BlueChip\Security\Core\ListTable
     /**
      * Prepare items for table.
      */
-    public function prepare_items()
+    public function prepare_items() // @codingStandardsIgnoreLine
     {
         $current_page = $this->get_pagenum();
         $per_page = $this->get_items_per_page(self::RECORDS_PER_PAGE);

@@ -65,7 +65,7 @@ class AdminPage extends \BlueChip\Security\Core\AdminSettingsPage
     /**
      * Run on `admin_init` hook.
      */
-    public function admin_init()
+    public function initAdmin()
     {
         // Shortcut
         $settings_api_helper = $this->settings_api_helper;
