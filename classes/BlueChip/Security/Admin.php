@@ -49,7 +49,7 @@ class Admin
      */
     public function addPage(Core\AdminPage $page)
     {
-        $this->pages[$page->slug] = $page;
+        $this->pages[$page->getSlug()] = $page;
         return $this;
     }
 
@@ -72,23 +72,23 @@ class Admin
             '', // obsolete as soon as page has subpages
             _x('BC Security', 'Dashboard menu item name', 'bc-security'),
             self::CAPABILITY,
-            $main_page->slug,
+            $main_page->getSlug(),
             '', // obsolete as soon as page has subpages
             self::ICON
         );
 
         // Add subpages
         foreach ($this->pages as $page) {
-            $hook = add_submenu_page(
-                $main_page->slug,
-                $page->page_title,
-                $page->menu_title . $this->formatCounter($page),
+            $page_hook = add_submenu_page(
+                $main_page->getSlug(),
+                $page->getPageTitle(),
+                $page->getMenuTitle() . $this->formatCounter($page),
                 self::CAPABILITY,
-                $page->slug,
+                $page->getSlug(),
                 [$page, 'render']
             );
-            if ($hook) {
-                $page->setHook($hook);
+            if ($page_hook) {
+                $page->setPageHook($page_hook);
             }
         }
     }
@@ -106,7 +106,7 @@ class Admin
             $links[] = sprintf(
                 '<a href="%s">%s</a>',
                 $this->pages['bc-security-setup']->getUrl(),
-                esc_html($this->pages['bc-security-setup']->menu_title)
+                esc_html($this->pages['bc-security-setup']->getMenuTitle())
             );
         }
         return $links;

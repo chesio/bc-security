@@ -24,7 +24,6 @@ class AdminPage extends \BlueChip\Security\Core\AdminSettingsPage
 
         $this->page_title = _x('BC Security Setup', 'Dashboard page title', 'bc-security');
         $this->menu_title = _x('Setup', 'Dashboard menu item name', 'bc-security');
-        $this->slug = self::SLUG;
     }
 
 
@@ -52,7 +51,7 @@ class AdminPage extends \BlueChip\Security\Core\AdminSettingsPage
         $settings_api_helper->register();
 
         // Set page as current
-        $settings_api_helper->setSettingsPage($this->slug);
+        $settings_api_helper->setSettingsPage(self::SLUG);
 
         // Section: Site connection
         $settings_api_helper->addSettingsSection(
@@ -72,7 +71,7 @@ class AdminPage extends \BlueChip\Security\Core\AdminSettingsPage
     public function renderSiteConnectionHint()
     {
         $list = IpAddress::enlist(true);
-        
+
         echo '<p>';
         echo esc_html__('Your server provides following information about remote addresses:', 'bc-security');
         echo '</p>';

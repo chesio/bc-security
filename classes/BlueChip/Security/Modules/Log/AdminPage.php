@@ -49,7 +49,6 @@ class AdminPage extends \BlueChip\Security\Core\AdminSettingsPage
 
         $this->page_title = _x('Log records', 'Dashboard page title', 'bc-security');
         $this->menu_title = _x('Logs', 'Dashboard menu item name', 'bc-security');
-        $this->slug = self::SLUG;
 
         $this->logger = $logger;
         $this->counter = $this->getNewRecordsCount(wp_get_current_user());
@@ -70,7 +69,7 @@ class AdminPage extends \BlueChip\Security\Core\AdminSettingsPage
         $settings_api_helper->register();
 
         // Set page as current.
-        $settings_api_helper->setSettingsPage($this->slug);
+        $settings_api_helper->setSettingsPage(self::SLUG);
 
         // Section: Automatic clean-up configuration
         $settings_api_helper->addSettingsSection(

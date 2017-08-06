@@ -11,25 +11,61 @@ namespace BlueChip\Security\Core;
 abstract class AdminPage
 {
     /**
-     * @var string
+     * @var string Page slug (each inheriting class must define its own)
      */
-    public $menu_title;
+    const SLUG = 'bc-security';
 
     /**
-     * @var string
+     * @var string Page title for menu
      */
-    public $page_title;
+    protected $menu_title;
 
     /**
-     * @var string
+     * @var string Page title for browser window
      */
-    public $slug;
+    protected $page_title;
 
 
     /**
      * Output page content.
      */
     abstract public function render();
+
+
+    /**
+     * @return string Menu title of page.
+     */
+    public function getMenuTitle()
+    {
+        return $this->menu_title;
+    }
+
+
+    /**
+     * @return string Browser title of page.
+     */
+    public function getPageTitle()
+    {
+        return $this->page_title;
+    }
+
+
+    /**
+     * @return string Page slug.
+     */
+    public function getSlug()
+    {
+        return static::SLUG;
+    }
+
+
+    /**
+     * @return string URL of admin page.
+     */
+    public function getUrl()
+    {
+        return self::getPageUrl($this->getSlug());
+    }
 
 
     /**
@@ -45,20 +81,15 @@ abstract class AdminPage
 
 
     /**
-     * @return string URL of admin page.
+     * Register method to be run on page load.
+     *
+     * @link https://developer.wordpress.org/reference/hooks/load-page_hook/
+     *
+     * @param string $page_hook
      */
-    public function getUrl()
+    public function setPageHook($page_hook)
     {
-        return self::getPageUrl($this->slug);
-    }
-
-
-    /**
-     * @param string $hook
-     */
-    public function setHook($hook)
-    {
-        add_action('load-' . $hook, [$this, 'loadPage']);
+        add_action('load-' . $page_hook, [$this, 'loadPage']);
     }
 
 

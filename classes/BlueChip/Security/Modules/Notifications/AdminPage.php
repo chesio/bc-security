@@ -24,7 +24,6 @@ class AdminPage extends \BlueChip\Security\Core\AdminSettingsPage
 
         $this->page_title = _x('Notifications Settings', 'Dashboard page title', 'bc-security');
         $this->menu_title = _x('Notifications', 'Dashboard menu item name', 'bc-security');
-        $this->slug = self::SLUG;
     }
 
 
@@ -52,7 +51,7 @@ class AdminPage extends \BlueChip\Security\Core\AdminSettingsPage
         $settings_api_helper->register();
 
         // Set page as current.
-        $settings_api_helper->setSettingsPage($this->slug);
+        $settings_api_helper->setSettingsPage(self::SLUG);
 
         // Section: When to notify?
         $settings_api_helper->addSettingsSection(

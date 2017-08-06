@@ -23,7 +23,6 @@ class AdminPage extends \BlueChip\Security\Core\AdminSettingsPage
 
         $this->page_title = _x('WordPress Hardening', 'Dashboard page title', 'bc-security');
         $this->menu_title = _x('Hardening', 'Dashboard menu item name', 'bc-security');
-        $this->slug = self::SLUG;
     }
 
 
@@ -49,7 +48,7 @@ class AdminPage extends \BlueChip\Security\Core\AdminSettingsPage
         $this->settings_api_helper->register();
 
         // Set page as current
-        $this->settings_api_helper->setSettingsPage($this->slug);
+        $this->settings_api_helper->setSettingsPage(self::SLUG);
 
         // Section: Disable pingbacks
         $this->settings_api_helper->addSettingsSection(

@@ -84,7 +84,6 @@ class AdminPage extends \BlueChip\Security\Core\AdminPage
     {
         $this->page_title = _x('IP Blacklist', 'Dashboard page title', 'bc-security');
         $this->menu_title = _x('IP Blacklist', 'Dashboard menu item name', 'bc-security');
-        $this->slug = self::SLUG;
 
         $this->bl_manager = $bl_manager;
         $this->bl_cleaner = $bl_cleaner;
