@@ -189,6 +189,23 @@ class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\
 
 
     /**
+     * Return number of records inserted since given $timestamp.
+     *
+     * @param int $timestamp
+     * @return int
+     */
+    public function countFrom($timestamp)
+    {
+        $query = $this->wpdb->prepare(
+            "SELECT COUNT(id) AS total FROM {$this->log_table} WHERE date_and_time > %s",
+            date(self::MYSQL_DATETIME_FORMAT, $timestamp)
+        );
+
+        return intval($this->wpdb->get_var($query));
+    }
+
+
+    /**
      * Fetch log records that match provided arguments.
      *
      * @param string $event Only fetch records under event name (empty string is allowed).

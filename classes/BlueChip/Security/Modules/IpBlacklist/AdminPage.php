@@ -15,6 +15,11 @@ class AdminPage extends \BlueChip\Security\Core\AdminPage
     const SLUG = 'bc-security-ip-blacklist';
 
     /**
+     * @var string Name of user meta key for last view time
+     */
+    const LAST_VISIT_TIMESTAMP_META = 'bc-security/ip-blacklist-last-visit';
+
+    /**
      * @var string Name of nonce used for any action on this page
      */
     const NONCE_NAME = '_wpnonce';
@@ -65,6 +70,11 @@ class AdminPage extends \BlueChip\Security\Core\AdminPage
      */
     private $list_table;
 
+    /**
+     * @var int Number of new records in blacklist table since the last time current user viewed the page
+     */
+    public $counter;
+
 
     /**
      * @param \BlueChip\Security\Modules\IpBlacklist\Manager $bl_manager
@@ -79,6 +89,8 @@ class AdminPage extends \BlueChip\Security\Core\AdminPage
         $this->bl_manager = $bl_manager;
         $this->bl_cleaner = $bl_cleaner;
 
+        $this->counter = $this->getNewRecordsCount(wp_get_current_user());
+
         add_filter('set-screen-option', [$this, 'setScreenOption'], 10, 3);
     }
 
@@ -87,6 +99,7 @@ class AdminPage extends \BlueChip\Security\Core\AdminPage
     {
         $this->processActions();
         $this->addScreenOptions();
+        $this->resetNewRecordsCount(wp_get_current_user());
         $this->initListTable();
     }
 
@@ -242,6 +255,31 @@ class AdminPage extends \BlueChip\Security\Core\AdminPage
             'default' => 20,
             'option' => ListTable::RECORDS_PER_PAGE,
         ]);
+    }
+
+
+    /**
+     * @param \WP_User $user
+     * @return int Number of blacklist records recorded since the last time user visited this page.
+     */
+    public function getNewRecordsCount(\WP_User $user)
+    {
+        $last_visit_timestamp = get_user_meta($user->ID, self::LAST_VISIT_TIMESTAMP_META, true);
+
+        return empty($last_visit_timestamp)
+            ? $this->bl_manager->countAll()
+            : $this->bl_manager->countFrom($last_visit_timestamp)
+        ;
+    }
+
+
+    /**
+     * @param \WP_User $user
+     */
+    private function resetNewRecordsCount(\WP_User $user)
+    {
+        // Update $user's last view time for this page.
+        update_user_meta($user->ID, self::LAST_VISIT_TIMESTAMP_META, current_time('timestamp'));
     }
 
 
