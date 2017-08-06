@@ -155,7 +155,7 @@ class Event
                     $id,
                     __('Checksums verification alert', 'bc-security'),
                     LogLevel::WARNING,
-                    __('Official checksums do not match for the following files: {files}.', 'bc-security'),
+                    __('Following files have been modified: {modified_files}. Following files are unknown: {unknown_files}.', 'bc-security'),
                     ['modified_files' => __('Modified files', 'bc-security'), 'unknown_files' => __('Unknown files', 'bc-security')]
                 );
             default:
