@@ -56,10 +56,10 @@ class CronJob implements \BlueChip\Security\Modules\Activable, \BlueChip\Securit
      * @param int|string $time
      * @param string $recurrence
      * @param string $hook
-     * @param callback $action
+     * @param callable $action
      * @param array $args
      */
-    public function __construct($time, $recurrence, $hook, $action, array $args = [])
+    public function __construct($time, $recurrence, $hook, callable $action, array $args = [])
     {
         $this->action = $action;
         $this->args = $args;
@@ -72,8 +72,7 @@ class CronJob implements \BlueChip\Security\Modules\Activable, \BlueChip\Securit
     /**
      * Schedule new cron job, if not scheduled yet.
      *
-     * @return bool True, if cron job has been activated or was already active,
-     * false otherwise.
+     * @return bool True, if cron job has been activated or was already active, false otherwise.
      */
     public function activate()
     {

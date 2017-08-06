@@ -126,7 +126,7 @@ class SettingsApiHelper
      *
      * @param string $section
      * @param string $title
-     * @param callback $callback
+     * @param callable $callback
      */
     public function addSettingsSection($section, $title, $callback = null)
     {
@@ -149,10 +149,10 @@ class SettingsApiHelper
      *
      * @param string $key Key of the field (must be proper key from Settings)
      * @param string $title Title of the field
-     * @param callback $callback Function that fills the field with the desired form inputs
+     * @param callable $callback Callback that produces form input for the field
      * @param array $args [Optional] Any extra arguments for $callback function
      */
-    public function addSettingsField($key, $title, $callback, $args = [])
+    public function addSettingsField($key, $title, callable $callback, array $args = [])
     {
         if (!is_string($this->recent_page)) {
             _doing_it_wrong(__METHOD__, 'No recent page set yet!', '0.1.0');
