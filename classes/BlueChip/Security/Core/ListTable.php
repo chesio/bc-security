@@ -8,7 +8,7 @@ namespace BlueChip\Security\Core;
 /**
  * Base class for all list tables in plugin.
  */
-class ListTable extends \WP_List_Table
+abstract class ListTable extends \WP_List_Table
 {
     /**
      * @var string URL of admin page where the list table is displayed
