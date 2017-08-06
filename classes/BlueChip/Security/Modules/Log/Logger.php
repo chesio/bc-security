@@ -13,7 +13,7 @@ use Psr\Log;
  *
  * @link http://www.php-fig.org/psr/psr-3/
  */
-class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\Installable, Modules\Loadable
+class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\Installable, Modules\Loadable, \Countable
 {
     /** @var string Name of DB table where logs are stored */
     const LOG_TABLE = 'bc_security_log';
@@ -166,6 +166,17 @@ class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\
                 _doing_it_wrong(__METHOD__, sprintf('Unknown log level: %s', $level), '0.2.0');
                 return null;
         }
+    }
+
+
+    /**
+     * @internal Implements Countable interface.
+     * 
+     * @return int
+     */
+    public function count()
+    {
+        return $this->countAll();
     }
 
 
