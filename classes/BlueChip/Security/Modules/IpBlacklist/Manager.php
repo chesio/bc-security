@@ -108,6 +108,23 @@ class Manager implements \BlueChip\Security\Modules\Installable
 
 
     /**
+     * Return number of records inserted since given $timestamp.
+     *
+     * @param int $timestamp
+     * @return int
+     */
+    public function countFrom($timestamp)
+    {
+        $query = $this->wpdb->prepare(
+            "SELECT COUNT(id) AS total FROM {$this->blacklist_table} WHERE ban_time > %s",
+            date(self::MYSQL_DATETIME_FORMAT, $timestamp)
+        );
+
+        return intval($this->wpdb->get_var($query));
+    }
+
+
+    /**
      * Fetch all items on blacklist that match provided arguments.
      *
      * @param int $scope

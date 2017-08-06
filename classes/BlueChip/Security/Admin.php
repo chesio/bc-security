@@ -82,7 +82,7 @@ class Admin
             $hook = add_submenu_page(
                 $main_page->slug,
                 $page->page_title,
-                $page->menu_title,
+                $page->menu_title . $this->formatCounter($page),
                 self::CAPABILITY,
                 $page->slug,
                 [$page, 'render']
@@ -110,5 +110,21 @@ class Admin
             );
         }
         return $links;
+    }
+
+
+    /**
+     * Format counter indicator for menu title for given $page.
+     *
+     * @param \BlueChip\Security\Core\AdminPage $page
+     * @return string
+     */
+    private function formatCounter(\BlueChip\Security\Core\AdminPage $page)
+    {
+        // Counter is optional.
+        return isset($page->counter) && !empty($page->counter)
+            ? sprintf(' <span class="awaiting-mod"><span>%d</span></span>', number_format_i18n($page->counter))
+            : ''
+        ;
     }
 }
