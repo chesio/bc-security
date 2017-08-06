@@ -10,8 +10,10 @@ use BlueChip\Security\Helpers\FormHelper;
 /**
  * Admin page that displays log records.
  */
-class AdminPage extends \BlueChip\Security\Core\AdminSettingsPage
+class AdminPage extends \BlueChip\Security\Core\AdminPage
 {
+    use \BlueChip\Security\Core\Admin\SettingsPage;
+
     /**
      * @var string Page slug
      */
@@ -45,28 +47,25 @@ class AdminPage extends \BlueChip\Security\Core\AdminSettingsPage
      */
     public function __construct(Settings $settings, Logger $logger)
     {
-        parent::__construct($settings);
-
         $this->page_title = _x('Log records', 'Dashboard page title', 'bc-security');
         $this->menu_title = _x('Logs', 'Dashboard menu item name', 'bc-security');
 
         $this->logger = $logger;
         $this->counter = $this->getNewRecordsCount(wp_get_current_user());
 
+        $this->constructSettingsPage($settings);
+
         add_filter('set-screen-option', [$this, 'setScreenOption'], 10, 3);
     }
 
 
     /**
-     * Run on `admin_init` hook.
+     * Initialize settings page: add sections and fields.
      */
-    public function initAdmin()
+    public function initSettingsPageSectionsAndFields()
     {
         // Shortcut
         $settings_api_helper = $this->settings_api_helper;
-
-        // Register setting first.
-        $settings_api_helper->register();
 
         // Set page as current.
         $settings_api_helper->setSettingsPage(self::SLUG);
@@ -95,8 +94,7 @@ class AdminPage extends \BlueChip\Security\Core\AdminSettingsPage
     public function loadPage()
     {
         // To have admin notices displayed.
-        parent::loadPage();
-
+        $this->loadSettingsPage();
         $this->addScreenOptions();
         $this->resetNewRecordsCount(wp_get_current_user());
         $this->initListTable();
@@ -120,7 +118,7 @@ class AdminPage extends \BlueChip\Security\Core\AdminSettingsPage
         echo '</form>';
 
         // Pruning configuration form
-        echo $this->settings_api_helper->renderForm();
+        echo $this->renderForm();
 
         echo '</div>';
     }

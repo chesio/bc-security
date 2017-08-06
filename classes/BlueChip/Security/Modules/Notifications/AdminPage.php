@@ -7,8 +7,10 @@ namespace BlueChip\Security\Modules\Notifications;
 
 use BlueChip\Security\Helpers\FormHelper;
 
-class AdminPage extends \BlueChip\Security\Core\AdminSettingsPage
+class AdminPage extends \BlueChip\Security\Core\AdminPage
 {
+    use \BlueChip\Security\Core\Admin\SettingsPage;
+
     /**
      * @var string Page slug
      */
@@ -20,10 +22,16 @@ class AdminPage extends \BlueChip\Security\Core\AdminSettingsPage
      */
     public function __construct(Settings $settings)
     {
-        parent::__construct($settings);
-
         $this->page_title = _x('Notifications Settings', 'Dashboard page title', 'bc-security');
         $this->menu_title = _x('Notifications', 'Dashboard menu item name', 'bc-security');
+
+        $this->constructSettingsPage($settings);
+    }
+
+
+    public function loadPage()
+    {
+        $this->loadSettingsPage();
     }
 
 
@@ -34,21 +42,18 @@ class AdminPage extends \BlueChip\Security\Core\AdminSettingsPage
     {
         echo '<div class="wrap">';
         echo '<h1>' . esc_html($this->page_title) . '</h1>';
-        echo $this->settings_api_helper->renderForm();
+        echo $this->renderForm();
         echo '</div>';
     }
 
 
     /**
-     * Run on `admin_init` hook.
+     * Initialize settings page: add sections and fields.
      */
-    public function initAdmin()
+    public function initSettingsPageSectionsAndFields()
     {
         // Shortcut
         $settings_api_helper = $this->settings_api_helper;
-
-        // Register setting first.
-        $settings_api_helper->register();
 
         // Set page as current.
         $settings_api_helper->setSettingsPage(self::SLUG);

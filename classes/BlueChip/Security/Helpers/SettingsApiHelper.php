@@ -183,24 +183,24 @@ class SettingsApiHelper
     //// Printers //////////////////////////////////////////////////////////////
 
     /**
-     * Print settings form with settings from recent page (ie. $page that has been set as last via set_settings_page()).
+     * Render nonce, action and other hidden fields.
      */
-    public function renderForm()
+    public function renderSettingsFields()
+    {
+        settings_fields($this->option_group);
+    }
+
+
+    /**
+     * Render visible form fields.
+     */
+    public function renderSettingsSections()
     {
         if (!is_string($this->recent_page)) {
             _doing_it_wrong(__METHOD__, 'No recent page set!', '0.1.0');
             return;
         }
 
-        echo '<form method="post" action="' . admin_url('options.php') .'">';
-
-        // Render nonce, action and other hidden fields...
-        settings_fields($this->option_group);
-        // ... visible fields ...
         do_settings_sections($this->recent_page);
-        // ... and finally the submit button :)
-        submit_button();
-
-        echo '</form>';
     }
 }

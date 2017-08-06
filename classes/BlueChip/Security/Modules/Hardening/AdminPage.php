@@ -7,22 +7,31 @@ namespace BlueChip\Security\Modules\Hardening;
 
 use BlueChip\Security\Helpers\FormHelper;
 
-class AdminPage extends \BlueChip\Security\Core\AdminSettingsPage
+class AdminPage extends \BlueChip\Security\Core\AdminPage
 {
+    use \BlueChip\Security\Core\Admin\SettingsPage;
+
     /**
      * @var string Page slug
      */
     const SLUG = 'bc-security-hardening';
+
 
     /**
      * @param \BlueChip\Security\Modules\Hardening\Settings $settings Hardening settings
      */
     public function __construct(Settings $settings)
     {
-        parent::__construct($settings);
-
         $this->page_title = _x('WordPress Hardening', 'Dashboard page title', 'bc-security');
         $this->menu_title = _x('Hardening', 'Dashboard menu item name', 'bc-security');
+
+        $this->constructSettingsPage($settings);
+    }
+
+
+    public function loadPage()
+    {
+        $this->loadSettingsPage();
     }
 
 
@@ -34,20 +43,17 @@ class AdminPage extends \BlueChip\Security\Core\AdminSettingsPage
         echo '<div class="wrap">';
         echo '<h1>' . esc_html($this->page_title) . '</h1>';
         echo '<p>' . esc_html__('All security features below are applied through WordPress filters.', 'bc-security') . '</p>';
-        echo $this->settings_api_helper->renderForm();
+        echo $this->renderForm();
         echo '</div>';
     }
 
 
     /**
-     * Run on `admin_init` hook.
+     * Initialize settings page: add sections and fields.
      */
-    public function initAdmin()
+    public function initSettingsPageSectionsAndFields()
     {
-        // Register setting first
-        $this->settings_api_helper->register();
-
-        // Set page as current
+        // Set page as current.
         $this->settings_api_helper->setSettingsPage(self::SLUG);
 
         // Section: Disable pingbacks
