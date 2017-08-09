@@ -9,7 +9,9 @@ use BlueChip\Security\Helpers\FormHelper;
 
 class AdminPage extends \BlueChip\Security\Core\AdminPage
 {
+    /** Page has settings section */
     use \BlueChip\Security\Core\Admin\SettingsPage;
+
 
     /**
      * @var string Page slug
@@ -25,13 +27,13 @@ class AdminPage extends \BlueChip\Security\Core\AdminPage
         $this->page_title = _x('Notifications Settings', 'Dashboard page title', 'bc-security');
         $this->menu_title = _x('Notifications', 'Dashboard menu item name', 'bc-security');
 
-        $this->constructSettingsPage($settings);
+        $this->useSettings($settings);
     }
 
 
     public function loadPage()
     {
-        $this->loadSettingsPage();
+        $this->displaySettingsErrors();
     }
 
 
@@ -42,7 +44,7 @@ class AdminPage extends \BlueChip\Security\Core\AdminPage
     {
         echo '<div class="wrap">';
         echo '<h1>' . esc_html($this->page_title) . '</h1>';
-        echo $this->renderForm();
+        echo $this->renderSettingsForm();
         echo '</div>';
     }
 
@@ -50,70 +52,70 @@ class AdminPage extends \BlueChip\Security\Core\AdminPage
     /**
      * Initialize settings page: add sections and fields.
      */
-    public function initSettingsPageSectionsAndFields()
+    public function init()
     {
-        // Shortcut
-        $settings_api_helper = $this->settings_api_helper;
+        // Register settings.
+        $this->registerSettings();
 
         // Set page as current.
-        $settings_api_helper->setSettingsPage(self::SLUG);
+        $this->setSettingsPage(self::SLUG);
 
         // Section: When to notify?
-        $settings_api_helper->addSettingsSection(
+        $this->addSettingsSection(
             'when-to-notify',
             _x('When to send notification?', 'Settings section title', 'bc-security'),
             function () {
                 echo '<p>' . esc_html__('Immediately send email notification when:', 'bc-security') . '</p>';
             }
         );
-        $settings_api_helper->addSettingsField(
+        $this->addSettingsField(
             Settings::ADMIN_USER_LOGIN,
             __('User with admin privileges logs in', 'bc-security'),
             [FormHelper::class, 'renderCheckbox']
         );
-        $settings_api_helper->addSettingsField(
+        $this->addSettingsField(
             Settings::KNOWN_IP_LOCKOUT,
             __('Known IP address is locked out', 'bc-security'),
             [FormHelper::class, 'renderCheckbox']
         );
-        $settings_api_helper->addSettingsField(
+        $this->addSettingsField(
             Settings::CORE_UPDATE_AVAILABLE,
             __('WordPress update is available', 'bc-security'),
             [FormHelper::class, 'renderCheckbox']
         );
-        $settings_api_helper->addSettingsField(
+        $this->addSettingsField(
             Settings::PLUGIN_UPDATE_AVAILABLE,
             __('Plugin update is available', 'bc-security'),
             [FormHelper::class, 'renderCheckbox']
         );
-        $settings_api_helper->addSettingsField(
+        $this->addSettingsField(
             Settings::THEME_UPDATE_AVAILABLE,
             __('Theme update is available', 'bc-security'),
             [FormHelper::class, 'renderCheckbox']
         );
-        $settings_api_helper->addSettingsField(
+        $this->addSettingsField(
             Settings::CHECKSUMS_VERIFICATION_ERROR,
             __('Checksums verification results in error', 'bc-security'),
             [FormHelper::class, 'renderCheckbox']
         );
-        $settings_api_helper->addSettingsField(
+        $this->addSettingsField(
             Settings::PLUGIN_DEACTIVATED,
             __('BC Security is deactivated', 'bc-security'),
             [FormHelper::class, 'renderCheckbox']
         );
 
         // Section: Who to notify?
-        $settings_api_helper->addSettingsSection(
+        $this->addSettingsSection(
             'who-to-notify',
             _x('Whom to send notification?', 'Settings section title', 'bc-security')
         );
-        $settings_api_helper->addSettingsField(
+        $this->addSettingsField(
             Settings::NOTIFY_SITE_ADMIN,
             __('Notify site admin', 'bc-security'),
             [FormHelper::class, 'renderCheckbox'],
             [ 'description' => sprintf(__('Currently: %s', 'bc-security'), get_option('admin_email')), ]
         );
-        $settings_api_helper->addSettingsField(
+        $this->addSettingsField(
             Settings::NOTIFICATION_RECIPIENTS,
             __('Send notifications to:', 'bc-security'),
             [FormHelper::class, 'renderTextArea'],

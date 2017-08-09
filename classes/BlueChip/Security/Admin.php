@@ -36,6 +36,7 @@ class Admin
     public function init($plugin_basename)
     {
         add_action('admin_menu', [$this, 'makeAdminMenu']);
+        add_action('admin_init', [$this, 'initAdminPages']);
         add_filter('plugin_action_links_' . $plugin_basename, [$this, 'filterActionLinks']);
         return $this;
     }
@@ -51,6 +52,14 @@ class Admin
     {
         $this->pages[$page->getSlug()] = $page;
         return $this;
+    }
+
+
+    public function initAdminPages()
+    {
+        foreach ($this->pages as $page) {
+            $page->init();
+        }
     }
 
 

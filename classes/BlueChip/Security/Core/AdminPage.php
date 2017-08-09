@@ -94,6 +94,15 @@ abstract class AdminPage
 
 
     /**
+     * Run on admin initialization.
+     */
+    public function init()
+    {
+        // By default do nothing.
+    }
+
+
+    /**
      * Run on page load.
      */
     public function loadPage()

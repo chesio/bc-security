@@ -9,7 +9,9 @@ use BlueChip\Security\Helpers\FormHelper;
 
 class AdminPage extends \BlueChip\Security\Core\AdminPage
 {
+    /** Page has settings section */
     use \BlueChip\Security\Core\Admin\SettingsPage;
+
 
     /**
      * @var string Page slug
@@ -25,13 +27,13 @@ class AdminPage extends \BlueChip\Security\Core\AdminPage
         $this->page_title = _x('WordPress Hardening', 'Dashboard page title', 'bc-security');
         $this->menu_title = _x('Hardening', 'Dashboard menu item name', 'bc-security');
 
-        $this->constructSettingsPage($settings);
+        $this->useSettings($settings);
     }
 
 
     public function loadPage()
     {
-        $this->loadSettingsPage();
+        $this->displaySettingsErrors();
     }
 
 
@@ -43,7 +45,7 @@ class AdminPage extends \BlueChip\Security\Core\AdminPage
         echo '<div class="wrap">';
         echo '<h1>' . esc_html($this->page_title) . '</h1>';
         echo '<p>' . esc_html__('All security features below are applied through WordPress filters.', 'bc-security') . '</p>';
-        echo $this->renderForm();
+        echo $this->renderSettingsForm();
         echo '</div>';
     }
 
@@ -51,13 +53,16 @@ class AdminPage extends \BlueChip\Security\Core\AdminPage
     /**
      * Initialize settings page: add sections and fields.
      */
-    public function initSettingsPageSectionsAndFields()
+    public function init()
     {
+        // Register settings.
+        $this->registerSettings();
+
         // Set page as current.
-        $this->settings_api_helper->setSettingsPage(self::SLUG);
+        $this->setSettingsPage(self::SLUG);
 
         // Section: Disable pingbacks
-        $this->settings_api_helper->addSettingsSection(
+        $this->addSettingsSection(
             'disable-pingback',
             __('Disable pingbacks', 'bc-security'),
             function () {
@@ -67,14 +72,14 @@ class AdminPage extends \BlueChip\Security\Core\AdminPage
                 ) . '</p>';
             }
         );
-        $this->settings_api_helper->addSettingsField(
+        $this->addSettingsField(
             Settings::DISABLE_PINGBACKS,
             __('Disable pingbacks', 'bc-security'),
             [FormHelper::class, 'renderCheckbox']
         );
 
         // Section: Disable XML-RPC methods that require authentication
-        $this->settings_api_helper->addSettingsSection(
+        $this->addSettingsSection(
             'disable-xml-rpc',
             __('Disable XML-RPC methods that require authentication', 'bc-security'),
             function () {
@@ -84,14 +89,14 @@ class AdminPage extends \BlueChip\Security\Core\AdminPage
                 ) . '</p>';
             }
         );
-        $this->settings_api_helper->addSettingsField(
+        $this->addSettingsField(
             Settings::DISABLE_XML_RPC,
             __('Disable XML-RPC methods', 'bc-security'),
             [FormHelper::class, 'renderCheckbox']
         );
 
         // Section: Disable REST API to anonymous users
-        $this->settings_api_helper->addSettingsSection(
+        $this->addSettingsSection(
             'disable-rest-api',
             __('Disable access to REST API to anonymous users', 'bc-security'),
             function () {
@@ -102,7 +107,7 @@ class AdminPage extends \BlueChip\Security\Core\AdminPage
                 ) . '</p>';
             }
         );
-        $this->settings_api_helper->addSettingsField(
+        $this->addSettingsField(
             Settings::DISABLE_REST_API,
             __('Disable REST API access', 'bc-security'),
             [FormHelper::class, 'renderCheckbox']

@@ -11,52 +11,184 @@ namespace BlueChip\Security\Core\Admin;
 trait SettingsPage
 {
     /**
-     * @var \BlueChip\Security\Helpers\SettingsApiHelper
+     * @var string Option group
      */
-    protected $settings_api_helper;
+    protected $option_group;
+
+    /**
+     * @var string Option name
+     */
+    protected $option_name;
+
+    /**
+     * @var string Recent page serves as default $page for add_settings_field() and add_settings_section() functions.
+     */
+    protected $recent_page;
+
+    /**
+     * @var string Recent section serves as default $section for add_settings_field() function.
+     */
+    protected $recent_section;
+
+    /**
+     * @var \BlueChip\Security\Core\Settings Object with actual settings.
+     */
+    protected $settings;
 
 
     /**
+     * @link https://codex.wordpress.org/Settings_API
+     *
      * @param \BlueChip\Security\Core\Settings $settings
      */
-    protected function constructSettingsPage($settings)
+    protected function useSettings(\BlueChip\Security\Core\Settings $settings)
     {
-        $this->settings_api_helper = new \BlueChip\Security\Helpers\SettingsApiHelper($settings);
-
-        add_action('admin_init', [$this, 'initSettingsPage']);
+        // Remember the settings.
+        $this->settings = $settings;
+        $this->option_name = $settings->getOptionName();
+        $this->option_group = md5($this->option_name);
     }
 
 
-    protected function loadSettingsPage()
+    /**
+     * Display settings errors via admin notices.
+     */
+    public function displaySettingsErrors()
     {
         add_action('admin_notices', 'settings_errors');
     }
 
 
-    public function initSettingsPage()
+    /**
+     * Register setting.
+     */
+    public function registerSettings()
     {
-        // Register settings.
-        $this->settings_api_helper->register();
-
-        // Init settings page.
-        $this->initSettingsPageSectionsAndFields();
+        register_setting($this->option_group, $this->option_name, [$this->settings, 'sanitize']);
     }
 
 
-    abstract protected function initSettingsPageSectionsAndFields();
+    /**
+     * Unregister setting.
+     */
+    public function unregisterSettings()
+    {
+        unregister_setting($this->option_group, $this->option_name);
+    }
+
+
+    /**
+     * Set $page as recent page, ie. value of $page argument for
+     * add_settings_field(), add_settings_section() and do_settings_sections()
+     * functions. To add setting sections and fields to built-in pages, pass one
+     * of SETTINGS_* constants as $page.
+     * @param string $page
+     */
+    public function setSettingsPage($page)
+    {
+        $this->recent_page = $page;
+    }
+
+
+    //// WP wrappers ///////////////////////////////////////////////////////////
+
+    /**
+     * Helper function that wraps call to add_settings_section().
+     *
+     * @see add_settings_section()
+     *
+     * @param string $section
+     * @param string $title
+     * @param callable $callback
+     */
+    public function addSettingsSection($section, $title, $callback = null)
+    {
+        if (!is_string($this->recent_page)) {
+            _doing_it_wrong(__METHOD__, 'No recent page set yet!', '0.1.0');
+            return;
+        }
+
+        // Remember the most recent section.
+        $this->recent_section = $section;
+        // Add new section to most recent page.
+        add_settings_section($section, $title, $callback, $this->recent_page);
+    }
+
+
+    /**
+     * Helper function that wraps call(s) to add_settings_field().
+     *
+     * @see add_settings_field()
+     *
+     * @param string $key Key of the field (must be proper key from Settings)
+     * @param string $title Title of the field
+     * @param callable $callback Callback that produces form input for the field
+     * @param array $args [Optional] Any extra arguments for $callback function
+     */
+    public function addSettingsField($key, $title, callable $callback, array $args = [])
+    {
+        if (!is_string($this->recent_page)) {
+            _doing_it_wrong(__METHOD__, 'No recent page set yet!', '0.1.0');
+            return;
+        }
+
+        if (!is_string($this->recent_section)) {
+            _doing_it_wrong(__METHOD__, 'No recent section added yet!', '0.1.0');
+            return;
+        }
+
+        add_settings_field(
+            $key, // $id
+            $title,
+            $callback,
+            $this->recent_page, // $page
+            $this->recent_section, // $section
+            array_merge($args, [ // $args
+                'label_for' => sprintf('%s-%s', $this->option_name, $key), // "label_for" is WP reserved name
+                'key' => $key,
+                'name' => sprintf('%s[%s]', $this->option_name, $key),
+                'value' => $this->settings[$key],
+            ])
+        );
+    }
+
+
+    //// Printers //////////////////////////////////////////////////////////////
+
+    /**
+     * Render nonce, action and other hidden fields.
+     */
+    public function renderSettingsFields()
+    {
+        settings_fields($this->option_group);
+    }
+
+
+    /**
+     * Render visible form fields.
+     */
+    public function renderSettingsSections()
+    {
+        if (!is_string($this->recent_page)) {
+            _doing_it_wrong(__METHOD__, 'No recent page set!', '0.1.0');
+            return;
+        }
+
+        do_settings_sections($this->recent_page);
+    }
 
 
     /**
      * Output form for settings manipulation.
      */
-    protected function renderForm()
+    protected function renderSettingsForm()
     {
         echo '<form method="post" action="' . admin_url('options.php') .'">';
 
         // Render nonce, action and other hidden fields...
-        $this->settings_api_helper->renderSettingsFields();
+        $this->renderSettingsFields();
         // ... visible fields ...
-        $this->settings_api_helper->renderSettingsSections();
+        $this->renderSettingsSections();
         // ... and finally the submit button :)
         submit_button();
 

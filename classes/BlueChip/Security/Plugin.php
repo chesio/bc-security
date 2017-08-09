@@ -197,7 +197,7 @@ class Plugin
         }
 
         if ($this->admin) {
-            // Initialize admin interface.
+            // Initialize admin interface (set necessary hooks).
             $this->admin->init($this->basename)
                 // Setup comes first...
                 ->addPage(new Setup\AdminPage($this->settings['setup']))

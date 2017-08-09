@@ -171,7 +171,7 @@ class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\
 
     /**
      * @internal Implements Countable interface.
-     * 
+     *
      * @return int
      */
     public function count()

@@ -9,7 +9,9 @@ use BlueChip\Security\Helpers\FormHelper;
 
 class AdminPage extends \BlueChip\Security\Core\AdminPage
 {
+    /** Page has settings section */
     use \BlueChip\Security\Core\Admin\SettingsPage;
+
 
     /**
      * @var string Page slug
@@ -25,7 +27,13 @@ class AdminPage extends \BlueChip\Security\Core\AdminPage
         $this->page_title = _x('BC Security Setup', 'Dashboard page title', 'bc-security');
         $this->menu_title = _x('Setup', 'Dashboard menu item name', 'bc-security');
 
-        $this->constructSettingsPage($settings);
+        $this->useSettings($settings);
+    }
+
+
+    public function loadPage()
+    {
+        $this->displaySettingsErrors();
     }
 
 
@@ -36,7 +44,7 @@ class AdminPage extends \BlueChip\Security\Core\AdminPage
     {
         echo '<div class="wrap">';
         echo '<h1>' . esc_html($this->page_title) . '</h1>';
-        echo $this->renderForm();
+        echo $this->renderSettingsForm();
         echo '</div>';
     }
 
@@ -44,21 +52,21 @@ class AdminPage extends \BlueChip\Security\Core\AdminPage
     /**
      * Initialize settings page: add sections and fields.
      */
-    public function initSettingsPageSectionsAndFields()
+    public function init()
     {
-        // Shortcut
-        $settings_api_helper = $this->settings_api_helper;
+        // Register settings.
+        $this->registerSettings();
 
         // Set page as current
-        $settings_api_helper->setSettingsPage(self::SLUG);
+        $this->setSettingsPage(self::SLUG);
 
         // Section: Site connection
-        $settings_api_helper->addSettingsSection(
+        $this->addSettingsSection(
             'site-connection',
             _x('Site connection', 'Settings section title', 'bc-security'),
             [$this, 'renderSiteConnectionHint']
         );
-        $settings_api_helper->addSettingsField(
+        $this->addSettingsField(
             Settings::CONNECTION_TYPE,
             __('Connection type', 'bc-security'),
             [FormHelper::class, 'renderSelect'],

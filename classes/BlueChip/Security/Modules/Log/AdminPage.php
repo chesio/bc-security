@@ -12,11 +12,12 @@ use BlueChip\Security\Helpers\FormHelper;
  */
 class AdminPage extends \BlueChip\Security\Core\AdminPage
 {
+    /** Page has counter indicator */
+    use \BlueChip\Security\Core\Admin\CountablePage;
+
     /** Page has settings section */
     use \BlueChip\Security\Core\Admin\SettingsPage;
 
-    /** Page has counter indicator */
-    use \BlueChip\Security\Core\Admin\CountablePage;
 
 
     /**
@@ -47,8 +48,8 @@ class AdminPage extends \BlueChip\Security\Core\AdminPage
 
         $this->logger = $logger;
 
-        $this->constructSettingsPage($settings);
         $this->setCounter($logger);
+        $this->useSettings($settings);
 
         add_filter('set-screen-option', [$this, 'setScreenOption'], 10, 3);
     }
@@ -57,27 +58,27 @@ class AdminPage extends \BlueChip\Security\Core\AdminPage
     /**
      * Initialize settings page: add sections and fields.
      */
-    public function initSettingsPageSectionsAndFields()
+    public function init()
     {
-        // Shortcut
-        $settings_api_helper = $this->settings_api_helper;
+        // Register settings.
+        $this->registerSettings();
 
         // Set page as current.
-        $settings_api_helper->setSettingsPage(self::SLUG);
+        $this->setSettingsPage(self::SLUG);
 
         // Section: Automatic clean-up configuration
-        $settings_api_helper->addSettingsSection(
+        $this->addSettingsSection(
             'log-cleanup-configuration',
             _x('Automatic clean-up configuration', 'Settings section title', 'bc-security'),
             [$this, 'renderCleanupConfigurationHint']
         );
-        $settings_api_helper->addSettingsField(
+        $this->addSettingsField(
             Settings::LOG_MAX_AGE,
             __('Maximum age', 'bc-security'),
             [FormHelper::class, 'renderNumberInput'],
             [ 'append' => __('days', 'bc-security'), ]
         );
-        $settings_api_helper->addSettingsField(
+        $this->addSettingsField(
             Settings::LOG_MAX_SIZE,
             __('Maximum size', 'bc-security'),
             [FormHelper::class, 'renderNumberInput'],
@@ -89,8 +90,7 @@ class AdminPage extends \BlueChip\Security\Core\AdminPage
     public function loadPage()
     {
         $this->resetCount();
-        // To have admin notices displayed.
-        $this->loadSettingsPage();
+        $this->displaySettingsErrors();
         $this->addScreenOptions();
         $this->initListTable();
     }
@@ -113,7 +113,7 @@ class AdminPage extends \BlueChip\Security\Core\AdminPage
         echo '</form>';
 
         // Pruning configuration form
-        echo $this->renderForm();
+        echo $this->renderSettingsForm();
 
         echo '</div>';
     }
