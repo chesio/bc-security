@@ -12,6 +12,9 @@ class AdminPage extends \BlueChip\Security\Core\AdminPage
     /** Page has counter indicator */
     use \BlueChip\Security\Core\Admin\CountablePage;
 
+    /** Page has list table */
+    use \BlueChip\Security\Core\Admin\ListingPage;
+
 
     /**
      * @var string Page slug
@@ -64,11 +67,6 @@ class AdminPage extends \BlueChip\Security\Core\AdminPage
      */
     private $bl_cleaner;
 
-    /**
-     * @var \BlueChip\Security\Modules\IpBlacklist\ListTable
-     */
-    private $list_table;
-
 
     /**
      * @param \BlueChip\Security\Modules\IpBlacklist\Manager $bl_manager
@@ -83,8 +81,7 @@ class AdminPage extends \BlueChip\Security\Core\AdminPage
         $this->bl_cleaner = $bl_cleaner;
 
         $this->setCounter($bl_manager);
-
-        add_filter('set-screen-option', [$this, 'setScreenOption'], 10, 3);
+        $this->setPerPageOption('bc_security_ip_blacklist_records_per_page');
     }
 
 
@@ -92,7 +89,7 @@ class AdminPage extends \BlueChip\Security\Core\AdminPage
     {
         $this->resetCount();
         $this->processActions();
-        $this->addScreenOptions();
+        $this->addPerPageOption();
         $this->initListTable();
     }
 
@@ -230,33 +227,11 @@ class AdminPage extends \BlueChip\Security\Core\AdminPage
 
 
     /**
-     * @param bool $status
-     * @param string $option
-     * @param string $value
-     * @return mixed
-     */
-    public function setScreenOption($status, $option, $value)
-    {
-        return ($option === ListTable::RECORDS_PER_PAGE) ? intval($value) : $status;
-    }
-
-
-    private function addScreenOptions()
-    {
-        add_screen_option('per_page', [
-            'label' => __('Records', 'bc-security'),
-            'default' => 20,
-            'option' => ListTable::RECORDS_PER_PAGE,
-        ]);
-    }
-
-
-    /**
      * Initialize list table instance.
      */
     private function initListTable()
     {
-        $this->list_table = new ListTable($this->getUrl(), $this->bl_manager);
+        $this->list_table = new ListTable($this->getUrl(), $this->per_page_option_name, $this->bl_manager);
         $this->list_table->processActions(); // may trigger wp_redirect()
         $this->list_table->displayNotices();
         $this->list_table->prepare_items();

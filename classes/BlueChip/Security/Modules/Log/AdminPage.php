@@ -18,6 +18,8 @@ class AdminPage extends \BlueChip\Security\Core\AdminPage
     /** Page has settings section */
     use \BlueChip\Security\Core\Admin\SettingsPage;
 
+    /** Page has list table */
+    use \BlueChip\Security\Core\Admin\ListingPage;
 
 
     /**
@@ -30,11 +32,6 @@ class AdminPage extends \BlueChip\Security\Core\AdminPage
      * @var \BlueChip\Security\Modules\Log\Logger
      */
     private $logger;
-
-    /**
-     * @var \BlueChip\Security\Modules\Log\ListTable
-     */
-    private $list_table;
 
 
     /**
@@ -50,8 +47,7 @@ class AdminPage extends \BlueChip\Security\Core\AdminPage
 
         $this->setCounter($logger);
         $this->useSettings($settings);
-
-        add_filter('set-screen-option', [$this, 'setScreenOption'], 10, 3);
+        $this->setPerPageOption('bc_security_log_records_per_page');
     }
 
 
@@ -91,7 +87,7 @@ class AdminPage extends \BlueChip\Security\Core\AdminPage
     {
         $this->resetCount();
         $this->displaySettingsErrors();
-        $this->addScreenOptions();
+        $this->addPerPageOption();
         $this->initListTable();
     }
 
@@ -128,33 +124,11 @@ class AdminPage extends \BlueChip\Security\Core\AdminPage
 
 
     /**
-     * @param bool $status
-     * @param string $option
-     * @param string $value
-     * @return mixed
-     */
-    public function setScreenOption($status, $option, $value)
-    {
-        return ($option === ListTable::RECORDS_PER_PAGE) ? intval($value) : $status;
-    }
-
-
-    private function addScreenOptions()
-    {
-        add_screen_option('per_page', [
-            'label' => __('Records', 'bc-security'),
-            'default' => 20,
-            'option' => ListTable::RECORDS_PER_PAGE,
-        ]);
-    }
-
-
-    /**
      * Initialize list table instance.
      */
     private function initListTable()
     {
-        $this->list_table = new ListTable($this->getUrl(), $this->logger);
+        $this->list_table = new ListTable($this->getUrl(), $this->per_page_option_name, $this->logger);
         $this->list_table->prepare_items();
     }
 }

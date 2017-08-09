@@ -25,12 +25,18 @@ abstract class ListTable extends \WP_List_Table
      */
     protected $order_by = 'id';
 
+    /**
+     * @var int Number of items per page.
+     */
+    protected $items_per_page;
+
 
     /**
      * @param string $url
+     * @param string $per_page_option_name
      * @param array $args
      */
-    public function __construct($url, array $args = [])
+    public function __construct($url, $per_page_option_name, array $args = [])
     {
         $default_args = [
             'singular' => __('Record', 'bc-security'),
@@ -41,6 +47,7 @@ abstract class ListTable extends \WP_List_Table
         parent::__construct(array_merge($default_args, $args));
 
         $this->url = $url;
+        $this->items_per_page = $this->get_items_per_page($per_page_option_name);
 
         $order_by = filter_input(INPUT_GET, 'orderby', FILTER_SANITIZE_STRING);
         if (in_array($order_by, $this->get_sortable_columns(), true)) {
@@ -52,6 +59,25 @@ abstract class ListTable extends \WP_List_Table
         if ($order === 'asc' || $order === 'desc') {
             $this->order = $order;
             $this->url = add_query_arg('order', $order, $this->url);
+        }
+    }
+
+
+    /**
+     * Display (dismissible) admin notice informing user that an action has been performed successfully.
+     */
+    public function displayNotice($query_arg, $single, $plural)
+    {
+        $result = filter_input(INPUT_GET, $query_arg, FILTER_VALIDATE_INT);
+        if (is_int($result) && ($result > 0)) {
+            AdminNotices::add(
+                _n($single, $plural, $result, 'bc-security'),
+                AdminNotices::SUCCESS
+            );
+            add_filter('removable_query_args', function ($removable_query_args) use ($query_arg) {
+                $removable_query_args[] = $query_arg;
+                return $removable_query_args;
+            });
         }
     }
 
