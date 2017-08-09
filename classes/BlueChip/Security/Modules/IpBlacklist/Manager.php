@@ -5,6 +5,8 @@
 
 namespace BlueChip\Security\Modules\IpBlacklist;
 
+use BlueChip\Security\Modules;
+
 /**
  * Who's on the blacklist, baby?
  *
@@ -20,7 +22,7 @@ namespace BlueChip\Security\Modules\IpBlacklist;
  * release date that is the most future one), if single IP is locked multiple
  * times in the same scope.
  */
-class Manager implements \BlueChip\Security\Modules\Installable, \Countable
+class Manager implements Modules\Countable, Modules\Installable, \Countable
 {
     /**
      * @var string Name of DB table where IP blacklist is stored

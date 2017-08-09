@@ -13,7 +13,7 @@ use Psr\Log;
  *
  * @link http://www.php-fig.org/psr/psr-3/
  */
-class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\Installable, Modules\Loadable, \Countable
+class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\Countable, Modules\Installable, Modules\Loadable, \Countable
 {
     /** @var string Name of DB table where logs are stored */
     const LOG_TABLE = 'bc_security_log';

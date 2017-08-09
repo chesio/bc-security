@@ -12,17 +12,17 @@ use BlueChip\Security\Helpers\FormHelper;
  */
 class AdminPage extends \BlueChip\Security\Core\AdminPage
 {
+    /** Page has settings section */
     use \BlueChip\Security\Core\Admin\SettingsPage;
+
+    /** Page has counter indicator */
+    use \BlueChip\Security\Core\Admin\CountablePage;
+
 
     /**
      * @var string Page slug
      */
     const SLUG = 'bc-security-logs';
-
-    /**
-     * @var string Name of user meta key for last view time
-     */
-    const LAST_VISIT_TIMESTAMP_META = 'bc-security/logs-last-visit';
 
 
     /**
@@ -35,11 +35,6 @@ class AdminPage extends \BlueChip\Security\Core\AdminPage
      */
     private $list_table;
 
-    /**
-     * @var int Number of new records in log since the last time current user viewed the page
-     */
-    public $counter;
-
 
     /**
      * @param \BlueChip\Security\Modules\Log\Settings $settings
@@ -51,9 +46,9 @@ class AdminPage extends \BlueChip\Security\Core\AdminPage
         $this->menu_title = _x('Logs', 'Dashboard menu item name', 'bc-security');
 
         $this->logger = $logger;
-        $this->counter = $this->getNewRecordsCount(wp_get_current_user());
 
         $this->constructSettingsPage($settings);
+        $this->setCounter($logger);
 
         add_filter('set-screen-option', [$this, 'setScreenOption'], 10, 3);
     }
@@ -93,10 +88,10 @@ class AdminPage extends \BlueChip\Security\Core\AdminPage
 
     public function loadPage()
     {
+        $this->resetCount();
         // To have admin notices displayed.
         $this->loadSettingsPage();
         $this->addScreenOptions();
-        $this->resetNewRecordsCount(wp_get_current_user());
         $this->initListTable();
     }
 
@@ -151,31 +146,6 @@ class AdminPage extends \BlueChip\Security\Core\AdminPage
             'default' => 20,
             'option' => ListTable::RECORDS_PER_PAGE,
         ]);
-    }
-
-
-    /**
-     * @param \WP_User $user
-     * @return int Number of log records recorded since the last time user visited this page.
-     */
-    private function getNewRecordsCount(\WP_User $user)
-    {
-        $last_visit_timestamp = get_user_meta($user->ID, self::LAST_VISIT_TIMESTAMP_META, true);
-
-        return empty($last_visit_timestamp)
-            ? $this->logger->countAll()
-            : $this->logger->countFrom($last_visit_timestamp)
-        ;
-    }
-
-
-    /**
-     * @param \WP_User $user
-     */
-    private function resetNewRecordsCount(\WP_User $user)
-    {
-        // Update $user's last view time for this page.
-        update_user_meta($user->ID, self::LAST_VISIT_TIMESTAMP_META, current_time('timestamp'));
     }
 
 

@@ -122,8 +122,8 @@ class Admin
     private function formatCounter(\BlueChip\Security\Core\AdminPage $page)
     {
         // Counter is optional.
-        return isset($page->counter) && !empty($page->counter)
-            ? sprintf(' <span class="awaiting-mod"><span>%d</span></span>', number_format_i18n($page->counter))
+        return method_exists($page, 'getCount') && !empty($count = $page->getCount())
+            ? sprintf(' <span class="awaiting-mod"><span>%d</span></span>', number_format_i18n($count))
             : ''
         ;
     }
