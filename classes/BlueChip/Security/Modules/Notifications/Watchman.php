@@ -113,14 +113,20 @@ class Watchman implements Modules\Loadable, Modules\Initializable, Modules\Activ
         }
 
         if ($this->settings[Settings::PLUGIN_DEACTIVATED]) {
-            // Get the bastard that turned us off!
-            $user = wp_get_current_user();
-
             $subject = __('BC Security deactivated', 'bc-security');
-            $message = sprintf(
-                __('User "%s" had just deactivated BC Security plugin on your website!', 'bc-security'),
-                $user->user_login
-            );
+
+            $user = wp_get_current_user();
+            if ($user->ID) {
+                // Name the bastard that turned us off!
+                $message = sprintf(
+                    __('User "%s" had just deactivated BC Security plugin on your website!', 'bc-security'),
+                    $user->user_login
+                );
+            } else {
+                // No user means plugin has been probably deactivated via WP-CLI.
+                // See: https://github.com/chesio/bc-security/issues/16#issuecomment-321541102
+                $message = __('BC Security plugin on your website has been deactivated!', 'bc-security');
+            }
 
             $this->notify($subject, $message);
         }
