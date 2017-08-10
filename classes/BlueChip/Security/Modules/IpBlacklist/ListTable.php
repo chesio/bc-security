@@ -48,11 +48,6 @@ class ListTable extends \BlueChip\Security\Core\ListTable
     const NONCE_NAME = '_wpnonce';
 
     /**
-     * @var string Name of option holding records per page value
-     */
-    const RECORDS_PER_PAGE = 'ip_blacklist_records_per_page';
-
-    /**
      * @var string Name of view query argument
      */
     const VIEW_SCOPE = 'scope';
@@ -71,11 +66,12 @@ class ListTable extends \BlueChip\Security\Core\ListTable
 
     /**
      * @param string $url
+     * @param string $per_page_option_name
      * @param \BlueChip\Security\Modules\IpBlacklist\Manager $bl_manager
      */
-    public function __construct($url, Manager $bl_manager)
+    public function __construct($url, $per_page_option_name, Manager $bl_manager)
     {
-        parent::__construct($url);
+        parent::__construct($url, $per_page_option_name);
 
         $this->bl_manager = $bl_manager;
 
@@ -115,28 +111,17 @@ class ListTable extends \BlueChip\Security\Core\ListTable
      */
     public function displayNotices()
     {
-        $removed = filter_input(INPUT_GET, self::NOTICE_RECORD_REMOVED, FILTER_VALIDATE_INT);
-        if (is_int($removed) && ($removed > 0)) {
-            AdminNotices::add(
-                _n('Selected record has been removed.', 'Selected records have been removed.', $removed),
-                AdminNotices::SUCCESS
-            );
-            add_filter('removable_query_args', function ($removable_query_args) {
-                $removable_query_args[] = self::NOTICE_RECORD_REMOVED;
-                return $removable_query_args;
-            });
-        }
-        $unlocked = filter_input(INPUT_GET, self::NOTICE_RECORD_UNLOCKED, FILTER_VALIDATE_INT);
-        if (is_int($unlocked) && ($unlocked > 0)) {
-            AdminNotices::add(
-                _n('Selected record has been unlocked.', 'Selected records have been unlocked.', $unlocked),
-                AdminNotices::SUCCESS
-            );
-            add_filter('removable_query_args', function ($removable_query_args) {
-                $removable_query_args[] = self::NOTICE_RECORD_UNLOCKED;
-                return $removable_query_args;
-            });
-        }
+        $this->displayNotice(
+            self::NOTICE_RECORD_REMOVED,
+            'Selected record has been removed.',
+            'Selected records have been removed.'
+        );
+
+        $this->displayNotice(
+            self::NOTICE_RECORD_UNLOCKED,
+            'Selected record has been unlocked.',
+            'Selected records have been unlocked.'
+        );
     }
 
 
@@ -234,7 +219,7 @@ class ListTable extends \BlueChip\Security\Core\ListTable
     public function prepare_items() // @codingStandardsIgnoreLine
     {
         $current_page = $this->get_pagenum();
-        $per_page = $this->get_items_per_page(self::RECORDS_PER_PAGE);
+        $per_page = $this->items_per_page;
 
         $total_items = $this->bl_manager->countAll($this->scope);
 

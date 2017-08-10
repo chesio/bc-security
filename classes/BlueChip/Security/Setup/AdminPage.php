@@ -7,8 +7,12 @@ namespace BlueChip\Security\Setup;
 
 use BlueChip\Security\Helpers\FormHelper;
 
-class AdminPage extends \BlueChip\Security\Core\AdminSettingsPage
+class AdminPage extends \BlueChip\Security\Core\AdminPage
 {
+    /** Page has settings section */
+    use \BlueChip\Security\Core\Admin\SettingsPage;
+
+
     /**
      * @var string Page slug
      */
@@ -20,11 +24,16 @@ class AdminPage extends \BlueChip\Security\Core\AdminSettingsPage
      */
     public function __construct(Settings $settings)
     {
-        parent::__construct($settings);
-
         $this->page_title = _x('BC Security Setup', 'Dashboard page title', 'bc-security');
         $this->menu_title = _x('Setup', 'Dashboard menu item name', 'bc-security');
-        $this->slug = self::SLUG;
+
+        $this->useSettings($settings);
+    }
+
+
+    public function loadPage()
+    {
+        $this->displaySettingsErrors();
     }
 
 
@@ -35,32 +44,29 @@ class AdminPage extends \BlueChip\Security\Core\AdminSettingsPage
     {
         echo '<div class="wrap">';
         echo '<h1>' . esc_html($this->page_title) . '</h1>';
-        echo $this->settings_api_helper->renderForm();
+        echo $this->renderSettingsForm();
         echo '</div>';
     }
 
 
     /**
-     * Run on `admin_init` hook.
+     * Initialize settings page: add sections and fields.
      */
-    public function initAdmin()
+    public function init()
     {
-        // Shortcut
-        $settings_api_helper = $this->settings_api_helper;
-
-        // Register setting first
-        $settings_api_helper->register();
+        // Register settings.
+        $this->registerSettings();
 
         // Set page as current
-        $settings_api_helper->setSettingsPage($this->slug);
+        $this->setSettingsPage(self::SLUG);
 
         // Section: Site connection
-        $settings_api_helper->addSettingsSection(
+        $this->addSettingsSection(
             'site-connection',
             _x('Site connection', 'Settings section title', 'bc-security'),
             [$this, 'renderSiteConnectionHint']
         );
-        $settings_api_helper->addSettingsField(
+        $this->addSettingsField(
             Settings::CONNECTION_TYPE,
             __('Connection type', 'bc-security'),
             [FormHelper::class, 'renderSelect'],
@@ -72,7 +78,7 @@ class AdminPage extends \BlueChip\Security\Core\AdminSettingsPage
     public function renderSiteConnectionHint()
     {
         $list = IpAddress::enlist(true);
-        
+
         echo '<p>';
         echo esc_html__('Your server provides following information about remote addresses:', 'bc-security');
         echo '</p>';

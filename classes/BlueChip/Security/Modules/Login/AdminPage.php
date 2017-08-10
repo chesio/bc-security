@@ -7,8 +7,12 @@ namespace BlueChip\Security\Modules\Login;
 
 use BlueChip\Security\Helpers\FormHelper;
 
-class AdminPage extends \BlueChip\Security\Core\AdminSettingsPage
+class AdminPage extends \BlueChip\Security\Core\AdminPage
 {
+    /** Page has settings section */
+    use \BlueChip\Security\Core\Admin\SettingsPage;
+
+
     /**
      * @var string Page slug
      */
@@ -20,11 +24,16 @@ class AdminPage extends \BlueChip\Security\Core\AdminSettingsPage
      */
     public function __construct(Settings $settings)
     {
-        parent::__construct($settings);
-
         $this->page_title = _x('Login Security Settings', 'Dashboard page title', 'bc-security');
         $this->menu_title = _x('Login', 'Dashboard menu item name', 'bc-security');
-        $this->slug = self::SLUG;
+
+        $this->useSettings($settings);
+    }
+
+
+    public function loadPage()
+    {
+        $this->displaySettingsErrors();
     }
 
 
@@ -35,7 +44,7 @@ class AdminPage extends \BlueChip\Security\Core\AdminSettingsPage
     {
         echo '<div class="wrap">';
         echo '<h1>' . esc_html($this->page_title) . '</h1>';
-        echo $this->settings_api_helper->renderForm();
+        echo $this->renderSettingsForm();
         echo '</div>';
     }
 
@@ -63,56 +72,53 @@ class AdminPage extends \BlueChip\Security\Core\AdminSettingsPage
 
 
     /**
-     * Run on `admin_init` hook.
+     * Initialize settings page: add sections and fields.
      */
-    public function initAdmin()
+    public function init()
     {
-        // Shortcut
-        $settings_api_helper = $this->settings_api_helper;
-
-        // Register setting first
-        $settings_api_helper->register();
+        // Register settings.
+        $this->registerSettings();
 
         // Set page as current
-        $settings_api_helper->setSettingsPage($this->slug);
+        $this->setSettingsPage(self::SLUG);
 
         // Section: Lockout configuration
-        $settings_api_helper->addSettingsSection(
+        $this->addSettingsSection(
             'lockout-configuration',
             _x('Lockout configuration', 'Settings section title', 'bc-security'),
             [$this, 'renderLockoutConfigurationHint']
         );
-        $settings_api_helper->addSettingsField(
+        $this->addSettingsField(
             Settings::SHORT_LOCKOUT_AFTER,
             __('Short lockout after', 'bc-security'),
             [FormHelper::class, 'renderNumberInput'],
             [ 'append' => __('failed attempt(s)', 'bc-security'), ]
         );
-        $settings_api_helper->addSettingsField(
+        $this->addSettingsField(
             Settings::SHORT_LOCKOUT_DURATION,
             __('Short lockout duration', 'bc-security'),
             [FormHelper::class, 'renderNumberInput'],
             [ 'append' => __('minutes', 'bc-security'), ]
         );
-        $settings_api_helper->addSettingsField(
+        $this->addSettingsField(
             Settings::LONG_LOCKOUT_AFTER,
             __('Long lockout after', 'bc-security'),
             [FormHelper::class, 'renderNumberInput'],
             [ 'append' => __('failed attempt(s)', 'bc-security'), ]
         );
-        $settings_api_helper->addSettingsField(
+        $this->addSettingsField(
             Settings::LONG_LOCKOUT_DURATION,
             __('Long lockout duration', 'bc-security'),
             [FormHelper::class, 'renderNumberInput'],
             [ 'append' => __('hours', 'bc-security'), ]
         );
-        $settings_api_helper->addSettingsField(
+        $this->addSettingsField(
             Settings::RESET_TIMEOUT,
             __('Reset retries after', 'bc-security'),
             [FormHelper::class, 'renderNumberInput'],
             [ 'append' => __('days', 'bc-security'), ]
         );
-        $settings_api_helper->addSettingsField(
+        $this->addSettingsField(
             Settings::USERNAME_BLACKLIST,
             __('Immediately (long) lock out specific usernames', 'bc-security'),
             [FormHelper::class, 'renderTextArea'],
@@ -120,19 +126,19 @@ class AdminPage extends \BlueChip\Security\Core\AdminSettingsPage
         );
 
         // Section: Authentication cookies
-        $settings_api_helper->addSettingsSection(
+        $this->addSettingsSection(
             'auth-cookies',
             _x('Auth cookies', 'Settings section title', 'bc-security'),
             null
         );
-        $settings_api_helper->addSettingsField(
+        $this->addSettingsField(
             Settings::CHECK_COOKIES,
             __('Check auth cookies', 'bc-security'),
             [FormHelper::class, 'renderCheckbox']
         );
 
         // Section: Display generic error message on failed login
-        $settings_api_helper->addSettingsSection(
+        $this->addSettingsSection(
             'generic-error-message',
             __('Display generic error message on failed login', 'bc-security'),
             function () {
@@ -143,7 +149,7 @@ class AdminPage extends \BlueChip\Security\Core\AdminSettingsPage
                 echo '<p>' . esc_html__('Generic error message is displayed only for default authentication errors: invalid username, invalid email or invalid password. Display of any other authentication errors is not affected.', 'bc-security') . '</p>';
             }
         );
-        $settings_api_helper->addSettingsField(
+        $this->addSettingsField(
             Settings::GENERIC_LOGIN_ERROR_MESSAGE,
             __('Display generic error message', 'bc-security'),
             [FormHelper::class, 'renderCheckbox']

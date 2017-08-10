@@ -3,47 +3,13 @@
  * @package BC_Security
  */
 
-namespace BlueChip\Security\Helpers;
+namespace BlueChip\Security\Core\Admin;
 
 /**
- * Helper for WordPress Settings API that provides methods for adding setting
- * fields and sections to settings page.
- *
- * @link https://kovshenin.com/2012/the-wordpress-settings-api/
+ * Common settings API boilerplate for admin pages.
  */
-class SettingsApiHelper
+trait SettingsPage
 {
-    /**
-     * General settings page slug-name - usable as $page arg to set_settings_page().
-     */
-    const SETTINGS_GENERAL      = 'general';
-
-    /**
-     * Writing settings page slug-name - usable as $page arg to set_settings_page().
-     */
-    const SETTINGS_WRITING      = 'writing';
-
-    /**
-     * Reading settings page slug-name - usable as $page arg to set_settings_page().
-     */
-    const SETTINGS_READING      = 'reading';
-
-    /**
-     * Discussion settings page slug-name - usable as $page arg to set_settings_page().
-     */
-    const SETTINGS_DISCUSSION   = 'discussion';
-
-    /**
-     * Media settings page slug-name - usable as $page arg to set_settings_page().
-     */
-    const SETTINGS_MEDIA        = 'media';
-
-    /**
-     * Permalink settings page slug-name - usable as $page arg to set_settings_page().
-     */
-    const SETTINGS_PERMALINK    = 'permalink';
-
-
     /**
      * @var string Option group
      */
@@ -71,13 +37,11 @@ class SettingsApiHelper
 
 
     /**
-     * Settings helper needs to know the settings only.
-     *
      * @link https://codex.wordpress.org/Settings_API
      *
      * @param \BlueChip\Security\Core\Settings $settings
      */
-    public function __construct(\BlueChip\Security\Core\Settings $settings)
+    protected function useSettings(\BlueChip\Security\Core\Settings $settings)
     {
         // Remember the settings.
         $this->settings = $settings;
@@ -87,9 +51,18 @@ class SettingsApiHelper
 
 
     /**
+     * Display settings errors via admin notices.
+     */
+    public function displaySettingsErrors()
+    {
+        add_action('admin_notices', 'settings_errors');
+    }
+
+
+    /**
      * Register setting.
      */
-    public function register()
+    public function registerSettings()
     {
         register_setting($this->option_group, $this->option_name, [$this->settings, 'sanitize']);
     }
@@ -98,7 +71,7 @@ class SettingsApiHelper
     /**
      * Unregister setting.
      */
-    public function unregister()
+    public function unregisterSettings()
     {
         unregister_setting($this->option_group, $this->option_name);
     }
@@ -183,21 +156,39 @@ class SettingsApiHelper
     //// Printers //////////////////////////////////////////////////////////////
 
     /**
-     * Print settings form with settings from recent page (ie. $page that has been set as last via set_settings_page()).
+     * Render nonce, action and other hidden fields.
      */
-    public function renderForm()
+    public function renderSettingsFields()
+    {
+        settings_fields($this->option_group);
+    }
+
+
+    /**
+     * Render visible form fields.
+     */
+    public function renderSettingsSections()
     {
         if (!is_string($this->recent_page)) {
             _doing_it_wrong(__METHOD__, 'No recent page set!', '0.1.0');
             return;
         }
 
+        do_settings_sections($this->recent_page);
+    }
+
+
+    /**
+     * Output form for settings manipulation.
+     */
+    protected function renderSettingsForm()
+    {
         echo '<form method="post" action="' . admin_url('options.php') .'">';
 
         // Render nonce, action and other hidden fields...
-        settings_fields($this->option_group);
+        $this->renderSettingsFields();
         // ... visible fields ...
-        do_settings_sections($this->recent_page);
+        $this->renderSettingsSections();
         // ... and finally the submit button :)
         submit_button();
 

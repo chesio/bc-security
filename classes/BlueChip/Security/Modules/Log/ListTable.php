@@ -15,9 +15,6 @@ class ListTable extends \BlueChip\Security\Core\ListTable
     /** @var string Name of blacklist action query argument */
     const ACTION_BLACKLIST = 'blacklist';
 
-    /** @var string Name of option holding records per page value */
-    const RECORDS_PER_PAGE = 'log_table_records_per_page';
-
     /** @var string Name of view query argument */
     const VIEW_EVENT = 'event';
 
@@ -31,11 +28,12 @@ class ListTable extends \BlueChip\Security\Core\ListTable
 
     /**
      * @param string $url
+     * @param string $per_page_option_name
      * @param \BlueChip\Security\Modules\Log\Logger $logger
      */
-    public function __construct($url, Logger $logger)
+    public function __construct($url, $per_page_option_name, Logger $logger)
     {
-        parent::__construct($url);
+        parent::__construct($url, $per_page_option_name);
 
         $this->logger = $logger;
 
@@ -191,7 +189,7 @@ class ListTable extends \BlueChip\Security\Core\ListTable
         $event_id = $this->event ? $this->event->getId() : null;
 
         $current_page = $this->get_pagenum();
-        $per_page = $this->get_items_per_page(self::RECORDS_PER_PAGE);
+        $per_page = $this->items_per_page;
 
         $total_items = $this->logger->countAll($event_id);
 

@@ -31,7 +31,6 @@ class AdminPage extends \BlueChip\Security\Core\AdminPage
     {
         $this->page_title = _x('Security Checklist', 'Dashboard page title', 'bc-security');
         $this->menu_title = _x('Checklist', 'Dashboard menu item name', 'bc-security');
-        $this->slug = self::SLUG;
 
         $this->wpdb = $wpdb;
     }
