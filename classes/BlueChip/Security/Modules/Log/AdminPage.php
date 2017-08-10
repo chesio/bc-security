@@ -10,7 +10,7 @@ use BlueChip\Security\Helpers\FormHelper;
 /**
  * Admin page that displays log records.
  */
-class AdminPage extends \BlueChip\Security\Core\AdminPage
+class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
 {
     /** Page has counter indicator */
     use \BlueChip\Security\Core\Admin\CountablePage;

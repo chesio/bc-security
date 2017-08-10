@@ -7,7 +7,7 @@ namespace BlueChip\Security\Modules\IpBlacklist;
 
 use BlueChip\Security\Helpers\AdminNotices;
 
-class AdminPage extends \BlueChip\Security\Core\AdminPage
+class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
 {
     /** Page has counter indicator */
     use \BlueChip\Security\Core\Admin\CountablePage;
@@ -70,9 +70,9 @@ class AdminPage extends \BlueChip\Security\Core\AdminPage
 
     /**
      * @param \BlueChip\Security\Modules\IpBlacklist\Manager $bl_manager
-     * @param \BlueChip\Security\Core\CronJob $bl_cleaner
+     * @param \BlueChip\Security\Modules\Cron\Job $bl_cleaner
      */
-    public function __construct(Manager $bl_manager, \BlueChip\Security\Core\CronJob $bl_cleaner)
+    public function __construct(Manager $bl_manager, \BlueChip\Security\Modules\Cron\Job $bl_cleaner)
     {
         $this->page_title = _x('IP Blacklist', 'Dashboard page title', 'bc-security');
         $this->menu_title = _x('IP Blacklist', 'Dashboard menu item name', 'bc-security');

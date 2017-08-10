@@ -7,7 +7,7 @@ namespace BlueChip\Security\Modules\Hardening;
 
 use BlueChip\Security\Helpers\FormHelper;
 
-class AdminPage extends \BlueChip\Security\Core\AdminPage
+class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
 {
     /** Page has settings section */
     use \BlueChip\Security\Core\Admin\SettingsPage;

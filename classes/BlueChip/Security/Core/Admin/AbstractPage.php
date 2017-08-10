@@ -3,12 +3,12 @@
  * @package BC_Security
  */
 
-namespace BlueChip\Security\Core;
+namespace BlueChip\Security\Core\Admin;
 
 /**
  * Basis (abstract) class for every admin page.
  */
-abstract class AdminPage
+abstract class AbstractPage
 {
     /**
      * @var string Page slug (each inheriting class must define its own)

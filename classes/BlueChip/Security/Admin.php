@@ -22,7 +22,7 @@ class Admin
 
 
     /**
-     * @var \BlueChip\Security\Core\AdminPage[]
+     * @var \BlueChip\Security\Core\Admin\AbstractPage[]
      */
     private $pages = [];
 
@@ -31,7 +31,7 @@ class Admin
      * Initialize admin area of the plugin.
      *
      * @param string $plugin_basename
-     * @return \BlueChip\Security\Admin
+     * @return self
      */
     public function init($plugin_basename)
     {
@@ -45,10 +45,10 @@ class Admin
     /**
      * Add a page to plugin dashboard menu.
      *
-     * @param \BlueChip\Security\Core\AdminPage $page
-     * @return \BlueChip\Security\Admin
+     * @param \BlueChip\Security\Core\Admin\AbstractPage $page
+     * @return self
      */
-    public function addPage(Core\AdminPage $page)
+    public function addPage(Core\Admin\AbstractPage $page)
     {
         $this->pages[$page->getSlug()] = $page;
         return $this;
@@ -125,10 +125,10 @@ class Admin
     /**
      * Format counter indicator for menu title for given $page.
      *
-     * @param \BlueChip\Security\Core\AdminPage $page
+     * @param \BlueChip\Security\Core\Admin\AbstractPage $page
      * @return string
      */
-    private function formatCounter(\BlueChip\Security\Core\AdminPage $page)
+    private function formatCounter(Core\Admin\AbstractPage $page)
     {
         // Counter is optional.
         return method_exists($page, 'getCount') && !empty($count = $page->getCount())

@@ -135,29 +135,29 @@ class Plugin
     private function constructCronJobs(array $settings, array $modules)
     {
         return [
-            'blacklist-cleaner' => new Core\CronJob(
+            'blacklist-cleaner' => new Modules\Cron\Job(
                 '01:02:03',
-                Core\CronJob::RECUR_DAILY,
+                Modules\Cron\Recurrence::DAILY,
                 'bc-security/ip-blacklist-clean-up',
                 [$modules['blacklist-manager'], 'prune']
             ),
-            'log-cleaner-by-age' => new Core\CronJob(
+            'log-cleaner-by-age' => new Modules\Cron\Job(
                 '02:03:04',
-                Core\CronJob::RECUR_DAILY,
+                Modules\Cron\Recurrence::DAILY,
                 'bc-security/logs-clean-up-by-age',
                 [$modules['logger'], 'pruneByAge'],
                 [$settings['log']->getMaxAge()]
             ),
-            'log-cleaner-by-size' => new Core\CronJob(
+            'log-cleaner-by-size' => new Modules\Cron\Job(
                 '03:04:05',
-                Core\CronJob::RECUR_DAILY,
+                Modules\Cron\Recurrence::DAILY,
                 'bc-security/logs-clean-up-by-size',
                 [$modules['logger'], 'pruneBySize'],
                 [$settings['log']->getMaxSize()]
             ),
-            'checksum-verifier' => new Core\CronJob(
+            'checksum-verifier' => new Modules\Cron\Job(
                 '04:05:06',
-                Core\CronJob::RECUR_DAILY,
+                Modules\Cron\Recurrence::DAILY,
                 'bc-security/checksum-verifier',
                 [$modules['checksum-verifier'], 'runCheck']
             ),
