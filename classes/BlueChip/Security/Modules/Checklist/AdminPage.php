@@ -5,7 +5,7 @@
 
 namespace BlueChip\Security\Modules\Checklist;
 
-use BlueChip\Security\Core\Admin;
+use BlueChip\Security\Modules\Hardening;
 
 class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
 {
@@ -81,7 +81,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
             esc_html__('You might also want to enable some other %s.', 'bc-security'),
             sprintf(
                 '<a href="%s">%s</a>',
-                Admin\AbstractPage::getPageUrl(\BlueChip\Security\Modules\Hardening\AdminPage::SLUG),
+                Hardening\AdminPage::getPageUrl(),
                 esc_html__('hardening options', 'bc-security')
             )
         );

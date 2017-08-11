@@ -221,7 +221,7 @@ class ListTable extends \BlueChip\Security\Core\ListTable
                         IpBlacklist\AdminPage::DEFAULT_IP_ADDRESS => $item['ip_address'],
                         IpBlacklist\AdminPage::DEFAULT_SCOPE => $scope,
                     ],
-                    IpBlacklist\AdminPage::getPageUrl(IpBlacklist\AdminPage::SLUG)
+                    IpBlacklist\AdminPage::getPageUrl()
                 ),
                 esc_html__('Add to blacklist', 'bc-security')
             ),

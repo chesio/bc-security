@@ -64,19 +64,17 @@ abstract class AbstractPage
      */
     public function getUrl()
     {
-        return self::getPageUrl($this->getSlug());
+        return static::getPageUrl();
     }
 
 
     /**
-     * Helper method to get URL of admin page identified by $slug.
-     *
-     * @param string $slug
-     * @return string
+     * @return string URL of admin page.
      */
-    public static function getPageUrl($slug)
+    public static function getPageUrl()
     {
-        return add_query_arg(['page' => $slug,], admin_url('admin.php'));
+        // Why static and not self? See: http://php.net/manual/en/language.oop5.late-static-bindings.php
+        return add_query_arg('page', static::SLUG, admin_url('admin.php'));
     }
 
 
