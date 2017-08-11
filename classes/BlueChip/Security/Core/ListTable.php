@@ -5,11 +5,18 @@
 
 namespace BlueChip\Security\Core;
 
+use BlueChip\Security\Helpers\AdminNotices;
+
 /**
  * Base class for all list tables in plugin.
  */
 abstract class ListTable extends \WP_List_Table
 {
+    /**
+     * @var string Nonce name used for actions in all tables
+     */
+    const NONCE_NAME = '_wpnonce';
+
     /**
      * @var string URL of admin page where the list table is displayed
      */
@@ -32,8 +39,8 @@ abstract class ListTable extends \WP_List_Table
 
 
     /**
-     * @param string $url
-     * @param string $per_page_option_name
+     * @param string $url URL of admin page where list table is displayed.
+     * @param string $per_page_option_name Option name for "per page" screen option.
      * @param array $args
      */
     public function __construct($url, $per_page_option_name, array $args = [])
@@ -65,20 +72,51 @@ abstract class ListTable extends \WP_List_Table
 
     /**
      * Display (dismissible) admin notice informing user that an action has been performed successfully.
+     *
+     * @param string $action Name of query string argument that indicates number of items affected by action.
+     * @param string $single The text to be used in notice if action affected single item.
+     * @param string $plural The text to be used in notice if action affected multiple items.
      */
-    public function displayNotice($query_arg, $single, $plural)
+    protected function displayNotice($action, $single, $plural)
     {
-        $result = filter_input(INPUT_GET, $query_arg, FILTER_VALIDATE_INT);
+        // Have any items been affected by given action?
+        $result = filter_input(INPUT_GET, $action, FILTER_VALIDATE_INT);
         if (is_int($result) && ($result > 0)) {
             AdminNotices::add(
                 _n($single, $plural, $result, 'bc-security'),
                 AdminNotices::SUCCESS
             );
-            add_filter('removable_query_args', function ($removable_query_args) use ($query_arg) {
-                $removable_query_args[] = $query_arg;
+            add_filter('removable_query_args', function ($removable_query_args) use ($action) {
+                $removable_query_args[] = $action;
                 return $removable_query_args;
             });
         }
+    }
+
+
+    /**
+     * Return HTML for specified row action link.
+     *
+     * @param string $action
+     * @param int $id
+     * @param string $class
+     * @param string $label
+     * @return string
+     */
+    protected function formatRowAction($action, $id, $class, $label)
+    {
+        return sprintf(
+            '<span class="' . $class . '"><a href="%s">%s</a></span>',
+            wp_nonce_url(
+                add_query_arg(
+                    ['action' => $action, 'id' => $id],
+                    $this->url
+                ),
+                sprintf('%s:%s', $action, $id),
+                self::NONCE_NAME
+            ),
+            esc_html($label)
+        );
     }
 
 
@@ -95,7 +133,7 @@ abstract class ListTable extends \WP_List_Table
 
 
     /**
-     * Return value for default columns (with no extra value processing).
+     * Return column contents without any extra processing.
      *
      * @param array $item
      * @param string $column_name

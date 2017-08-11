@@ -5,8 +5,6 @@
 
 namespace BlueChip\Security\Modules\IpBlacklist;
 
-use BlueChip\Security\Helpers\AdminNotices;
-
 /**
  * IP blacklist table
  */
@@ -41,11 +39,6 @@ class ListTable extends \BlueChip\Security\Core\ListTable
      * @var string Name of unlocked notice query argument
      */
     const NOTICE_RECORD_UNLOCKED = 'unlocked';
-
-    /**
-     * @var string Nonce name used for actions in this table
-     */
-    const NONCE_NAME = '_wpnonce';
 
     /**
      * @var string Name of view query argument
@@ -88,7 +81,7 @@ class ListTable extends \BlueChip\Security\Core\ListTable
      * @param array $item
      * @return string
      */
-    public function column_ip_address($item) // @codingStandardsIgnoreLine
+    public function column_ip_address(array $item) // @codingStandardsIgnoreLine
     {
         return $item['ip_address'] . $this->row_actions($this->getRowActions($item));
     }
@@ -100,7 +93,7 @@ class ListTable extends \BlueChip\Security\Core\ListTable
      * @param array $item
      * @return string
      */
-    public function column_reason($item) // @codingStandardsIgnoreLine
+    public function column_reason(array $item) // @codingStandardsIgnoreLine
     {
         return $this->explainBanReason($item['reason']);
     }
@@ -239,7 +232,7 @@ class ListTable extends \BlueChip\Security\Core\ListTable
      */
     public function processActions()
     {
-        // Unlock single record?
+        // Remove or unlock single record?
         if (($action = filter_input(INPUT_GET, 'action'))) {
             // Get ID of record to act upon.
             $id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
@@ -255,12 +248,12 @@ class ListTable extends \BlueChip\Security\Core\ListTable
 
             if (($action === self::ACTION_REMOVE) && $this->bl_manager->remove($id)) {
                 // Record removed successfully, redirect to overview (and trigger admin notice)
-                wp_redirect(add_query_arg([self::NOTICE_RECORD_REMOVED => 1], $this->url));
+                wp_redirect(add_query_arg(self::NOTICE_RECORD_REMOVED, 1, $this->url));
             }
 
             if (($action === self::ACTION_UNLOCK) && $this->bl_manager->unlock($id)) {
                 // Record unlocked successfully, redirect to overview (and trigger admin notice)
-                wp_redirect(add_query_arg([self::NOTICE_RECORD_UNLOCKED => 1], $this->url));
+                wp_redirect(add_query_arg(self::NOTICE_RECORD_UNLOCKED, 1, $this->url));
             }
         }
 
@@ -271,12 +264,12 @@ class ListTable extends \BlueChip\Security\Core\ListTable
 
             if ($current_action === self::BULK_ACTION_REMOVE && ($removed = $this->bl_manager->removeMany($ids))) {
                 // Records removed successfully, redirect to overview (and trigger admin notice)
-                wp_redirect(add_query_arg([self::NOTICE_RECORD_REMOVED => $removed], $this->url));
+                wp_redirect(add_query_arg(self::NOTICE_RECORD_REMOVED, $removed, $this->url));
             }
 
             if ($current_action === self::BULK_ACTION_UNLOCK && ($unlocked = $this->bl_manager->unlockMany($ids))) {
                 // Records unlocked successfully, redirect to overview (and trigger admin notice)
-                wp_redirect(add_query_arg([self::NOTICE_UNLOCKED => $unlocked], $this->url));
+                wp_redirect(add_query_arg(self::NOTICE_UNLOCKED, $unlocked, $this->url));
             }
         }
     }
@@ -312,33 +305,21 @@ class ListTable extends \BlueChip\Security\Core\ListTable
     {
         $actions = [
             // Any item can be removed
-            self::ACTION_REMOVE => sprintf(
-                '<span class="delete"><a href="%s">%s</a></span>',
-                wp_nonce_url(
-                    add_query_arg(
-                        ['action' => self::ACTION_REMOVE, 'id' => $item['id']],
-                        $this->url
-                    ),
-                    sprintf('%s:%s', self::ACTION_REMOVE, $item['id']),
-                    self::NONCE_NAME
-                ),
-                esc_html__('Remove', 'bc-security')
+            self::ACTION_REMOVE => $this->formatRowAction(
+                self::ACTION_REMOVE,
+                $item['id'],
+                'delete',
+                __('Remove', 'bc-security')
             ),
         ];
 
         if (strtotime($item['release_time']) > current_time('timestamp')) {
             // Only active locks can be unlocked
-            $actions[self::ACTION_UNLOCK] = sprintf(
-                '<span class="unlock"><a href="%s">%s</a></span>',
-                wp_nonce_url(
-                    add_query_arg(
-                        ['action' => self::ACTION_UNLOCK, 'id' => $item['id']],
-                        $this->url
-                    ),
-                    sprintf('%s:%s', self::ACTION_UNLOCK, $item['id']),
-                    self::NONCE_NAME
-                ),
-                esc_html__('Unlock', 'bc-security')
+            $actions[self::ACTION_UNLOCK] = $this->formatRowAction(
+                self::ACTION_UNLOCK,
+                $item['id'],
+                'unlock',
+                __('Unlock', 'bc-security')
             );
         }
 

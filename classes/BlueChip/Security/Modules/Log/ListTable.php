@@ -37,7 +37,7 @@ class ListTable extends \BlueChip\Security\Core\ListTable
 
         $this->logger = $logger;
 
-        // Display only events from particular type?
+        // Display only events of particular type?
         $event_id = filter_input(INPUT_GET, self::VIEW_EVENT, FILTER_SANITIZE_URL);
         if ($event_id && in_array($event_id, Event::enlist(), true)) {
             $this->event = Event::create($event_id);
@@ -48,17 +48,19 @@ class ListTable extends \BlueChip\Security\Core\ListTable
 
     /**
      * Return content for first column (date and time) including row actions.
+     *
      * @param array $item
      * @return string
      */
-    public function column_date_and_time($item) // @codingStandardsIgnoreLine
+    public function column_date_and_time(array $item) // @codingStandardsIgnoreLine
     {
         return $item['date_and_time'] . $this->row_actions($this->getRowActions($item));
     }
 
 
     /**
-     * Return value for default columns (with no extra value processing).
+     * Return column contents.
+     *
      * @param array $item
      * @param string $column_name
      * @return string
@@ -80,7 +82,7 @@ class ListTable extends \BlueChip\Security\Core\ListTable
      * @param array $item
      * @return string
      */
-    public function column_event($item) // @codingStandardsIgnoreLine
+    public function column_event(array $item) // @codingStandardsIgnoreLine
     {
         $event = Event::create($item['event']);
         return $event ? $event->getName() : '';
@@ -93,7 +95,7 @@ class ListTable extends \BlueChip\Security\Core\ListTable
      * @param array $item
      * @return string
      */
-    public function column_message($item) // @codingStandardsIgnoreLine
+    public function column_message(array $item) // @codingStandardsIgnoreLine
     {
         $message = empty($item['message']) ? '' : $item['message'];
         $context = empty($item['context']) ? [] : unserialize($item['context']);
@@ -137,7 +139,6 @@ class ListTable extends \BlueChip\Security\Core\ListTable
         return [
             'date_and_time' => 'date_and_time',
             'ip_address' => 'ip_address',
-            // TODO
             'event' => 'event',
         ];
     }
