@@ -38,13 +38,13 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
 
 
     /**
-     * Render admin page.
+     * Output page contents.
      */
-    public function render()
+    public function printContents()
     {
         echo '<div class="wrap">';
         echo '<h1>' . esc_html($this->page_title) . '</h1>';
-        echo $this->renderSettingsForm();
+        $this->printSettingsForm();
         echo '</div>';
     }
 
@@ -52,7 +52,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
     /**
      * Initialize settings page: add sections and fields.
      */
-    public function init()
+    public function initPage()
     {
         // Register settings.
         $this->registerSettings();
@@ -64,18 +64,18 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
         $this->addSettingsSection(
             'site-connection',
             _x('Site connection', 'Settings section title', 'bc-security'),
-            [$this, 'renderSiteConnectionHint']
+            [$this, 'printSiteConnectionHint']
         );
         $this->addSettingsField(
             Settings::CONNECTION_TYPE,
             __('Connection type', 'bc-security'),
-            [FormHelper::class, 'renderSelect'],
+            [FormHelper::class, 'printSelect'],
             ['options' => $this->getConnectionOptions()]
         );
     }
 
 
-    public function renderSiteConnectionHint()
+    public function printSiteConnectionHint()
     {
         $list = IpAddress::enlist(true);
 

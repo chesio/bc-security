@@ -27,9 +27,9 @@ abstract class AbstractPage
 
 
     /**
-     * Output page content.
+     * Output page contents.
      */
-    abstract public function render();
+    abstract public function printContents();
 
 
     /**
@@ -94,7 +94,7 @@ abstract class AbstractPage
     /**
      * Run on admin initialization.
      */
-    public function init()
+    public function initPage()
     {
         // By default do nothing.
     }

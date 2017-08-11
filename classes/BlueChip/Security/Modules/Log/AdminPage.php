@@ -54,7 +54,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
     /**
      * Initialize settings page: add sections and fields.
      */
-    public function init()
+    public function initPage()
     {
         // Register settings.
         $this->registerSettings();
@@ -66,18 +66,22 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
         $this->addSettingsSection(
             'log-cleanup-configuration',
             _x('Automatic clean-up configuration', 'Settings section title', 'bc-security'),
-            [$this, 'renderCleanupConfigurationHint']
+            function () {
+                echo '<p>';
+                echo esc_html__('Logs are cleaned automatically once a day based on the configuration below.', 'bc-security');
+                echo '</p>';
+            }
         );
         $this->addSettingsField(
             Settings::LOG_MAX_AGE,
             __('Maximum age', 'bc-security'),
-            [FormHelper::class, 'renderNumberInput'],
+            [FormHelper::class, 'printNumberInput'],
             [ 'append' => __('days', 'bc-security'), ]
         );
         $this->addSettingsField(
             Settings::LOG_MAX_SIZE,
             __('Maximum size', 'bc-security'),
-            [FormHelper::class, 'renderNumberInput'],
+            [FormHelper::class, 'printNumberInput'],
             [ 'append' => __('thousands', 'bc-security'), ]
         );
     }
@@ -93,9 +97,9 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
 
 
     /**
-     * Render admin page.
+     * Output page contents.
      */
-    public function render()
+    public function printContents()
     {
         echo '<div class="wrap">';
 
@@ -109,17 +113,9 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
         echo '</form>';
 
         // Pruning configuration form
-        echo $this->renderSettingsForm();
+        $this->printSettingsForm();
 
         echo '</div>';
-    }
-
-
-    public function renderCleanupConfigurationHint()
-    {
-        echo '<p>';
-        echo esc_html__('Logs are cleaned automatically once a day based on the configuration below.', 'bc-security');
-        echo '</p>';
     }
 
 

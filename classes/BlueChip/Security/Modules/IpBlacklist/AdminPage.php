@@ -95,15 +95,15 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
 
 
     /**
-     * Render admin page.
+     * Output page contents.
      */
-    public function render()
+    public function printContents()
     {
         echo '<div class="wrap">';
         // Page heading
         echo '<h1>' . esc_html($this->page_title) . '</h1>';
         // Manual blacklist form
-        $this->renderBlacklistingForm();
+        $this->printBlacklistingForm();
         // Table
         echo '<h2>' . esc_html__('Blacklisted IP addresses', 'bc-security') . '</h2>';
         $this->list_table->views();
@@ -111,17 +111,17 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
         $this->list_table->display();
         echo '</form>';
         // Table pruning actions
-        $this->renderPruningActions();
+        $this->printPruningActions();
         echo '</div>';
     }
 
 
     /**
-     * Render form for manual addition of IP addresses to blacklist.
+     * Output form for manual addition of IP addresses to blacklist.
      *
      * @hook \BlueChip\Security\Modules\IpBlacklist\Hooks::DEFAULT_MANUAL_LOCK_DURATION
      */
-    private function renderBlacklistingForm()
+    private function printBlacklistingForm()
     {
         // Accept the following values as "pre-fill"
         // Note: the "add-" prefix is especially important for scope, because
@@ -200,9 +200,9 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
 
 
     /**
-     * Render forms for IP blacklist pruning (including cron job activation and deactivation).
+     * Output forms for IP blacklist pruning (including cron job activation and deactivation).
      */
-    private function renderPruningActions()
+    private function printPruningActions()
     {
         echo '<h2>' . esc_html__('Blacklist pruning', 'bc-security') . '</h2>';
 

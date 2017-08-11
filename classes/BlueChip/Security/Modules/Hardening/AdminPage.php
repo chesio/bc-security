@@ -38,14 +38,14 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
 
 
     /**
-     * Render admin page.
+     * Output page contents.
      */
-    public function render()
+    public function printContents()
     {
         echo '<div class="wrap">';
         echo '<h1>' . esc_html($this->page_title) . '</h1>';
         echo '<p>' . esc_html__('All security features below are applied through WordPress filters.', 'bc-security') . '</p>';
-        echo $this->renderSettingsForm();
+        $this->printSettingsForm();
         echo '</div>';
     }
 
@@ -53,7 +53,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
     /**
      * Initialize settings page: add sections and fields.
      */
-    public function init()
+    public function initPage()
     {
         // Register settings.
         $this->registerSettings();
@@ -75,7 +75,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
         $this->addSettingsField(
             Settings::DISABLE_PINGBACKS,
             __('Disable pingbacks', 'bc-security'),
-            [FormHelper::class, 'renderCheckbox']
+            [FormHelper::class, 'printCheckbox']
         );
 
         // Section: Disable XML-RPC methods that require authentication
@@ -92,7 +92,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
         $this->addSettingsField(
             Settings::DISABLE_XML_RPC,
             __('Disable XML-RPC methods', 'bc-security'),
-            [FormHelper::class, 'renderCheckbox']
+            [FormHelper::class, 'printCheckbox']
         );
 
         // Section: Disable REST API to anonymous users
@@ -110,7 +110,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
         $this->addSettingsField(
             Settings::DISABLE_REST_API,
             __('Disable REST API access', 'bc-security'),
-            [FormHelper::class, 'renderCheckbox']
+            [FormHelper::class, 'printCheckbox']
         );
     }
 }

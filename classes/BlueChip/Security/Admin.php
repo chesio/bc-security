@@ -58,7 +58,7 @@ class Admin
     public function initAdminPages()
     {
         foreach ($this->pages as $page) {
-            $page->init();
+            $page->initPage();
         }
     }
 
@@ -91,10 +91,10 @@ class Admin
             $page_hook = add_submenu_page(
                 $main_page->getSlug(),
                 $page->getPageTitle(),
-                $page->getMenuTitle() . $this->formatCounter($page),
+                $page->getMenuTitle() . $this->renderCounter($page),
                 self::CAPABILITY,
                 $page->getSlug(),
-                [$page, 'render']
+                [$page, 'printContents']
             );
             if ($page_hook) {
                 $page->setPageHook($page_hook);
@@ -128,7 +128,7 @@ class Admin
      * @param \BlueChip\Security\Core\Admin\AbstractPage $page
      * @return string
      */
-    private function formatCounter(Core\Admin\AbstractPage $page)
+    private function renderCounter(Core\Admin\AbstractPage $page)
     {
         // Counter is optional.
         return method_exists($page, 'getCount') && !empty($count = $page->getCount())

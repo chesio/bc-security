@@ -8,7 +8,7 @@ namespace BlueChip\Security\Helpers;
 abstract class FormHelper
 {
     /**
-     * Render <input type="checkbox" /> element.
+     * Print <input type="checkbox" /> element.
      *
      * Unless "plain" is set as $args key, an extra hidden field with the same
      * name and empty (false-like) value is printed before checkbox - this way,
@@ -21,7 +21,7 @@ abstract class FormHelper
      *
      * @param array $args Required: label_for, name, value. Optional: plain.
      */
-    public static function renderCheckbox(array $args)
+    public static function printCheckbox(array $args)
     {
         // Field properties
         $properties = [
@@ -38,20 +38,20 @@ abstract class FormHelper
                 // no value necessary - empty value is interpreted as false by PHP
                 'name' => $args['name'],
             ];
-            echo '<input ' . self::printFieldProperties($hidden_properties) . '>';
+            echo '<input ' . self::renderFieldProperties($hidden_properties) . '>';
         }
-        echo '<input ' . self::printFieldProperties($properties) . '>';
+        echo '<input ' . self::renderFieldProperties($properties) . '>';
 
         self::printAppendix($args, true);
     }
 
 
     /**
-     * Render <input type="number> element.
+     * Print <input type="number> element.
      *
      * @param array $args
      */
-    public static function renderNumberInput(array $args)
+    public static function printNumberInput(array $args)
     {
         // Field properties
         $properties = [
@@ -62,25 +62,25 @@ abstract class FormHelper
             'class'     => 'small-text',
         ];
 
-        echo '<input ' . self::printFieldProperties($properties) . '>';
+        echo '<input ' . self::renderFieldProperties($properties) . '>';
 
         self::printAppendix($args, true);
     }
 
 
     /**
-     * Render <select /> element.
+     * Print <select /> element.
      *
      * @param array $args
      */
-    public static function renderSelect(array $args)
+    public static function printSelect(array $args)
     {
         $properties = [
             'id'        => $args['label_for'],
             'name'      => $args['name'],
         ];
 
-        echo '<select ' . self::printFieldProperties($properties) . '>';
+        echo '<select ' . self::renderFieldProperties($properties) . '>';
         foreach ($args['options'] as $key => $value) {
             echo '<option value="' . esc_attr($key) . '"' . selected($key, $args['value'], false) . '>';
             echo esc_html($value);
@@ -93,14 +93,14 @@ abstract class FormHelper
 
 
     /**
-     * Render <textarea /> element.
+     * Print <textarea /> element.
      *
      * Note: method expects the value argument ($args['value']) to be an array
      * (of lines).
      *
      * @param array $args
      */
-    public static function renderTextArea(array $args)
+    public static function printTextArea(array $args)
     {
         // Field properties
         $properties = [
@@ -108,7 +108,7 @@ abstract class FormHelper
             'name'      => $args['name'],
         ];
 
-        echo '<textarea ' . self::printFieldProperties($properties) . '>';
+        echo '<textarea ' . self::renderFieldProperties($properties) . '>';
         echo esc_html(implode(PHP_EOL, $args['value']));
         echo '</textarea>';
 
@@ -125,7 +125,7 @@ abstract class FormHelper
      * @param array $properties
      * @return string
      */
-    protected static function printFieldProperties(array $properties)
+    protected static function renderFieldProperties(array $properties)
     {
         $filtered = array_filter(
             $properties,

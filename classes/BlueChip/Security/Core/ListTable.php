@@ -103,7 +103,7 @@ abstract class ListTable extends \WP_List_Table
      * @param string $label
      * @return string
      */
-    protected function formatRowAction($action, $id, $class, $label)
+    protected function renderRowAction($action, $id, $class, $label)
     {
         return sprintf(
             '<span class="' . $class . '"><a href="%s">%s</a></span>',

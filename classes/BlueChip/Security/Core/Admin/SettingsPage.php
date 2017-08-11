@@ -156,18 +156,18 @@ trait SettingsPage
     //// Printers //////////////////////////////////////////////////////////////
 
     /**
-     * Render nonce, action and other hidden fields.
+     * Output nonce, action and other hidden fields.
      */
-    public function renderSettingsFields()
+    public function printSettingsFields()
     {
         settings_fields($this->option_group);
     }
 
 
     /**
-     * Render visible form fields.
+     * Output visible form fields.
      */
-    public function renderSettingsSections()
+    public function printSettingsSections()
     {
         if (!is_string($this->recent_page)) {
             _doing_it_wrong(__METHOD__, 'No recent page set!', '0.1.0');
@@ -181,14 +181,14 @@ trait SettingsPage
     /**
      * Output form for settings manipulation.
      */
-    protected function renderSettingsForm()
+    protected function printSettingsForm()
     {
         echo '<form method="post" action="' . admin_url('options.php') .'">';
 
-        // Render nonce, action and other hidden fields...
-        $this->renderSettingsFields();
+        // Output nonce, action and other hidden fields...
+        $this->printSettingsFields();
         // ... visible fields ...
-        $this->renderSettingsSections();
+        $this->printSettingsSections();
         // ... and finally the submit button :)
         submit_button();
 

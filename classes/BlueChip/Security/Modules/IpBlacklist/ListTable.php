@@ -305,7 +305,7 @@ class ListTable extends \BlueChip\Security\Core\ListTable
     {
         $actions = [
             // Any item can be removed
-            self::ACTION_REMOVE => $this->formatRowAction(
+            self::ACTION_REMOVE => $this->renderRowAction(
                 self::ACTION_REMOVE,
                 $item['id'],
                 'delete',
@@ -315,7 +315,7 @@ class ListTable extends \BlueChip\Security\Core\ListTable
 
         if (strtotime($item['release_time']) > current_time('timestamp')) {
             // Only active locks can be unlocked
-            $actions[self::ACTION_UNLOCK] = $this->formatRowAction(
+            $actions[self::ACTION_UNLOCK] = $this->renderRowAction(
                 self::ACTION_UNLOCK,
                 $item['id'],
                 'unlock',

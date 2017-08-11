@@ -201,7 +201,7 @@ class Plugin
             $this->admin->init($this->basename)
                 // Setup comes first...
                 ->addPage(new Setup\AdminPage($this->settings['setup']))
-                // ...then comes modules pages.
+                // ...then come admin pages.
                 ->addPage(new Modules\Checklist\AdminPage($this->wpdb))
                 ->addPage(new Modules\Hardening\AdminPage($this->settings['hardening']))
                 ->addPage(new Modules\Login\AdminPage($this->settings['login']))
