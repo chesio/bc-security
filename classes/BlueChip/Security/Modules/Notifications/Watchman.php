@@ -245,7 +245,7 @@ class Watchman implements Modules\Loadable, Modules\Initializable, Modules\Activ
         // Filter out any updates for which notification has been sent already.
         $theme_updates = array_filter($update_transient->response, function ($theme_update_data, $theme_slug) {
             $last_version = Transients::getForSite('update-notifications', 'theme', $theme_slug);
-            return empty($last_version) || version_compare($last_version, $theme_update_data->new_version, '<');
+            return empty($last_version) || version_compare($last_version, $theme_update_data['new_version'], '<');
         }, ARRAY_FILTER_USE_BOTH);
 
         if (empty($theme_updates)) {
