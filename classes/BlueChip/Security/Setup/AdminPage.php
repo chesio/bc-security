@@ -5,8 +5,14 @@
 
 namespace BlueChip\Security\Setup;
 
-class AdminPage extends \BlueChip\Security\Core\AdminSettingsPage
+use BlueChip\Security\Helpers\FormHelper;
+
+class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
 {
+    /** Page has settings section */
+    use \BlueChip\Security\Core\Admin\SettingsPage;
+
+
     /**
      * @var string Page slug
      */
@@ -16,64 +22,67 @@ class AdminPage extends \BlueChip\Security\Core\AdminSettingsPage
     /**
      * @param \BlueChip\Security\Setup\Settings $settings Basic settings
      */
-    function __construct(Settings $settings)
+    public function __construct(Settings $settings)
     {
-        parent::__construct($settings);
-
         $this->page_title = _x('BC Security Setup', 'Dashboard page title', 'bc-security');
         $this->menu_title = _x('Setup', 'Dashboard menu item name', 'bc-security');
-        $this->slug = self::SLUG;
+
+        $this->useSettings($settings);
+    }
+
+
+    public function loadPage()
+    {
+        $this->displaySettingsErrors();
     }
 
 
     /**
-     * Render admin page.
+     * Output page contents.
      */
-    public function render()
+    public function printContents()
     {
         echo '<div class="wrap">';
         echo '<h1>' . esc_html($this->page_title) . '</h1>';
-        echo $this->settings_api_helper->renderForm();
+        $this->printSettingsForm();
         echo '</div>';
     }
 
 
     /**
-     * Run on `admin_init` hook.
+     * Initialize settings page: add sections and fields.
      */
-    public function admin_init()
+    public function initPage()
     {
-        // Form helper is going to be useful here
-        $form_helper = new \BlueChip\Security\Helpers\FormHelper();
-
-        // Shortcut
-        $settings_api_helper = $this->settings_api_helper;
-
-        // Register setting first
-        $settings_api_helper->register();
+        // Register settings.
+        $this->registerSettings();
 
         // Set page as current
-        $settings_api_helper->setSettingsPage($this->slug);
+        $this->setSettingsPage(self::SLUG);
 
         // Section: Site connection
-        $settings_api_helper->addSettingsSection(
+        $this->addSettingsSection(
             'site-connection',
             _x('Site connection', 'Settings section title', 'bc-security'),
-            [$this, 'renderSiteConnectionHint']
+            [$this, 'printSiteConnectionHint']
         );
-        $settings_api_helper->addSettingsField(
+        $this->addSettingsField(
             Settings::CONNECTION_TYPE,
             __('Connection type', 'bc-security'),
-            [$form_helper, 'renderSelect'],
+            [FormHelper::class, 'printSelect'],
             ['options' => $this->getConnectionOptions()]
         );
     }
 
 
-    public function renderSiteConnectionHint()
+    public function printSiteConnectionHint()
     {
         $list = IpAddress::enlist(true);
-        echo '<p>' . esc_html__('Your server provides following information about remote addresses:', 'bc-security') . '</p>';
+
+        echo '<p>';
+        echo esc_html__('Your server provides following information about remote addresses:', 'bc-security');
+        echo '</p>';
+
         echo '<ol>';
         foreach ($list as $type => $explanation) {
             if (($ip_address = IpAddress::getRaw($type))) {

@@ -5,11 +5,10 @@
 
 namespace BlueChip\Security\Helpers;
 
-
-class FormHelper
+abstract class FormHelper
 {
     /**
-     * Render <input type="checkbox" /> element.
+     * Print <input type="checkbox" /> element.
      *
      * Unless "plain" is set as $args key, an extra hidden field with the same
      * name and empty (false-like) value is printed before checkbox - this way,
@@ -22,15 +21,15 @@ class FormHelper
      *
      * @param array $args Required: label_for, name, value. Optional: plain.
      */
-    public function renderCheckbox(array $args)
+    public static function printCheckbox(array $args)
     {
         // Field properties
         $properties = [
-            'type'		=> 'checkbox',
-            'value'		=> 'true',
-            'id'		=> $args['label_for'],
-            'name'		=> $args['name'],
-            'checked'	=> boolval($args['value']),
+            'type'      => 'checkbox',
+            'value'     => 'true',
+            'id'        => $args['label_for'],
+            'name'      => $args['name'],
+            'checked'   => boolval($args['value']),
         ];
 
         if (!isset($args['plain'])) {
@@ -39,20 +38,20 @@ class FormHelper
                 // no value necessary - empty value is interpreted as false by PHP
                 'name' => $args['name'],
             ];
-            echo '<input ' . $this->printFieldProperties($hidden_properties) . '>';
+            echo '<input ' . self::renderFieldProperties($hidden_properties) . '>';
         }
-        echo '<input ' . $this->printFieldProperties($properties) . '>';
+        echo '<input ' . self::renderFieldProperties($properties) . '>';
 
-        $this->printAppendix($args, true);
+        self::printAppendix($args, true);
     }
 
 
     /**
-     * Render <input type="number> element.
+     * Print <input type="number> element.
      *
      * @param array $args
      */
-    public function renderNumberInput(array $args)
+    public static function printNumberInput(array $args)
     {
         // Field properties
         $properties = [
@@ -63,43 +62,45 @@ class FormHelper
             'class'     => 'small-text',
         ];
 
-        echo '<input ' . $this->printFieldProperties($properties) . '>';
+        echo '<input ' . self::renderFieldProperties($properties) . '>';
 
-        $this->printAppendix($args, true);
+        self::printAppendix($args, true);
     }
 
 
     /**
-     * Render <select /> element.
+     * Print <select /> element.
      *
      * @param array $args
      */
-    public function renderSelect(array $args)
+    public static function printSelect(array $args)
     {
         $properties = [
             'id'        => $args['label_for'],
             'name'      => $args['name'],
         ];
 
-        echo '<select ' . $this->printFieldProperties($properties) . '>';
+        echo '<select ' . self::renderFieldProperties($properties) . '>';
         foreach ($args['options'] as $key => $value) {
-            echo '<option value="' . esc_attr($key) . '"' . selected($key, $args['value'], false) . '>' . esc_html($value) . '</option>';
+            echo '<option value="' . esc_attr($key) . '"' . selected($key, $args['value'], false) . '>';
+            echo esc_html($value);
+            echo '</option>';
         }
         echo '</select>';
 
-        $this->printAppendix($args, true);
+        self::printAppendix($args, true);
     }
 
 
     /**
-     * Render <textarea /> element.
+     * Print <textarea /> element.
      *
      * Note: method expects the value argument ($args['value']) to be an array
      * (of lines).
      *
      * @param array $args
      */
-    public function renderTextArea(array $args)
+    public static function printTextArea(array $args)
     {
         // Field properties
         $properties = [
@@ -107,9 +108,11 @@ class FormHelper
             'name'      => $args['name'],
         ];
 
-        echo '<textarea ' . $this->printFieldProperties($properties) . '>' . esc_html(implode(PHP_EOL, $args['value'])) . '</textarea>';
+        echo '<textarea ' . self::renderFieldProperties($properties) . '>';
+        echo esc_html(implode(PHP_EOL, $args['value']));
+        echo '</textarea>';
 
-        $this->printAppendix($args, false);
+        self::printAppendix($args, false);
     }
 
 
@@ -122,15 +125,18 @@ class FormHelper
      * @param array $properties
      * @return string
      */
-    protected function printFieldProperties(array $properties)
+    protected static function renderFieldProperties(array $properties)
     {
-        $filtered = array_filter($properties,
+        $filtered = array_filter(
+            $properties,
             // Remove any false-like values (empty strings and false booleans) except for integers.
-            function($value) { return is_int($value) || (is_string($value) && !empty($value)) || (is_bool($value) && $value); }
+            function ($value) {
+                return is_int($value) || (is_string($value) && !empty($value)) || (is_bool($value) && $value);
+            }
         );
         // Map keys and values together as key=value
         $mapped = array_map(
-            function($key, $value) {
+            function ($key, $value) {
                 // Boolean values are replaced with key name: checked => true ---> checked="checked"
                 return sprintf('%s="%s"', $key, esc_attr(is_bool($value) ? $key : $value));
             },
@@ -149,10 +155,14 @@ class FormHelper
      * @param array $args
      * @param bool $inline
      */
-    protected function printAppendix(array $args, $inline)
+    protected static function printAppendix(array $args, $inline)
     {
         if (isset($args['description'])) {
-            echo sprintf('<%1$s class="description">%2$s</%1$s>', $inline ? 'span' : 'p', esc_html($args['description']));
+            echo sprintf(
+                '<%1$s class="description">%2$s</%1$s>',
+                $inline ? 'span' : 'p',
+                esc_html($args['description'])
+            );
         } elseif (isset($args['append'])) {
             echo ($inline ? ' ' : '<br>') . esc_html($args['append']);
         }

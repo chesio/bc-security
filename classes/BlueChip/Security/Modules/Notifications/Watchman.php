@@ -6,11 +6,11 @@
 namespace BlueChip\Security\Modules\Notifications;
 
 use BlueChip\Security\Helpers\Is;
+use BlueChip\Security\Helpers\Transients;
 use BlueChip\Security\Modules;
 use BlueChip\Security\Modules\Log\Logger;
 use BlueChip\Security\Modules\Checksums;
 use BlueChip\Security\Modules\Login;
-
 
 class Watchman implements Modules\Loadable, Modules\Initializable, Modules\Activable
 {
@@ -114,14 +114,20 @@ class Watchman implements Modules\Loadable, Modules\Initializable, Modules\Activ
         }
 
         if ($this->settings[Settings::PLUGIN_DEACTIVATED]) {
-            // Get the bastard that turned us off!
-            $user = wp_get_current_user();
-
             $subject = __('BC Security deactivated', 'bc-security');
-            $message = sprintf(
-                __('User "%s" had just deactivated BC Security plugin on your website!', 'bc-security'),
-                $user->user_login
-            );
+
+            $user = wp_get_current_user();
+            if ($user->ID) {
+                // Name the bastard that turned us off!
+                $message = sprintf(
+                    __('User "%s" had just deactivated BC Security plugin on your website!', 'bc-security'),
+                    $user->user_login
+                );
+            } else {
+                // No user means plugin has been probably deactivated via WP-CLI.
+                // See: https://github.com/chesio/bc-security/issues/16#issuecomment-321541102
+                $message = __('BC Security plugin on your website has been deactivated!', 'bc-security');
+            }
 
             $this->notify($subject, $message);
         }
@@ -154,7 +160,7 @@ class Watchman implements Modules\Loadable, Modules\Initializable, Modules\Activ
         $latest_version = $update->current;
 
         // Already notified about this update?
-        if ($latest_version === get_site_transient($this->makeUpdateCheckTransientName('core'))) {
+        if ($latest_version === Transients::getForSite('update-notifications', 'core')) {
             return;
         }
 
@@ -169,12 +175,8 @@ class Watchman implements Modules\Loadable, Modules\Initializable, Modules\Activ
 
         // Send notification.
         if ($this->notify($subject, $message) !== false) {
-            // No further notifications for this update until transient expires (or gets deleted).
-            set_site_transient(
-                $this->makeUpdateCheckTransientName('core'),
-                $latest_version,
-                current_time('timestamp') + MONTH_IN_SECONDS
-            );
+            // No further notifications for this update.
+            Transients::setForSite($latest_version, 'update-notifications', 'core');
         }
     }
 
@@ -192,8 +194,8 @@ class Watchman implements Modules\Loadable, Modules\Initializable, Modules\Activ
         }
 
         // Filter out any updates for which notification has been sent already.
-        $plugin_updates = array_filter($update_transient->response, function($plugin_update_data, $plugin_file) {
-            $notified_version = get_site_transient($this->makeUpdateCheckTransientName('plugin' . ':' . $plugin_file));
+        $plugin_updates = array_filter($update_transient->response, function ($plugin_update_data, $plugin_file) {
+            $notified_version = Transients::getForSite('update-notifications', 'plugin', $plugin_file);
             return empty($notified_version) || version_compare($notified_version, $plugin_update_data->new_version, '<');
         }, ARRAY_FILTER_USE_BOTH);
 
@@ -221,12 +223,8 @@ class Watchman implements Modules\Loadable, Modules\Initializable, Modules\Activ
         // Send notification.
         if ($this->notify($subject, $message) !== false) {
             foreach ($plugin_updates as $plugin_file => $plugin_update_data) {
-                // No further notifications for this plugin version until transient expires (or gets deleted).
-                set_site_transient(
-                    $this->makeUpdateCheckTransientName('plugin' . ':' . $plugin_file),
-                    $plugin_update_data->new_version,
-                    current_time('timestamp') + MONTH_IN_SECONDS
-                );
+                // No further notifications for this plugin version.
+                Transients::setForSite($plugin_update_data->new_version, 'update-notifications', 'plugin', $plugin_file);
             }
         }
     }
@@ -245,8 +243,8 @@ class Watchman implements Modules\Loadable, Modules\Initializable, Modules\Activ
         }
 
         // Filter out any updates for which notification has been sent already.
-        $theme_updates = array_filter($update_transient->response, function($theme_update_data, $theme_slug) {
-            $last_version = get_site_transient($this->makeUpdateCheckTransientName('theme' . ':' . $theme_slug));
+        $theme_updates = array_filter($update_transient->response, function ($theme_update_data, $theme_slug) {
+            $last_version = Transients::getForSite('update-notifications', 'theme', $theme_slug);
             return empty($last_version) || version_compare($last_version, $theme_update_data['new_version'], '<');
         }, ARRAY_FILTER_USE_BOTH);
 
@@ -272,12 +270,8 @@ class Watchman implements Modules\Loadable, Modules\Initializable, Modules\Activ
         // Send notification.
         if ($this->notify($subject, $message) !== false) {
             foreach ($theme_updates as $theme_slug => $theme_update_data) {
-                // No further notifications for this theme version until transient expires (or gets deleted).
-                set_site_transient(
-                    $this->makeUpdateCheckTransientName('theme' . ':' . $theme_slug),
-                    $theme_update_data['new_version'],
-                    current_time('timestamp') + MONTH_IN_SECONDS
-                );
+                // No further notifications for this theme version.
+                Transients::setForSite($theme_update_data['new_version'], 'update-notifications', 'theme', $theme_slug);
             }
         }
     }
@@ -386,17 +380,5 @@ class Watchman implements Modules\Loadable, Modules\Initializable, Modules\Activ
     private function notify($subject, $message)
     {
         return empty($this->recipients) ? null : Mailman::send($this->recipients, $subject, $message);
-    }
-
-
-    /**
-     * Get name for update check transient based on $key.
-     *
-     * @param string $key
-     * @return string
-     */
-    private function makeUpdateCheckTransientName($key)
-    {
-        return md5(implode(':', ['bc-security', 'update-notifications', $key]));
     }
 }

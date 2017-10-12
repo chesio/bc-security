@@ -5,6 +5,8 @@
 
 namespace BlueChip\Security\Modules\IpBlacklist;
 
+use BlueChip\Security\Modules;
+
 /**
  * Who's on the blacklist, baby?
  *
@@ -20,7 +22,7 @@ namespace BlueChip\Security\Modules\IpBlacklist;
  * release date that is the most future one), if single IP is locked multiple
  * times in the same scope.
  */
-class Manager implements \BlueChip\Security\Modules\Installable
+class Manager implements Modules\Countable, Modules\Installable, \Countable
 {
     /**
      * @var string Name of DB table where IP blacklist is stored
@@ -90,6 +92,17 @@ class Manager implements \BlueChip\Security\Modules\Installable
 
 
     /**
+     * @internal Implements Countable interface.
+     *
+     * @return int
+     */
+    public function count()
+    {
+        return $this->countAll();
+    }
+
+
+    /**
      * Return number of all records on blacklist (active and expired).
      *
      * @param int $scope
@@ -102,6 +115,23 @@ class Manager implements \BlueChip\Security\Modules\Installable
         if ($scope !== LockScope::ANY) {
             $query .= $this->wpdb->prepare(" WHERE scope = %d", $scope);
         }
+
+        return intval($this->wpdb->get_var($query));
+    }
+
+
+    /**
+     * Return number of records inserted since given $timestamp.
+     *
+     * @param int $timestamp
+     * @return int
+     */
+    public function countFrom($timestamp)
+    {
+        $query = $this->wpdb->prepare(
+            "SELECT COUNT(id) AS total FROM {$this->blacklist_table} WHERE ban_time > %s",
+            date(self::MYSQL_DATETIME_FORMAT, $timestamp)
+        );
 
         return intval($this->wpdb->get_var($query));
     }
@@ -284,7 +314,9 @@ class Manager implements \BlueChip\Security\Modules\Installable
         // Prepare query.
         $query = sprintf(
             "DELETE FROM {$this->blacklist_table} WHERE %s",
-            implode(' OR ', array_map(function ($id) { return sprintf('id = %d', $id); }, $ids))
+            implode(' OR ', array_map(function ($id) {
+                return sprintf('id = %d', $id);
+            }, $ids))
         );
         // Execute query.
         $result = $this->wpdb->query($query);
@@ -333,7 +365,9 @@ class Manager implements \BlueChip\Security\Modules\Installable
         $query = sprintf(
             "UDPATE {$this->blacklist_table} SET release_time = '%s' WHERE %s",
             date(self::MYSQL_DATETIME_FORMAT, current_time('timestamp')),
-            implode(' OR ', array_map(function ($id) { return sprintf('id = %d', $id); }, $ids))
+            implode(' OR ', array_map(function ($id) {
+                return sprintf('id = %d', $id);
+            }, $ids))
         );
         // Execute query.
         $result = $this->wpdb->query($query);

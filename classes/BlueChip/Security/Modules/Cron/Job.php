@@ -3,29 +3,15 @@
  * @package BC_Security
  */
 
-namespace BlueChip\Security\Core;
+namespace BlueChip\Security\Modules\Cron;
+
+use \BlueChip\Security\Modules;
 
 /**
  * Simple wrapper for cron job handling
  */
-class CronJob implements \BlueChip\Security\Modules\Activable, \BlueChip\Security\Modules\Initializable
+class Job implements Modules\Activable, Modules\Initializable
 {
-    /**
-     * @var string Built-in recurrence name for cron job that should run every hour
-     */
-    const RECUR_HOURLY = 'hourly';
-
-    /**
-     * @var string Built-in recurrence name for cron job that should run twice a day
-     */
-    const RECUR_TWICEDAILY = 'twicedaily';
-
-    /**
-     * @var string Built-in recurrence name for cron job that should run once a day
-     */
-    const RECUR_DAILY = 'daily';
-
-
     /**
      * @var callback Callback to be executed on cron job run.
      */
@@ -56,10 +42,10 @@ class CronJob implements \BlueChip\Security\Modules\Activable, \BlueChip\Securit
      * @param int|string $time
      * @param string $recurrence
      * @param string $hook
-     * @param callback $action
+     * @param callable $action
      * @param array $args
      */
-    public function __construct($time, $recurrence, $hook, $action, array $args = [])
+    public function __construct($time, $recurrence, $hook, callable $action, array $args = [])
     {
         $this->action = $action;
         $this->args = $args;
@@ -72,8 +58,7 @@ class CronJob implements \BlueChip\Security\Modules\Activable, \BlueChip\Securit
     /**
      * Schedule new cron job, if not scheduled yet.
      *
-     * @return bool True, if cron job has been activated or was already active,
-     * false otherwise.
+     * @return bool True, if cron job has been activated or was already active, false otherwise.
      */
     public function activate()
     {

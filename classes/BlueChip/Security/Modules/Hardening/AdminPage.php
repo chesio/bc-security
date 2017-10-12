@@ -5,55 +5,64 @@
 
 namespace BlueChip\Security\Modules\Hardening;
 
-class AdminPage extends \BlueChip\Security\Core\AdminSettingsPage
+use BlueChip\Security\Helpers\FormHelper;
+
+class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
 {
+    /** Page has settings section */
+    use \BlueChip\Security\Core\Admin\SettingsPage;
+
+
     /**
      * @var string Page slug
      */
     const SLUG = 'bc-security-hardening';
 
-    /**
-     * @param Settings $settings Hardening settings
-     */
-    function __construct($settings)
-    {
-        parent::__construct($settings);
 
+    /**
+     * @param \BlueChip\Security\Modules\Hardening\Settings $settings Hardening settings
+     */
+    public function __construct(Settings $settings)
+    {
         $this->page_title = _x('WordPress Hardening', 'Dashboard page title', 'bc-security');
         $this->menu_title = _x('Hardening', 'Dashboard menu item name', 'bc-security');
-        $this->slug = self::SLUG;
+
+        $this->useSettings($settings);
+    }
+
+
+    public function loadPage()
+    {
+        $this->displaySettingsErrors();
     }
 
 
     /**
-     * Render admin page.
+     * Output page contents.
      */
-    public function render()
+    public function printContents()
     {
         echo '<div class="wrap">';
         echo '<h1>' . esc_html($this->page_title) . '</h1>';
         echo '<p>' . esc_html__('All security features below are applied through WordPress filters.', 'bc-security') . '</p>';
-        echo $this->settings_api_helper->renderForm();
+        $this->printSettingsForm();
         echo '</div>';
     }
 
 
     /**
-     * Run on `admin_init` hook.
+     * Initialize settings page: add sections and fields.
      */
-    public function admin_init()
+    public function initPage()
     {
-        // Form helper is going to be useful here
-        $form_helper = new \BlueChip\Security\Helpers\FormHelper();
+        // Register settings.
+        $this->registerSettings();
 
-        // Register setting first
-        $this->settings_api_helper->register();
-
-        // Set page as current
-        $this->settings_api_helper->setSettingsPage($this->slug);
+        // Set page as current.
+        $this->setSettingsPage(self::SLUG);
 
         // Section: Disable pingbacks
-        $this->settings_api_helper->addSettingsSection(
+        $this->addSettingsSection(
             'disable-pingback',
             __('Disable pingbacks', 'bc-security'),
             function () {
@@ -63,14 +72,14 @@ class AdminPage extends \BlueChip\Security\Core\AdminSettingsPage
                 ) . '</p>';
             }
         );
-        $this->settings_api_helper->addSettingsField(
+        $this->addSettingsField(
             Settings::DISABLE_PINGBACKS,
             __('Disable pingbacks', 'bc-security'),
-            [$form_helper, 'renderCheckbox']
+            [FormHelper::class, 'printCheckbox']
         );
 
         // Section: Disable XML-RPC methods that require authentication
-        $this->settings_api_helper->addSettingsSection(
+        $this->addSettingsSection(
             'disable-xml-rpc',
             __('Disable XML-RPC methods that require authentication', 'bc-security'),
             function () {
@@ -80,14 +89,14 @@ class AdminPage extends \BlueChip\Security\Core\AdminSettingsPage
                 ) . '</p>';
             }
         );
-        $this->settings_api_helper->addSettingsField(
+        $this->addSettingsField(
             Settings::DISABLE_XML_RPC,
             __('Disable XML-RPC methods', 'bc-security'),
-            [$form_helper, 'renderCheckbox']
+            [FormHelper::class, 'printCheckbox']
         );
 
         // Section: Disable REST API to anonymous users
-        $this->settings_api_helper->addSettingsSection(
+        $this->addSettingsSection(
             'disable-rest-api',
             __('Disable access to REST API to anonymous users', 'bc-security'),
             function () {
@@ -98,10 +107,10 @@ class AdminPage extends \BlueChip\Security\Core\AdminSettingsPage
                 ) . '</p>';
             }
         );
-        $this->settings_api_helper->addSettingsField(
+        $this->addSettingsField(
             Settings::DISABLE_REST_API,
             __('Disable REST API access', 'bc-security'),
-            [$form_helper, 'renderCheckbox']
+            [FormHelper::class, 'printCheckbox']
         );
     }
 }

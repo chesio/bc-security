@@ -31,6 +31,11 @@ class Plugin
     private $settings;
 
     /**
+     * @var string Plugin basename
+     */
+    private $basename;
+
+    /**
      * @var \wpdb WordPress database access abstraction object
      */
     private $wpdb;
@@ -39,10 +44,12 @@ class Plugin
     /**
      * Construct the plugin instance.
      *
+     * @param string $basename Plugin basename
      * @param \wpdb $wpdb WordPress database access abstraction object
      */
-    public function __construct(\wpdb $wpdb)
+    public function __construct($basename, \wpdb $wpdb)
     {
+        $this->basename = $basename;
         $this->wpdb = $wpdb;
 
         // Read plugin settings.
@@ -128,29 +135,29 @@ class Plugin
     private function constructCronJobs(array $settings, array $modules)
     {
         return [
-            'blacklist-cleaner' => new Core\CronJob(
+            'blacklist-cleaner' => new Modules\Cron\Job(
                 '01:02:03',
-                Core\CronJob::RECUR_DAILY,
+                Modules\Cron\Recurrence::DAILY,
                 'bc-security/ip-blacklist-clean-up',
                 [$modules['blacklist-manager'], 'prune']
             ),
-            'log-cleaner-by-age' => new Core\CronJob(
+            'log-cleaner-by-age' => new Modules\Cron\Job(
                 '02:03:04',
-                Core\CronJob::RECUR_DAILY,
+                Modules\Cron\Recurrence::DAILY,
                 'bc-security/logs-clean-up-by-age',
                 [$modules['logger'], 'pruneByAge'],
                 [$settings['log']->getMaxAge()]
             ),
-            'log-cleaner-by-size' => new Core\CronJob(
+            'log-cleaner-by-size' => new Modules\Cron\Job(
                 '03:04:05',
-                Core\CronJob::RECUR_DAILY,
+                Modules\Cron\Recurrence::DAILY,
                 'bc-security/logs-clean-up-by-size',
                 [$modules['logger'], 'pruneBySize'],
                 [$settings['log']->getMaxSize()]
             ),
-            'checksum-verifier' => new Core\CronJob(
+            'checksum-verifier' => new Modules\Cron\Job(
                 '04:05:06',
-                Core\CronJob::RECUR_DAILY,
+                Modules\Cron\Recurrence::DAILY,
                 'bc-security/checksum-verifier',
                 [$modules['checksum-verifier'], 'runCheck']
             ),
@@ -190,11 +197,11 @@ class Plugin
         }
 
         if ($this->admin) {
-            // Initialize admin interface.
-            $this->admin->init()
+            // Initialize admin interface (set necessary hooks).
+            $this->admin->init($this->basename)
                 // Setup comes first...
                 ->addPage(new Setup\AdminPage($this->settings['setup']))
-                // ...then comes modules pages.
+                // ...then come admin pages.
                 ->addPage(new Modules\Checklist\AdminPage($this->wpdb))
                 ->addPage(new Modules\Hardening\AdminPage($this->settings['hardening']))
                 ->addPage(new Modules\Login\AdminPage($this->settings['login']))
@@ -269,6 +276,15 @@ class Plugin
         foreach ($this->settings as $settings) {
             delete_option($settings->getOptionName());
         }
+
+        // Remove site transients set by plugin.
+        $this->wpdb->query(
+            sprintf(
+                "DELETE FROM {$this->wpdb->options} WHERE (option_name LIKE '%s' OR option_name LIKE '%s')",
+                '_site_transient_' . Helpers\Transients::NAME_PREFIX . '%',
+                '_site_transient_timeout_' . Helpers\Transients::NAME_PREFIX . '%'
+            )
+        );
 
         // Uninstall every module that requires it.
         foreach ($this->modules as $module) {

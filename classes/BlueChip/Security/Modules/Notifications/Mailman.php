@@ -7,7 +7,6 @@ namespace BlueChip\Security\Modules\Notifications;
 
 use BlueChip\Security\Modules\Notifications\AdminPage;
 
-
 abstract class Mailman
 {
     /**
@@ -57,7 +56,7 @@ abstract class Mailman
             '',
             sprintf(
                 __('To change your notification settings, visit: %s', 'bc-security'),
-                AdminPage::getPageUrl(AdminPage::SLUG)
+                AdminPage::getPageUrl()
             ),
         ];
 

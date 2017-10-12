@@ -5,11 +5,23 @@
 
 namespace BlueChip\Security\Modules\Log;
 
+use BlueChip\Security\Helpers\FormHelper;
+
 /**
  * Admin page that displays log records.
  */
-class AdminPage extends \BlueChip\Security\Core\AdminSettingsPage
+class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
 {
+    /** Page has counter indicator */
+    use \BlueChip\Security\Core\Admin\CountablePage;
+
+    /** Page has settings section */
+    use \BlueChip\Security\Core\Admin\SettingsPage;
+
+    /** Page has list table */
+    use \BlueChip\Security\Core\Admin\ListingPage;
+
+
     /**
      * @var string Page slug
      */
@@ -21,63 +33,55 @@ class AdminPage extends \BlueChip\Security\Core\AdminSettingsPage
      */
     private $logger;
 
-    /**
-     * @var \BlueChip\Security\Modules\Log\ListTable
-     */
-    private $list_table;
-
 
     /**
      * @param \BlueChip\Security\Modules\Log\Settings $settings
      * @param \BlueChip\Security\Modules\Log\Logger $logger
      */
-    function __construct(Settings $settings, Logger $logger)
+    public function __construct(Settings $settings, Logger $logger)
     {
-        parent::__construct($settings);
-
         $this->page_title = _x('Log records', 'Dashboard page title', 'bc-security');
         $this->menu_title = _x('Logs', 'Dashboard menu item name', 'bc-security');
-        $this->slug = self::SLUG;
 
         $this->logger = $logger;
 
-        add_filter('set-screen-option', [$this, 'setScreenOption'], 10, 3);
+        $this->setCounter($logger);
+        $this->useSettings($settings);
+        $this->setPerPageOption('bc_security_log_records_per_page');
     }
 
 
     /**
-     * Run on `admin_init` hook.
+     * Initialize settings page: add sections and fields.
      */
-    public function admin_init()
+    public function initPage()
     {
-        // Form helper is going to be useful here.
-        $form_helper = new \BlueChip\Security\Helpers\FormHelper();
-
-        // Shortcut
-        $settings_api_helper = $this->settings_api_helper;
-
-        // Register setting first.
-        $settings_api_helper->register();
+        // Register settings.
+        $this->registerSettings();
 
         // Set page as current.
-        $settings_api_helper->setSettingsPage($this->slug);
+        $this->setSettingsPage(self::SLUG);
 
         // Section: Automatic clean-up configuration
-        $settings_api_helper->addSettingsSection(
+        $this->addSettingsSection(
             'log-cleanup-configuration',
             _x('Automatic clean-up configuration', 'Settings section title', 'bc-security'),
-            [$this, 'renderCleanupConfigurationHint']
+            function () {
+                echo '<p>';
+                echo esc_html__('Logs are cleaned automatically once a day based on the configuration below.', 'bc-security');
+                echo '</p>';
+            }
         );
-        $settings_api_helper->addSettingsField(
+        $this->addSettingsField(
             Settings::LOG_MAX_AGE,
             __('Maximum age', 'bc-security'),
-            [$form_helper, 'renderNumberInput'],
+            [FormHelper::class, 'printNumberInput'],
             [ 'append' => __('days', 'bc-security'), ]
         );
-        $settings_api_helper->addSettingsField(
+        $this->addSettingsField(
             Settings::LOG_MAX_SIZE,
             __('Maximum size', 'bc-security'),
-            [$form_helper, 'renderNumberInput'],
+            [FormHelper::class, 'printNumberInput'],
             [ 'append' => __('thousands', 'bc-security'), ]
         );
     }
@@ -85,18 +89,17 @@ class AdminPage extends \BlueChip\Security\Core\AdminSettingsPage
 
     public function loadPage()
     {
-        // To have admin notices displayed.
-        parent::loadPage();
-
-        $this->addScreenOptions();
+        $this->resetCount();
+        $this->displaySettingsErrors();
+        $this->addPerPageOption();
         $this->initListTable();
     }
 
 
     /**
-     * Render admin page.
+     * Output page contents.
      */
-    public function render()
+    public function printContents()
     {
         echo '<div class="wrap">';
 
@@ -110,39 +113,9 @@ class AdminPage extends \BlueChip\Security\Core\AdminSettingsPage
         echo '</form>';
 
         // Pruning configuration form
-        echo $this->settings_api_helper->renderForm();
+        $this->printSettingsForm();
 
         echo '</div>';
-    }
-
-
-    public function renderCleanupConfigurationHint()
-    {
-        echo '<p>';
-        echo esc_html__('Logs are cleaned automatically once a day based on the configuration below.', 'bc-security');
-        echo '</p>';
-    }
-
-
-    /**
-     * @param bool $status
-     * @param string $option
-     * @param string $value
-     * @return mixed
-     */
-    public function setScreenOption($status, $option, $value)
-    {
-        return ($option === ListTable::RECORDS_PER_PAGE) ? intval($value) : $status;
-    }
-
-
-    private function addScreenOptions()
-    {
-        add_screen_option('per_page', [
-            'label' => __('Records', 'bc-security'),
-            'default' => 20,
-            'option' => ListTable::RECORDS_PER_PAGE,
-        ]);
     }
 
 
@@ -151,7 +124,7 @@ class AdminPage extends \BlueChip\Security\Core\AdminSettingsPage
      */
     private function initListTable()
     {
-        $this->list_table = new ListTable($this->getUrl(), $this->logger);
+        $this->list_table = new ListTable($this->getUrl(), $this->per_page_option_name, $this->logger);
         $this->list_table->prepare_items();
     }
 }

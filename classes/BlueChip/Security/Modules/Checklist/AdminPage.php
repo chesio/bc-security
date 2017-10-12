@@ -5,7 +5,9 @@
 
 namespace BlueChip\Security\Modules\Checklist;
 
-class AdminPage extends \BlueChip\Security\Core\AdminPage
+use BlueChip\Security\Modules\Hardening;
+
+class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
 {
     /**
      * @var string Page slug
@@ -27,20 +29,19 @@ class AdminPage extends \BlueChip\Security\Core\AdminPage
     /**
      * @param \wpdb $wpdb WordPress database access abstraction object
      */
-    function __construct(\wpdb $wpdb)
+    public function __construct(\wpdb $wpdb)
     {
         $this->page_title = _x('Security Checklist', 'Dashboard page title', 'bc-security');
         $this->menu_title = _x('Checklist', 'Dashboard menu item name', 'bc-security');
-        $this->slug = self::SLUG;
 
         $this->wpdb = $wpdb;
     }
 
 
     /**
-     * Render admin page.
+     * Output admin page.
      */
-    public function render()
+    public function printContents()
     {
         echo '<div class="wrap">';
 
@@ -52,25 +53,25 @@ class AdminPage extends \BlueChip\Security\Core\AdminPage
 
         echo '<table class="wp-list-table widefat striped">';
 
-        $this->renderPhpFileEditationStatus();
+        $this->printPhpFileEditationStatus();
 
-        $this->renderDirectoryListingDisabled();
+        $this->printDirectoryListingDisabled();
 
-        $this->renderPhpFileBlockedInUploadsDir();
+        $this->printPhpFileBlockedInUploadsDir();
 
         if (defined('WP_ENV') && (WP_ENV === 'production')) {
             // Only check in production environment, as in other environments error display might be active on purpose.
-            $this->renderDisplayOfErrorsIsOff();
+            $this->printDisplayOfErrorsIsOff();
         }
 
         if (WP_DEBUG && WP_DEBUG_LOG) {
             // Only check, if there is a chance that debug.log is present.
-            $this->renderNoPublicAccessToErrorLog();
+            $this->printNoPublicAccessToErrorLog();
         }
 
-        $this->renderNoObviousUsernamesStatus();
+        $this->printNoObviousUsernamesStatus();
 
-        $this->renderNoDefaultMd5HashedPasswords();
+        $this->printNoDefaultMd5HashedPasswords();
 
         echo '</table>';
 
@@ -80,7 +81,7 @@ class AdminPage extends \BlueChip\Security\Core\AdminPage
             esc_html__('You might also want to enable some other %s.', 'bc-security'),
             sprintf(
                 '<a href="%s">%s</a>',
-                \BlueChip\Security\Core\AdminPage::getPageUrl(\BlueChip\Security\Modules\Hardening\AdminPage::SLUG),
+                Hardening\AdminPage::getPageUrl(),
                 esc_html__('hardening options', 'bc-security')
             )
         );
@@ -91,14 +92,14 @@ class AdminPage extends \BlueChip\Security\Core\AdminPage
 
 
     /**
-     * Render single table row.
+     * Output single table row.
      *
      * @param string $name Check name.
      * @param string $description Check description.
      * @param bool|null $status Check status.
      * @param array $detail Explanation for any particular status [optional].
      */
-    private function renderCheckRow($name, $description, $status, array $detail = [])
+    private function printCheckRow($name, $description, $status, array $detail = [])
     {
         echo '<tr>';
 
@@ -116,11 +117,11 @@ class AdminPage extends \BlueChip\Security\Core\AdminPage
 
 
     /**
-     * Render status info about php file editation.
+     * Output status info about php file editation.
      */
-    private function renderPhpFileEditationStatus()
+    private function printPhpFileEditationStatus()
     {
-        $this->renderCheckRow(
+        $this->printCheckRow(
             __('PHP Files Editation Disabled', 'bc-security'),
             sprintf(__('It is generally recommended to <a href="%s">disable editation of PHP files</a>.', 'bc-security'), 'https://codex.wordpress.org/Hardening_WordPress#Disable_File_Editing'),
             defined('DISALLOW_FILE_EDIT') && DISALLOW_FILE_EDIT
@@ -129,11 +130,11 @@ class AdminPage extends \BlueChip\Security\Core\AdminPage
 
 
     /**
-     * Render status info about directory listings being disabled.
+     * Output status info about directory listings being disabled.
      */
-    private function renderDirectoryListingDisabled()
+    private function printDirectoryListingDisabled()
     {
-        $this->renderCheckRow(
+        $this->printCheckRow(
             __('Directory Listing Disabled', 'bc-security'),
             sprintf(__('A common security practice is to disable <a href="%s">directory listings</a>.', 'bc-security'), 'https://wiki.apache.org/httpd/DirectoryListings'),
             Helper::isDirectoryListingDisabled(),
@@ -147,11 +148,11 @@ class AdminPage extends \BlueChip\Security\Core\AdminPage
 
 
     /**
-     * Render status info about php files being unaccessible from within uploads directory.
+     * Output status info about php files being unaccessible from within uploads directory.
      */
-    private function renderPhpFileBlockedInUploadsDir()
+    private function printPhpFileBlockedInUploadsDir()
     {
-        $this->renderCheckRow(
+        $this->printCheckRow(
             __('PHP Files Forbidden', 'bc-security'),
             sprintf(__('Vulnerable plugins may allow upload of arbitrary files into uploads directory. <a href="%s">Disabling access to PHP files</a> within uploads directory may help prevent successful exploitation of such vulnerabilities.', 'bc-security'), 'https://gist.github.com/chesio/8f83224840eccc1e80a17fc29babadf2'),
             Helper::isAccessToPhpFilesInUploadsDirForbidden(),
@@ -165,11 +166,11 @@ class AdminPage extends \BlueChip\Security\Core\AdminPage
 
 
     /**
-     * Render status info about whether display_errors PHP config is off by default.
+     * Output status info about whether display_errors PHP config is off by default.
      */
-    public function renderDisplayOfErrorsIsOff()
+    private function printDisplayOfErrorsIsOff()
     {
-        $this->renderCheckRow(
+        $this->printCheckRow(
             __('Display of PHP errors is off', 'bc-security'),
             sprintf(
                 __('<a href="%1$s">Errors should never be printed</a> to the screen as part of the output on production systems. In WordPress environment, <a href="%2$s">display of errors can lead to path disclosures</a> when directly loading certain files.', 'bc-security'),
@@ -187,11 +188,11 @@ class AdminPage extends \BlueChip\Security\Core\AdminPage
 
 
     /**
-     * Render status info about error log being publicly unaccessible.
+     * Output status info about error log being publicly unaccessible.
      */
-    private function renderNoPublicAccessToErrorLog()
+    private function printNoPublicAccessToErrorLog()
     {
-        $this->renderCheckRow(
+        $this->printCheckRow(
             __('Error log not publicly accessible', 'bc-security'),
             sprintf(__('Both <code>WP_DEBUG</code> and <code>WP_DEBUG_LOG</code> constants are set to true, therefore <a href="%s">WordPress saves all errors</a> to a <code>debug.log</code> log file inside the <code>/wp-content/</code> directory. This file can contain sensitive information and therefore should not be publicly accessible.', 'bc-security'), 'https://codex.wordpress.org/Debugging_in_WordPress'),
             Helper::isAccessToErrorLogForbidden(),
@@ -205,18 +206,20 @@ class AdminPage extends \BlueChip\Security\Core\AdminPage
 
 
     /**
-     * Render status info about no obvious usernames being present on the system.
+     * Output status info about no obvious usernames being present on the system.
      *
      * @hook \BlueChip\Security\Modules\Checklist\Hooks::OBVIOUS_USERNAMES Filters list of obvious usernames to check and report.
      */
-    private function renderNoObviousUsernamesStatus()
+    private function printNoObviousUsernamesStatus()
     {
         // Get (filtered) list of obvious usernames to test.
         $obvious = apply_filters(Hooks::OBVIOUS_USERNAMES, ['admin', 'administrator']);
         // Check for existing usernames.
-        $existing = array_filter($obvious, function ($username) { return get_user_by('login', $username); });
+        $existing = array_filter($obvious, function ($username) {
+            return get_user_by('login', $username);
+        });
 
-        $this->renderCheckRow(
+        $this->printCheckRow(
             __('No Obvious Usernames', 'bc-security'),
             sprintf(__('Usernames like "admin" and "administrator" are often used in brute force attacks and <a href="%s">should be avoided</a>.', 'bc-security'), 'https://codex.wordpress.org/Hardening_WordPress#Security_through_obscurity'),
             empty($existing),
@@ -233,9 +236,9 @@ class AdminPage extends \BlueChip\Security\Core\AdminPage
 
 
     /**
-     * Render status info about no default MD5-based password hashes being present in database.
+     * Output status info about no default MD5-based password hashes being present in database.
      */
-    private function renderNoDefaultMd5HashedPasswords()
+    private function printNoDefaultMd5HashedPasswords()
     {
         // Get all users with old hash prefix
         $result = $this->wpdb->get_results(sprintf(
@@ -243,7 +246,7 @@ class AdminPage extends \BlueChip\Security\Core\AdminPage
             self::WP_OLD_HASH_PREFIX
         ));
 
-        $this->renderCheckRow(
+        $this->printCheckRow(
             __('No Default MD5 Password Hashes', 'bc-security'),
             sprintf(__('WordPress by default uses an MD5 based password hashing scheme that is too cheap and fast to generate cryptographically secure hashes. For modern PHP versions, there are <a href="%s">more secure alternatives</a> available.', 'bc-security'), 'https://github.com/roots/wp-password-bcrypt'),
             ($result === false) ? null : empty($result),

@@ -7,7 +7,6 @@ namespace BlueChip\Security\Modules\Log;
 
 use BlueChip\Security\Modules\IpBlacklist;
 
-
 /**
  * Logs table
  */
@@ -15,9 +14,6 @@ class ListTable extends \BlueChip\Security\Core\ListTable
 {
     /** @var string Name of blacklist action query argument */
     const ACTION_BLACKLIST = 'blacklist';
-
-    /** @var string Name of option holding records per page value */
-    const RECORDS_PER_PAGE = 'log_table_records_per_page';
 
     /** @var string Name of view query argument */
     const VIEW_EVENT = 'event';
@@ -32,15 +28,16 @@ class ListTable extends \BlueChip\Security\Core\ListTable
 
     /**
      * @param string $url
+     * @param string $per_page_option_name
      * @param \BlueChip\Security\Modules\Log\Logger $logger
      */
-    public function __construct($url, Logger $logger)
+    public function __construct($url, $per_page_option_name, Logger $logger)
     {
-        parent::__construct($url);
+        parent::__construct($url, $per_page_option_name);
 
         $this->logger = $logger;
 
-        // Display only events from particular type?
+        // Display only events of particular type?
         $event_id = filter_input(INPUT_GET, self::VIEW_EVENT, FILTER_SANITIZE_URL);
         if ($event_id && in_array($event_id, Event::enlist(), true)) {
             $this->event = Event::create($event_id);
@@ -51,22 +48,24 @@ class ListTable extends \BlueChip\Security\Core\ListTable
 
     /**
      * Return content for first column (date and time) including row actions.
+     *
      * @param array $item
      * @return string
      */
-    public function column_date_and_time($item)
+    public function column_date_and_time(array $item) // @codingStandardsIgnoreLine
     {
         return $item['date_and_time'] . $this->row_actions($this->getRowActions($item));
     }
 
 
     /**
-     * Return value for default columns (with no extra value processing).
+     * Return column contents.
+     *
      * @param array $item
      * @param string $column_name
      * @return string
      */
-    public function column_default($item, $column_name)
+    public function column_default($item, $column_name) // @codingStandardsIgnoreLine
     {
         if ($this->event && $this->event->hasContext($column_name)) {
             $context = empty($item['context']) ? [] : unserialize($item['context']);
@@ -83,7 +82,7 @@ class ListTable extends \BlueChip\Security\Core\ListTable
      * @param array $item
      * @return string
      */
-    public function column_event($item)
+    public function column_event(array $item) // @codingStandardsIgnoreLine
     {
         $event = Event::create($item['event']);
         return $event ? $event->getName() : '';
@@ -96,7 +95,7 @@ class ListTable extends \BlueChip\Security\Core\ListTable
      * @param array $item
      * @return string
      */
-    public function column_message($item)
+    public function column_message(array $item) // @codingStandardsIgnoreLine
     {
         $message = empty($item['message']) ? '' : $item['message'];
         $context = empty($item['context']) ? [] : unserialize($item['context']);
@@ -108,7 +107,7 @@ class ListTable extends \BlueChip\Security\Core\ListTable
      * Define table columns
      * @return array
      */
-    public function get_columns()
+    public function get_columns() // @codingStandardsIgnoreLine
     {
         $columns = [
             'date_and_time' => __('Date and time', 'bc-security'),
@@ -135,12 +134,11 @@ class ListTable extends \BlueChip\Security\Core\ListTable
      * Define sortable columns
      * @return array
      */
-    public function get_sortable_columns()
+    public function get_sortable_columns() // @codingStandardsIgnoreLine
     {
         return [
             'date_and_time' => 'date_and_time',
             'ip_address' => 'ip_address',
-            // TODO
             'event' => 'event',
         ];
     }
@@ -150,7 +148,7 @@ class ListTable extends \BlueChip\Security\Core\ListTable
      * Define available views for this table.
      * @return array
      */
-    protected function get_views()
+    protected function get_views() // @codingStandardsIgnoreLine
     {
         $event_id = is_null($this->event) ? null : $this->event->getId();
 
@@ -187,12 +185,12 @@ class ListTable extends \BlueChip\Security\Core\ListTable
     /**
      * Prepare items for table.
      */
-    public function prepare_items()
+    public function prepare_items() // @codingStandardsIgnoreLine
     {
         $event_id = $this->event ? $this->event->getId() : null;
 
         $current_page = $this->get_pagenum();
-        $per_page = $this->get_items_per_page(self::RECORDS_PER_PAGE);
+        $per_page = $this->items_per_page;
 
         $total_items = $this->logger->countAll($event_id);
 
@@ -224,7 +222,7 @@ class ListTable extends \BlueChip\Security\Core\ListTable
                         IpBlacklist\AdminPage::DEFAULT_IP_ADDRESS => $item['ip_address'],
                         IpBlacklist\AdminPage::DEFAULT_SCOPE => $scope,
                     ],
-                    IpBlacklist\AdminPage::getPageUrl(IpBlacklist\AdminPage::SLUG)
+                    IpBlacklist\AdminPage::getPageUrl()
                 ),
                 esc_html__('Add to blacklist', 'bc-security')
             ),

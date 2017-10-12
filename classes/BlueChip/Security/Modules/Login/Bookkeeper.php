@@ -98,7 +98,8 @@ class Bookkeeper implements \BlueChip\Security\Modules\Installable
         // Get count of all unexpired failed login attempts for given IP address.
         $query = $this->wpdb->prepare(
             "SELECT COUNT(*) AS retries_count FROM {$this->failed_logins_table} WHERE ip_address = %s AND date_and_time > %s",
-            $ip_address, date(self::MYSQL_DATETIME_FORMAT, $now - $this->settings->getResetTimeoutDuration())
+            $ip_address,
+            date(self::MYSQL_DATETIME_FORMAT, $now - $this->settings->getResetTimeoutDuration())
         );
 
         return $this->wpdb->get_var($query);

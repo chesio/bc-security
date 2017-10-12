@@ -8,13 +8,12 @@ namespace BlueChip\Security\Modules\Log;
 use BlueChip\Security\Modules;
 use Psr\Log;
 
-
 /**
  * Simple PSR-3 compliant logger with database backend.
  *
  * @link http://www.php-fig.org/psr/psr-3/
  */
-class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\Installable, Modules\Loadable
+class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\Countable, Modules\Installable, Modules\Loadable, \Countable
 {
     /** @var string Name of DB table where logs are stored */
     const LOG_TABLE = 'bc_security_log';
@@ -144,8 +143,9 @@ class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\
      * @param string $level Log level constant: emergency, alert, critical, error, warning, notice, info or debug.
      * @return mixed Integer code for given log level or null, if unknown level given.
      */
-    public function translateLogLevel($level) {
-        switch($level) {
+    public function translateLogLevel($level)
+    {
+        switch ($level) {
             case Log\LogLevel::EMERGENCY:
                 return 0;
             case Log\LogLevel::ALERT:
@@ -170,6 +170,17 @@ class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\
 
 
     /**
+     * @internal Implements Countable interface.
+     *
+     * @return int
+     */
+    public function count()
+    {
+        return $this->countAll();
+    }
+
+
+    /**
      * Return number of all records in log table.
      *
      * @param mixed $event Only count records under event name (empty string is allowed).
@@ -183,6 +194,23 @@ class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\
         if (is_string($event)) {
             $query .= $this->wpdb->prepare(' WHERE event = %s', $event);
         }
+
+        return intval($this->wpdb->get_var($query));
+    }
+
+
+    /**
+     * Return number of records inserted since given $timestamp.
+     *
+     * @param int $timestamp
+     * @return int
+     */
+    public function countFrom($timestamp)
+    {
+        $query = $this->wpdb->prepare(
+            "SELECT COUNT(id) AS total FROM {$this->log_table} WHERE date_and_time > %s",
+            date(self::MYSQL_DATETIME_FORMAT, $timestamp)
+        );
 
         return intval($this->wpdb->get_var($query));
     }

@@ -57,7 +57,6 @@ abstract class IpAddress
 
         // Not found, try to fall back to direct address, if proxy has been requested.
         if (($type !== self::REMOTE_ADDR) && isset($_SERVER[self::REMOTE_ADDR])) {
-
             // NOTE: Even though we fall back to direct address -- meaning you
             // can get a mostly working plugin when connection type is not set
             // properly -- it is not safe!

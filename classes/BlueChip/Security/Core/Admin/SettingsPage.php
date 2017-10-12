@@ -3,47 +3,13 @@
  * @package BC_Security
  */
 
-namespace BlueChip\Security\Helpers;
+namespace BlueChip\Security\Core\Admin;
 
 /**
- * Helper for WordPress Settings API that provides methods for adding setting
- * fields and sections to settings page.
- *
- * @link https://kovshenin.com/2012/the-wordpress-settings-api/
+ * Common settings API boilerplate for admin pages.
  */
-class SettingsApiHelper
+trait SettingsPage
 {
-    /**
-     * General settings page slug-name - usable as $page arg to set_settings_page().
-     */
-    const SETTINGS_GENERAL      = 'general';
-
-    /**
-     * Writing settings page slug-name - usable as $page arg to set_settings_page().
-     */
-    const SETTINGS_WRITING      = 'writing';
-
-    /**
-     * Reading settings page slug-name - usable as $page arg to set_settings_page().
-     */
-    const SETTINGS_READING      = 'reading';
-
-    /**
-     * Discussion settings page slug-name - usable as $page arg to set_settings_page().
-     */
-    const SETTINGS_DISCUSSION   = 'discussion';
-
-    /**
-     * Media settings page slug-name - usable as $page arg to set_settings_page().
-     */
-    const SETTINGS_MEDIA        = 'media';
-
-    /**
-     * Permalink settings page slug-name - usable as $page arg to set_settings_page().
-     */
-    const SETTINGS_PERMALINK    = 'permalink';
-
-
     /**
      * @var string Option group
      */
@@ -55,12 +21,12 @@ class SettingsApiHelper
     protected $option_name;
 
     /**
-     * @var string Most recently set page serves as default $page value for add_settings_section() and add_settings_field() functions.
+     * @var string Recent page serves as default $page for add_settings_field() and add_settings_section() functions.
      */
     protected $recent_page;
 
     /**
-     * @var string Most recently added section serves as default $section value for add_settings_field() function.
+     * @var string Recent section serves as default $section for add_settings_field() function.
      */
     protected $recent_section;
 
@@ -71,13 +37,11 @@ class SettingsApiHelper
 
 
     /**
-     * Settings helper needs to know the settings only.
-     *
      * @link https://codex.wordpress.org/Settings_API
      *
      * @param \BlueChip\Security\Core\Settings $settings
      */
-    public function __construct(\BlueChip\Security\Core\Settings $settings)
+    protected function useSettings(\BlueChip\Security\Core\Settings $settings)
     {
         // Remember the settings.
         $this->settings = $settings;
@@ -87,9 +51,18 @@ class SettingsApiHelper
 
 
     /**
+     * Display settings errors via admin notices.
+     */
+    public function displaySettingsErrors()
+    {
+        add_action('admin_notices', 'settings_errors');
+    }
+
+
+    /**
      * Register setting.
      */
-    public function register()
+    public function registerSettings()
     {
         register_setting($this->option_group, $this->option_name, [$this->settings, 'sanitize']);
     }
@@ -98,7 +71,7 @@ class SettingsApiHelper
     /**
      * Unregister setting.
      */
-    public function unregister()
+    public function unregisterSettings()
     {
         unregister_setting($this->option_group, $this->option_name);
     }
@@ -117,7 +90,7 @@ class SettingsApiHelper
     }
 
 
-	//// WP wrappers ///////////////////////////////////////////////////////////
+    //// WP wrappers ///////////////////////////////////////////////////////////
 
     /**
      * Helper function that wraps call to add_settings_section().
@@ -126,7 +99,7 @@ class SettingsApiHelper
      *
      * @param string $section
      * @param string $title
-     * @param callback $callback
+     * @param callable $callback
      */
     public function addSettingsSection($section, $title, $callback = null)
     {
@@ -149,10 +122,10 @@ class SettingsApiHelper
      *
      * @param string $key Key of the field (must be proper key from Settings)
      * @param string $title Title of the field
-     * @param callback $callback Function that fills the field with the desired form inputs
+     * @param callable $callback Callback that produces form input for the field
      * @param array $args [Optional] Any extra arguments for $callback function
      */
-    public function addSettingsField($key, $title, $callback, $args = [])
+    public function addSettingsField($key, $title, callable $callback, array $args = [])
     {
         if (!is_string($this->recent_page)) {
             _doing_it_wrong(__METHOD__, 'No recent page set yet!', '0.1.0');
@@ -177,28 +150,45 @@ class SettingsApiHelper
                 'value' => $this->settings[$key],
             ])
         );
-
     }
 
 
     //// Printers //////////////////////////////////////////////////////////////
 
     /**
-     * Print settings form with settings from recent page (ie. $page that has been set as last via set_settings_page()).
+     * Output nonce, action and other hidden fields.
      */
-    public function renderForm()
+    public function printSettingsFields()
+    {
+        settings_fields($this->option_group);
+    }
+
+
+    /**
+     * Output visible form fields.
+     */
+    public function printSettingsSections()
     {
         if (!is_string($this->recent_page)) {
             _doing_it_wrong(__METHOD__, 'No recent page set!', '0.1.0');
             return;
         }
 
+        do_settings_sections($this->recent_page);
+    }
+
+
+    /**
+     * Output form for settings manipulation.
+     */
+    protected function printSettingsForm()
+    {
         echo '<form method="post" action="' . admin_url('options.php') .'">';
 
-        // Render nonce, action and other hidden fields...
-        settings_fields($this->option_group);
+        // Output nonce, action and other hidden fields...
+        $this->printSettingsFields();
         // ... visible fields ...
-        do_settings_sections($this->recent_page);
+        $this->printSettingsSections();
         // ... and finally the submit button :)
         submit_button();
 

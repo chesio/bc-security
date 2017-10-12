@@ -22,7 +22,7 @@ class Admin
 
 
     /**
-     * @var \BlueChip\Security\Core\AdminPage[]
+     * @var \BlueChip\Security\Core\Admin\AbstractPage[]
      */
     private $pages = [];
 
@@ -30,12 +30,14 @@ class Admin
     /**
      * Initialize admin area of the plugin.
      *
-     * @return \BlueChip\Security\Admin
+     * @param string $plugin_basename
+     * @return self
      */
-    public function init()
+    public function init($plugin_basename)
     {
         add_action('admin_menu', [$this, 'makeAdminMenu']);
-        add_filter('plugin_action_links_' . plugin_basename(BC_SECURITY_PLUGIN_FILE), [$this, 'filterActionLinks']);
+        add_action('admin_init', [$this, 'initAdminPages']);
+        add_filter('plugin_action_links_' . $plugin_basename, [$this, 'filterActionLinks']);
         return $this;
     }
 
@@ -43,13 +45,21 @@ class Admin
     /**
      * Add a page to plugin dashboard menu.
      *
-     * @param \BlueChip\Security\Core\AdminPage $page
-     * @return \BlueChip\Security\Admin
+     * @param \BlueChip\Security\Core\Admin\AbstractPage $page
+     * @return self
      */
-    public function addPage(Core\AdminPage $page)
+    public function addPage(Core\Admin\AbstractPage $page)
     {
-        $this->pages[$page->slug] = $page;
+        $this->pages[$page->getSlug()] = $page;
         return $this;
+    }
+
+
+    public function initAdminPages()
+    {
+        foreach ($this->pages as $page) {
+            $page->initPage();
+        }
     }
 
 
@@ -71,23 +81,23 @@ class Admin
             '', // obsolete as soon as page has subpages
             _x('BC Security', 'Dashboard menu item name', 'bc-security'),
             self::CAPABILITY,
-            $main_page->slug,
+            $main_page->getSlug(),
             '', // obsolete as soon as page has subpages
             self::ICON
         );
 
         // Add subpages
         foreach ($this->pages as $page) {
-            $hook = add_submenu_page(
-                $main_page->slug,
-                $page->page_title,
-                $page->menu_title,
+            $page_hook = add_submenu_page(
+                $main_page->getSlug(),
+                $page->getPageTitle(),
+                $page->getMenuTitle() . $this->renderCounter($page),
                 self::CAPABILITY,
-                $page->slug,
-                [$page, 'render']
+                $page->getSlug(),
+                [$page, 'printContents']
             );
-            if ($hook) {
-                $page->setHook($hook);
+            if ($page_hook) {
+                $page->setPageHook($page_hook);
             }
         }
     }
@@ -105,9 +115,25 @@ class Admin
             $links[] = sprintf(
                 '<a href="%s">%s</a>',
                 $this->pages['bc-security-setup']->getUrl(),
-                esc_html($this->pages['bc-security-setup']->menu_title)
+                esc_html($this->pages['bc-security-setup']->getMenuTitle())
             );
         }
         return $links;
+    }
+
+
+    /**
+     * Format counter indicator for menu title for given $page.
+     *
+     * @param \BlueChip\Security\Core\Admin\AbstractPage $page
+     * @return string
+     */
+    private function renderCounter(Core\Admin\AbstractPage $page)
+    {
+        // Counter is optional.
+        return method_exists($page, 'getCount') && !empty($count = $page->getCount())
+            ? sprintf(' <span class="awaiting-mod"><span>%d</span></span>', number_format_i18n($count))
+            : ''
+        ;
     }
 }
