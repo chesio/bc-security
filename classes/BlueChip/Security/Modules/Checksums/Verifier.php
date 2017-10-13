@@ -142,6 +142,7 @@ class Verifier
         $ignored_files = apply_filters(
             Hooks::IGNORED_UNKNOWN_FILES,
             [
+                '.htaccess',
                 'wp-config.php',
                 'liesmich.html', // German readme (de_DE)
                 'olvasdel.html', // Hungarian readme (hu_HU)

@@ -333,19 +333,16 @@ class Watchman implements Modules\Loadable, Modules\Initializable, Modules\Activ
         $message = [];
 
         if (!empty($modified_files)) {
-            $message = array_merge(
-                $message,
-                __('Official checksums do not match for the following files:', 'bc-security'),
-                $modified_files
-            );
+            $message[] = __('Official checksums do not match for the following files:', 'bc-security');
+            $message = array_merge($message, $modified_files);
         }
 
         if (!empty($unknown_files)) {
-            $message = array_merge(
-                $message,
-                __('Following files are present on the file system, but not in official checksums:', 'bc-security'),
-                $unknown_files
-            );
+            if (!empty($message)) {
+                $message[] = '';
+            }
+            $message[] = __('Following files are present on the file system, but not in official checksums:', 'bc-security');
+            $message = array_merge($message, $unknown_files);
         }
 
         // Append list of matched files to the message and send an email.
