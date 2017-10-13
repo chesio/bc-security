@@ -196,6 +196,11 @@ class Plugin
             }
         }
 
+        // Initialize cron jobs.
+        foreach ($this->cron_jobs as $cron_job) {
+            $cron_job->init();
+        }
+
         if ($this->admin) {
             // Initialize admin interface (set necessary hooks).
             $this->admin->init($this->basename)
