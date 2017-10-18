@@ -69,7 +69,9 @@ class ListTable extends \BlueChip\Security\Core\ListTable
     {
         if ($this->event && $this->event->hasContext($column_name)) {
             $context = empty($item['context']) ? [] : unserialize($item['context']);
-            return isset($context[$column_name]) ? $context[$column_name] : '';
+            $value = isset($context[$column_name]) ? $context[$column_name] : '';
+            // Value can be an array, in such case output array values separated by ",".
+            return is_array($value) ? implode(', ', $value) : $value;
         } else {
             return isset($item[$column_name]) ? $item[$column_name] : '';
         }
