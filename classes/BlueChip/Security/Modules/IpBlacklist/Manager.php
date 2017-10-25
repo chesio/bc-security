@@ -64,12 +64,17 @@ class Manager implements Modules\Countable, Modules\Installable, \Countable
     }
 
 
+    /**
+     * @link https://codex.wordpress.org/Creating_Tables_with_Plugins#Creating_or_Updating_the_Table
+     */
     public function install()
     {
         // To have dbDelta()
         require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 
-        dbDelta(implode(' ', [
+        $charset_collate = $this->wpdb->get_charset_collate();
+
+        dbDelta(implode(PHP_EOL, [
             "CREATE TABLE {$this->blacklist_table} (",
             "id int unsigned NOT NULL AUTO_INCREMENT,",
             "scope tinyint unsigned NOT NULL,",
@@ -80,7 +85,7 @@ class Manager implements Modules\Countable, Modules\Installable, \Countable
             "comment char(255) NOT NULL,",
             "PRIMARY KEY  (id),", // 2 spaces seems to be necessary
             "UNIQUE KEY ip_in_scope_for_reason (scope, ip_address, reason)",
-            ");",
+            ") $charset_collate;",
         ]));
     }
 
