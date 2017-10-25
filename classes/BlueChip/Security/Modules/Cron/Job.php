@@ -13,6 +13,17 @@ use \BlueChip\Security\Modules;
 class Job implements Modules\Activable, Modules\Initializable
 {
     /**
+     * @var string Indicate that cron job should be scheduled at random time between 00:00:00 and 05:59:59 local time.
+     */
+    const RUN_AT_NIGHT = 'run_at_night';
+
+    /**
+     * @var string Indicate that cron job should be scheduled at random time during entire day.
+     */
+    const RUN_RANDOMLY = 'run_randomly';
+
+
+    /**
      * @var callback Callback to be executed on cron job run.
      */
     private $action;
@@ -102,14 +113,25 @@ class Job implements Modules\Activable, Modules\Initializable
     /**
      * Return timestamp for given $time string offset for current WP time zone.
      *
+     * Note: $time can be also one of self::RUN_AT_NIGHT or self::RUN_RANDOMLY constants.
+     *
      * @link http://www.php.net/manual/en/datetime.formats.relative.php
      * @link https://wordpress.stackexchange.com/a/223341
      *
-     * @param string $time
+     * @param string $time_string
      * @return int
      */
-    public static function getTimestamp($time)
+    public static function getTimestamp($time_string)
     {
+        if ($time_string === self::RUN_AT_NIGHT || $time_string === self::RUN_RANDOMLY) {
+            $hour = mt_rand(0, ($time_string === self::RUN_AT_NIGHT) ? 5 : 23);
+            $minute = mt_rand(0, 59);
+            $second = mt_rand(0, 59);
+            $time = sprintf("%02d:%02d:%02d", $hour, $minute, $second);
+        } else {
+            // Assume $time_string denotes actual time like '01:02:03'.
+            $time = $time_string;
+        }
         // Get time zone from settings.
         $time_zone = new \DateTimeZone(get_option('timezone_string'));
         // Get DateTime object.

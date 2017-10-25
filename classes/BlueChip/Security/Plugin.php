@@ -136,27 +136,27 @@ class Plugin
     {
         return [
             'blacklist-cleaner' => new Modules\Cron\Job(
-                '01:02:03',
+                Modules\Cron\Job::RUN_AT_NIGHT,
                 Modules\Cron\Recurrence::DAILY,
                 'bc-security/ip-blacklist-clean-up',
                 [$modules['blacklist-manager'], 'prune']
             ),
             'log-cleaner-by-age' => new Modules\Cron\Job(
-                '02:03:04',
+                Modules\Cron\Job::RUN_AT_NIGHT,
                 Modules\Cron\Recurrence::DAILY,
                 'bc-security/logs-clean-up-by-age',
                 [$modules['logger'], 'pruneByAge'],
                 [$settings['log']->getMaxAge()]
             ),
             'log-cleaner-by-size' => new Modules\Cron\Job(
-                '03:04:05',
+                Modules\Cron\Job::RUN_AT_NIGHT,
                 Modules\Cron\Recurrence::DAILY,
                 'bc-security/logs-clean-up-by-size',
                 [$modules['logger'], 'pruneBySize'],
                 [$settings['log']->getMaxSize()]
             ),
             'checksum-verifier' => new Modules\Cron\Job(
-                '04:05:06',
+                Modules\Cron\Job::RUN_AT_NIGHT,
                 Modules\Cron\Recurrence::DAILY,
                 'bc-security/checksum-verifier',
                 [$modules['checksum-verifier'], 'runCheck']
