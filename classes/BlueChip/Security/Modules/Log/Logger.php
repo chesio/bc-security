@@ -49,12 +49,17 @@ class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\
     }
 
 
+    /**
+     * @link https://codex.wordpress.org/Creating_Tables_with_Plugins#Creating_or_Updating_the_Table
+     */
     public function install()
     {
         // To have dbDelta()
         require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 
-        dbDelta(implode(' ', [
+        $charset_collate = $this->wpdb->get_charset_collate();
+
+        dbDelta(implode(PHP_EOL, [
             "CREATE TABLE {$this->log_table} (",
             "id int unsigned NOT NULL AUTO_INCREMENT,",
             "date_and_time datetime NOT NULL,",
@@ -65,7 +70,7 @@ class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\
             "context text NULL,",
             "PRIMARY KEY  (id),", // 2 spaces seems to be necessary
             "INDEX event (event)",
-            ");",
+            ") $charset_collate;",
         ]));
     }
 
