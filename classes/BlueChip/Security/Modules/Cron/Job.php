@@ -33,9 +33,9 @@ class Job implements Modules\Activable, Modules\Initializable
     private $recurrence;
 
     /**
-     * @var int Unix timestamp (UTC) for when to run the cron job.
+     * @var int|string Unix timestamp or time string indicating when to run the cron job.
      */
-    private $timestamp;
+    private $time;
 
 
     /**
@@ -51,7 +51,7 @@ class Job implements Modules\Activable, Modules\Initializable
         $this->args = $args;
         $this->hook = $hook;
         $this->recurrence = $recurrence;
-        $this->timestamp = is_int($time) ? $time : self::getTimestamp($time);
+        $this->time = $time;
     }
 
 
@@ -62,9 +62,12 @@ class Job implements Modules\Activable, Modules\Initializable
      */
     public function activate()
     {
+        // Compute Unix timestamp (UTC) for when to run the cron job based on $time value.
+        $timestamp = is_int($this->time) ? $this->time : self::getTimestamp($this->time);
+
         return $this->isScheduled()
             ? true
-            : (wp_schedule_event($this->timestamp, $this->recurrence, $this->hook, $this->args) !== false)
+            : (wp_schedule_event($timestamp, $this->recurrence, $this->hook, $this->args) !== false)
         ;
     }
 
