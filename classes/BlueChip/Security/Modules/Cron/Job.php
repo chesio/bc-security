@@ -73,8 +73,10 @@ class Job implements Modules\Activable, Modules\Initializable
      */
     public function activate()
     {
+        // Filter $time value.
+        $time = apply_filters(Hooks::EXECUTION_TIME, $this->time, $this->hook);
         // Compute Unix timestamp (UTC) for when to run the cron job based on $time value.
-        $timestamp = is_int($this->time) ? $this->time : self::getTimestamp($this->time);
+        $timestamp = is_int($time) ? $time : self::getTimestamp($time);
 
         return $this->isScheduled()
             ? true
