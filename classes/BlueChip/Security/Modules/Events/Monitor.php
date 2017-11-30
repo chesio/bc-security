@@ -51,8 +51,9 @@ class Monitor implements \BlueChip\Security\Modules\Initializable
         // Log the following BC Security events:
         // - lockout event
         add_action(Login\Hooks::LOCKOUT_EVENT, [$this, 'logLockoutEvent'], 10, 3);
-        // - checksum verification alert
-        add_action(Checksums\Hooks::CHECKSUMS_VERIFICATION_ALERT, [$this, 'logChecksumsVerificationAlert'], 10, 2);
+        // - checksum verification alerts
+        add_action(Checksums\Hooks::CORE_CHECKSUMS_VERIFICATION_ALERT, [$this, 'logCoreChecksumsVerificationAlert'], 10, 2);
+        add_action(Checksums\Hooks::PLUGIN_CHECKSUMS_VERIFICATION_ALERT, [$this, 'logPluginChecksumsVerificationAlert'], 10, 4);
     }
 
 
@@ -123,13 +124,27 @@ class Monitor implements \BlueChip\Security\Modules\Initializable
 
 
     /**
-     * Log checksums verification alert.
+     * Log checksums verification alert for core files.
      *
      * @param array $modified_files Files for which official checksums do not match.
      * @param array $unknown_files Files that are present on file system but not in official checksums.
      */
-    public function logChecksumsVerificationAlert(array $modified_files, array $unknown_files)
+    public function logCoreChecksumsVerificationAlert(array $modified_files, array $unknown_files)
     {
-        do_action(Log\Action::EVENT, Log\Event::CHECKSUMS_VERIFICATION_ALERT, ['modified_files' => $modified_files, 'unknown_files' => $unknown_files]);
+        do_action(Log\Action::EVENT, Log\Event::CHECKSUMS_VERIFICATION_ALERT, ['codebase' => __('WordPress core', 'bc-security'), 'modified_files' => $modified_files, 'unknown_files' => $unknown_files]);
+    }
+
+
+    /**
+     * Log checksums verification alert for plugin files.
+     *
+     * @param string $plugin_basename Plugin's basename (for example "bc-security/bc-security.php").
+     * @param array $plugin_data Plugin's data like name, version etc.
+     * @param array $modified_files Files for which checksums do not match.
+     * @param array $unknown_files Files that are present on file system but not in checksums.
+     */
+    public function logPluginChecksumsVerificationAlert($plugin_basename, array $plugin_data, array $modified_files, array $unknown_files)
+    {
+        do_action(Log\Action::EVENT, Log\Event::CHECKSUMS_VERIFICATION_ALERT, ['codebase' => sprintf(__('"%s" plugin'), $plugin_data['name']), 'modified_files' => $modified_files, 'unknown_files' => $unknown_files]);
     }
 }
