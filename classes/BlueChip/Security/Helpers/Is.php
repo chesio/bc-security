@@ -17,6 +17,9 @@ class Is
      */
     public static function admin(\WP_User $user)
     {
-        return is_multisite() ? user_can($user, 'manage_network') : user_can($user, 'manage_options');
+        return apply_filters(
+            Hooks::IS_ADMIN,
+            is_multisite() ? user_can($user, 'manage_network') : user_can($user, 'manage_options')
+        );
     }
 }
