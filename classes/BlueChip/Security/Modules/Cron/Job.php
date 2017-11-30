@@ -69,6 +69,8 @@ class Job implements Modules\Activable, Modules\Initializable
     /**
      * Schedule new cron job, if not scheduled yet.
      *
+     * @hook \BlueChip\Security\Modules\Cron\Hooks::EXECUTION_TIME
+     *
      * @return bool True, if cron job has been activated or was already active, false otherwise.
      */
     public function activate()
