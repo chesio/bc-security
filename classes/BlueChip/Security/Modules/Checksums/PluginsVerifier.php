@@ -58,7 +58,6 @@ class PluginsVerifier extends Verifier
             $slug = dirname($plugin_basename);
 
             // Add necessary arguments to request URL.
-            // See: https://meta.trac.wordpress.org/ticket/3192
             $url = self::CHECKSUMS_API_URL_BASE . $slug . '/' . $plugin_data['Version'] . '.json';
 
             // Get checksums.
@@ -71,9 +70,9 @@ class PluginsVerifier extends Verifier
             $plugin_dir = trailingslashit(self::getPluginDirPath($plugin_basename));
 
             // Use checksums to find any modified files.
-            $modified_files = $this->checkDirectoryForModifiedFiles($plugin_dir, $checksums, ['readme.txt']);
+            $modified_files = self::checkDirectoryForModifiedFiles($plugin_dir, $checksums, ['readme.txt']);
             // Use checksums to find any unknown files.
-            $unknown_files = $this->scanDirectoryForUnknownFiles($plugin_dir, $plugin_dir, $checksums, true);
+            $unknown_files = self::scanDirectoryForUnknownFiles($plugin_dir, $plugin_dir, $checksums, true);
 
             // Trigger alert, if any suspicious files have been found.
             if (!empty($modified_files) || !empty($unknown_files)) {
@@ -102,19 +101,10 @@ class PluginsVerifier extends Verifier
      */
     private function getChecksums($url)
     {
-        // Make request.
-        $response = wp_remote_get($url);
-
-        // Check response code.
-        if (wp_remote_retrieve_response_code($response) !== 200) {
-            return null;
-        }
-
-        // Read JSON.
-        $json = json_decode(wp_remote_retrieve_body($response));
+        $json = self::getJson($url);
 
         // Bail on error or if the response body is invalid.
-        if ((json_last_error() !== JSON_ERROR_NONE) || empty($json->files)) {
+        if (empty($json) || empty($json->files)) {
             return null;
         }
 

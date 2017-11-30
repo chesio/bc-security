@@ -61,24 +61,9 @@ class CoreVerifier extends Verifier
      */
     private function getChecksums($url)
     {
-        // Make request to Checksums API.
-        $response = wp_remote_get($url);
+        $json = self::getJson($url);
 
-        // Check response code.
-        if (wp_remote_retrieve_response_code($response) !== 200) {
-            return null;
-        }
-
-        // Read JSON.
-        $json = json_decode(wp_remote_retrieve_body($response));
-
-        if (json_last_error() === JSON_ERROR_NONE) {
-            // Return checksums, if they exists.
-            return empty($json->checksums) ? null : $json->checksums;
-        } else {
-            // Return nothing.
-            return null;
-        }
+        return $json && !empty($json->checksums) ? $json->checksums : null;
     }
 
 
@@ -105,7 +90,7 @@ class CoreVerifier extends Verifier
         );
 
         // Initialize array for files that do not match.
-        $modified_files = $this->checkDirectoryForModifiedFiles(ABSPATH, $checksums, $ignored_files);
+        $modified_files = self::checkDirectoryForModifiedFiles(ABSPATH, $checksums, $ignored_files);
 
         // Ignore any modified files in wp-content directory.
         return array_filter($modified_files, function ($filename) { return strpos($filename, 'wp-content/') !== 0; });
@@ -137,11 +122,11 @@ class CoreVerifier extends Verifier
         return array_filter(
             array_merge(
                 // Scan root WordPress directory.
-                $this->scanDirectoryForUnknownFiles(ABSPATH, ABSPATH, $checksums, false),
+                self::scanDirectoryForUnknownFiles(ABSPATH, ABSPATH, $checksums, false),
                 // Scan wp-admin directory recursively.
-                $this->scanDirectoryForUnknownFiles(ABSPATH . 'wp-admin', ABSPATH, $checksums, true),
+                self::scanDirectoryForUnknownFiles(ABSPATH . 'wp-admin', ABSPATH, $checksums, true),
                 // Scan wp-include directory recursively.
-                $this->scanDirectoryForUnknownFiles(ABSPATH . WPINC, ABSPATH, $checksums, true)
+                self::scanDirectoryForUnknownFiles(ABSPATH . WPINC, ABSPATH, $checksums, true)
             ),
             function ($filename) use ($ignored_files) {
                 return !in_array($filename, $ignored_files, true);
