@@ -131,7 +131,7 @@ class Monitor implements \BlueChip\Security\Modules\Initializable
      */
     public function logCoreChecksumsVerificationAlert(array $modified_files, array $unknown_files)
     {
-        do_action(Log\Action::EVENT, Log\Event::CHECKSUMS_VERIFICATION_ALERT, ['codebase' => __('WordPress core', 'bc-security'), 'modified_files' => $modified_files, 'unknown_files' => $unknown_files]);
+        do_action(Log\Action::EVENT, Log\Event::CORE_CHECKSUMS_VERIFICATION_ALERT, ['modified_files' => $modified_files, 'unknown_files' => $unknown_files]);
     }
 
 
@@ -143,7 +143,7 @@ class Monitor implements \BlueChip\Security\Modules\Initializable
     public function logPluginChecksumsVerificationAlert(array $plugins)
     {
         foreach ($plugins as $plugin_data) {
-            do_action(Log\Action::EVENT, Log\Event::CHECKSUMS_VERIFICATION_ALERT, ['codebase' => sprintf(__('"%s" plugin'), $plugin_data['Name']), 'modified_files' => $plugin_data['ModifiedFiles'], 'unknown_files' => $plugin_data['UnknownFiles']]);
+            do_action(Log\Action::EVENT, Log\Event::PLUGIN_CHECKSUMS_VERIFICATION_ALERT, ['plugin_name' => $plugin_data['Name'], 'plugin_version' => $plugin_data['Version'], 'modified_files' => $plugin_data['ModifiedFiles'], 'unknown_files' => $plugin_data['UnknownFiles']]);
         }
     }
 }
