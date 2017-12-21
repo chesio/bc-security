@@ -39,7 +39,7 @@ WordPress core files verification is done in two phases:
 1. Official md5 checksums from WordPress.org are used to determine if any of core files have been modified.
 1. All files in root directory, `wp-admin` directory (including subdirectories) and `wp-includes` directory (including subdirectories) are checked against official checksums list to determine if the file is official (known) file.
 
-Plugin files verification only works for plugins hosted at [WordPress Plugins](https://wordpress.org/plugins/) directory and, for the time being, relies on API that is not officially published yet (see [related Trac ticket](https://meta.trac.wordpress.org/ticket/3192)). Otherwise, the verification process is akin to the core files verification.
+Plugin files verification works only for plugins hosted at [WordPress Plugins](https://wordpress.org/plugins/) directory. The verification process is akin to the core files verification, although the API is slightly different (see [related Trac ticket](https://meta.trac.wordpress.org/ticket/3192) and [specification](https://docs.google.com/document/d/14-SMpaPtDGEBm8hE9ZwnA-vik5OvECDig32KqX8uFlg/edit)).
 
 ### Login security
 
