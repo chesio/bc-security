@@ -27,7 +27,7 @@ class PluginsVerifier extends Verifier
      * @param string $plugin_basename
      * @return string
      */
-    public static function getPluginDirPath($plugin_basename)
+    public static function getPluginDirPath(string $plugin_basename): string
     {
         return wp_normalize_path(WP_PLUGIN_DIR . '/' . dirname($plugin_basename));
     }
@@ -99,7 +99,7 @@ class PluginsVerifier extends Verifier
      * @param string $url
      * @return \stdClass|null
      */
-    private function getChecksums($url)
+    private function getChecksums(string $url)
     {
         $json = self::getJson($url);
 
@@ -124,7 +124,7 @@ class PluginsVerifier extends Verifier
      *
      * @return array
      */
-    private function getPlugins()
+    private function getPlugins(): array
     {
         // We're using some wp-admin stuff here, so make sure it's available.
         if (!function_exists('get_plugins')) {

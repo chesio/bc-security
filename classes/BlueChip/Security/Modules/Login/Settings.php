@@ -41,7 +41,7 @@ class Settings extends \BlueChip\Security\Core\Settings
      * @param array $s
      * @return array
      */
-    public function sanitize(array $s)
+    public function sanitize(array $s): array
     {
         return [
             self::SHORT_LOCKOUT_AFTER
@@ -67,7 +67,7 @@ class Settings extends \BlueChip\Security\Core\Settings
     /**
      * @return int Long lockout duration in seconds
      */
-    public function getLongLockoutDuration()
+    public function getLongLockoutDuration(): int
     {
         return $this->data[self::LONG_LOCKOUT_DURATION] * HOUR_IN_SECONDS;
     }
@@ -76,7 +76,7 @@ class Settings extends \BlueChip\Security\Core\Settings
     /**
      * @return int Reset timeout duration in seconds.
      */
-    public function getResetTimeoutDuration()
+    public function getResetTimeoutDuration(): int
     {
         return $this->data[self::RESET_TIMEOUT] * DAY_IN_SECONDS;
     }
@@ -85,7 +85,7 @@ class Settings extends \BlueChip\Security\Core\Settings
     /**
      * @return int Short lockout duration in seconds
      */
-    public function getShortLockoutDuration()
+    public function getShortLockoutDuration(): int
     {
         return $this->data[self::SHORT_LOCKOUT_DURATION] * MINUTE_IN_SECONDS;
     }
@@ -98,7 +98,7 @@ class Settings extends \BlueChip\Security\Core\Settings
      *
      * @return array
      */
-    public function getUsernameBlacklist()
+    public function getUsernameBlacklist(): array
     {
         return apply_filters(Hooks::USERNAME_BLACKLIST, $this->data[self::USERNAME_BLACKLIST]);
     }

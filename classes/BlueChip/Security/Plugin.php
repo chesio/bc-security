@@ -47,7 +47,7 @@ class Plugin
      * @param string $basename Plugin basename
      * @param \wpdb $wpdb WordPress database access abstraction object
      */
-    public function __construct($basename, \wpdb $wpdb)
+    public function __construct(string $basename, \wpdb $wpdb)
     {
         $this->basename = $basename;
         $this->wpdb = $wpdb;
@@ -78,7 +78,7 @@ class Plugin
      *
      * @return array
      */
-    private function constructSettings()
+    private function constructSettings(): array
     {
         return [
             'hardening'     => new Modules\Hardening\Settings('bc-security-hardening'),
@@ -99,7 +99,7 @@ class Plugin
      * @param array $settings
      * @return array
      */
-    private function constructModules(\wpdb $wpdb, $remote_address, $server_address, array $settings)
+    private function constructModules(\wpdb $wpdb, string $remote_address, string $server_address, array $settings): array
     {
         $logger             = new Modules\Log\Logger($wpdb, $remote_address);
         $core_verifier      = new Modules\Checksums\CoreVerifier();
@@ -134,7 +134,7 @@ class Plugin
      * @param array $modules
      * @return array
      */
-    private function constructCronJobs(array $settings, array $modules)
+    private function constructCronJobs(array $settings, array $modules): array
     {
         return [
             'blacklist-cleaner' => new Modules\Cron\Job(

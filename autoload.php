@@ -6,7 +6,7 @@
  */
 
 // Register autoload function
-spl_autoload_register(function ($class) {
+spl_autoload_register(function (string $class) {
     // Only autoload classes shipped with the plugin.
     if ((strpos($class, 'BlueChip\\Security') !== 0) && (strpos($class, 'Psr\\Log') !== 0)) {
         return;

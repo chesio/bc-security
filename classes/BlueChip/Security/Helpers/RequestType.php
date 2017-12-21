@@ -16,7 +16,7 @@ abstract class RequestType
      * @param string $type One of: admin, ajax, cron, frontend or wp-cli.
      * @return bool True, if current request is of given $type, false otherwise.
      */
-    public static function is($type)
+    public static function is(string $type): bool
     {
         switch ($type) {
             case 'admin':

@@ -56,7 +56,7 @@ class Job implements Modules\Activable, Modules\Initializable
      * @param callable $action
      * @param array $args
      */
-    public function __construct($time, $recurrence, $hook, callable $action, array $args = [])
+    public function __construct($time, string $recurrence, string $hook, callable $action, array $args = [])
     {
         $this->action = $action;
         $this->args = $args;
@@ -73,7 +73,7 @@ class Job implements Modules\Activable, Modules\Initializable
      *
      * @return bool True, if cron job has been activated or was already active, false otherwise.
      */
-    public function activate()
+    public function activate(): bool
     {
         // Filter $time value.
         $time = apply_filters(Hooks::EXECUTION_TIME, $this->time, $this->hook);
@@ -108,7 +108,7 @@ class Job implements Modules\Activable, Modules\Initializable
     /**
      * @return bool True, if cron job is currently scheduled.
      */
-    public function isScheduled()
+    public function isScheduled(): bool
     {
         return is_int(wp_next_scheduled($this->hook, $this->args));
     }
@@ -125,7 +125,7 @@ class Job implements Modules\Activable, Modules\Initializable
      * @param string $time_string
      * @return int
      */
-    public static function getTimestamp($time_string)
+    public static function getTimestamp(string $time_string): int
     {
         if ($time_string === self::RUN_AT_NIGHT || $time_string === self::RUN_RANDOMLY) {
             $hour = mt_rand(0, ($time_string === self::RUN_AT_NIGHT) ? 5 : 23);

@@ -40,7 +40,7 @@ class Watchman implements Modules\Loadable, Modules\Initializable, Modules\Activ
      * @param string $remote_address Remote IP address.
      * @param \BlueChip\Security\Modules\Log\Logger $logger
      */
-    public function __construct(Settings $settings, $remote_address, Logger $logger)
+    public function __construct(Settings $settings, string $remote_address, Logger $logger)
     {
         $this->remote_address = $remote_address;
         $this->settings = $settings;
@@ -288,7 +288,7 @@ class Watchman implements Modules\Loadable, Modules\Initializable, Modules\Activ
      * @param string $username
      * @param int $duration
      */
-    public function watchLockoutEvents($remote_address, $username, $duration)
+    public function watchLockoutEvents(string $remote_address, string $username, int $duration)
     {
         if (in_array($remote_address, $this->logger->getKnownIps(), true)) {
             $subject = __('Known IP locked out', 'bc-security');
@@ -310,7 +310,7 @@ class Watchman implements Modules\Loadable, Modules\Initializable, Modules\Activ
      * @param string $username
      * @param \WP_User $user
      */
-    public function watchWpLogin($username, $user)
+    public function watchWpLogin(string $username, \WP_User $user)
     {
         if (Is::admin($user)) {
             $subject = __('Admin user login', 'bc-security');
@@ -394,7 +394,7 @@ class Watchman implements Modules\Loadable, Modules\Initializable, Modules\Activ
      *
      * @param string $url
      */
-    public function watchCoreChecksumsRetrievalFailed($url)
+    public function watchCoreChecksumsRetrievalFailed(string $url)
     {
         $subject = __('Checksums verification failed', 'bc-security');
         $message = sprintf(
@@ -438,7 +438,7 @@ class Watchman implements Modules\Loadable, Modules\Initializable, Modules\Activ
      * @param array|string $message
      * @return null|false|true Null, if there are no recipients configured. True, if email has been sent, false otherwise.
      */
-    private function notify($subject, $message)
+    private function notify(string $subject, $message)
     {
         return empty($this->recipients) ? null : Mailman::send($this->recipients, $subject, $message);
     }

@@ -21,7 +21,7 @@ abstract class Transients
      * @param string[] $key
      * @return bool
      */
-    public static function deleteFromSite(...$key)
+    public static function deleteFromSite(string ...$key): bool
     {
         return delete_site_transient(self::name($key));
     }
@@ -30,9 +30,9 @@ abstract class Transients
      * Get transient.
      *
      * @param string[] $key
-     * @return bool
+     * @return mixed
      */
-    public static function getForSite(...$key)
+    public static function getForSite(string ...$key)
     {
         return get_site_transient(self::name($key));
     }
@@ -44,7 +44,7 @@ abstract class Transients
      * @param mixed[] $args
      * @return bool
      */
-    public static function setForSite($value, ...$args)
+    public static function setForSite($value, ...$args): bool
     {
         // If the first variable argument is int, take it as expiration value.
         $expiration = is_int($args[0]) ? array_shift($args) : 0;
@@ -58,7 +58,7 @@ abstract class Transients
      * @param string[] $key
      * @return string
      */
-    private static function name(array $key)
+    private static function name(array $key): string
     {
         return self::NAME_PREFIX . md5(implode(':', $key));
     }

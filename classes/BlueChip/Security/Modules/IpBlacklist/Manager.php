@@ -101,7 +101,7 @@ class Manager implements Modules\Countable, Modules\Installable, \Countable
      *
      * @return int
      */
-    public function count()
+    public function count(): int
     {
         return $this->countAll();
     }
@@ -110,10 +110,12 @@ class Manager implements Modules\Countable, Modules\Installable, \Countable
     /**
      * Return number of all records on blacklist (active and expired).
      *
+     * @internal Implements \BlueChip\Security\Modules\Countable interface.
+     *
      * @param int $scope
      * @return int
      */
-    public function countAll($scope = LockScope::ANY)
+    public function countAll(int $scope = LockScope::ANY): int
     {
         $query = "SELECT COUNT(id) AS total FROM {$this->blacklist_table}";
 
@@ -128,10 +130,12 @@ class Manager implements Modules\Countable, Modules\Installable, \Countable
     /**
      * Return number of records inserted since given $timestamp.
      *
+     * @internal Implements \BlueChip\Security\Modules\Countable interface.
+     *
      * @param int $timestamp
      * @return int
      */
-    public function countFrom($timestamp)
+    public function countFrom(int $timestamp): int
     {
         $query = $this->wpdb->prepare(
             "SELECT COUNT(id) AS total FROM {$this->blacklist_table} WHERE ban_time > %s",
@@ -152,7 +156,7 @@ class Manager implements Modules\Countable, Modules\Installable, \Countable
      * @param string $order
      * @return array
      */
-    public function fetch($scope = LockScope::ANY, $from = 0, $limit = 20, $order_by = null, $order = null)
+    public function fetch(int $scope = LockScope::ANY, int $from = 0, int $limit = 20, string $order_by = '', string $order = ''): array
     {
         // Prepare query
         $query = "SELECT * FROM {$this->blacklist_table}";
@@ -189,7 +193,7 @@ class Manager implements Modules\Countable, Modules\Installable, \Countable
      * @param int $scope Blacklist scope [optional].
      * @return array
      */
-    public function fetchAll($scope = LockScope::ANY)
+    public function fetchAll(int $scope = LockScope::ANY): array
     {
         // Prepare query
         $query = "SELECT * FROM {$this->blacklist_table}";
@@ -211,7 +215,7 @@ class Manager implements Modules\Countable, Modules\Installable, \Countable
      * @param int $scope Blacklist scope.
      * @return bool True, if IP address is on blacklist with given scope.
      */
-    public function isLocked($ip_address, $scope)
+    public function isLocked(string $ip_address, int $scope): bool
     {
         // Prepare query. Because of different ban reasons, multiple records may
         // match the where condition, so pick up the most future release time.
@@ -237,7 +241,7 @@ class Manager implements Modules\Countable, Modules\Installable, \Countable
      * @param string $comment [optional]
      * @return bool True, if IP address has been locked, false otherwise.
      */
-    public function lock($ip_address, $duration, $scope, $reason, $comment = '')
+    public function lock(string $ip_address, int $duration, int $scope, int $reason, string $comment = ''): bool
     {
         $now = current_time('timestamp');
 
@@ -275,7 +279,7 @@ class Manager implements Modules\Countable, Modules\Installable, \Countable
      *
      * @return bool True on success, false on failure.
      */
-    public function prune()
+    public function prune(): bool
     {
         // Prepare query
         // Note: $wpdb->delete cannot be used as it does not support "<=" comparison)
@@ -296,7 +300,7 @@ class Manager implements Modules\Countable, Modules\Installable, \Countable
      * @param int $id
      * @return bool True, if record with $id has been removed, false otherwise.
      */
-    public function remove($id)
+    public function remove(int $id): bool
     {
         // Execute query.
         $result = $this->wpdb->delete($this->blacklist_table, ['id' => $id], ['%d']);
@@ -311,7 +315,7 @@ class Manager implements Modules\Countable, Modules\Installable, \Countable
      * @param array $ids
      * @return int Number of deleted records.
      */
-    public function removeMany(array $ids)
+    public function removeMany(array $ids): int
     {
         if (empty($ids)) {
             return 0;
@@ -338,7 +342,7 @@ class Manager implements Modules\Countable, Modules\Installable, \Countable
      * @param int $id
      * @return bool True, if record with $id has been unlocked, false otherwise.
      */
-    public function unlock($id)
+    public function unlock(int $id): bool
     {
         // Execute query.
         $result = $this->wpdb->update(
@@ -361,7 +365,7 @@ class Manager implements Modules\Countable, Modules\Installable, \Countable
      * @param array $ids
      * @return int Number of unlocked records.
      */
-    public function unlockMany(array $ids)
+    public function unlockMany(array $ids): int
     {
         if (empty($ids)) {
             return 0;
@@ -390,7 +394,7 @@ class Manager implements Modules\Countable, Modules\Installable, \Countable
      * @param int $reason
      * @return int|null
      */
-    protected function getId($ip_address, $scope, $reason)
+    protected function getId(string $ip_address, int $scope, int $reason)
     {
         // Prepare query.
         $query = $this->wpdb->prepare(

@@ -179,7 +179,7 @@ class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\
      *
      * @return int
      */
-    public function count()
+    public function count(): int
     {
         return $this->countAll();
     }
@@ -188,10 +188,12 @@ class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\
     /**
      * Return number of all records in log table.
      *
+     * @internal Implements \BlueChip\Security\Modules\Countable interface.
+     *
      * @param mixed $event Only count records under event name (empty string is allowed).
      * @return int
      */
-    public function countAll($event = null)
+    public function countAll($event = null): int
     {
         $query = "SELECT COUNT(id) AS total FROM {$this->log_table}";
 
@@ -207,10 +209,12 @@ class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\
     /**
      * Return number of records inserted since given $timestamp.
      *
+     * @internal Implements \BlueChip\Security\Modules\Countable interface.
+     *
      * @param int $timestamp
      * @return int
      */
-    public function countFrom($timestamp)
+    public function countFrom(int $timestamp): int
     {
         $query = $this->wpdb->prepare(
             "SELECT COUNT(id) AS total FROM {$this->log_table} WHERE date_and_time > %s",

@@ -62,7 +62,7 @@ class ListTable extends \BlueChip\Security\Core\ListTable
      * @param string $per_page_option_name
      * @param \BlueChip\Security\Modules\IpBlacklist\Manager $bl_manager
      */
-    public function __construct($url, $per_page_option_name, Manager $bl_manager)
+    public function __construct(string $url, string $per_page_option_name, Manager $bl_manager)
     {
         parent::__construct($url, $per_page_option_name);
 
@@ -81,7 +81,7 @@ class ListTable extends \BlueChip\Security\Core\ListTable
      * @param array $item
      * @return string
      */
-    public function column_ip_address(array $item) // @codingStandardsIgnoreLine
+    public function column_ip_address(array $item): string // @codingStandardsIgnoreLine
     {
         return $item['ip_address'] . $this->row_actions($this->getRowActions($item));
     }
@@ -93,7 +93,7 @@ class ListTable extends \BlueChip\Security\Core\ListTable
      * @param array $item
      * @return string
      */
-    public function column_reason(array $item) // @codingStandardsIgnoreLine
+    public function column_reason(array $item): string // @codingStandardsIgnoreLine
     {
         return $this->explainBanReason($item['reason']);
     }
@@ -281,7 +281,7 @@ class ListTable extends \BlueChip\Security\Core\ListTable
      * @param int $banReason
      * @return string
      */
-    private function explainBanReason($banReason)
+    private function explainBanReason(int $banReason): string
     {
         switch ($banReason) {
             case BanReason::LOGIN_LOCKOUT_SHORT:
@@ -301,7 +301,7 @@ class ListTable extends \BlueChip\Security\Core\ListTable
      * @param array $item
      * @return array
      */
-    private function getRowActions(array $item)
+    private function getRowActions(array $item): array
     {
         $actions = [
             // Any item can be removed

@@ -21,7 +21,7 @@ abstract class Verifier
      * @param array $ignored_files List of filenames to ignore [optional].
      * @return array
      */
-    protected static function checkDirectoryForModifiedFiles($path, $checksums, array $ignored_files = [])
+    protected static function checkDirectoryForModifiedFiles(string $path, $checksums, array $ignored_files = []): array
     {
         // Initialize array for files that do not match.
         $modified_files = [];
@@ -60,7 +60,7 @@ abstract class Verifier
      * @param bool $recursive Scan subdirectories too [optional].
      * @return array
      */
-    protected static function scanDirectoryForUnknownFiles($directory, $path, $checksums, $recursive = false)
+    protected static function scanDirectoryForUnknownFiles(string $directory, string $path, $checksums, bool $recursive = false): array
     {
         // Only allow to scan ABSPATH and subdirectories.
         if (strpos($directory, ABSPATH) !== 0) {
@@ -103,7 +103,7 @@ abstract class Verifier
      * @param string $url
      * @return mixed
      */
-    protected static function getJson($url)
+    protected static function getJson(string $url)
     {
         // Make request to URL.
         $response = wp_remote_get($url);

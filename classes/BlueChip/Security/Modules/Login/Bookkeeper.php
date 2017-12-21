@@ -85,7 +85,7 @@ class Bookkeeper implements \BlueChip\Security\Modules\Installable
      * @param string $username
      * @return int Number of non-expired failed login attempts for $ip_address.
      */
-    public function recordFailedLoginAttempt($ip_address, $username)
+    public function recordFailedLoginAttempt(string $ip_address, string $username): int
     {
         $now = current_time('timestamp');
         $user = get_user_by(is_email($username) ? 'email' : 'login', $username);

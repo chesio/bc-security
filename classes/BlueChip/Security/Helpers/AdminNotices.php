@@ -24,7 +24,7 @@ abstract class AdminNotices
      * @param string $type Type: error, warning, success or info.
      * @param bool $escape_html
      */
-    public static function add($message, $type = self::INFO, $escape_html = true)
+    public static function add($message, string $type = self::INFO, bool $escape_html = true)
     {
         add_action('admin_notices', function () use ($message, $type, $escape_html) {
             echo sprintf('<div class="notice %s is-dismissible">', $type);

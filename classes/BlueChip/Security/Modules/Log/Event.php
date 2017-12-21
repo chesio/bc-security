@@ -55,7 +55,7 @@ class Event
      * @param string $message
      * @param array $context
      */
-    private function __construct($id, $name, $level, $message, $context)
+    private function __construct(string $id, string $name, string $level, string $message, array $context)
     {
         $this->id = $id;
         $this->name = $name;
@@ -65,37 +65,37 @@ class Event
     }
 
 
-    public function getId()
+    public function getId(): string
     {
         return $this->id;
     }
 
 
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
 
 
-    public function getLevel()
+    public function getLevel(): string
     {
         return $this->level;
     }
 
 
-    public function getMessage()
+    public function getMessage(): string
     {
         return $this->message;
     }
 
 
-    public function getContext()
+    public function getContext(): array
     {
         return $this->context;
     }
 
 
-    public function hasContext($key)
+    public function hasContext(string $key): bool
     {
         return isset($this->context[$key]);
     }
@@ -105,9 +105,9 @@ class Event
      * Create event object for given $id.
      *
      * @param string $id Valid event ID.
-     * @return \BlueChip\Security\Modules\Log\Event
+     * @return \BlueChip\Security\Modules\Log\Event|null
      */
-    public static function create($id)
+    public static function create(string $id)
     {
         switch ($id) {
             case self::AUTH_BAD_COOKIE:
@@ -169,7 +169,7 @@ class Event
      *
      * @return array
      */
-    public static function enlist()
+    public static function enlist(): array
     {
         return [
             self::AUTH_BAD_COOKIE,

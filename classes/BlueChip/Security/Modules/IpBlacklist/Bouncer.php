@@ -27,7 +27,7 @@ class Bouncer implements \BlueChip\Security\Modules\Initializable, \BlueChip\Sec
      * @param string $remote_address Remote IP address.
      * @param Manager $bl_manager
      */
-    public function __construct($remote_address, Manager $bl_manager)
+    public function __construct(string $remote_address, Manager $bl_manager)
     {
         $this->bl_manager = $bl_manager;
         $this->remote_address = $remote_address;
@@ -68,7 +68,7 @@ class Bouncer implements \BlueChip\Security\Modules\Initializable, \BlueChip\Sec
      *
      * @param string $ip_address Remote IP address to include in error message [optional].
      */
-    public static function blockAccessTemporarily($ip_address = '')
+    public static function blockAccessTemporarily(string $ip_address = '')
     {
         $error_msg = empty($ip_address)
             ? esc_html__('Access from your device has been temporarily disabled for security reasons.', 'bc-security')

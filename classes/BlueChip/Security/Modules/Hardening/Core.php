@@ -51,7 +51,7 @@ class Core implements \BlueChip\Security\Modules\Initializable
      * @param array $methods
      * @return array
      */
-    public function disablePingbacks($methods)
+    public function disablePingbacks(array $methods): array
     {
         unset($methods['pingback.ping']);
         return $methods;

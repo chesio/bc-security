@@ -98,7 +98,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
      *
      * @return array
      */
-    private function getConnectionOptions()
+    private function getConnectionOptions(): array
     {
         $list = IpAddress::enlist(true);
         $options = [];

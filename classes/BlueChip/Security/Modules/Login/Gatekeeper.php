@@ -39,7 +39,7 @@ class Gatekeeper implements \BlueChip\Security\Modules\Initializable, \BlueChip\
      * @param \BlueChip\Security\Modules\Login\Bookkeeper $bookkeeper
      * @param \BlueChip\Security\Modules\IpBlacklist\Manager $bl_manager
      */
-    public function __construct(Settings $settings, $remote_address, Bookkeeper $bookkeeper, IpBlacklist\Manager $bl_manager)
+    public function __construct(Settings $settings, string $remote_address, Bookkeeper $bookkeeper, IpBlacklist\Manager $bl_manager)
     {
         $this->remote_address = $remote_address;
         $this->settings = $settings;
@@ -88,7 +88,7 @@ class Gatekeeper implements \BlueChip\Security\Modules\Initializable, \BlueChip\
      * @param array $error_codes
      * @return array
      */
-    public function filterShakeErrorCodes(array $error_codes)
+    public function filterShakeErrorCodes(array $error_codes): array
     {
         $error_codes[] = 'authentication_failed';
         return $error_codes;
@@ -101,7 +101,7 @@ class Gatekeeper implements \BlueChip\Security\Modules\Initializable, \BlueChip\
      *
      * @param array $cookie_elements
      */
-    public function handleBadCookie($cookie_elements)
+    public function handleBadCookie(array $cookie_elements)
     {
         // Clear authentication cookies completely
         $this->clearAuthCookie();
@@ -118,7 +118,7 @@ class Gatekeeper implements \BlueChip\Security\Modules\Initializable, \BlueChip\
      *
      * @param string $username
      */
-    public function handleFailedLogin($username)
+    public function handleFailedLogin(string $username)
     {
         // If currently locked-out, bail (should not happen, but better safe than sorry)
         if ($this->bl_manager->isLocked($this->remote_address, IpBlacklist\LockScope::ADMIN)) {
@@ -149,7 +149,7 @@ class Gatekeeper implements \BlueChip\Security\Modules\Initializable, \BlueChip\
      * @param string $username
      * @return WP_Error|WP_User
      */
-    public function lockIpIfUsernameOnBlacklist($user, $username)
+    public function lockIpIfUsernameOnBlacklist($user, string $username)
     {
         // When a non-existing username (or email)...
         if (is_wp_error($user) && ($user->get_error_code() === 'invalid_username' || $user->get_error_code() === 'invalid_email')) {
@@ -228,7 +228,7 @@ class Gatekeeper implements \BlueChip\Security\Modules\Initializable, \BlueChip\
      * @param int $duration Duration (in secs) of lockout
      * @param int $reason Lockout reason
      */
-    protected function lockOut($username, $duration, $reason)
+    protected function lockOut(string $username, int $duration, int $reason)
     {
         // Trigger lockout action
         do_action(Hooks::LOCKOUT_EVENT, $this->remote_address, $username, $duration, $reason);

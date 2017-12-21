@@ -43,7 +43,7 @@ trait CountablePage
      *
      * @return int
      */
-    public function getCount()
+    public function getCount(): int
     {
         $user = wp_get_current_user();
 
@@ -56,7 +56,7 @@ trait CountablePage
     /**
      * @return string
      */
-    private function getCounterUserMetaKey()
+    private function getCounterUserMetaKey(): string
     {
         return implode('/', [$this->getSlug(), 'last-visit']);
     }

@@ -59,7 +59,7 @@ class CoreVerifier extends Verifier
      * @param string $url
      * @return \stdClass|null
      */
-    private function getChecksums($url)
+    private function getChecksums(string $url)
     {
         $json = self::getJson($url);
 
@@ -78,7 +78,7 @@ class CoreVerifier extends Verifier
      * @param \stdClass $checksums
      * @return array
      */
-    private function findModifiedFiles($checksums)
+    private function findModifiedFiles($checksums): array
     {
         // Get files that should be ignored.
         $ignored_files = apply_filters(
@@ -105,7 +105,7 @@ class CoreVerifier extends Verifier
      * @param \stdClass $checksums
      * @return array
      */
-    private function findUnknownFiles($checksums)
+    private function findUnknownFiles($checksums): array
     {
         // Get files that should be ignored.
         $ignored_files = apply_filters(

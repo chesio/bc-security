@@ -26,7 +26,7 @@ trait ListingPage
      *
      * @param string $option_name
      */
-    private function setPerPageOption($option_name)
+    private function setPerPageOption(string $option_name)
     {
         $this->per_page_option_name = $option_name;
 

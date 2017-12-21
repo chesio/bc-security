@@ -23,7 +23,7 @@ class Settings extends \BlueChip\Security\Core\Settings
      * @param array $s
      * @return array
      */
-    public function sanitize(array $s)
+    public function sanitize(array $s): array
     {
         return [
             self::LOG_MAX_SIZE
@@ -37,7 +37,7 @@ class Settings extends \BlueChip\Security\Core\Settings
     /**
      * @return int Maximum age of log records in seconds.
      */
-    public function getMaxAge()
+    public function getMaxAge(): int
     {
         return $this->data[self::LOG_MAX_AGE] * DAY_IN_SECONDS;
     }
@@ -46,7 +46,7 @@ class Settings extends \BlueChip\Security\Core\Settings
     /**
      * @return int Maximum size of log table in number of records.
      */
-    public function getMaxSize()
+    public function getMaxSize(): int
     {
         return $this->data[self::LOG_MAX_SIZE] * 1000;
     }

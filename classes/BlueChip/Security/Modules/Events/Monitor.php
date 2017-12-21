@@ -26,7 +26,7 @@ class Monitor implements \BlueChip\Security\Modules\Initializable
      * @param string $remote_address Remote IP address.
      * @param string $server_address Server IP address.
      */
-    public function __construct($remote_address, $server_address)
+    public function __construct(string $remote_address, string $server_address)
     {
         $this->remote_address = $remote_address;
         $this->server_address = $server_address;
@@ -93,7 +93,7 @@ class Monitor implements \BlueChip\Security\Modules\Initializable
      *
      * @param string $username
      */
-    public function logFailedLogin($username)
+    public function logFailedLogin(string $username)
     {
         do_action(Log\Action::EVENT, Log\Event::LOGIN_FAILURE, ['username' => $username]);
     }
@@ -104,7 +104,7 @@ class Monitor implements \BlueChip\Security\Modules\Initializable
      *
      * @param string $username
      */
-    public function logSuccessfulLogin($username)
+    public function logSuccessfulLogin(string $username)
     {
         do_action(Log\Action::EVENT, Log\Event::LOGIN_SUCCESSFUL, ['username' => $username]);
     }
@@ -117,7 +117,7 @@ class Monitor implements \BlueChip\Security\Modules\Initializable
      * @param string $username
      * @param int $duration
      */
-    public function logLockoutEvent($remote_address, $username, $duration)
+    public function logLockoutEvent(string $remote_address, string $username, int $duration)
     {
         do_action(Log\Action::EVENT, Log\Event::LOGIN_LOCKOUT, ['ip_address' => $remote_address, 'duration' => $duration, 'username' => $username]);
     }

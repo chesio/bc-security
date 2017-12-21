@@ -31,7 +31,7 @@ class ListTable extends \BlueChip\Security\Core\ListTable
      * @param string $per_page_option_name
      * @param \BlueChip\Security\Modules\Log\Logger $logger
      */
-    public function __construct($url, $per_page_option_name, Logger $logger)
+    public function __construct(string $url, string $per_page_option_name, Logger $logger)
     {
         parent::__construct($url, $per_page_option_name);
 
@@ -52,7 +52,7 @@ class ListTable extends \BlueChip\Security\Core\ListTable
      * @param array $item
      * @return string
      */
-    public function column_date_and_time(array $item) // @codingStandardsIgnoreLine
+    public function column_date_and_time(array $item): string // @codingStandardsIgnoreLine
     {
         return $item['date_and_time'] . $this->row_actions($this->getRowActions($item));
     }
@@ -84,7 +84,7 @@ class ListTable extends \BlueChip\Security\Core\ListTable
      * @param array $item
      * @return string
      */
-    public function column_event(array $item) // @codingStandardsIgnoreLine
+    public function column_event(array $item): string // @codingStandardsIgnoreLine
     {
         $event = Event::create($item['event']);
         return $event ? $event->getName() : '';
@@ -97,7 +97,7 @@ class ListTable extends \BlueChip\Security\Core\ListTable
      * @param array $item
      * @return string
      */
-    public function column_message(array $item) // @codingStandardsIgnoreLine
+    public function column_message(array $item): string // @codingStandardsIgnoreLine
     {
         $message = empty($item['message']) ? '' : $item['message'];
         $context = empty($item['context']) ? [] : unserialize($item['context']);
@@ -209,7 +209,7 @@ class ListTable extends \BlueChip\Security\Core\ListTable
      * @param array $item
      * @return array
      */
-    private function getRowActions(array $item)
+    private function getRowActions(array $item): array
     {
         if (empty($scope = $this->getLockScopeFromEvent($item['event']))) {
             // No scope, no action.
@@ -235,13 +235,15 @@ class ListTable extends \BlueChip\Security\Core\ListTable
     /**
      * Return appropriate lock scope for $event type.
      *
-     * @param int $event
+     * @see \BlueChip\Security\Modules\Log\Event
+     *
+     * @param string $event_id One from event IDs defined in \BlueChip\Security\Modules\Log\Event.
      * @return int|null Return null, if given $event does not warrant blacklisting,
      * otherwise return lock scope code.
      */
-    private function getLockScopeFromEvent($event)
+    private function getLockScopeFromEvent(string $event_id)
     {
-        switch ($event) {
+        switch ($event_id) {
             case Event::QUERY_404:
                 return IpBlacklist\LockScope::WEBSITE;
             case Event::AUTH_BAD_COOKIE:
@@ -261,7 +263,7 @@ class ListTable extends \BlueChip\Security\Core\ListTable
      * @param array $context
      * @return string
      */
-    private static function formatMessage($message, array $context)
+    private static function formatMessage(string $message, array $context): string
     {
         foreach ($context as $key => $value) {
             // Format array as comma separated list (indicate empty array with "-")
