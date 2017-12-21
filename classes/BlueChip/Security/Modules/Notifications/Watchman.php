@@ -416,6 +416,7 @@ class Watchman implements Modules\Loadable, Modules\Initializable, Modules\Activ
         $subject = __('Plugin checksums verification failed', 'bc-security');
         $message = [
             __('Checksums verification for the following plugins has been aborted, because checksums could not be fetched from remote server:', 'bc-security'),
+            '',
         ];
 
         foreach ($plugins as $plugin_data) {
