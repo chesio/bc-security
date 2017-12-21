@@ -143,7 +143,7 @@ class Monitor implements \BlueChip\Security\Modules\Initializable
     public function logPluginChecksumsVerificationAlert(array $plugins)
     {
         foreach ($plugins as $plugin_data) {
-            do_action(Log\Action::EVENT, Log\Event::CHECKSUMS_VERIFICATION_ALERT, ['codebase' => sprintf(__('"%s" plugin'), $plugin_data['name']), 'modified_files' => $plugin_data['ModifiedFiles'], 'unknown_files' => $plugin_data['UnknownFiles']]);
+            do_action(Log\Action::EVENT, Log\Event::CHECKSUMS_VERIFICATION_ALERT, ['codebase' => sprintf(__('"%s" plugin'), $plugin_data['Name']), 'modified_files' => $plugin_data['ModifiedFiles'], 'unknown_files' => $plugin_data['UnknownFiles']]);
         }
     }
 }
