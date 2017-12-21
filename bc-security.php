@@ -7,7 +7,7 @@
  * Author: Česlav Przywara <ceslav@przywara.cz>
  * Author URI: https://www.chesio.com
  * Requires at least: 4.7
- * Tested up to: 4.8
+ * Tested up to: 4.9
  * Text Domain: bc-security
  */
 
