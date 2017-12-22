@@ -52,7 +52,7 @@ class ListTable extends \BlueChip\Security\Core\ListTable
      * @param array $item
      * @return string
      */
-    public function column_date_and_time(array $item): string // @codingStandardsIgnoreLine
+    public function column_date_and_time(array $item): string // phpcs:ignore
     {
         return $item['date_and_time'] . $this->row_actions($this->getRowActions($item));
     }
@@ -65,7 +65,7 @@ class ListTable extends \BlueChip\Security\Core\ListTable
      * @param string $column_name
      * @return string
      */
-    public function column_default($item, $column_name) // @codingStandardsIgnoreLine
+    public function column_default($item, $column_name) // phpcs:ignore
     {
         if ($this->event && $this->event->hasContext($column_name)) {
             $context = empty($item['context']) ? [] : unserialize($item['context']);
@@ -84,7 +84,7 @@ class ListTable extends \BlueChip\Security\Core\ListTable
      * @param array $item
      * @return string
      */
-    public function column_event(array $item): string // @codingStandardsIgnoreLine
+    public function column_event(array $item): string // phpcs:ignore
     {
         $event = Event::create($item['event']);
         return $event ? $event->getName() : '';
@@ -97,7 +97,7 @@ class ListTable extends \BlueChip\Security\Core\ListTable
      * @param array $item
      * @return string
      */
-    public function column_message(array $item): string // @codingStandardsIgnoreLine
+    public function column_message(array $item): string // phpcs:ignore
     {
         $message = empty($item['message']) ? '' : $item['message'];
         $context = empty($item['context']) ? [] : unserialize($item['context']);
@@ -109,7 +109,7 @@ class ListTable extends \BlueChip\Security\Core\ListTable
      * Define table columns
      * @return array
      */
-    public function get_columns() // @codingStandardsIgnoreLine
+    public function get_columns() // phpcs:ignore
     {
         $columns = [
             'date_and_time' => __('Date and time', 'bc-security'),
@@ -136,7 +136,7 @@ class ListTable extends \BlueChip\Security\Core\ListTable
      * Define sortable columns
      * @return array
      */
-    public function get_sortable_columns() // @codingStandardsIgnoreLine
+    public function get_sortable_columns() // phpcs:ignore
     {
         return [
             'date_and_time' => 'date_and_time',
@@ -150,7 +150,7 @@ class ListTable extends \BlueChip\Security\Core\ListTable
      * Define available views for this table.
      * @return array
      */
-    protected function get_views() // @codingStandardsIgnoreLine
+    protected function get_views() // phpcs:ignore
     {
         $event_id = is_null($this->event) ? null : $this->event->getId();
 
@@ -187,7 +187,7 @@ class ListTable extends \BlueChip\Security\Core\ListTable
     /**
      * Prepare items for table.
      */
-    public function prepare_items() // @codingStandardsIgnoreLine
+    public function prepare_items() // phpcs:ignore
     {
         $event_id = $this->event ? $this->event->getId() : null;
 
