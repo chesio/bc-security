@@ -369,7 +369,6 @@ class Watchman implements Modules\Loadable, Modules\Initializable, Modules\Activ
         ];
 
         foreach ($plugins as $plugin_basename => $plugin_data) {
-
             $message[] = '';
             $message[] = sprintf("%s (%s)", $plugin_data['Name'], $plugin_basename);
 

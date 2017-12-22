@@ -52,7 +52,6 @@ class PluginsVerifier extends Verifier
         $checksums_verification_failed = [];
 
         foreach ($plugins as $plugin_basename => $plugin_data) {
-
             // This is fine most of the time and WPCentral/WP-CLI-Security gets the slug the same way,
             // but it does not seem to be guaranteed that slug is always equal to directory name...
             $slug = dirname($plugin_basename);
