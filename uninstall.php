@@ -14,6 +14,9 @@ if (!defined('WP_UNINSTALL_PLUGIN')) {
 require_once __DIR__ . '/autoload.php';
 
 // Construct plugin instance.
-$bc_security = new \BlueChip\Security\Plugin($GLOBALS['wpdb']);
+$bc_security = new \BlueChip\Security\Plugin(
+    plugin_basename(preg_replace('/uninstall.php$/', 'bc-security.php', __FILE__)), // A bit hacky, but functional approach.
+    $GLOBALS['wpdb']
+);
 // Run uninstall actions.
 $bc_security->uninstall();
