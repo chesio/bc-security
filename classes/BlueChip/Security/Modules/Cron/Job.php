@@ -136,8 +136,8 @@ class Job implements Modules\Activable, Modules\Initializable
             // Assume $time_string denotes actual time like '01:02:03'.
             $time = $time_string;
         }
-        // Get time zone from settings.
-        $time_zone = new \DateTimeZone(get_option('timezone_string'));
+        // Get time zone from settings. Fall back to UTC, if option is empty.
+        $time_zone = new \DateTimeZone(get_option('timezone_string') ?: 'UTC');
         // Get DateTime object.
         $date = new \DateTime($time, $time_zone);
         // Get timestamp.
