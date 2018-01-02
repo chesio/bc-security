@@ -11,8 +11,7 @@ namespace BlueChip\Security\Modules\IpBlacklist;
 interface Hooks
 {
     /**
-     * Filter: allows to change default lock duration for manually blacklisted
-     * IP addresses.
+     * Filter: allows to change default lock duration for manually blacklisted IP addresses.
      *
      * add_filter(\BlueChip\Security\Modules\IpBlacklist\Hooks::DEFAULT_MANUAL_LOCK_DURATION, function () {
      *     // Block for one year per default
@@ -20,4 +19,19 @@ interface Hooks
      * }, 10, 0);
      */
     const DEFAULT_MANUAL_LOCK_DURATION = 'bc-security/filter:ip-blacklist-default-manual-lock-duration';
+
+    /**
+     * Filter: allows to filter result of "is IP address locked" check.
+     *
+     * add_filter(
+     *     \BlueChip\Security\Modules\IpBlacklist\Hooks::DEFAULT_MANUAL_LOCK_DURATION,
+     *     function (bool $result, string $ip_address, int $scope) {
+     *         // Block any IP address that starts with "1"
+     *         return strpos($ip_address, '1') === 0;
+     *     },
+     *     10,
+     *     3
+     * );
+     */
+    const IS_IP_ADDRESS_LOCKED = 'bc-security/filter:is-ip-address-locked';
 }
