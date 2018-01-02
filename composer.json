@@ -30,6 +30,8 @@
     }
   },
   "scripts": {
+    "phpcs": "phpcs",
+    "phpunit": "phpunit",
     "test": ["phpcs", "phpunit"]
   }
 }
