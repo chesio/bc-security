@@ -29,7 +29,7 @@ class PluginTest extends \BlueChip\Security\Tests\TestCase
     /**
      * Test class instances.
      */
-    public function test_instances()
+    public function testInstances()
     {
         $this->assertInstanceOf(Plugin::class, $this->bc_security);
         $this->assertInstanceOf(\wpdb::class, $this->readAttribute($this->bc_security, 'wpdb'));
