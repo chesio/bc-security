@@ -17,7 +17,8 @@ class PluginTest extends \BlueChip\Security\Tests\TestCase
     /**
      * Setup test.
      */
-    public function setUp() {
+    public function setUp()
+    {
         global $wpdb;
 
         parent::setUp();
@@ -28,7 +29,8 @@ class PluginTest extends \BlueChip\Security\Tests\TestCase
     /**
      * Test class instances.
      */
-    function test_instances() {
+    public function test_instances()
+    {
         $this->assertInstanceOf(Plugin::class, $this->bc_security);
         $this->assertInstanceOf(\wpdb::class, $this->readAttribute($this->bc_security, 'wpdb'));
     }
