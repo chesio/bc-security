@@ -419,9 +419,10 @@ class Watchman implements Modules\Loadable, Modules\Initializable, Modules\Activ
             '',
         ];
 
-        foreach ($plugins as $plugin_data) {
+        foreach ($plugins as $plugin_basename => $plugin_data) {
             $message[] = sprintf(
-                __("%s (version %s): failed to fetch checksums from %s", 'bc-security'),
+                __("%s (%s, version %s): failed to fetch checksums from %s", 'bc-security'),
+                $plugin_basename,
                 $plugin_data['Name'],
                 $plugin_data['Version'],
                 $plugin_data['Checksums URL']
