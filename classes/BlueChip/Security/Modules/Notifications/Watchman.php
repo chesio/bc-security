@@ -55,6 +55,23 @@ class Watchman implements Modules\Loadable, Modules\Initializable, Modules\Activ
     }
 
 
+    /**
+     * Format remote IP address - append result of reverse DNS lookup, if successful.
+     *
+     * @param string $remote_address
+     * @return string
+     */
+    private static function formatRemoteAddress(string $remote_address): string
+    {
+        $remote_hostname = gethostbyaddr($remote_address);
+        if (empty($remote_hostname) || ($remote_hostname === $remote_address)) {
+            return $remote_address;
+        } else {
+            return "{$remote_address} ({$remote_hostname})";
+        }
+    }
+
+
     public function load()
     {
         // Bail early, if no recipients are set.
@@ -294,7 +311,7 @@ class Watchman implements Modules\Loadable, Modules\Initializable, Modules\Activ
             $subject = __('Known IP locked out', 'bc-security');
             $message = sprintf(
                 __('A known IP address %1$s has been locked out for %2$d seconds after someone tried to log in with username "%3$s".', 'bc-security'),
-                $remote_address,
+                self::formatRemoteAddress($remote_address),
                 $duration,
                 $username
             );
@@ -317,7 +334,7 @@ class Watchman implements Modules\Loadable, Modules\Initializable, Modules\Activ
             $message = sprintf(
                 __('User "%1$s" with administrator privileges just logged in to your WordPress site from IP address %2$s.', 'bc-security'),
                 $username,
-                $this->remote_address
+                self::formatRemoteAddress($this->remote_address)
             );
 
             $this->notify($subject, $message);
