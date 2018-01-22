@@ -3,13 +3,13 @@
 Helps keeping WordPress websites secure.
 
 ## Requirements
-* [PHP](https://secure.php.net/) 5.6 or newer
+* [PHP](https://secure.php.net/) 7.0 or newer
 * [WordPress](https://wordpress.org/) 4.7 or newer
 
 ## Limitations
 
 * BC Security has not been tested on WordPress multisite installation.
-* BC Security is primarily being developed for Apache webserver environment.
+* BC Security is primarily being developed for Apache webserver and Unix-like environments.
 
 ## Features
 
@@ -24,7 +24,7 @@ BC Security features a checklist of common security practices. In the moment, th
 1. Are there no common usernames like admin or administrator on the system?
 1. Are user passwords hashed with some non-default hashing algorithm?
 
-### WordPress Hardening
+### WordPress hardening
 
 BC Security allows you to:
 1. Disable pingbacks
@@ -33,18 +33,20 @@ BC Security allows you to:
 
 ### Checksums verification
 
-BC Security once a day performs integrity check of WordPress core files. This check is done in two phases:
+BC Security once a day performs integrity check of WordPress core and plugin files. Any file that is evaluated as modified or unknown is [logged](#events-logging) and (optionally) reported via [email notification](#notifications).
+
+WordPress core files verification is done in two phases:
 1. Official md5 checksums from WordPress.org are used to determine if any of core files have been modified.
 1. All files in root directory, `wp-admin` directory (including subdirectories) and `wp-includes` directory (including subdirectories) are checked against official checksums list to determine if the file is official (known) file.
 
-Any file that is evaluated as modified or unknown is [logged](#events-logging) and (optionally) reported via [email notification](#notifications).
+Plugin files verification works only for plugins hosted at [WordPress Plugins](https://wordpress.org/plugins/) directory. The verification process is akin to the core files verification, although the API is slightly different (see [related Trac ticket](https://meta.trac.wordpress.org/ticket/3192) and [specification](https://docs.google.com/document/d/14-SMpaPtDGEBm8hE9ZwnA-vik5OvECDig32KqX8uFlg/edit)).
 
-### Login Security
+### Login security
 
 1. BC Security allows you to limit number of login attempts from single IP address. Implementation of this feature is heavily inspired by popular [Limit Login Attempts](https://wordpress.org/plugins/limit-login-attempts/) plugin with an extra feature of immediate blocking of specific usernames (like _admin_ or _administrator_).
 1. BC Security offers an option to only display generic error message as a result of failed login attempt when wrong username, email or password is provided.
 
-### IP Blacklist
+### IP blacklist
 
 BC Security maintains a list of IP addresses with limited access to the website. This list is automatically populated by [Login Security](#login-security) module, but manual addition of IP addresses is also possible.
 
@@ -78,9 +80,9 @@ Logs are stored in database and can be viewed on backend. Logs are automatically
 
 ## Credits
 
-1. [Login Security](#login-security) feature has been inspired by [Limit Login Attempts](https://wordpress.org/plugins/limit-login-attempts/) plugin by Johan Eenfeldt.
+1. [Login Security](#login-security) feature is inspired by [Limit Login Attempts](https://wordpress.org/plugins/limit-login-attempts/) plugin by Johan Eenfeldt.
 1. Part of [psr/log](https://packagist.org/packages/psr/log) package codebase is shipped with the plugin.
-1. [Checksums verification](#checksums-verification) feature is almost verbatim taken from [Checksum Verifier](https://github.com/pluginkollektiv/checksum-verifier) plugin by Sergej Müller.
+1. [Checksums verification](#checksums-verification) feature is heavily inspired by [Checksum Verifier](https://github.com/pluginkollektiv/checksum-verifier) plugin by Sergej Müller.
 
 ## Alternatives (and why I do not use them)
 

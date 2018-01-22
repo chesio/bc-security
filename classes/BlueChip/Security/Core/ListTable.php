@@ -43,7 +43,7 @@ abstract class ListTable extends \WP_List_Table
      * @param string $per_page_option_name Option name for "per page" screen option.
      * @param array $args
      */
-    public function __construct($url, $per_page_option_name, array $args = [])
+    public function __construct(string $url, string $per_page_option_name, array $args = [])
     {
         $default_args = [
             'singular' => __('Record', 'bc-security'),
@@ -77,7 +77,7 @@ abstract class ListTable extends \WP_List_Table
      * @param string $single The text to be used in notice if action affected single item.
      * @param string $plural The text to be used in notice if action affected multiple items.
      */
-    protected function displayNotice($action, $single, $plural)
+    protected function displayNotice(string $action, string $single, string $plural)
     {
         // Have any items been affected by given action?
         $result = filter_input(INPUT_GET, $action, FILTER_VALIDATE_INT);
@@ -86,7 +86,7 @@ abstract class ListTable extends \WP_List_Table
                 _n($single, $plural, $result, 'bc-security'),
                 AdminNotices::SUCCESS
             );
-            add_filter('removable_query_args', function ($removable_query_args) use ($action) {
+            add_filter('removable_query_args', function (array $removable_query_args) use ($action): array {
                 $removable_query_args[] = $action;
                 return $removable_query_args;
             });
@@ -103,7 +103,7 @@ abstract class ListTable extends \WP_List_Table
      * @param string $label
      * @return string
      */
-    protected function renderRowAction($action, $id, $class, $label)
+    protected function renderRowAction(string $action, int $id, string $class, string $label): string
     {
         return sprintf(
             '<span class="' . $class . '"><a href="%s">%s</a></span>',

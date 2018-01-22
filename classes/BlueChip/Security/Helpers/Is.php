@@ -15,8 +15,11 @@ class Is
      * @param \WP_User $user
      * @return bool
      */
-    public static function admin(\WP_User $user)
+    public static function admin(\WP_User $user): bool
     {
-        return is_multisite() ? user_can($user, 'manage_network') : user_can($user, 'manage_options');
+        return apply_filters(
+            Hooks::IS_ADMIN,
+            is_multisite() ? user_can($user, 'manage_network') : user_can($user, 'manage_options')
+        );
     }
 }

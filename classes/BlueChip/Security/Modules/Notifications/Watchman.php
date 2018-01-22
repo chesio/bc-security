@@ -40,7 +40,7 @@ class Watchman implements Modules\Loadable, Modules\Initializable, Modules\Activ
      * @param string $remote_address Remote IP address.
      * @param \BlueChip\Security\Modules\Log\Logger $logger
      */
-    public function __construct(Settings $settings, $remote_address, Logger $logger)
+    public function __construct(Settings $settings, string $remote_address, Logger $logger)
     {
         $this->remote_address = $remote_address;
         $this->settings = $settings;
@@ -90,9 +90,13 @@ class Watchman implements Modules\Loadable, Modules\Initializable, Modules\Activ
         if ($this->settings[Settings::KNOWN_IP_LOCKOUT]) {
             add_action(Login\Hooks::LOCKOUT_EVENT, [$this, 'watchLockoutEvents'], 10, 3);
         }
-        if ($this->settings[Settings::CHECKSUMS_VERIFICATION_ERROR]) {
-            add_action(Checksums\Hooks::CHECKSUMS_RETRIEVAL_FAILED, [$this, 'watchChecksumsRetrievalFailed'], 10, 1);
-            add_action(Checksums\Hooks::CHECKSUMS_VERIFICATION_ALERT, [$this, 'watchChecksumsVerificationAlert'], 10, 2);
+        if ($this->settings[Settings::CORE_CHECKSUMS_VERIFICATION_ERROR]) {
+            add_action(Checksums\Hooks::CORE_CHECKSUMS_RETRIEVAL_FAILED, [$this, 'watchCoreChecksumsRetrievalFailed'], 10, 1);
+            add_action(Checksums\Hooks::CORE_CHECKSUMS_VERIFICATION_ALERT, [$this, 'watchCoreChecksumsVerificationAlert'], 10, 2);
+        }
+        if ($this->settings[Settings::PLUGIN_CHECKSUMS_VERIFICATION_ERROR]) {
+            add_action(Checksums\Hooks::PLUGIN_CHECKSUMS_RETRIEVAL_FAILED, [$this, 'watchPluginChecksumsRetrievalFailed'], 10, 1);
+            add_action(Checksums\Hooks::PLUGIN_CHECKSUMS_VERIFICATION_ALERT, [$this, 'watchPluginChecksumsVerificationAlert'], 10, 1);
         }
     }
 
@@ -284,7 +288,7 @@ class Watchman implements Modules\Loadable, Modules\Initializable, Modules\Activ
      * @param string $username
      * @param int $duration
      */
-    public function watchLockoutEvents($remote_address, $username, $duration)
+    public function watchLockoutEvents(string $remote_address, string $username, int $duration)
     {
         if (in_array($remote_address, $this->logger->getKnownIps(), true)) {
             $subject = __('Known IP locked out', 'bc-security');
@@ -306,7 +310,7 @@ class Watchman implements Modules\Loadable, Modules\Initializable, Modules\Activ
      * @param string $username
      * @param \WP_User $user
      */
-    public function watchWpLogin($username, $user)
+    public function watchWpLogin(string $username, \WP_User $user)
     {
         if (Is::admin($user)) {
             $subject = __('Admin user login', 'bc-security');
@@ -322,15 +326,17 @@ class Watchman implements Modules\Loadable, Modules\Initializable, Modules\Activ
 
 
     /**
-     * Send notification if checksums verification found files with non-matching checksum.
+     * Send notification if checksums verification found modified or unknown files in WordPress directories.
      *
      * @param array $modified_files Files for which official checksums do not match.
      * @param array $unknown_files Files that are present on file system but not in official checksums.
      */
-    public function watchChecksumsVerificationAlert(array $modified_files, array $unknown_files)
+    public function watchCoreChecksumsVerificationAlert(array $modified_files, array $unknown_files)
     {
         $subject = __('Checksums verification alert', 'bc-security');
-        $message = [];
+        $message = [
+            __('There have been modified or unknown files found in directories where WordPress is installed.'),
+        ];
 
         if (!empty($modified_files)) {
             $message[] = __('Official checksums do not match for the following files:', 'bc-security');
@@ -351,17 +357,77 @@ class Watchman implements Modules\Loadable, Modules\Initializable, Modules\Activ
 
 
     /**
-     * Send notification if checksums retrieval from WordPress.org API failed.
+     * Send notification if checksums verification found modified or unknown files in plugin directories.
+     *
+     * @param array $plugins Plugins for which checksums verification triggered an alert.
+     */
+    public function watchPluginChecksumsVerificationAlert(array $plugins)
+    {
+        $subject = __('Plugin checksums verification alert', 'bc-security');
+        $message = [
+            __('Checksums verification for the following plugins triggered an alert:', 'bc-security'),
+        ];
+
+        foreach ($plugins as $plugin_basename => $plugin_data) {
+
+            $message[] = '';
+            $message[] = sprintf("%s (%s)", $plugin_data['Name'], $plugin_basename);
+
+            if (!empty($plugin_data['ModifiedFiles'])) {
+                $message[] = __('Checksums do not match for the following files:', 'bc-security');
+                $message = array_merge($message, $plugin_data['ModifiedFiles']);
+            }
+
+            if (!empty($plugin_data['UnknownFiles'])) {
+                $message[] = __('Following files are present on the file system, but not in checksums:', 'bc-security');
+                $message = array_merge($message, $plugin_data['UnknownFiles']);
+            }
+        }
+
+        // Append list of matched files to the message and send an email.
+        $this->notify($subject, $message);
+    }
+
+
+    /**
+     * Send notification if checksums retrieval via WordPress.org API failed.
      *
      * @param string $url
      */
-    public function watchChecksumsRetrievalFailed($url)
+    public function watchCoreChecksumsRetrievalFailed(string $url)
     {
         $subject = __('Checksums verification failed', 'bc-security');
         $message = sprintf(
-            __('Checksums verification has been aborted, because official checksums could not be read from %s.', 'bc-security'),
+            __('Checksums verification for WordPress core has been aborted, because checksums could not be fetched from %s.', 'bc-security'),
             $url
         );
+
+        $this->notify($subject, $message);
+    }
+
+
+    /**
+     * Send notifications if checksums retrieval for plugins via WordPress.org failed.
+     *
+     * @param array $plugins Plugins for which checksums could not be retrieved.
+     */
+    public function watchPluginChecksumsRetrievalFailed(array $plugins)
+    {
+        $subject = __('Plugin checksums verification failed', 'bc-security');
+        $message = [
+            __('Checksums verification for the following plugins has been aborted, because checksums could not be fetched from remote server:', 'bc-security'),
+            '',
+        ];
+
+        foreach ($plugins as $plugin_basename => $plugin_data) {
+            $message[] = sprintf(
+                __("%s (%s, version %s): failed to fetch checksums from %s", 'bc-security'),
+                $plugin_basename,
+                $plugin_data['Name'],
+                $plugin_data['Version'],
+                $plugin_data['Checksums URL']
+            );
+        }
 
         $this->notify($subject, $message);
     }
@@ -374,7 +440,7 @@ class Watchman implements Modules\Loadable, Modules\Initializable, Modules\Activ
      * @param array|string $message
      * @return null|false|true Null, if there are no recipients configured. True, if email has been sent, false otherwise.
      */
-    private function notify($subject, $message)
+    private function notify(string $subject, $message)
     {
         return empty($this->recipients) ? null : Mailman::send($this->recipients, $subject, $message);
     }

@@ -24,7 +24,7 @@ abstract class Mailman
      * @param array|string $message Body of notification.
      * @return bool True, if notifications was sent successfully, false otherwise.
      */
-    public static function send($to, $subject, $message)
+    public static function send($to, string $subject, $message): bool
     {
         return wp_mail(
             $to,
@@ -40,7 +40,7 @@ abstract class Mailman
      * @param array $message Message body as list of lines.
      * @return string
      */
-    private static function formatMessage(array $message)
+    private static function formatMessage(array $message): string
     {
         $boilerplate_intro = [
             sprintf(
@@ -70,7 +70,7 @@ abstract class Mailman
      * @param string $subject
      * @return string
      */
-    private static function formatSubject($subject)
+    private static function formatSubject(string $subject): string
     {
         return sprintf('[%s | %s] %s', get_option('blogname'), __('BC Security Alert', 'bc-security'), $subject);
     }

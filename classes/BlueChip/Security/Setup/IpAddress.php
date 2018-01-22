@@ -26,7 +26,7 @@ abstract class IpAddress
      * @param bool $explain Return array with type as key and explanation as value.
      * @return array Array of known (valid) connection types.
      */
-    public static function enlist($explain = false)
+    public static function enlist(bool $explain = false): array
     {
         $list = [
             self::REMOTE_ADDR => __('Direct connection to the Internet', 'bc-security'),
@@ -44,7 +44,7 @@ abstract class IpAddress
      * @param string $type
      * @return string Remote IP or empty string, if remote IP could not been determined.
      */
-    public static function get($type)
+    public static function get(string $type): string
     {
         if (!in_array($type, self::enlist(), true)) {
             // Invalid type, fall back to direct address.
@@ -76,7 +76,7 @@ abstract class IpAddress
      * @param string $type
      * @return string
      */
-    public static function getRaw($type)
+    public static function getRaw(string $type): string
     {
         return (in_array($type, self::enlist(), true) && isset($_SERVER[$type])) ? $_SERVER[$type] : '';
     }
@@ -87,7 +87,7 @@ abstract class IpAddress
      *
      * @return string IP address of webserver or empty string if none provided (typically when running via PHP-CLI).
      */
-    public static function getServer()
+    public static function getServer(): string
     {
         return isset($_SERVER['SERVER_ADDR']) ? self::getFirst($_SERVER['SERVER_ADDR']) : '';
     }
@@ -99,7 +99,7 @@ abstract class IpAddress
      * @param string $ip_addresses
      * @return string
      */
-    private static function getFirst($ip_addresses)
+    private static function getFirst(string $ip_addresses): string
     {
         // Note: explode always return an array with at least one item.
         $ips = array_map('trim', explode(',', $ip_addresses));

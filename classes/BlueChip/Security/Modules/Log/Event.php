@@ -17,7 +17,8 @@ class Event
     const LOGIN_LOCKOUT = 'login_lockdown';
     const LOGIN_SUCCESSFUL = 'login_success';
     const QUERY_404 = 'query_404';
-    const CHECKSUMS_VERIFICATION_ALERT = 'checksums_verification_alert';
+    const CORE_CHECKSUMS_VERIFICATION_ALERT = 'core_checksums_verification_alert';
+    const PLUGIN_CHECKSUMS_VERIFICATION_ALERT = 'plugin_checksums_verification_alert';
 
 
     /**
@@ -55,7 +56,7 @@ class Event
      * @param string $message
      * @param array $context
      */
-    private function __construct($id, $name, $level, $message, $context)
+    private function __construct(string $id, string $name, string $level, string $message, array $context)
     {
         $this->id = $id;
         $this->name = $name;
@@ -65,37 +66,37 @@ class Event
     }
 
 
-    public function getId()
+    public function getId(): string
     {
         return $this->id;
     }
 
 
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
 
 
-    public function getLevel()
+    public function getLevel(): string
     {
         return $this->level;
     }
 
 
-    public function getMessage()
+    public function getMessage(): string
     {
         return $this->message;
     }
 
 
-    public function getContext()
+    public function getContext(): array
     {
         return $this->context;
     }
 
 
-    public function hasContext($key)
+    public function hasContext(string $key): bool
     {
         return isset($this->context[$key]);
     }
@@ -105,9 +106,9 @@ class Event
      * Create event object for given $id.
      *
      * @param string $id Valid event ID.
-     * @return \BlueChip\Security\Modules\Log\Event
+     * @return \BlueChip\Security\Modules\Log\Event|null
      */
-    public static function create($id)
+    public static function create(string $id)
     {
         switch ($id) {
             case self::AUTH_BAD_COOKIE:
@@ -150,13 +151,21 @@ class Event
                     __('Main query returned no results (404 page) for request {request}.', 'bc-security'),
                     ['request' => __('Request URI', 'bc-security')]
                 );
-            case self::CHECKSUMS_VERIFICATION_ALERT:
+            case self::CORE_CHECKSUMS_VERIFICATION_ALERT:
                 return new self(
                     $id,
-                    __('Checksums verification alert', 'bc-security'),
+                    __('Core checksums verification alert', 'bc-security'),
                     LogLevel::WARNING,
                     __('Following files have been modified: {modified_files}. Following files are unknown: {unknown_files}.', 'bc-security'),
                     ['modified_files' => __('Modified files', 'bc-security'), 'unknown_files' => __('Unknown files', 'bc-security')]
+                );
+            case self::PLUGIN_CHECKSUMS_VERIFICATION_ALERT:
+                return new self(
+                    $id,
+                    __('Plugin checksums verification alert', 'bc-security'),
+                    LogLevel::WARNING,
+                    __('Plugin: {plugin_name} (ver. {plugin_version}). Following files have been modified: {modified_files}. Following files are unknown: {unknown_files}.', 'bc-security'),
+                    ['plugin_name' => __('Plugin name', 'bc-security'), 'plugin_version' => __('Plugin version', 'bc-security'), 'modified_files' => __('Modified files', 'bc-security'), 'unknown_files' => __('Unknown files', 'bc-security')]
                 );
             default:
                 return null;
@@ -169,7 +178,7 @@ class Event
      *
      * @return array
      */
-    public static function enlist()
+    public static function enlist(): array
     {
         return [
             self::AUTH_BAD_COOKIE,
@@ -177,7 +186,8 @@ class Event
             self::LOGIN_SUCCESSFUL,
             self::LOGIN_LOCKOUT,
             self::QUERY_404,
-            self::CHECKSUMS_VERIFICATION_ALERT,
+            self::CORE_CHECKSUMS_VERIFICATION_ALERT,
+            self::PLUGIN_CHECKSUMS_VERIFICATION_ALERT,
         ];
     }
 }

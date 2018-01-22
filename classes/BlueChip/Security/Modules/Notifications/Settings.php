@@ -25,8 +25,11 @@ class Settings extends \BlueChip\Security\Core\Settings
     /** bool: Notify when there is a theme update available [Yes] */
     const THEME_UPDATE_AVAILABLE = 'theme_update_available';
 
-    /** bool: Notify when there is any error during checksums verification [Yes] */
-    const CHECKSUMS_VERIFICATION_ERROR = 'checksums_verification_error';
+    /** bool: Notify when there is any error during core checksums verification [Yes] */
+    const CORE_CHECKSUMS_VERIFICATION_ERROR = 'core_checksums_verification_error';
+
+    /** bool: Notify when there is any error during plugin checksums verification [Yes] */
+    const PLUGIN_CHECKSUMS_VERIFICATION_ERROR = 'plugin_checksums_verification_error';
 
     /** bool: Notify when BC Security is deactivated [Yes] */
     const PLUGIN_DEACTIVATED = 'plugin_deactivated';
@@ -44,7 +47,7 @@ class Settings extends \BlueChip\Security\Core\Settings
      * @param array $s
      * @return array
      */
-    public function sanitize(array $s)
+    public function sanitize(array $s): array
     {
         return [
             self::ADMIN_USER_LOGIN
@@ -57,8 +60,10 @@ class Settings extends \BlueChip\Security\Core\Settings
                 => isset($s[self::PLUGIN_UPDATE_AVAILABLE]) ? boolval($s[self::PLUGIN_UPDATE_AVAILABLE]) : true,
             self::THEME_UPDATE_AVAILABLE
                 => isset($s[self::THEME_UPDATE_AVAILABLE]) ? boolval($s[self::THEME_UPDATE_AVAILABLE]) : true,
-            self::CHECKSUMS_VERIFICATION_ERROR
-                => isset($s[self::CHECKSUMS_VERIFICATION_ERROR]) ? boolval($s[self::CHECKSUMS_VERIFICATION_ERROR]) : true,
+            self::CORE_CHECKSUMS_VERIFICATION_ERROR
+                => isset($s[self::CORE_CHECKSUMS_VERIFICATION_ERROR]) ? boolval($s[self::CORE_CHECKSUMS_VERIFICATION_ERROR]) : true,
+            self::PLUGIN_CHECKSUMS_VERIFICATION_ERROR
+                => isset($s[self::PLUGIN_CHECKSUMS_VERIFICATION_ERROR]) ? boolval($s[self::PLUGIN_CHECKSUMS_VERIFICATION_ERROR]) : true,
             self::PLUGIN_DEACTIVATED
                 => isset($s[self::PLUGIN_DEACTIVATED]) ? boolval($s[self::PLUGIN_DEACTIVATED]) : true,
             self::NOTIFY_SITE_ADMIN

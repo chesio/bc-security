@@ -26,7 +26,7 @@ class Monitor implements \BlueChip\Security\Modules\Initializable
      * @param string $remote_address Remote IP address.
      * @param string $server_address Server IP address.
      */
-    public function __construct($remote_address, $server_address)
+    public function __construct(string $remote_address, string $server_address)
     {
         $this->remote_address = $remote_address;
         $this->server_address = $server_address;
@@ -51,8 +51,9 @@ class Monitor implements \BlueChip\Security\Modules\Initializable
         // Log the following BC Security events:
         // - lockout event
         add_action(Login\Hooks::LOCKOUT_EVENT, [$this, 'logLockoutEvent'], 10, 3);
-        // - checksum verification alert
-        add_action(Checksums\Hooks::CHECKSUMS_VERIFICATION_ALERT, [$this, 'logChecksumsVerificationAlert'], 10, 2);
+        // - checksum verification alerts
+        add_action(Checksums\Hooks::CORE_CHECKSUMS_VERIFICATION_ALERT, [$this, 'logCoreChecksumsVerificationAlert'], 10, 2);
+        add_action(Checksums\Hooks::PLUGIN_CHECKSUMS_VERIFICATION_ALERT, [$this, 'logPluginChecksumsVerificationAlert'], 10, 1);
     }
 
 
@@ -92,7 +93,7 @@ class Monitor implements \BlueChip\Security\Modules\Initializable
      *
      * @param string $username
      */
-    public function logFailedLogin($username)
+    public function logFailedLogin(string $username)
     {
         do_action(Log\Action::EVENT, Log\Event::LOGIN_FAILURE, ['username' => $username]);
     }
@@ -103,7 +104,7 @@ class Monitor implements \BlueChip\Security\Modules\Initializable
      *
      * @param string $username
      */
-    public function logSuccessfulLogin($username)
+    public function logSuccessfulLogin(string $username)
     {
         do_action(Log\Action::EVENT, Log\Event::LOGIN_SUCCESSFUL, ['username' => $username]);
     }
@@ -116,20 +117,33 @@ class Monitor implements \BlueChip\Security\Modules\Initializable
      * @param string $username
      * @param int $duration
      */
-    public function logLockoutEvent($remote_address, $username, $duration)
+    public function logLockoutEvent(string $remote_address, string $username, int $duration)
     {
         do_action(Log\Action::EVENT, Log\Event::LOGIN_LOCKOUT, ['ip_address' => $remote_address, 'duration' => $duration, 'username' => $username]);
     }
 
 
     /**
-     * Log checksums verification alert.
+     * Log checksums verification alert for core files.
      *
      * @param array $modified_files Files for which official checksums do not match.
      * @param array $unknown_files Files that are present on file system but not in official checksums.
      */
-    public function logChecksumsVerificationAlert(array $modified_files, array $unknown_files)
+    public function logCoreChecksumsVerificationAlert(array $modified_files, array $unknown_files)
     {
-        do_action(Log\Action::EVENT, Log\Event::CHECKSUMS_VERIFICATION_ALERT, ['modified_files' => $modified_files, 'unknown_files' => $unknown_files]);
+        do_action(Log\Action::EVENT, Log\Event::CORE_CHECKSUMS_VERIFICATION_ALERT, ['modified_files' => $modified_files, 'unknown_files' => $unknown_files]);
+    }
+
+
+    /**
+     * Log checksums verification alert for plugin files.
+     *
+     * @param array $plugins Plugins for which checksums verification triggered an alert.
+     */
+    public function logPluginChecksumsVerificationAlert(array $plugins)
+    {
+        foreach ($plugins as $plugin_data) {
+            do_action(Log\Action::EVENT, Log\Event::PLUGIN_CHECKSUMS_VERIFICATION_ALERT, ['plugin_name' => $plugin_data['Name'], 'plugin_version' => $plugin_data['Version'], 'modified_files' => $plugin_data['ModifiedFiles'], 'unknown_files' => $plugin_data['UnknownFiles']]);
+        }
     }
 }

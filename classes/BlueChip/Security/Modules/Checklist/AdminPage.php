@@ -99,7 +99,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
      * @param bool|null $status Check status.
      * @param array $detail Explanation for any particular status [optional].
      */
-    private function printCheckRow($name, $description, $status, array $detail = [])
+    private function printCheckRow(string $name, string $description, $status, array $detail = [])
     {
         echo '<tr>';
 

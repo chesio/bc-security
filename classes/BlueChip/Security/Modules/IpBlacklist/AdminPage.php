@@ -368,7 +368,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
      * @param array $units_in_seconds
      * @return array
      */
-    private function transformSecondsIntoFittingUnit($seconds, array $units_in_seconds)
+    private function transformSecondsIntoFittingUnit(int $seconds, array $units_in_seconds): array
     {
         foreach ($units_in_seconds as $unit_in_seconds) {
             $units = $seconds / $unit_in_seconds;

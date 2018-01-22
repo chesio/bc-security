@@ -24,7 +24,7 @@ abstract class Settings implements \ArrayAccess
     /**
      * @param string $option_name
      */
-    public function __construct($option_name)
+    public function __construct(string $option_name)
     {
         // Read settings from wp_options table and sanitize them right away.
         $this->option_name = $option_name;
@@ -38,7 +38,7 @@ abstract class Settings implements \ArrayAccess
      * @param string $name
      * @return mixed A null value is returned if $name is not a valid key.
      */
-    public function __get($name)
+    public function __get(string $name)
     {
         if (isset($this->data[$name])) {
             return $this->data[$name];
@@ -55,7 +55,7 @@ abstract class Settings implements \ArrayAccess
      * @param string $name
      * @param mixed $value
      */
-    public function __set($name, $value)
+    public function __set(string $name, $value)
     {
         if (isset($this->data[$name])) {
             $this->update($name, $value);
@@ -75,7 +75,7 @@ abstract class Settings implements \ArrayAccess
      * @param string $offset
      * @return bool
      */
-    public function offsetExists($offset)
+    public function offsetExists($offset): bool
     {
         return isset($this->data[$offset]);
     }
@@ -113,6 +113,7 @@ abstract class Settings implements \ArrayAccess
      * Reset setting under key $offset to its default value.
      *
      * @internal Implements ArrayAccess interface.
+     *
      * @param string $offset
      */
     public function offsetUnset($offset)
@@ -126,7 +127,7 @@ abstract class Settings implements \ArrayAccess
      *
      * @return string
      */
-    public function getOptionName()
+    public function getOptionName(): string
     {
         return $this->option_name;
     }
@@ -138,7 +139,7 @@ abstract class Settings implements \ArrayAccess
      * @param array $settings
      * @return array
      */
-    abstract public function sanitize(array $settings);
+    abstract public function sanitize(array $settings): array;
 
 
     /**
@@ -147,7 +148,7 @@ abstract class Settings implements \ArrayAccess
      * @param array|string $list
      * @return array
      */
-    protected function parseList($list)
+    protected function parseList($list): array
     {
         return is_array($list) ? $list : array_filter(array_map('trim', explode(PHP_EOL, $list)));
     }
@@ -160,7 +161,7 @@ abstract class Settings implements \ArrayAccess
      * @param mixed $value
      * @return bool
      */
-    protected function update($name, $value)
+    protected function update(string $name, $value): bool
     {
         if (!isset($this->data[$name])) {
             // Cannot update, invalid setting name.

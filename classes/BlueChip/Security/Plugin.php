@@ -47,7 +47,7 @@ class Plugin
      * @param string $basename Plugin basename
      * @param \wpdb $wpdb WordPress database access abstraction object
      */
-    public function __construct($basename, \wpdb $wpdb)
+    public function __construct(string $basename, \wpdb $wpdb)
     {
         $this->basename = $basename;
         $this->wpdb = $wpdb;
@@ -78,7 +78,7 @@ class Plugin
      *
      * @return array
      */
-    private function constructSettings()
+    private function constructSettings(): array
     {
         return [
             'hardening'     => new Modules\Hardening\Settings('bc-security-hardening'),
@@ -99,26 +99,28 @@ class Plugin
      * @param array $settings
      * @return array
      */
-    private function constructModules(\wpdb $wpdb, $remote_address, $server_address, array $settings)
+    private function constructModules(\wpdb $wpdb, string $remote_address, string $server_address, array $settings): array
     {
-        $logger     = new Modules\Log\Logger($wpdb, $remote_address);
-        $verifier   = new Modules\Checksums\Verifier();
-        $monitor    = new Modules\Events\Monitor($remote_address, $server_address);
-        $notifier   = new Modules\Notifications\Watchman($settings['notifications'], $remote_address, $logger);
-        $hardening  = new Modules\Hardening\Core($settings['hardening']);
-        $bl_manager = new Modules\IpBlacklist\Manager($wpdb);
-        $bl_bouncer = new Modules\IpBlacklist\Bouncer($remote_address, $bl_manager);
-        $bookkeeper = new Modules\Login\Bookkeeper($settings['login'], $wpdb);
-        $gatekeeper = new Modules\Login\Gatekeeper($settings['login'], $remote_address, $bookkeeper, $bl_manager);
+        $logger             = new Modules\Log\Logger($wpdb, $remote_address);
+        $core_verifier      = new Modules\Checksums\CoreVerifier();
+        $plugins_verifier   = new Modules\Checksums\PluginsVerifier();
+        $monitor            = new Modules\Events\Monitor($remote_address, $server_address);
+        $notifier           = new Modules\Notifications\Watchman($settings['notifications'], $remote_address, $logger);
+        $hardening          = new Modules\Hardening\Core($settings['hardening']);
+        $blacklist_manager  = new Modules\IpBlacklist\Manager($wpdb);
+        $blacklist_bouncer  = new Modules\IpBlacklist\Bouncer($remote_address, $blacklist_manager);
+        $bookkeeper         = new Modules\Login\Bookkeeper($settings['login'], $wpdb);
+        $gatekeeper         = new Modules\Login\Gatekeeper($settings['login'], $remote_address, $bookkeeper, $blacklist_manager);
 
         return [
             'logger'            => $logger,
-            'checksum-verifier' => $verifier,
+            'core-verifier'     => $core_verifier,
+            'plugins-verifier'  => $plugins_verifier,
             'events-monitor'    => $monitor,
             'notifier'          => $notifier,
             'hardening-core'    => $hardening,
-            'blacklist-manager' => $bl_manager,
-            'blacklist-bouncer' => $bl_bouncer,
+            'blacklist-manager' => $blacklist_manager,
+            'blacklist-bouncer' => $blacklist_bouncer,
             'login-bookkeeper'  => $bookkeeper,
             'login-gatekeeper'  => $gatekeeper,
         ];
@@ -132,34 +134,40 @@ class Plugin
      * @param array $modules
      * @return array
      */
-    private function constructCronJobs(array $settings, array $modules)
+    private function constructCronJobs(array $settings, array $modules): array
     {
         return [
             'blacklist-cleaner' => new Modules\Cron\Job(
-                '01:02:03',
+                Modules\Cron\Job::RUN_AT_NIGHT,
                 Modules\Cron\Recurrence::DAILY,
                 'bc-security/ip-blacklist-clean-up',
                 [$modules['blacklist-manager'], 'prune']
             ),
             'log-cleaner-by-age' => new Modules\Cron\Job(
-                '02:03:04',
+                Modules\Cron\Job::RUN_AT_NIGHT,
                 Modules\Cron\Recurrence::DAILY,
                 'bc-security/logs-clean-up-by-age',
                 [$modules['logger'], 'pruneByAge'],
                 [$settings['log']->getMaxAge()]
             ),
             'log-cleaner-by-size' => new Modules\Cron\Job(
-                '03:04:05',
+                Modules\Cron\Job::RUN_AT_NIGHT,
                 Modules\Cron\Recurrence::DAILY,
                 'bc-security/logs-clean-up-by-size',
                 [$modules['logger'], 'pruneBySize'],
                 [$settings['log']->getMaxSize()]
             ),
-            'checksum-verifier' => new Modules\Cron\Job(
-                '04:05:06',
+            'core-checksums-verifier' => new Modules\Cron\Job(
+                Modules\Cron\Job::RUN_AT_NIGHT,
                 Modules\Cron\Recurrence::DAILY,
-                'bc-security/checksum-verifier',
-                [$modules['checksum-verifier'], 'runCheck']
+                'bc-security/core-checksums-verifier',
+                [$modules['core-verifier'], 'runCheck']
+            ),
+            'plugin-checksums-verifier' => new Modules\Cron\Job(
+                Modules\Cron\Job::RUN_AT_NIGHT,
+                Modules\Cron\Recurrence::DAILY,
+                'bc-security/plugin-checksums-verifier',
+                [$modules['plugins-verifier'], 'runCheck']
             ),
         ];
     }

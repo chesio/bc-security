@@ -84,7 +84,7 @@ trait SettingsPage
      * of SETTINGS_* constants as $page.
      * @param string $page
      */
-    public function setSettingsPage($page)
+    public function setSettingsPage(string $page)
     {
         $this->recent_page = $page;
     }
@@ -101,7 +101,7 @@ trait SettingsPage
      * @param string $title
      * @param callable $callback
      */
-    public function addSettingsSection($section, $title, $callback = null)
+    public function addSettingsSection(string $section, string $title, $callback = null)
     {
         if (!is_string($this->recent_page)) {
             _doing_it_wrong(__METHOD__, 'No recent page set yet!', '0.1.0');
@@ -125,7 +125,7 @@ trait SettingsPage
      * @param callable $callback Callback that produces form input for the field
      * @param array $args [Optional] Any extra arguments for $callback function
      */
-    public function addSettingsField($key, $title, callable $callback, array $args = [])
+    public function addSettingsField(string $key, string $title, callable $callback, array $args = [])
     {
         if (!is_string($this->recent_page)) {
             _doing_it_wrong(__METHOD__, 'No recent page set yet!', '0.1.0');

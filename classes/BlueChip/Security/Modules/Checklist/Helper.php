@@ -79,7 +79,7 @@ abstract class Helper
      * @param string $body Response body to check [optional].
      * @return null|bool
      */
-    public static function isAccessToUrlForbidden($url, $body = null)
+    public static function isAccessToUrlForbidden(string $url, $body = null)
     {
         // Try to get provided URL. Use HEAD request for simplicity, if response body is of no interest.
         $response = is_string($body) ? wp_remote_get($url) : wp_remote_head($url);

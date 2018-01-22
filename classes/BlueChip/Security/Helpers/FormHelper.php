@@ -125,7 +125,7 @@ abstract class FormHelper
      * @param array $properties
      * @return string
      */
-    protected static function renderFieldProperties(array $properties)
+    protected static function renderFieldProperties(array $properties): string
     {
         $filtered = array_filter(
             $properties,
@@ -155,7 +155,7 @@ abstract class FormHelper
      * @param array $args
      * @param bool $inline
      */
-    protected static function printAppendix(array $args, $inline)
+    protected static function printAppendix(array $args, bool $inline)
     {
         if (isset($args['description'])) {
             echo sprintf(

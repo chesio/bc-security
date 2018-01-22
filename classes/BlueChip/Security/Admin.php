@@ -33,7 +33,7 @@ class Admin
      * @param string $plugin_basename
      * @return self
      */
-    public function init($plugin_basename)
+    public function init(string $plugin_basename): self
     {
         add_action('admin_menu', [$this, 'makeAdminMenu']);
         add_action('admin_init', [$this, 'initAdminPages']);
@@ -48,7 +48,7 @@ class Admin
      * @param \BlueChip\Security\Core\Admin\AbstractPage $page
      * @return self
      */
-    public function addPage(Core\Admin\AbstractPage $page)
+    public function addPage(Core\Admin\AbstractPage $page): self
     {
         $this->pages[$page->getSlug()] = $page;
         return $this;
@@ -109,7 +109,7 @@ class Admin
      * @param array $links
      * @return array
      */
-    public function filterActionLinks(array $links)
+    public function filterActionLinks(array $links): array
     {
         if (current_user_can(self::CAPABILITY) && isset($this->pages['bc-security-setup'])) {
             $links[] = sprintf(
@@ -128,7 +128,7 @@ class Admin
      * @param \BlueChip\Security\Core\Admin\AbstractPage $page
      * @return string
      */
-    private function renderCounter(Core\Admin\AbstractPage $page)
+    private function renderCounter(Core\Admin\AbstractPage $page): string
     {
         // Counter is optional.
         return method_exists($page, 'getCount') && !empty($count = $page->getCount())

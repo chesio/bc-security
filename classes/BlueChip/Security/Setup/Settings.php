@@ -20,7 +20,7 @@ class Settings extends \BlueChip\Security\Core\Settings
      * @param array $s
      * @return array
      */
-    public function sanitize(array $s)
+    public function sanitize(array $s): array
     {
         return [
             self::CONNECTION_TYPE

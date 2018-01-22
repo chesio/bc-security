@@ -16,7 +16,7 @@ class Core
     /**
      * @param \BlueChip\Security\Setup\Settings $settings
      */
-    public function __construct($settings)
+    public function __construct(Settings $settings)
     {
         $this->connection_type = $settings[Settings::CONNECTION_TYPE];
     }
@@ -27,7 +27,7 @@ class Core
      *
      * @return string
      */
-    public function getRemoteAddress()
+    public function getRemoteAddress(): string
     {
         return IpAddress::get($this->connection_type);
     }
@@ -38,7 +38,7 @@ class Core
      *
      * @return string
      */
-    public function getServerAddress()
+    public function getServerAddress(): string
     {
         return IpAddress::getServer();
     }

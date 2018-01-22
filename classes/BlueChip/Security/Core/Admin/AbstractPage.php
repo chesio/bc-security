@@ -35,7 +35,7 @@ abstract class AbstractPage
     /**
      * @return string Menu title of page.
      */
-    public function getMenuTitle()
+    public function getMenuTitle(): string
     {
         return $this->menu_title;
     }
@@ -44,7 +44,7 @@ abstract class AbstractPage
     /**
      * @return string Browser title of page.
      */
-    public function getPageTitle()
+    public function getPageTitle(): string
     {
         return $this->page_title;
     }
@@ -53,7 +53,7 @@ abstract class AbstractPage
     /**
      * @return string Page slug.
      */
-    public function getSlug()
+    public function getSlug(): string
     {
         return static::SLUG;
     }
@@ -62,7 +62,7 @@ abstract class AbstractPage
     /**
      * @return string URL of admin page.
      */
-    public function getUrl()
+    public function getUrl(): string
     {
         return static::getPageUrl();
     }
@@ -71,7 +71,7 @@ abstract class AbstractPage
     /**
      * @return string URL of admin page.
      */
-    public static function getPageUrl()
+    public static function getPageUrl(): string
     {
         // Why static and not self? See: http://php.net/manual/en/language.oop5.late-static-bindings.php
         return add_query_arg('page', static::SLUG, admin_url('admin.php'));
@@ -85,7 +85,7 @@ abstract class AbstractPage
      *
      * @param string $page_hook
      */
-    public function setPageHook($page_hook)
+    public function setPageHook(string $page_hook)
     {
         add_action('load-' . $page_hook, [$this, 'loadPage']);
     }
