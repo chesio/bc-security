@@ -122,7 +122,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
     private function printPhpFileEditationStatus()
     {
         $this->printCheckRow(
-            __('PHP Files Editation Disabled', 'bc-security'),
+            __('PHP files editation disabled', 'bc-security'),
             sprintf(__('It is generally recommended to <a href="%s">disable editation of PHP files</a>.', 'bc-security'), 'https://codex.wordpress.org/Hardening_WordPress#Disable_File_Editing'),
             defined('DISALLOW_FILE_EDIT') && DISALLOW_FILE_EDIT
         );
@@ -135,7 +135,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
     private function printDirectoryListingDisabled()
     {
         $this->printCheckRow(
-            __('Directory Listing Disabled', 'bc-security'),
+            __('Directory listing disabled', 'bc-security'),
             sprintf(__('A common security practice is to disable <a href="%s">directory listings</a>.', 'bc-security'), 'https://wiki.apache.org/httpd/DirectoryListings'),
             Helper::isDirectoryListingDisabled(),
             [
@@ -153,7 +153,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
     private function printPhpFileBlockedInUploadsDir()
     {
         $this->printCheckRow(
-            __('PHP Files Forbidden', 'bc-security'),
+            __('No access to PHP files in uploads directory', 'bc-security'),
             sprintf(__('Vulnerable plugins may allow upload of arbitrary files into uploads directory. <a href="%s">Disabling access to PHP files</a> within uploads directory may help prevent successful exploitation of such vulnerabilities.', 'bc-security'), 'https://gist.github.com/chesio/8f83224840eccc1e80a17fc29babadf2'),
             Helper::isAccessToPhpFilesInUploadsDirForbidden(),
             [
@@ -220,7 +220,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
         });
 
         $this->printCheckRow(
-            __('No Obvious Usernames', 'bc-security'),
+            __('No obvious usernames exist', 'bc-security'),
             sprintf(__('Usernames like "admin" and "administrator" are often used in brute force attacks and <a href="%s">should be avoided</a>.', 'bc-security'), 'https://codex.wordpress.org/Hardening_WordPress#Security_through_obscurity'),
             empty($existing),
             [
@@ -247,7 +247,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
         ));
 
         $this->printCheckRow(
-            __('No Default MD5 Password Hashes', 'bc-security'),
+            __('No default MD5 password hashes', 'bc-security'),
             sprintf(__('WordPress by default uses an MD5 based password hashing scheme that is too cheap and fast to generate cryptographically secure hashes. For modern PHP versions, there are <a href="%s">more secure alternatives</a> available.', 'bc-security'), 'https://github.com/roots/wp-password-bcrypt'),
             ($result === false) ? null : empty($result),
             [
