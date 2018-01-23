@@ -5,12 +5,10 @@
 
 namespace BlueChip\Security\Modules\Cron;
 
-use \BlueChip\Security\Modules;
-
 /**
  * Simple wrapper for cron job handling
  */
-class Job implements Modules\Activable, Modules\Initializable
+class Job
 {
     /**
      * @var string Indicate that cron job should be scheduled at random time between 00:00:00 and 05:59:59 local time.
@@ -39,6 +37,11 @@ class Job implements Modules\Activable, Modules\Initializable
     private $hook;
 
     /**
+     * @var \BlueChip\Security\Modules\Cron\Settings
+     */
+    private $settings;
+
+    /**
      * @var string How often the cron job should recur.
      */
     private $recurrence;
@@ -50,30 +53,54 @@ class Job implements Modules\Activable, Modules\Initializable
 
 
     /**
+     * @param \BlueChip\Security\Modules\Cron\Settings $settings
      * @param int|string $time
      * @param string $recurrence
      * @param string $hook
      * @param callable $action
      * @param array $args
      */
-    public function __construct($time, string $recurrence, string $hook, callable $action, array $args = [])
+    public function __construct(Settings $settings, $time, string $recurrence, string $hook, callable $action, array $args = [])
     {
         $this->action = $action;
         $this->args = $args;
         $this->hook = $hook;
+        $this->settings = $settings;
         $this->recurrence = $recurrence;
         $this->time = $time;
     }
 
 
     /**
-     * Schedule new cron job, if not scheduled yet.
+     * Activate this cron job: schedule and mark the job as permanently active.
+     *
+     * @return bool True, if cron job has been activated or was already active, false otherwise.
+     */
+    public function activate(): bool
+    {
+        $this->settings[$this->hook] = true;
+        return $this->schedule();
+    }
+
+
+    /**
+     * Deactivate this cron job: unschedule and mark the job as permanently inactive.
+     */
+    public function deactivate()
+    {
+        $this->settings[$this->hook] = false;
+        $this->unschedule();
+    }
+
+
+    /**
+     * Schedule this cron job, if not scheduled yet.
      *
      * @hook \BlueChip\Security\Modules\Cron\Hooks::EXECUTION_TIME
      *
      * @return bool True, if cron job has been activated or was already active, false otherwise.
      */
-    public function activate(): bool
+    public function schedule(): bool
     {
         // Filter $time value.
         $time = apply_filters(Hooks::EXECUTION_TIME, $this->time, $this->hook);
@@ -88,9 +115,9 @@ class Job implements Modules\Activable, Modules\Initializable
 
 
     /**
-     * Unschedule all cron jobs.
+     * Unschedule this cron job.
      */
-    public function deactivate()
+    public function unschedule()
     {
         wp_clear_scheduled_hook($this->hook, $this->args);
     }
@@ -102,6 +129,15 @@ class Job implements Modules\Activable, Modules\Initializable
     public function init()
     {
         add_action($this->hook, $this->action);
+    }
+
+
+    /**
+     * @return bool True, if cron job should be scheduled, when plugin is active, false otherwise.
+     */
+    public function isOn(): bool
+    {
+        return $this->settings[$this->hook];
     }
 
 

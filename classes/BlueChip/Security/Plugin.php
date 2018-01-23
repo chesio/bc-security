@@ -81,6 +81,7 @@ class Plugin
     private function constructSettings(): array
     {
         return [
+            'cron-jobs'     => new Modules\Cron\Settings('bc-security-cron-jobs'),
             'hardening'     => new Modules\Hardening\Settings('bc-security-hardening'),
             'log'           => new Modules\Log\Settings('bc-security-log'),
             'login'         => new Modules\Login\Settings('bc-security-login'),
@@ -138,35 +139,40 @@ class Plugin
     {
         return [
             'blacklist-cleaner' => new Modules\Cron\Job(
+                $settings['cron-jobs'],
                 Modules\Cron\Job::RUN_AT_NIGHT,
                 Modules\Cron\Recurrence::DAILY,
-                'bc-security/ip-blacklist-clean-up',
+                Modules\Cron\Jobs::IP_BLACKLIST_CLEAN_UP,
                 [$modules['blacklist-manager'], 'prune']
             ),
             'log-cleaner-by-age' => new Modules\Cron\Job(
+                $settings['cron-jobs'],
                 Modules\Cron\Job::RUN_AT_NIGHT,
                 Modules\Cron\Recurrence::DAILY,
-                'bc-security/logs-clean-up-by-age',
+                Modules\Cron\Jobs::LOGS_CLEAN_UP_BY_AGE,
                 [$modules['logger'], 'pruneByAge'],
                 [$settings['log']->getMaxAge()]
             ),
             'log-cleaner-by-size' => new Modules\Cron\Job(
+                $settings['cron-jobs'],
                 Modules\Cron\Job::RUN_AT_NIGHT,
                 Modules\Cron\Recurrence::DAILY,
-                'bc-security/logs-clean-up-by-size',
+                Modules\Cron\Jobs::LOGS_CLEAN_UP_BY_SIZE,
                 [$modules['logger'], 'pruneBySize'],
                 [$settings['log']->getMaxSize()]
             ),
             'core-checksums-verifier' => new Modules\Cron\Job(
+                $settings['cron-jobs'],
                 Modules\Cron\Job::RUN_AT_NIGHT,
                 Modules\Cron\Recurrence::DAILY,
-                'bc-security/core-checksums-verifier',
+                Modules\Cron\Jobs::CORE_CHECKSUMS_VERIFIER,
                 [$modules['core-verifier'], 'runCheck']
             ),
             'plugin-checksums-verifier' => new Modules\Cron\Job(
+                $settings['cron-jobs'],
                 Modules\Cron\Job::RUN_AT_NIGHT,
                 Modules\Cron\Recurrence::DAILY,
-                'bc-security/plugin-checksums-verifier',
+                Modules\Cron\Jobs::PLUGIN_CHECKSUMS_VERIFIER,
                 [$modules['plugins-verifier'], 'runCheck']
             ),
         ];
@@ -248,9 +254,11 @@ class Plugin
             }
         }
 
-        // Activate cron jobs.
+        // Schedule cron jobs that should be scheduled.
         foreach ($this->cron_jobs as $cron_job) {
-            $cron_job->activate();
+            if ($cron_job->isOn()) {
+                $cron_job->schedule();
+            }
         }
     }
 
@@ -263,9 +271,11 @@ class Plugin
      */
     public function deactivate()
     {
-        // Deactivate cron jobs.
+        // Unschedule all scheduled cron jobs.
         foreach ($this->cron_jobs as $cron_job) {
-            $cron_job->deactivate();
+            if ($cron_job->isScheduled()) {
+                $cron_job->unschedule();
+            }
         }
 
         // Deactivate every module that requires it.
