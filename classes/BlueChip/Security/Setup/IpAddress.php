@@ -7,16 +7,21 @@ namespace BlueChip\Security\Setup;
 
 /**
  * IP address retrieval (both remote and server)
+ *
+ * @link https://distinctplace.com/2014/04/23/story-behind-x-forwarded-for-and-x-real-ip-headers/
  */
 abstract class IpAddress
 {
     // Direct connection
     const REMOTE_ADDR = 'REMOTE_ADDR';
 
-    // Reverse proxy (or load balancer)
+    // Reverse proxy (or load balancer) - may contain multiple IP addresses.
     const HTTP_X_FORWARDED_FOR = 'HTTP_X_FORWARDED_FOR';
 
-    // CloudFlare proxy
+    // Presumably real IP of the client - set by some proxies.
+    const HTTP_X_REAL_IP = 'HTTP_X_REAL_IP';
+
+    // CloudFlare CDN (~ reverse proxy)
     const HTTP_CF_CONNECTING_IP = 'HTTP_CF_CONNECTING_IP';
 
 
@@ -30,8 +35,9 @@ abstract class IpAddress
     {
         $list = [
             self::REMOTE_ADDR => __('Direct connection to the Internet', 'bc-security'),
+            self::HTTP_CF_CONNECTING_IP => __('Behind CloudFlare CDN and reverse proxy', 'bc-security'),
             self::HTTP_X_FORWARDED_FOR => __('Behind a reverse proxy or load balancer', 'bc-security'),
-            self::HTTP_CF_CONNECTING_IP => __('Behind a CloudFlare proxy', 'bc-security'),
+            self::HTTP_X_REAL_IP => __('Behind a reverse proxy or load balancer', 'bc-security'),
         ];
 
         return $explain ? $list : array_keys($list);
