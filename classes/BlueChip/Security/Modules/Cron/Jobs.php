@@ -7,6 +7,9 @@ namespace BlueChip\Security\Modules\Cron;
 
 interface Jobs
 {
+    /** string: Hook name for "Checklist autorun" cron job */
+    const CHECKLIST_CHECK = 'bc-security/checklist-autorun';
+
     /** string: Hook name for "Automatic IP blacklist purging" cron job */
     const IP_BLACKLIST_CLEAN_UP = 'bc-security/ip-blacklist-clean-up';
 

@@ -104,6 +104,11 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
             [FormHelper::class, 'printCheckbox']
         );
         $this->addSettingsField(
+            Settings::CHECKLIST_ALERT,
+            __('Checklist monitoring triggers an alert', 'bc-security'),
+            [FormHelper::class, 'printCheckbox']
+        );
+        $this->addSettingsField(
             Settings::PLUGIN_DEACTIVATED,
             __('BC Security is deactivated', 'bc-security'),
             [FormHelper::class, 'printCheckbox']

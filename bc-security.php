@@ -42,7 +42,7 @@ if (version_compare(PHP_VERSION, '7.0', '<')) {
 require_once __DIR__ . '/autoload.php';
 
 // Construct plugin instance.
-$bc_security = new \BlueChip\Security\Plugin(plugin_basename(__FILE__), $GLOBALS['wpdb']);
+$bc_security = new \BlueChip\Security\Plugin(__FILE__, $GLOBALS['wpdb']);
 
 // Register activation hook.
 register_activation_hook(__FILE__, [$bc_security, 'activate']);

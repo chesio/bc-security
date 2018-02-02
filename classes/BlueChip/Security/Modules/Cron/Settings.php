@@ -21,6 +21,8 @@ class Settings extends \BlueChip\Security\Core\Settings
     public function sanitize(array $s): array
     {
         return [
+            Jobs::CHECKLIST_CHECK
+                => isset($s[Jobs::CHECKLIST_CHECK]) ? boolval($s[Jobs::CHECKLIST_CHECK]) : true,
             Jobs::IP_BLACKLIST_CLEAN_UP
                 => isset($s[Jobs::IP_BLACKLIST_CLEAN_UP]) ? boolval($s[Jobs::IP_BLACKLIST_CLEAN_UP]) : true,
             Jobs::LOGS_CLEAN_UP_BY_AGE
