@@ -30,14 +30,14 @@ class Admin
     /**
      * Initialize admin area of the plugin.
      *
-     * @param string $plugin_basename
+     * @param string $plugin_filename
      * @return self
      */
-    public function init(string $plugin_basename): self
+    public function init(string $plugin_filename): self
     {
         add_action('admin_menu', [$this, 'makeAdminMenu']);
         add_action('admin_init', [$this, 'initAdminPages']);
-        add_filter('plugin_action_links_' . $plugin_basename, [$this, 'filterActionLinks']);
+        add_filter('plugin_action_links_' . plugin_basename($plugin_filename), [$this, 'filterActionLinks']);
         return $this;
     }
 
