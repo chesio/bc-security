@@ -20,6 +20,9 @@ class PhpFilesEditationDisabled extends Checklist\Check
 
     public function run(): Checklist\CheckResult
     {
-        return new Checklist\CheckResult(defined('DISALLOW_FILE_EDIT') && DISALLOW_FILE_EDIT);
+        return defined('DISALLOW_FILE_EDIT') && DISALLOW_FILE_EDIT
+            ? new Checklist\CheckResult(true, esc_html__('Theme and plugin files cannot be edited from backend.', 'bc-security'))
+            : new Checklist\CheckResult(false, esc_html__('Theme and plugin files can be edited from backend!', 'bc-security'))
+        ;
     }
 }
