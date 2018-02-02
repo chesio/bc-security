@@ -81,13 +81,13 @@ class Plugin
     private function constructSettings(): array
     {
         return [
-            'cron-jobs'     => new Modules\Cron\Settings('bc-security-cron-jobs'),
-            'checklist'     => new Modules\Checklist\Settings('bc-security-checklist'),
-            'hardening'     => new Modules\Hardening\Settings('bc-security-hardening'),
-            'log'           => new Modules\Log\Settings('bc-security-log'),
-            'login'         => new Modules\Login\Settings('bc-security-login'),
-            'notifications' => new Modules\Notifications\Settings('bc-security-notifications'),
-            'setup'         => new Setup\Settings('bc-security-setup'),
+            'cron-jobs'         => new Modules\Cron\Settings('bc-security-cron-jobs'),
+            'checklist-autorun' => new Modules\Checklist\AutorunSettings('bc-security-checklist-autorun'),
+            'hardening'         => new Modules\Hardening\Settings('bc-security-hardening'),
+            'log'               => new Modules\Log\Settings('bc-security-log'),
+            'login'             => new Modules\Login\Settings('bc-security-login'),
+            'notifications'     => new Modules\Notifications\Settings('bc-security-notifications'),
+            'setup'             => new Setup\Settings('bc-security-setup'),
         ];
     }
 
@@ -104,7 +104,7 @@ class Plugin
     private function constructModules(\wpdb $wpdb, string $remote_address, string $server_address, array $settings): array
     {
         $logger             = new Modules\Log\Logger($wpdb, $remote_address);
-        $checklist_manager  = new Modules\Checklist\Manager($settings['checklist'], $wpdb);
+        $checklist_manager  = new Modules\Checklist\Manager($settings['checklist-autorun'], $wpdb);
         $core_verifier      = new Modules\Checksums\CoreVerifier();
         $plugins_verifier   = new Modules\Checksums\PluginsVerifier();
         $monitor            = new Modules\Events\Monitor($remote_address, $server_address);
@@ -231,7 +231,7 @@ class Plugin
                 // Setup comes first...
                 ->addPage(new Setup\AdminPage($this->settings['setup']))
                 // ...then come admin pages.
-                ->addPage(new Modules\Checklist\AdminPage($this->modules['checklist-manager']))
+                ->addPage(new Modules\Checklist\AdminPage($this->modules['checklist-manager'], $this->settings['checklist-autorun']))
                 ->addPage(new Modules\Hardening\AdminPage($this->settings['hardening']))
                 ->addPage(new Modules\Login\AdminPage($this->settings['login']))
                 ->addPage(new Modules\IpBlacklist\AdminPage($this->modules['blacklist-manager'], $this->cron_jobs['blacklist-cleaner']))

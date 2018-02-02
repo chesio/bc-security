@@ -8,7 +8,7 @@ namespace BlueChip\Security\Modules\Checklist;
 class Manager
 {
     /**
-     * @var \BlueChip\Security\Modules\Checklist\Settings
+     * @var \BlueChip\Security\Modules\Checklist\AutorunSettings
      */
     private $settings;
 
@@ -19,10 +19,10 @@ class Manager
 
 
     /**
-     * @param \BlueChip\Security\Modules\Checklist\Settings $settings
+     * @param \BlueChip\Security\Modules\Checklist\AutorunSettings $settings
      * @param \wpdb $wpdb WordPress database access abstraction object
      */
-    public function __construct(Settings $settings, \wpdb $wpdb)
+    public function __construct(AutorunSettings $settings, \wpdb $wpdb)
     {
         $this->settings = $settings;
         $this->wpdb = $wpdb;
@@ -84,12 +84,11 @@ class Manager
     public function runChecks()
     {
         $checks = $this->getChecks();
-        $disabled = $this->settings[Settings::DISABLED_CHECKS];
         $issues = [];
 
         foreach ($checks as $check_id => $check) {
-            if ($disabled[$check_id] || !$check->makesSense()) {
-                // Skip disabled checks and checks that don't make sense in current context.
+            if (!$this->settings[$check_id] || !$check->makesSense()) {
+                // Skip checks that should not be monitored and checks that don't make sense in current context.
                 continue;
             }
 
