@@ -423,7 +423,7 @@ class Watchman implements Modules\Loadable, Modules\Initializable, Modules\Activ
 
 
     /**
-     * Send notifications if checksums retrieval for plugins via WordPress.org failed.
+     * Send notification if checksums retrieval for plugins via WordPress.org failed.
      *
      * @param array $plugins Plugins for which checksums could not be retrieved.
      */
