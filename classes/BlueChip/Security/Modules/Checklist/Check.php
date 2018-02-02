@@ -24,7 +24,8 @@ abstract class Check
      * @param string $name
      * @param string $description
      */
-    protected function __construct(string $name, string $description) {
+    protected function __construct(string $name, string $description)
+    {
         $this->name = $name;
         $this->description = $description;
     }
