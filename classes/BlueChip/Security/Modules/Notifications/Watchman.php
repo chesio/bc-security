@@ -470,8 +470,6 @@ class Watchman implements Modules\Loadable, Modules\Initializable, Modules\Activ
             $message[] = sprintf("%s: %s", $issue['check']->getName(), strip_tags($issue['result']->getMessage()));
         }
 
-        \Debug\dump($subject, $message);
-
         $this->notify($subject, $message);
     }
 
