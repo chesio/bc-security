@@ -16,20 +16,20 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
 
 
     /**
-     * @var \wpdb WordPress database access abstraction object
+     * @var \BlueChip\Security\Modules\Checklist\Manager
      */
-    private $wpdb;
+    private $checklist_manager;
 
 
     /**
-     * @param \wpdb $wpdb WordPress database access abstraction object
+     * @param \BlueChip\Security\Modules\Checklist\Manager $checklist_manager
      */
-    public function __construct(\wpdb $wpdb)
+    public function __construct(Manager $checklist_manager)
     {
         $this->page_title = _x('Security Checklist', 'Dashboard page title', 'bc-security');
         $this->menu_title = _x('Checklist', 'Dashboard menu item name', 'bc-security');
 
-        $this->wpdb = $wpdb;
+        $this->checklist_manager = $checklist_manager;
     }
 
 
@@ -48,7 +48,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
 
         echo '<table class="wp-list-table widefat striped">';
 
-        $checks = Checks::getAll($this->wpdb);
+        $checks = $this->checklist_manager->getChecks();
 
         foreach ($checks as $check) {
             if ($check->makesSense()) {

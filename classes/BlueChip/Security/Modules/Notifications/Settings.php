@@ -31,6 +31,9 @@ class Settings extends \BlueChip\Security\Core\Settings
     /** bool: Notify when there is any error during plugin checksums verification [Yes] */
     const PLUGIN_CHECKSUMS_VERIFICATION_ERROR = 'plugin_checksums_verification_error';
 
+    /** bool: Notify when automatic checklist check triggers an alert [Yes] */
+    const CHECKLIST_ALERT = 'checklist_alert';
+
     /** bool: Notify when BC Security is deactivated [Yes] */
     const PLUGIN_DEACTIVATED = 'plugin_deactivated';
 
@@ -64,6 +67,8 @@ class Settings extends \BlueChip\Security\Core\Settings
                 => isset($s[self::CORE_CHECKSUMS_VERIFICATION_ERROR]) ? boolval($s[self::CORE_CHECKSUMS_VERIFICATION_ERROR]) : true,
             self::PLUGIN_CHECKSUMS_VERIFICATION_ERROR
                 => isset($s[self::PLUGIN_CHECKSUMS_VERIFICATION_ERROR]) ? boolval($s[self::PLUGIN_CHECKSUMS_VERIFICATION_ERROR]) : true,
+            self::CHECKLIST_ALERT
+                => isset($s[self::CHECKLIST_ALERT]) ? boolval($s[self::CHECKLIST_ALERT]) : true,
             self::PLUGIN_DEACTIVATED
                 => isset($s[self::PLUGIN_DEACTIVATED]) ? boolval($s[self::PLUGIN_DEACTIVATED]) : true,
             self::NOTIFY_SITE_ADMIN

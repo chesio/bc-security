@@ -9,6 +9,7 @@ use BlueChip\Security\Helpers\Is;
 use BlueChip\Security\Helpers\Transients;
 use BlueChip\Security\Modules;
 use BlueChip\Security\Modules\Log\Logger;
+use BlueChip\Security\Modules\Checklist;
 use BlueChip\Security\Modules\Checksums;
 use BlueChip\Security\Modules\Login;
 
@@ -114,6 +115,9 @@ class Watchman implements Modules\Loadable, Modules\Initializable, Modules\Activ
         if ($this->settings[Settings::PLUGIN_CHECKSUMS_VERIFICATION_ERROR]) {
             add_action(Checksums\Hooks::PLUGIN_CHECKSUMS_RETRIEVAL_FAILED, [$this, 'watchPluginChecksumsRetrievalFailed'], 10, 1);
             add_action(Checksums\Hooks::PLUGIN_CHECKSUMS_VERIFICATION_ALERT, [$this, 'watchPluginChecksumsVerificationAlert'], 10, 1);
+        }
+        if ($this->settings[Settings::CHECKLIST_ALERT]) {
+            add_action(Checklist\Hooks::CHECK_ALERT, [$this, 'watchChecklistAlert'], 10, 1);
         }
     }
 
@@ -444,6 +448,29 @@ class Watchman implements Modules\Loadable, Modules\Initializable, Modules\Activ
                 $plugin_data['Checksums URL']
             );
         }
+
+        $this->notify($subject, $message);
+    }
+
+
+    /**
+     * Send notification if there has been checklist alert triggered.
+     *
+     * @param array $issues Issues which triggered the alert (issue is an array with 'check' and 'result' keys).
+     */
+    public function watchChecklistAlert(array $issues)
+    {
+        $subject = __('Checklist alert', 'bc-security');
+        $message = [
+            __('Following issues have been found by automatic checklist check:'),
+        ];
+
+        foreach ($issues as $issue) {
+            $message[] = '';
+            $message[] = sprintf("%s: %s", $issue['check']->getName(), strip_tags($issue['result']->getMessage()));
+        }
+
+        \Debug\dump($subject, $message);
 
         $this->notify($subject, $message);
     }

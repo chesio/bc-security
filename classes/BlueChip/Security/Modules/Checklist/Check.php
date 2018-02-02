@@ -32,6 +32,15 @@ abstract class Check
 
 
     /**
+     * @return string Check unique ID.
+     */
+    public static function getId(): string
+    {
+        return basename(str_replace('\\', '/', static::class));
+    }
+
+
+    /**
      * @return string Check description.
      */
     public function getDescription(): string
