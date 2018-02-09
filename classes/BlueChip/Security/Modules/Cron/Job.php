@@ -96,21 +96,19 @@ class Job
     /**
      * Schedule this cron job, if not scheduled yet.
      *
-     * @hook \BlueChip\Security\Modules\Cron\Hooks::EXECUTION_TIME
-     *
      * @return bool True, if cron job has been activated or was already active, false otherwise.
      */
     public function schedule(): bool
     {
-        // Filter $time value.
-        $time = apply_filters(Hooks::EXECUTION_TIME, $this->time, $this->hook);
-        // Compute Unix timestamp (UTC) for when to run the cron job based on $time value.
-        $timestamp = is_int($time) ? $time : self::getTimestamp($time);
+        if ($this->isScheduled()) {
+            // Ok, job done - that was easy!
+            return true;
+        }
 
-        return $this->isScheduled()
-            ? true
-            : (wp_schedule_event($timestamp, $this->recurrence, $this->hook, $this->args) !== false)
-        ;
+        // Compute Unix timestamp (UTC) for when to run the cron job based on $time value.
+        $timestamp = is_int($this->time) ? $this->time : self::getTimestamp($this->time);
+
+        return wp_schedule_event($timestamp, $this->recurrence, $this->hook, $this->args) !== false;
     }
 
 
