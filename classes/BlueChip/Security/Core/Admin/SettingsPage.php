@@ -90,6 +90,26 @@ trait SettingsPage
     }
 
 
+    //// Helpers ///////////////////////////////////////////////////////////////
+
+    /**
+     * Get base properties (arguments) for setting field with given $key.
+     *
+     * @param string $key
+     * @param mixed $value [optional] Value to use instead of current value of setting with $key.
+     * @return array
+     */
+    protected function getFieldBaseProperties(string $key, $value = null): array
+    {
+        return [
+            'label_for' => sprintf('%s-%s', $this->option_name, $key), // "label_for" is WP reserved name
+            'key' => $key,
+            'name' => sprintf('%s[%s]', $this->option_name, $key),
+            'value' => is_null($value) ? $this->settings[$key] : $value,
+        ];
+    }
+
+
     //// WP wrappers ///////////////////////////////////////////////////////////
 
     /**
@@ -143,12 +163,7 @@ trait SettingsPage
             $callback,
             $this->recent_page, // $page
             $this->recent_section, // $section
-            array_merge($args, [ // $args
-                'label_for' => sprintf('%s-%s', $this->option_name, $key), // "label_for" is WP reserved name
-                'key' => $key,
-                'name' => sprintf('%s[%s]', $this->option_name, $key),
-                'value' => $this->settings[$key],
-            ])
+            array_merge($args, $this->getFieldBaseProperties($key)) // $args
         );
     }
 

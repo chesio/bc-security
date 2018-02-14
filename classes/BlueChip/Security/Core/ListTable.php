@@ -126,7 +126,7 @@ abstract class ListTable extends \WP_List_Table
      * @param array $item
      * @return string
      */
-    public function column_cb($item) // @codingStandardsIgnoreLine
+    public function column_cb($item) // phpcs:ignore
     {
         return sprintf('<input type="checkbox" name="ids[]" value="%d" />', $item['id']);
     }
@@ -139,7 +139,7 @@ abstract class ListTable extends \WP_List_Table
      * @param string $column_name
      * @return string
      */
-    public function column_default($item, $column_name) // @codingStandardsIgnoreLine
+    public function column_default($item, $column_name) // phpcs:ignore
     {
         return isset($item[$column_name]) ? $item[$column_name] : '';
     }
@@ -148,7 +148,7 @@ abstract class ListTable extends \WP_List_Table
     /**
      * Output "no items" message.
      */
-    public function no_items() // @codingStandardsIgnoreLine
+    public function no_items() // phpcs:ignore
     {
         esc_html_e('No records to display.', 'bc-security');
     }

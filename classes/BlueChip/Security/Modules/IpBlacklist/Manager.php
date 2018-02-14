@@ -211,6 +211,8 @@ class Manager implements Modules\Countable, Modules\Installable, \Countable
     /**
      * Is $ip_address on blacklist with given $scope?
      *
+     * @hook \BlueChip\Security\Modules\IpBlacklist\Hooks::IS_IP_ADDRESS_LOCKED
+     *
      * @param string $ip_address IP address to check.
      * @param int $scope Blacklist scope.
      * @return bool True, if IP address is on blacklist with given scope.
@@ -227,7 +229,9 @@ class Manager implements Modules\Countable, Modules\Installable, \Countable
         // Execute query
         $release_time = $this->wpdb->get_var($query);
         // Evaluate release time
-        return is_string($release_time) && (current_time('timestamp') < strtotime($release_time));
+        $result = is_string($release_time) && (current_time('timestamp') < strtotime($release_time));
+        // Allow the result to be filtered
+        return apply_filters(Hooks::IS_IP_ADDRESS_LOCKED, $result, $ip_address, $scope);
     }
 
 

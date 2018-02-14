@@ -9,6 +9,7 @@ use BlueChip\Security\Helpers\Is;
 use BlueChip\Security\Helpers\Transients;
 use BlueChip\Security\Modules;
 use BlueChip\Security\Modules\Log\Logger;
+use BlueChip\Security\Modules\Checklist;
 use BlueChip\Security\Modules\Checksums;
 use BlueChip\Security\Modules\Login;
 
@@ -55,6 +56,23 @@ class Watchman implements Modules\Loadable, Modules\Initializable, Modules\Activ
     }
 
 
+    /**
+     * Format remote IP address - append result of reverse DNS lookup, if successful.
+     *
+     * @param string $remote_address
+     * @return string
+     */
+    private static function formatRemoteAddress(string $remote_address): string
+    {
+        $remote_hostname = gethostbyaddr($remote_address);
+        if (empty($remote_hostname) || ($remote_hostname === $remote_address)) {
+            return $remote_address;
+        } else {
+            return "{$remote_address} ({$remote_hostname})";
+        }
+    }
+
+
     public function load()
     {
         // Bail early, if no recipients are set.
@@ -97,6 +115,9 @@ class Watchman implements Modules\Loadable, Modules\Initializable, Modules\Activ
         if ($this->settings[Settings::PLUGIN_CHECKSUMS_VERIFICATION_ERROR]) {
             add_action(Checksums\Hooks::PLUGIN_CHECKSUMS_RETRIEVAL_FAILED, [$this, 'watchPluginChecksumsRetrievalFailed'], 10, 1);
             add_action(Checksums\Hooks::PLUGIN_CHECKSUMS_VERIFICATION_ALERT, [$this, 'watchPluginChecksumsVerificationAlert'], 10, 1);
+        }
+        if ($this->settings[Settings::CHECKLIST_ALERT]) {
+            add_action(Checklist\Hooks::CHECK_ALERT, [$this, 'watchChecklistAlert'], 10, 1);
         }
     }
 
@@ -294,7 +315,7 @@ class Watchman implements Modules\Loadable, Modules\Initializable, Modules\Activ
             $subject = __('Known IP locked out', 'bc-security');
             $message = sprintf(
                 __('A known IP address %1$s has been locked out for %2$d seconds after someone tried to log in with username "%3$s".', 'bc-security'),
-                $remote_address,
+                self::formatRemoteAddress($remote_address),
                 $duration,
                 $username
             );
@@ -317,7 +338,7 @@ class Watchman implements Modules\Loadable, Modules\Initializable, Modules\Activ
             $message = sprintf(
                 __('User "%1$s" with administrator privileges just logged in to your WordPress site from IP address %2$s.', 'bc-security'),
                 $username,
-                $this->remote_address
+                self::formatRemoteAddress($this->remote_address)
             );
 
             $this->notify($subject, $message);
@@ -369,7 +390,6 @@ class Watchman implements Modules\Loadable, Modules\Initializable, Modules\Activ
         ];
 
         foreach ($plugins as $plugin_basename => $plugin_data) {
-
             $message[] = '';
             $message[] = sprintf("%s (%s)", $plugin_data['Name'], $plugin_basename);
 
@@ -407,7 +427,7 @@ class Watchman implements Modules\Loadable, Modules\Initializable, Modules\Activ
 
 
     /**
-     * Send notifications if checksums retrieval for plugins via WordPress.org failed.
+     * Send notification if checksums retrieval for plugins via WordPress.org failed.
      *
      * @param array $plugins Plugins for which checksums could not be retrieved.
      */
@@ -427,6 +447,27 @@ class Watchman implements Modules\Loadable, Modules\Initializable, Modules\Activ
                 $plugin_data['Version'],
                 $plugin_data['Checksums URL']
             );
+        }
+
+        $this->notify($subject, $message);
+    }
+
+
+    /**
+     * Send notification if there has been checklist alert triggered.
+     *
+     * @param array $issues Issues which triggered the alert (issue is an array with 'check' and 'result' keys).
+     */
+    public function watchChecklistAlert(array $issues)
+    {
+        $subject = __('Checklist alert', 'bc-security');
+        $message = [
+            __('Following issues have been found by automatic checklist check:'),
+        ];
+
+        foreach ($issues as $issue) {
+            $message[] = '';
+            $message[] = sprintf("%s: %s", $issue['check']->getName(), strip_tags($issue['result']->getMessage()));
         }
 
         $this->notify($subject, $message);

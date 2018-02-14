@@ -5,36 +5,45 @@
 
 namespace BlueChip\Security\Modules\Checklist;
 
+use BlueChip\Security\Helpers\FormHelper;
 use BlueChip\Security\Modules\Hardening;
 
 class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
 {
+    /** Page has settings section */
+    use \BlueChip\Security\Core\Admin\SettingsPage;
+
+
     /**
      * @var string Page slug
      */
     const SLUG = 'bc-security-checklist';
 
-    /**
-     * @var string Prefix of default, MD5-based hashes
-     */
-    const WP_OLD_HASH_PREFIX = '$P$';
-
 
     /**
-     * @var \wpdb WordPress database access abstraction object
+     * @var \BlueChip\Security\Modules\Checklist\Manager
      */
-    private $wpdb;
+    private $checklist_manager;
 
 
     /**
-     * @param \wpdb $wpdb WordPress database access abstraction object
+     * @param \BlueChip\Security\Modules\Checklist\Manager $checklist_manager
+     * @param \BlueChip\Security\Modules\Checklist\AutorunSettings $settings
      */
-    public function __construct(\wpdb $wpdb)
+    public function __construct(Manager $checklist_manager, AutorunSettings $settings)
     {
         $this->page_title = _x('Security Checklist', 'Dashboard page title', 'bc-security');
         $this->menu_title = _x('Checklist', 'Dashboard menu item name', 'bc-security');
 
-        $this->wpdb = $wpdb;
+        $this->checklist_manager = $checklist_manager;
+
+        $this->useSettings($settings);
+    }
+
+
+    public function loadPage()
+    {
+        $this->displaySettingsErrors();
     }
 
 
@@ -48,32 +57,41 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
         echo '<h1>' . esc_html($this->page_title) . '</h1>';
         echo '<p>';
         /* translators: %s: tick icon */
-        echo sprintf(esc_html__('The more %s you have, the better!'), '<span class="dashicons dashicons-yes"></span>');
+        echo sprintf(
+            esc_html__('The more %s you have, the better!'),
+            '<span class="dashicons dashicons-yes"></span>'
+        );
         echo '</p>';
+
+        echo '<form method="post" action="' . admin_url('options.php') .'">';
 
         echo '<table class="wp-list-table widefat striped">';
 
-        $this->printPhpFileEditationStatus();
+        $checks = $this->checklist_manager->getChecks();
 
-        $this->printDirectoryListingDisabled();
-
-        $this->printPhpFileBlockedInUploadsDir();
-
-        if (defined('WP_ENV') && (WP_ENV === 'production')) {
-            // Only check in production environment, as in other environments error display might be active on purpose.
-            $this->printDisplayOfErrorsIsOff();
+        foreach ($checks as $check) {
+            if ($check->makesSense()) {
+                $this->printCheckRow($check);
+            }
         }
-
-        if (WP_DEBUG && WP_DEBUG_LOG) {
-            // Only check, if there is a chance that debug.log is present.
-            $this->printNoPublicAccessToErrorLog();
-        }
-
-        $this->printNoObviousUsernamesStatus();
-
-        $this->printNoDefaultMd5HashedPasswords();
 
         echo '</table>';
+
+        echo '<p>';
+        echo esc_html__('You can monitor the checklist automatically - just click the button below.');
+        echo ' ';
+        echo sprintf(
+            esc_html__('Checks that are currently monitored are marked with %s icon.'),
+            '<span class="dashicons dashicons-visibility"></span>'
+        );
+        echo '</p>';
+
+        // Output nonce, action and other hidden fields...
+        $this->printSettingsFields();
+        // ... and finally the submit button :)
+        submit_button(__('Keep an eye on all passing checks', 'bc-security'));
+
+        echo '</form>';
 
         echo '<p>';
         echo sprintf(
@@ -92,172 +110,54 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
 
 
     /**
-     * Output single table row.
-     *
-     * @param string $name Check name.
-     * @param string $description Check description.
-     * @param bool|null $status Check status.
-     * @param array $detail Explanation for any particular status [optional].
+     * Initialize settings page: register settings etc.
      */
-    private function printCheckRow(string $name, string $description, $status, array $detail = [])
+    public function initPage()
     {
+        // Register settings.
+        $this->registerSettings();
+
+        // Set page as current.
+        $this->setSettingsPage(self::SLUG);
+    }
+
+
+    /**
+     * Output single table row with status information for given $check.
+     *
+     * @param \BlueChip\Security\Modules\Checklist\Check $check Check to evaluate and display results of.
+     */
+    private function printCheckRow(Check $check)
+    {
+        // Run check and get result;
+        $result = $check->run();
+
+        // Get result status and message.
+        $status = $result->getStatus();
+        $message = $result->getMessage();
+
+        $run_automatically = $this->settings[$check->getId()];
+
         echo '<tr>';
 
         // Status may be undetermined, in such case render no icon.
         echo '<th>' . (is_bool($status) ? ('<span class="dashicons dashicons-' . ($status ? 'yes' : 'no') . '"></span>') : '' ) . '</th>';
         // Name should be short and descriptive and without HTML tags.
-        echo '<th>' . esc_html($name) . '</th>';
+        echo '<th>' . esc_html($check->getName()) . '</th>';
+        // Background execution state
+        echo '<th><span class="dashicons dashicons-' . ($run_automatically ? 'visibility' : 'hidden') . '"></span></th>';
         // Allow for HTML tags in $description.
-        echo '<td>' . $description . '</td>';
-        // Detail depends on $status. Any field may be empty or a string or a callable that returns a string.
-        echo '<td>' . (isset($detail[$status]) ? (is_callable($detail[$status]) ? call_user_func($detail[$status]) : $detail[$status]) : '') . '</td>';
+        echo '<td>' . $check->getDescription() . '</td>';
+        // Allow for HTML tags in result $message.
+        echo '<td>' . $message . '</td>';
+        // Hidden input field with data for form submission.
+        echo '<td>';
+        FormHelper::printHiddenInput(
+            // The value to be submitted
+            array_merge($this->getFieldBaseProperties($check->getId(), intval($status)))
+        );
+        echo '</td>';
 
         echo '</tr>';
-    }
-
-
-    /**
-     * Output status info about php file editation.
-     */
-    private function printPhpFileEditationStatus()
-    {
-        $this->printCheckRow(
-            __('PHP Files Editation Disabled', 'bc-security'),
-            sprintf(__('It is generally recommended to <a href="%s">disable editation of PHP files</a>.', 'bc-security'), 'https://codex.wordpress.org/Hardening_WordPress#Disable_File_Editing'),
-            defined('DISALLOW_FILE_EDIT') && DISALLOW_FILE_EDIT
-        );
-    }
-
-
-    /**
-     * Output status info about directory listings being disabled.
-     */
-    private function printDirectoryListingDisabled()
-    {
-        $this->printCheckRow(
-            __('Directory Listing Disabled', 'bc-security'),
-            sprintf(__('A common security practice is to disable <a href="%s">directory listings</a>.', 'bc-security'), 'https://wiki.apache.org/httpd/DirectoryListings'),
-            Helper::isDirectoryListingDisabled(),
-            [
-                null => esc_html__('BC Security has failed to determine whether directory listing is disabled.', 'bc-security'),
-                true => esc_html__('It seems that directory listing is disabled.', 'bc-security'),
-                false => esc_html__('It seems that directory listing is not disabled!', 'bc-security'),
-            ]
-        );
-    }
-
-
-    /**
-     * Output status info about php files being unaccessible from within uploads directory.
-     */
-    private function printPhpFileBlockedInUploadsDir()
-    {
-        $this->printCheckRow(
-            __('PHP Files Forbidden', 'bc-security'),
-            sprintf(__('Vulnerable plugins may allow upload of arbitrary files into uploads directory. <a href="%s">Disabling access to PHP files</a> within uploads directory may help prevent successful exploitation of such vulnerabilities.', 'bc-security'), 'https://gist.github.com/chesio/8f83224840eccc1e80a17fc29babadf2'),
-            Helper::isAccessToPhpFilesInUploadsDirForbidden(),
-            [
-                null => esc_html__('BC Security has failed to determine whether PHP files can be executed from uploads directory.', 'bc-security'),
-                true => esc_html__('It seems that PHP files cannot be executed from uploads directory.', 'bc-security'),
-                false => esc_html__('It seems that PHP files can be executed from uploads directory!', 'bc-security'),
-            ]
-        );
-    }
-
-
-    /**
-     * Output status info about whether display_errors PHP config is off by default.
-     */
-    private function printDisplayOfErrorsIsOff()
-    {
-        $this->printCheckRow(
-            __('Display of PHP errors is off', 'bc-security'),
-            sprintf(
-                __('<a href="%1$s">Errors should never be printed</a> to the screen as part of the output on production systems. In WordPress environment, <a href="%2$s">display of errors can lead to path disclosures</a> when directly loading certain files.', 'bc-security'),
-                'http://php.net/manual/en/errorfunc.configuration.php#ini.display-errors',
-                'https://make.wordpress.org/core/handbook/testing/reporting-security-vulnerabilities/#why-are-there-path-disclosures-when-directly-loading-certain-files'
-            ),
-            Helper::isErrorsDisplayOff(),
-            [
-                null => esc_html__('BC Security has failed to determine whether display of errors is turned off by default.', 'bc-security'),
-                true => esc_html__('It seems that display of errors is turned off by default.', 'bc-security'),
-                false => esc_html__('It seems that display of errors is turned on by default!', 'bc-security'),
-            ]
-        );
-    }
-
-
-    /**
-     * Output status info about error log being publicly unaccessible.
-     */
-    private function printNoPublicAccessToErrorLog()
-    {
-        $this->printCheckRow(
-            __('Error log not publicly accessible', 'bc-security'),
-            sprintf(__('Both <code>WP_DEBUG</code> and <code>WP_DEBUG_LOG</code> constants are set to true, therefore <a href="%s">WordPress saves all errors</a> to a <code>debug.log</code> log file inside the <code>/wp-content/</code> directory. This file can contain sensitive information and therefore should not be publicly accessible.', 'bc-security'), 'https://codex.wordpress.org/Debugging_in_WordPress'),
-            Helper::isAccessToErrorLogForbidden(),
-            [
-                null => esc_html__('BC Security has failed to determine whether error log is publicly accessible.', 'bc-security'),
-                true => esc_html__('It seems that error log is not publicly accessible.', 'bc-security'),
-                false => esc_html__('It seems that error log is publicly accessible!', 'bc-security'),
-            ]
-        );
-    }
-
-
-    /**
-     * Output status info about no obvious usernames being present on the system.
-     *
-     * @hook \BlueChip\Security\Modules\Checklist\Hooks::OBVIOUS_USERNAMES Filters list of obvious usernames to check and report.
-     */
-    private function printNoObviousUsernamesStatus()
-    {
-        // Get (filtered) list of obvious usernames to test.
-        $obvious = apply_filters(Hooks::OBVIOUS_USERNAMES, ['admin', 'administrator']);
-        // Check for existing usernames.
-        $existing = array_filter($obvious, function ($username) {
-            return get_user_by('login', $username);
-        });
-
-        $this->printCheckRow(
-            __('No Obvious Usernames', 'bc-security'),
-            sprintf(__('Usernames like "admin" and "administrator" are often used in brute force attacks and <a href="%s">should be avoided</a>.', 'bc-security'), 'https://codex.wordpress.org/Hardening_WordPress#Security_through_obscurity'),
-            empty($existing),
-            [
-                true => function () use ($obvious) {
-                    return esc_html__('None of the following usernames exists on the system:', 'bc-security') . ' <em>' . implode(', ', $obvious) . '</em>';
-                },
-                false => function () use ($existing) {
-                    return esc_html__('The following obvious usernames exists on the system:', 'bc-security') . ' <em>' . implode(', ', $existing) . '</em>';
-                },
-            ]
-        );
-    }
-
-
-    /**
-     * Output status info about no default MD5-based password hashes being present in database.
-     */
-    private function printNoDefaultMd5HashedPasswords()
-    {
-        // Get all users with old hash prefix
-        $result = $this->wpdb->get_results(sprintf(
-            "SELECT `user_login` FROM {$this->wpdb->users} WHERE `user_pass` LIKE '%s%%';",
-            self::WP_OLD_HASH_PREFIX
-        ));
-
-        $this->printCheckRow(
-            __('No Default MD5 Password Hashes', 'bc-security'),
-            sprintf(__('WordPress by default uses an MD5 based password hashing scheme that is too cheap and fast to generate cryptographically secure hashes. For modern PHP versions, there are <a href="%s">more secure alternatives</a> available.', 'bc-security'), 'https://github.com/roots/wp-password-bcrypt'),
-            ($result === false) ? null : empty($result),
-            [
-                null => esc_html__('BC Security has failed to determine whether there are any users with password hashed with default MD5-based algorithm.', 'bc-security'),
-                true => esc_html__('No users have password hashed with default MD5-based algorithm.', 'bc-security'),
-                false => function () use ($result) {
-                    // If this function gets called, than result is non-empty array.
-                    return esc_html__('The following users have their password hashed with default MD5-based algorithm:', 'bc-security') . ' <em>' . implode(', ', wp_list_pluck($result, 'user_login')) . '</em>';
-                },
-            ]
-        );
     }
 }

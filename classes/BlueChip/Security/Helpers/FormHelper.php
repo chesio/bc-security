@@ -47,6 +47,25 @@ abstract class FormHelper
 
 
     /**
+     * Print <input type="hidden"> element.
+     *
+     * @param array $args
+     */
+    public static function printHiddenInput(array $args)
+    {
+        // Field properties
+        $properties = [
+            'type'      => 'hidden',
+            'value'     => $args['value'],
+            'id'        => $args['label_for'],
+            'name'      => $args['name'],
+        ];
+
+        echo '<input ' . self::renderFieldProperties($properties) . '>';
+    }
+
+
+    /**
      * Print <input type="number> element.
      *
      * @param array $args

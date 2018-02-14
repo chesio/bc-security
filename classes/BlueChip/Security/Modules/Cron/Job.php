@@ -5,12 +5,10 @@
 
 namespace BlueChip\Security\Modules\Cron;
 
-use \BlueChip\Security\Modules;
-
 /**
  * Simple wrapper for cron job handling
  */
-class Job implements Modules\Activable, Modules\Initializable
+class Job
 {
     /**
      * @var string Indicate that cron job should be scheduled at random time between 00:00:00 and 05:59:59 local time.
@@ -39,6 +37,11 @@ class Job implements Modules\Activable, Modules\Initializable
     private $hook;
 
     /**
+     * @var \BlueChip\Security\Modules\Cron\Settings
+     */
+    private $settings;
+
+    /**
      * @var string How often the cron job should recur.
      */
     private $recurrence;
@@ -50,47 +53,69 @@ class Job implements Modules\Activable, Modules\Initializable
 
 
     /**
+     * @param \BlueChip\Security\Modules\Cron\Settings $settings
      * @param int|string $time
      * @param string $recurrence
      * @param string $hook
      * @param callable $action
      * @param array $args
      */
-    public function __construct($time, string $recurrence, string $hook, callable $action, array $args = [])
+    public function __construct(Settings $settings, $time, string $recurrence, string $hook, callable $action, array $args = [])
     {
         $this->action = $action;
         $this->args = $args;
         $this->hook = $hook;
+        $this->settings = $settings;
         $this->recurrence = $recurrence;
         $this->time = $time;
     }
 
 
     /**
-     * Schedule new cron job, if not scheduled yet.
-     *
-     * @hook \BlueChip\Security\Modules\Cron\Hooks::EXECUTION_TIME
+     * Activate this cron job: schedule and mark the job as permanently active.
      *
      * @return bool True, if cron job has been activated or was already active, false otherwise.
      */
     public function activate(): bool
     {
-        // Filter $time value.
-        $time = apply_filters(Hooks::EXECUTION_TIME, $this->time, $this->hook);
-        // Compute Unix timestamp (UTC) for when to run the cron job based on $time value.
-        $timestamp = is_int($time) ? $time : self::getTimestamp($time);
-
-        return $this->isScheduled()
-            ? true
-            : (wp_schedule_event($timestamp, $this->recurrence, $this->hook, $this->args) !== false)
-        ;
+        $this->settings[$this->hook] = true;
+        return $this->schedule();
     }
 
 
     /**
-     * Unschedule all cron jobs.
+     * Deactivate this cron job: unschedule and mark the job as permanently inactive.
      */
     public function deactivate()
+    {
+        $this->settings[$this->hook] = false;
+        $this->unschedule();
+    }
+
+
+    /**
+     * Schedule this cron job, if not scheduled yet.
+     *
+     * @return bool True, if cron job has been activated or was already active, false otherwise.
+     */
+    public function schedule(): bool
+    {
+        if ($this->isScheduled()) {
+            // Ok, job done - that was easy!
+            return true;
+        }
+
+        // Compute Unix timestamp (UTC) for when to run the cron job based on $time value.
+        $timestamp = is_int($this->time) ? $this->time : self::getTimestamp($this->time);
+
+        return wp_schedule_event($timestamp, $this->recurrence, $this->hook, $this->args) !== false;
+    }
+
+
+    /**
+     * Unschedule this cron job.
+     */
+    public function unschedule()
     {
         wp_clear_scheduled_hook($this->hook, $this->args);
     }
@@ -102,6 +127,15 @@ class Job implements Modules\Activable, Modules\Initializable
     public function init()
     {
         add_action($this->hook, $this->action);
+    }
+
+
+    /**
+     * @return bool True, if cron job should be scheduled, when plugin is active, false otherwise.
+     */
+    public function isOn(): bool
+    {
+        return $this->settings[$this->hook];
     }
 
 
@@ -136,8 +170,8 @@ class Job implements Modules\Activable, Modules\Initializable
             // Assume $time_string denotes actual time like '01:02:03'.
             $time = $time_string;
         }
-        // Get time zone from settings.
-        $time_zone = new \DateTimeZone(get_option('timezone_string'));
+        // Get time zone from settings. Fall back to UTC, if option is empty.
+        $time_zone = new \DateTimeZone(get_option('timezone_string') ?: 'UTC');
         // Get DateTime object.
         $date = new \DateTime($time, $time_zone);
         // Get timestamp.

@@ -93,7 +93,12 @@ class CoreVerifier extends Verifier
         $modified_files = self::checkDirectoryForModifiedFiles(ABSPATH, $checksums, $ignored_files);
 
         // Ignore any modified files in wp-content directory.
-        return array_filter($modified_files, function ($filename) { return strpos($filename, 'wp-content/') !== 0; });
+        return array_filter(
+            $modified_files,
+            function ($filename) {
+                return strpos($filename, 'wp-content/') !== 0;
+            }
+        );
     }
 
 

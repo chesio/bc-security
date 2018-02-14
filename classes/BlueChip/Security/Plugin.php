@@ -31,9 +31,9 @@ class Plugin
     private $settings;
 
     /**
-     * @var string Plugin basename
+     * @var string Plugin filename
      */
-    private $basename;
+    private $plugin_filename;
 
     /**
      * @var \wpdb WordPress database access abstraction object
@@ -44,12 +44,12 @@ class Plugin
     /**
      * Construct the plugin instance.
      *
-     * @param string $basename Plugin basename
+     * @param string $plugin_filename Plugin filename
      * @param \wpdb $wpdb WordPress database access abstraction object
      */
-    public function __construct(string $basename, \wpdb $wpdb)
+    public function __construct(string $plugin_filename, \wpdb $wpdb)
     {
-        $this->basename = $basename;
+        $this->plugin_filename = $plugin_filename;
         $this->wpdb = $wpdb;
 
         // Read plugin settings.
@@ -81,11 +81,13 @@ class Plugin
     private function constructSettings(): array
     {
         return [
-            'hardening'     => new Modules\Hardening\Settings('bc-security-hardening'),
-            'log'           => new Modules\Log\Settings('bc-security-log'),
-            'login'         => new Modules\Login\Settings('bc-security-login'),
-            'notifications' => new Modules\Notifications\Settings('bc-security-notifications'),
-            'setup'         => new Setup\Settings('bc-security-setup'),
+            'cron-jobs'         => new Modules\Cron\Settings('bc-security-cron-jobs'),
+            'checklist-autorun' => new Modules\Checklist\AutorunSettings('bc-security-checklist-autorun'),
+            'hardening'         => new Modules\Hardening\Settings('bc-security-hardening'),
+            'log'               => new Modules\Log\Settings('bc-security-log'),
+            'login'             => new Modules\Login\Settings('bc-security-login'),
+            'notifications'     => new Modules\Notifications\Settings('bc-security-notifications'),
+            'setup'             => new Setup\Settings('bc-security-setup'),
         ];
     }
 
@@ -102,6 +104,7 @@ class Plugin
     private function constructModules(\wpdb $wpdb, string $remote_address, string $server_address, array $settings): array
     {
         $logger             = new Modules\Log\Logger($wpdb, $remote_address);
+        $checklist_manager  = new Modules\Checklist\Manager($settings['checklist-autorun'], $wpdb);
         $core_verifier      = new Modules\Checksums\CoreVerifier();
         $plugins_verifier   = new Modules\Checksums\PluginsVerifier();
         $monitor            = new Modules\Events\Monitor($remote_address, $server_address);
@@ -114,6 +117,7 @@ class Plugin
 
         return [
             'logger'            => $logger,
+            'checklist-manager' => $checklist_manager,
             'core-verifier'     => $core_verifier,
             'plugins-verifier'  => $plugins_verifier,
             'events-monitor'    => $monitor,
@@ -137,36 +141,48 @@ class Plugin
     private function constructCronJobs(array $settings, array $modules): array
     {
         return [
-            'blacklist-cleaner' => new Modules\Cron\Job(
+            'checklist-checker' => new Modules\Cron\Job(
+                $settings['cron-jobs'],
                 Modules\Cron\Job::RUN_AT_NIGHT,
                 Modules\Cron\Recurrence::DAILY,
-                'bc-security/ip-blacklist-clean-up',
+                Modules\Cron\Jobs::CHECKLIST_CHECK,
+                [$modules['checklist-manager'], 'runChecks']
+            ),
+            'blacklist-cleaner' => new Modules\Cron\Job(
+                $settings['cron-jobs'],
+                Modules\Cron\Job::RUN_AT_NIGHT,
+                Modules\Cron\Recurrence::DAILY,
+                Modules\Cron\Jobs::IP_BLACKLIST_CLEAN_UP,
                 [$modules['blacklist-manager'], 'prune']
             ),
             'log-cleaner-by-age' => new Modules\Cron\Job(
+                $settings['cron-jobs'],
                 Modules\Cron\Job::RUN_AT_NIGHT,
                 Modules\Cron\Recurrence::DAILY,
-                'bc-security/logs-clean-up-by-age',
+                Modules\Cron\Jobs::LOGS_CLEAN_UP_BY_AGE,
                 [$modules['logger'], 'pruneByAge'],
                 [$settings['log']->getMaxAge()]
             ),
             'log-cleaner-by-size' => new Modules\Cron\Job(
+                $settings['cron-jobs'],
                 Modules\Cron\Job::RUN_AT_NIGHT,
                 Modules\Cron\Recurrence::DAILY,
-                'bc-security/logs-clean-up-by-size',
+                Modules\Cron\Jobs::LOGS_CLEAN_UP_BY_SIZE,
                 [$modules['logger'], 'pruneBySize'],
                 [$settings['log']->getMaxSize()]
             ),
             'core-checksums-verifier' => new Modules\Cron\Job(
+                $settings['cron-jobs'],
                 Modules\Cron\Job::RUN_AT_NIGHT,
                 Modules\Cron\Recurrence::DAILY,
-                'bc-security/core-checksums-verifier',
+                Modules\Cron\Jobs::CORE_CHECKSUMS_VERIFIER,
                 [$modules['core-verifier'], 'runCheck']
             ),
             'plugin-checksums-verifier' => new Modules\Cron\Job(
+                $settings['cron-jobs'],
                 Modules\Cron\Job::RUN_AT_NIGHT,
                 Modules\Cron\Recurrence::DAILY,
-                'bc-security/plugin-checksums-verifier',
+                Modules\Cron\Jobs::PLUGIN_CHECKSUMS_VERIFIER,
                 [$modules['plugins-verifier'], 'runCheck']
             ),
         ];
@@ -211,11 +227,11 @@ class Plugin
 
         if ($this->admin) {
             // Initialize admin interface (set necessary hooks).
-            $this->admin->init($this->basename)
+            $this->admin->init($this->plugin_filename)
                 // Setup comes first...
                 ->addPage(new Setup\AdminPage($this->settings['setup']))
                 // ...then come admin pages.
-                ->addPage(new Modules\Checklist\AdminPage($this->wpdb))
+                ->addPage(new Modules\Checklist\AdminPage($this->modules['checklist-manager'], $this->settings['checklist-autorun']))
                 ->addPage(new Modules\Hardening\AdminPage($this->settings['hardening']))
                 ->addPage(new Modules\Login\AdminPage($this->settings['login']))
                 ->addPage(new Modules\IpBlacklist\AdminPage($this->modules['blacklist-manager'], $this->cron_jobs['blacklist-cleaner']))
@@ -248,9 +264,11 @@ class Plugin
             }
         }
 
-        // Activate cron jobs.
+        // Schedule cron jobs that should be scheduled.
         foreach ($this->cron_jobs as $cron_job) {
-            $cron_job->activate();
+            if ($cron_job->isOn()) {
+                $cron_job->schedule();
+            }
         }
     }
 
@@ -263,9 +281,11 @@ class Plugin
      */
     public function deactivate()
     {
-        // Deactivate cron jobs.
+        // Unschedule all scheduled cron jobs.
         foreach ($this->cron_jobs as $cron_job) {
-            $cron_job->deactivate();
+            if ($cron_job->isScheduled()) {
+                $cron_job->unschedule();
+            }
         }
 
         // Deactivate every module that requires it.

@@ -81,7 +81,7 @@ class ListTable extends \BlueChip\Security\Core\ListTable
      * @param array $item
      * @return string
      */
-    public function column_ip_address(array $item): string // @codingStandardsIgnoreLine
+    public function column_ip_address(array $item): string // phpcs:ignore
     {
         return $item['ip_address'] . $this->row_actions($this->getRowActions($item));
     }
@@ -93,7 +93,7 @@ class ListTable extends \BlueChip\Security\Core\ListTable
      * @param array $item
      * @return string
      */
-    public function column_reason(array $item): string // @codingStandardsIgnoreLine
+    public function column_reason(array $item): string // phpcs:ignore
     {
         return $this->explainBanReason($item['reason']);
     }
@@ -121,7 +121,7 @@ class ListTable extends \BlueChip\Security\Core\ListTable
     /**
      * @return array
      */
-    public function get_bulk_actions() // @codingStandardsIgnoreLine
+    public function get_bulk_actions() // phpcs:ignore
     {
         return [
             self::BULK_ACTION_UNLOCK => __('Unlock', 'bc-security'),
@@ -135,7 +135,7 @@ class ListTable extends \BlueChip\Security\Core\ListTable
      *
      * @return array
      */
-    public function get_columns() // @codingStandardsIgnoreLine
+    public function get_columns() // phpcs:ignore
     {
         return [
             'cb' => '<input type="checkbox">',
@@ -153,7 +153,7 @@ class ListTable extends \BlueChip\Security\Core\ListTable
      *
      * @return array
      */
-    public function get_sortable_columns() // @codingStandardsIgnoreLine
+    public function get_sortable_columns() // phpcs:ignore
     {
         return [
             'ip_address' => 'ip_address',
@@ -171,7 +171,7 @@ class ListTable extends \BlueChip\Security\Core\ListTable
      *
      * @return array
      */
-    protected function get_views() // @codingStandardsIgnoreLine
+    protected function get_views() // phpcs:ignore
     {
         return [
             'any' => sprintf(
@@ -209,7 +209,7 @@ class ListTable extends \BlueChip\Security\Core\ListTable
     /**
      * Prepare items for table.
      */
-    public function prepare_items() // @codingStandardsIgnoreLine
+    public function prepare_items() // phpcs:ignore
     {
         $current_page = $this->get_pagenum();
         $per_page = $this->items_per_page;
