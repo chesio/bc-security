@@ -6,9 +6,11 @@
  * Version: develop
  * Author: Česlav Przywara <ceslav@przywara.cz>
  * Author URI: https://www.chesio.com
- * Requires at least: 4.7
+ * Requires PHP: 7.0
+ * Requires WP: 4.7
  * Tested up to: 4.9
  * Text Domain: bc-security
+ * GitHub Plugin URI: https://github.com/chesio/bc-security
  */
 
 if (version_compare(PHP_VERSION, '7.0', '<')) {
