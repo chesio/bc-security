@@ -42,7 +42,9 @@ abstract class Verifier
             }
 
             // Compare MD5 hashes.
-            if (md5_file($pathname) !== $checksum) {
+            // Note that there can be multiple checksums provided for a single file (at least in plugin checksums).
+            $md5 = md5_file($pathname);
+            if (is_array($checksum) ? !in_array($md5, $checksum, true) : ($md5 !== $checksum)) {
                 $modified_files[] = $filename;
             }
         }
