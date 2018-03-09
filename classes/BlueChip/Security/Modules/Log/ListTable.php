@@ -39,8 +39,8 @@ class ListTable extends \BlueChip\Security\Core\ListTable
 
         // Display only events of particular type?
         $event_id = filter_input(INPUT_GET, self::VIEW_EVENT, FILTER_SANITIZE_URL);
-        if ($event_id && in_array($event_id, Event::enlist(), true)) {
-            $this->event = Event::create($event_id);
+        if ($event_id && in_array($event_id, EventsManager::enlist(), true)) {
+            $this->event = EventsManager::create($event_id);
             $this->url = add_query_arg(self::VIEW_EVENT, $event_id, $this->url);
         }
     }
@@ -86,7 +86,7 @@ class ListTable extends \BlueChip\Security\Core\ListTable
      */
     public function column_event(array $item): string // phpcs:ignore
     {
-        $event = Event::create($item['event']);
+        $event = EventsManager::create($item['event']);
         return $event ? $event->getName() : '';
     }
 
@@ -164,9 +164,9 @@ class ListTable extends \BlueChip\Security\Core\ListTable
             ),
         ];
 
-        foreach (Event::enlist() as $eid) {
+        foreach (EventsManager::enlist() as $eid) {
             // Get human readable name for event type.
-            if (empty($event = Event::create($eid))) {
+            if (empty($event = EventsManager::create($eid))) {
                 // Ignore event IDs unknown to the plugin (there should be none, but better to be safe).
                 continue;
             }

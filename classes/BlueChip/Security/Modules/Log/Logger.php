@@ -137,7 +137,7 @@ class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\
      */
     public function logEvent($event_id, array $context)
     {
-        $event = Event::create($event_id);
+        $event = EventsManager::create($event_id);
         $this->log($event->getLevel(), $event->getMessage(), array_merge(['event' => $event_id], $context));
     }
 

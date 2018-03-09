@@ -5,11 +5,6 @@
 
 namespace BlueChip\Security\Modules\Log;
 
-use Psr\Log\LogLevel;
-
-/**
- * Every event must be constructed using event ID. All other event properties can be inferred from event ID.
- */
 class Event
 {
     const AUTH_BAD_COOKIE = 'auth_bad_cookie';
@@ -56,7 +51,7 @@ class Event
      * @param string $message
      * @param array $context
      */
-    private function __construct(string $id, string $name, string $level, string $message, array $context)
+    protected function __construct(string $id, string $name, string $level, string $message, array $context)
     {
         $this->id = $id;
         $this->name = $name;
@@ -99,95 +94,5 @@ class Event
     public function hasContext(string $key): bool
     {
         return isset($this->context[$key]);
-    }
-
-
-    /**
-     * Create event object for given $id.
-     *
-     * @param string $id Valid event ID.
-     * @return \BlueChip\Security\Modules\Log\Event|null
-     */
-    public static function create(string $id)
-    {
-        switch ($id) {
-            case self::AUTH_BAD_COOKIE:
-                return new self(
-                    $id,
-                    __('Bad authentication cookie', 'bc-security'),
-                    LogLevel::NOTICE,
-                    __('Bad authentication cookie used with {username}.', 'bc-security'),
-                    ['username' => __('Username', 'bc-security')]
-                );
-            case self::LOGIN_FAILURE:
-                return new self(
-                    $id,
-                    __('Failed login', 'bc-security'),
-                    LogLevel::NOTICE,
-                    __('Login attempt with username {username} failed.', 'bc-security'),
-                    ['username' => __('Username', 'bc-security')]
-                );
-            case self::LOGIN_LOCKOUT:
-                return new self(
-                    $id,
-                    __('Login lockout', 'bc-security'),
-                    LogLevel::WARNING,
-                    __('Remote IP address {ip_address} has been locked out from login for {duration} seconds. Last username used for login was {username}.', 'bc-security'),
-                    ['ip_address' => __('IP Address', 'bc-security'), 'username' => __('Username', 'bc-security'), 'duration' => __('Duration', 'bc-security')]
-                );
-            case self::LOGIN_SUCCESSFUL:
-                return new self(
-                    $id,
-                    __('Successful login', 'bc-security'),
-                    LogLevel::INFO,
-                    __('User {username} logged in successfully.', 'bc-security'),
-                    ['username' => __('Username', 'bc-security')]
-                );
-            case self::QUERY_404:
-                return new self(
-                    $id,
-                    __('404 page', 'bc-security'),
-                    LogLevel::INFO,
-                    __('Main query returned no results (404 page) for request {request}.', 'bc-security'),
-                    ['request' => __('Request URI', 'bc-security')]
-                );
-            case self::CORE_CHECKSUMS_VERIFICATION_ALERT:
-                return new self(
-                    $id,
-                    __('Core checksums verification alert', 'bc-security'),
-                    LogLevel::WARNING,
-                    __('Following files have been modified: {modified_files}. Following files are unknown: {unknown_files}.', 'bc-security'),
-                    ['modified_files' => __('Modified files', 'bc-security'), 'unknown_files' => __('Unknown files', 'bc-security')]
-                );
-            case self::PLUGIN_CHECKSUMS_VERIFICATION_ALERT:
-                return new self(
-                    $id,
-                    __('Plugin checksums verification alert', 'bc-security'),
-                    LogLevel::WARNING,
-                    __('Plugin: {plugin_name} (ver. {plugin_version}). Following files have been modified: {modified_files}. Following files are unknown: {unknown_files}.', 'bc-security'),
-                    ['plugin_name' => __('Plugin name', 'bc-security'), 'plugin_version' => __('Plugin version', 'bc-security'), 'modified_files' => __('Modified files', 'bc-security'), 'unknown_files' => __('Unknown files', 'bc-security')]
-                );
-            default:
-                return null;
-        }
-    }
-
-
-    /**
-     * Return a list of all declared events.
-     *
-     * @return array
-     */
-    public static function enlist(): array
-    {
-        return [
-            self::AUTH_BAD_COOKIE,
-            self::LOGIN_FAILURE,
-            self::LOGIN_SUCCESSFUL,
-            self::LOGIN_LOCKOUT,
-            self::QUERY_404,
-            self::CORE_CHECKSUMS_VERIFICATION_ALERT,
-            self::PLUGIN_CHECKSUMS_VERIFICATION_ALERT,
-        ];
     }
 }
