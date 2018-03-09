@@ -107,7 +107,7 @@ class Plugin
         $checklist_manager  = new Modules\Checklist\Manager($settings['checklist-autorun'], $wpdb);
         $core_verifier      = new Modules\Checksums\CoreVerifier();
         $plugins_verifier   = new Modules\Checksums\PluginsVerifier();
-        $monitor            = new Modules\Events\Monitor($remote_address, $server_address);
+        $monitor            = new Modules\Log\EventsMonitor($remote_address, $server_address);
         $notifier           = new Modules\Notifications\Watchman($settings['notifications'], $remote_address, $logger);
         $hardening          = new Modules\Hardening\Core($settings['hardening']);
         $blacklist_manager  = new Modules\IpBlacklist\Manager($wpdb);

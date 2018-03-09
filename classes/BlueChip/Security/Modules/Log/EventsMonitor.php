@@ -3,13 +3,13 @@
  * @package BC_Security
  */
 
-namespace BlueChip\Security\Modules\Events;
+namespace BlueChip\Security\Modules\Log;
 
 use BlueChip\Security\Modules\Checksums;
 use BlueChip\Security\Modules\Log;
 use BlueChip\Security\Modules\Login;
 
-class Monitor implements \BlueChip\Security\Modules\Initializable
+class EventsMonitor implements \BlueChip\Security\Modules\Initializable
 {
     /**
      * @var string Remote IP address
