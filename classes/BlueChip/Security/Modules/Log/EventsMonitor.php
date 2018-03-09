@@ -71,7 +71,7 @@ class EventsMonitor implements \BlueChip\Security\Modules\Initializable
         /** @var \WP_Query $wp_query */
         global $wp_query;
 
-        if ($wp_query->is_404()) {
+        if ($wp_query->is_404() && apply_filters(Hooks::LOG_404_EVENT, true, $wp->request)) {
             do_action(Log\Action::EVENT, Log\Event::QUERY_404, ['request' => $wp->request]);
         }
     }
