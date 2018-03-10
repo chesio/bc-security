@@ -267,21 +267,6 @@ class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\
 
 
     /**
-     * Return list of distinct event types present in logs table.
-     *
-     * @todo Probably obsolete.
-     *
-     * @return array
-     */
-    public function getEventIds()
-    {
-        $result = $this->wpdb->get_results("SELECT DISTINCT(event) FROM {$this->log_table}");
-
-        return is_array($result) ? wp_list_pluck($result, 'event') : [];
-    }
-
-
-    /**
      * Return list of distinct IP addresses from which a successful login has
      * been made.
      *
