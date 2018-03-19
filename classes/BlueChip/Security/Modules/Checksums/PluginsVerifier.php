@@ -5,17 +5,26 @@
 
 namespace BlueChip\Security\Modules\Checksums;
 
+use BlueChip\Security\Modules;
+
 /**
  * Plugins verifier gets (official) checksums from WordPress.org Downloads.
  *
  * @link https://meta.trac.wordpress.org/ticket/3192
  */
-class PluginsVerifier extends Verifier
+class PluginsVerifier extends Verifier implements Modules\Initializable
 {
     /**
      * @var string URL of checksum API
      */
     const CHECKSUMS_API_URL_BASE = 'https://downloads.wordpress.org/plugin-checksums/';
+
+
+    public function init()
+    {
+        // Hook into cron job execution.
+        add_action(Modules\Cron\Jobs::CORE_CHECKSUMS_VERIFIER, [$this, 'runCheck'], 10, 0);
+    }
 
 
     /**

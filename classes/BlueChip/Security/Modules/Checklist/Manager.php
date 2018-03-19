@@ -5,7 +5,9 @@
 
 namespace BlueChip\Security\Modules\Checklist;
 
-class Manager
+use BlueChip\Security\Modules;
+
+class Manager implements Modules\Initializable
 {
     /**
      * @var \BlueChip\Security\Modules\Checklist\AutorunSettings
@@ -26,6 +28,13 @@ class Manager
     {
         $this->settings = $settings;
         $this->wpdb = $wpdb;
+    }
+
+
+    public function init()
+    {
+        // Hook into cron job execution.
+        add_action(Modules\Cron\Jobs::CHECKLIST_CHECK, [$this, 'runChecks'], 10, 0);
     }
 
 

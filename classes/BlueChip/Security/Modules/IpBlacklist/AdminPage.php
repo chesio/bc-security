@@ -6,6 +6,7 @@
 namespace BlueChip\Security\Modules\IpBlacklist;
 
 use BlueChip\Security\Helpers\AdminNotices;
+use BlueChip\Security\Modules\Cron;
 
 class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
 {
@@ -63,22 +64,22 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
     private $bl_manager;
 
     /**
-     * @var \BlueChip\Security\Core\CronJob
+     * @var \BlueChip\Security\Modules\Cron\Manager
      */
-    private $bl_cleaner;
+    private $cron_manager;
 
 
     /**
      * @param \BlueChip\Security\Modules\IpBlacklist\Manager $bl_manager
-     * @param \BlueChip\Security\Modules\Cron\Job $bl_cleaner
+     * @param \BlueChip\Security\Modules\Cron\Manager $cron_manager
      */
-    public function __construct(Manager $bl_manager, \BlueChip\Security\Modules\Cron\Job $bl_cleaner)
+    public function __construct(Manager $bl_manager, Cron\Manager $cron_manager)
     {
         $this->page_title = _x('IP Blacklist', 'Dashboard page title', 'bc-security');
         $this->menu_title = _x('IP Blacklist', 'Dashboard menu item name', 'bc-security');
 
         $this->bl_manager = $bl_manager;
-        $this->bl_cleaner = $bl_cleaner;
+        $this->cron_manager = $cron_manager;
 
         $this->setCounter($bl_manager);
         $this->setPerPageOption('bc_security_ip_blacklist_records_per_page');
@@ -213,7 +214,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
         echo '</form>';
 
         echo '<form method="post">';
-        if ($this->bl_cleaner->isScheduled()) {
+        if ($this->cron_manager->getJob(Cron\Jobs::IP_BLACKLIST_CLEAN_UP)->isScheduled()) {
             wp_nonce_field(self::CRON_ACTION_OFF, self::NONCE_NAME);
             echo '<p>' . esc_html__('Automatic clean up of out-dated records is active.', 'bc-security') . '</p>';
             submit_button(__('Deactivate auto-pruning', 'bc-security'), 'delete', self::CRON_ACTION_OFF, false);
@@ -331,7 +332,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
      */
     private function processCronOffAction()
     {
-        $this->bl_cleaner->deactivate();
+        $this->cron_manager->deactivateJob(Cron\Jobs::IP_BLACKLIST_CLEAN_UP);
         AdminNotices::add(
             __('Automatic pruning of IP blacklist table has been deactivated.', 'bc-security'),
             AdminNotices::SUCCESS
@@ -344,7 +345,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
      */
     private function processCronOnAction()
     {
-        if ($this->bl_cleaner->activate()) {
+        if ($this->cron_manager->activateJob(Cron\Jobs::IP_BLACKLIST_CLEAN_UP)) {
             AdminNotices::add(
                 __('Automatic pruning of IP blacklist table has been activated.', 'bc-security'),
                 AdminNotices::SUCCESS

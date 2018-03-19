@@ -22,7 +22,7 @@ use BlueChip\Security\Modules;
  * release date that is the most future one), if single IP is locked multiple
  * times in the same scope.
  */
-class Manager implements Modules\Countable, Modules\Installable, \Countable
+class Manager implements Modules\Countable, Modules\Installable, Modules\Initializable, \Countable
 {
     /**
      * @var string Name of DB table where IP blacklist is stored
@@ -93,6 +93,13 @@ class Manager implements Modules\Countable, Modules\Installable, \Countable
     public function uninstall()
     {
         $this->wpdb->query(sprintf('DROP TABLE IF EXISTS %s', $this->blacklist_table));
+    }
+
+
+    public function init()
+    {
+        // Hook into cron job execution.
+        add_action(Modules\Cron\Jobs::IP_BLACKLIST_CLEAN_UP, [$this, 'prune'], 10, 0);
     }
 
 
