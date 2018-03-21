@@ -26,7 +26,8 @@ class Manager implements Modules\Activable, Modules\Loadable
     /**
      * @param \BlueChip\Security\Modules\Cron\Settings $settings
      */
-    public function __construct(Settings $settings) {
+    public function __construct(Settings $settings)
+    {
         $this->jobs = [];
         $this->settings = $settings;
     }
