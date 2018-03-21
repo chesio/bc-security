@@ -6,18 +6,42 @@
 namespace BlueChip\Security\Modules\Log\Events;
 
 use BlueChip\Security\Modules\Log\Event;
-use Psr\Log\LogLevel;
 
 class AuthBadCookie extends Event
 {
-    public function __construct()
+    /**
+     * @var string Static event identificator.
+     */
+    const ID = 'auth_bad_cookie';
+
+    /**
+     * @var string Event log level.
+     */
+    const LOG_LEVEL = \Psr\Log\LogLevel::NOTICE;
+
+    /**
+     * __('Username')
+     *
+     * @var string Username used in authentication with a bad cookie.
+     */
+    protected $username = '';
+
+
+    public function getName(): string
     {
-        parent::__construct(
-            self::AUTH_BAD_COOKIE,
-            __('Bad authentication cookie', 'bc-security'),
-            LogLevel::NOTICE,
-            __('Bad authentication cookie used with {username}.', 'bc-security'),
-            ['username' => __('Username', 'bc-security')]
-        );
+        return __('Bad authentication cookie', 'bc-security');
+    }
+
+
+    public function getMessage(): string
+    {
+        return __('Bad authentication cookie used with {username}.', 'bc-security');
+    }
+
+
+    public function setUsername(string $username): self
+    {
+        $this->username = $username;
+        return $this;
     }
 }

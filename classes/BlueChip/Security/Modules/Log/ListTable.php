@@ -39,8 +39,8 @@ class ListTable extends \BlueChip\Security\Core\ListTable
 
         // Display only events of particular type?
         $event_id = filter_input(INPUT_GET, self::VIEW_EVENT, FILTER_SANITIZE_URL);
-        if ($event_id && in_array($event_id, EventsManager::enlist(), true)) {
-            $this->event = EventsManager::create($event_id);
+        if ($event_id && !empty($event = EventsManager::create($event_id))) {
+            $this->event = $event;
             $this->url = add_query_arg(self::VIEW_EVENT, $event_id, $this->url);
         }
     }
@@ -67,9 +67,9 @@ class ListTable extends \BlueChip\Security\Core\ListTable
      */
     public function column_default($item, $column_name) // phpcs:ignore
     {
-        if ($this->event && $this->event->hasContext($column_name)) {
+        if ($this->event && array_key_exists($column_name, $this->event->getContext())) {
             $context = empty($item['context']) ? [] : unserialize($item['context']);
-            $value = isset($context[$column_name]) ? $context[$column_name] : '';
+            $value = $context[$column_name] ?? '';
             // Value can be an array, in such case output array values separated by ",".
             return is_array($value) ? implode(', ', $value) : $value;
         } else {
@@ -117,10 +117,10 @@ class ListTable extends \BlueChip\Security\Core\ListTable
         ];
 
         if ($this->event) {
-            foreach ($this->event->getContext() as $id => $name) {
+            foreach ($this->event->explainContext() as $id => $label) {
                 // Do not override existing columns.
                 if (!isset($columns[$id])) {
-                    $columns[$id] = $name;
+                    $columns[$id] = $label;
                 }
             }
         } else {
@@ -164,12 +164,8 @@ class ListTable extends \BlueChip\Security\Core\ListTable
             ),
         ];
 
-        foreach (EventsManager::enlist() as $eid) {
+        foreach (EventsManager::getInstances() as $eid => $event) {
             // Get human readable name for event type.
-            if (empty($event = EventsManager::create($eid))) {
-                // Ignore event IDs unknown to the plugin (there should be none, but better to be safe).
-                continue;
-            }
 
             $views[$eid] = sprintf(
                 '<a href="%s" class="%s">%s</a> (%d)',
@@ -211,8 +207,8 @@ class ListTable extends \BlueChip\Security\Core\ListTable
      */
     private function getRowActions(array $item): array
     {
-        if (empty($scope = $this->getLockScopeFromEvent($item['event']))) {
-            // No scope, no action.
+        if (($scope = $this->getLockScopeFromEvent($item['event'])) === IpBlacklist\LockScope::ANY) {
+            // No specific scope, no action.
             return [];
         }
 
@@ -235,23 +231,22 @@ class ListTable extends \BlueChip\Security\Core\ListTable
     /**
      * Return appropriate lock scope for $event type.
      *
-     * @see \BlueChip\Security\Modules\Log\Event
+     * @see \BlueChip\Security\Modules\IpBlacklist\LockScope
      *
      * @param string $event_id One from event IDs defined in \BlueChip\Security\Modules\Log\Event.
-     * @return int|null Return null, if given $event does not warrant blacklisting,
-     * otherwise return lock scope code.
+     * @return int Lock scope code. LockScope::ANY indicates that given event does not warrant blacklisting.
      */
-    private function getLockScopeFromEvent(string $event_id)
+    private function getLockScopeFromEvent(string $event_id): int
     {
         switch ($event_id) {
-            case Event::QUERY_404:
+            case Events\Query404::ID:
                 return IpBlacklist\LockScope::WEBSITE;
-            case Event::AUTH_BAD_COOKIE:
-            case Event::LOGIN_FAILURE:
-            case Event::LOGIN_LOCKOUT:
+            case Events\AuthBadCookie::ID:
+            case Events\LoginFailure::ID:
+            case Events\LoginLockout::ID:
                 return IpBlacklist\LockScope::ADMIN;
             default:
-                return null;
+                return IpBlacklist\LockScope::ANY;
         }
     }
 

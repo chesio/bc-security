@@ -6,18 +6,42 @@
 namespace BlueChip\Security\Modules\Log\Events;
 
 use BlueChip\Security\Modules\Log\Event;
-use Psr\Log\LogLevel;
 
 class LoginFailure extends Event
 {
-    public function __construct()
+    /**
+     * @var string Static event identificator.
+     */
+    const ID = 'login_failure';
+
+    /**
+     * @var string Event log level.
+     */
+    const LOG_LEVEL = \Psr\Log\LogLevel::NOTICE;
+
+    /**
+     * __('Username')
+     *
+     * @var string Username used in failed login attempt.
+     */
+    protected $username = '';
+
+
+    public function getName(): string
     {
-        parent::__construct(
-            self::LOGIN_FAILURE,
-            __('Failed login', 'bc-security'),
-            LogLevel::NOTICE,
-            __('Login attempt with username {username} failed.', 'bc-security'),
-            ['username' => __('Username', 'bc-security')]
-        );
+        return __('Failed login', 'bc-security');
+    }
+
+
+    public function getMessage(): string
+    {
+        return __('Login attempt with username {username} failed.', 'bc-security');
+    }
+
+
+    public function setUsername(string $username): self
+    {
+        $this->username = $username;
+        return $this;
     }
 }
