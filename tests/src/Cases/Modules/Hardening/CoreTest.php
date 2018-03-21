@@ -3,7 +3,7 @@
  * @package BC Security
  */
 
-namespace BlueChip\Security\Tests\Cases;
+namespace BlueChip\Security\Tests\Cases\Modules\Hardening;
 
 use BlueChip\Security\Modules\Hardening;
 

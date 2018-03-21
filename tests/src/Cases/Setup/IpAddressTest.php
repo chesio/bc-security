@@ -3,7 +3,7 @@
  * @package BC Security
  */
 
-namespace BlueChip\Security\Tests\Cases;
+namespace BlueChip\Security\Tests\Cases\Setup;
 
 use BlueChip\Security\Setup\IpAddress;
 
