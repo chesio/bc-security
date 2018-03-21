@@ -3,11 +3,11 @@
  * @package BC Security
  */
 
-namespace BlueChip\Security\Tests\Cases\Modules\Cron;
+namespace BlueChip\Security\Tests\Integration\Cases\Modules\Cron;
 
 use BlueChip\Security\Modules\Cron;
 
-class JobTest extends \BlueChip\Security\Tests\TestCase
+class JobTest extends \BlueChip\Security\Tests\Integration\TestCase
 {
     const HOOK = 'test-job';
 

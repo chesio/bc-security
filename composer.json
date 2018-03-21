@@ -22,16 +22,25 @@
   },
   "require-dev": {
     "squizlabs/php_codesniffer": "^3.2",
-    "phpunit/phpunit": "^6.5"
+    "phpunit/phpunit": "^6.5",
+    "brain/monkey": "^2.2"
   },
   "autoload-dev": {
     "psr-4": {
-      "BlueChip\\Security\\Tests\\": "tests/src"
+      "BlueChip\\Security\\Tests\\Integration\\": "tests/integration/src",
+      "BlueChip\\Security\\Tests\\Unit\\": "tests/unit/src",
+      "BlueChip\\Security\\": "classes/BlueChip/Security",
+      "Psr\\Log\\": "classes/Psr/Log"
     }
   },
   "scripts": {
     "phpcs": "phpcs",
-    "phpunit": "phpunit",
-    "test": ["phpcs", "phpunit"]
+    "integration-tests": "phpunit --configuration tests/integration/phpunit.xml",
+    "unit-tests": "phpunit --configuration tests/unit/phpunit.xml",
+    "test": [
+      "phpcs",
+      "phpunit --configuration tests/integration/phpunit.xml",
+      "phpunit --configuration tests/unit/phpunit.xml"
+    ]
   }
 }

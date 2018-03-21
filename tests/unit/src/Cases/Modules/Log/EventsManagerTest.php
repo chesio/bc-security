@@ -3,11 +3,11 @@
  * @package BC Security
  */
 
-namespace BlueChip\Security\Tests\Cases\Modules\Log;
+namespace BlueChip\Security\Tests\Unit\Cases\Modules\Log;
 
 use BlueChip\Security\Modules\Log;
 
-class EventsManagerTest extends \BlueChip\Security\Tests\TestCase
+class EventsManagerTest extends \BlueChip\Security\Tests\Unit\TestCase
 {
     /**
      * Ensure that mapping from event ID to event class is sane.

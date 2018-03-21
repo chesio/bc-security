@@ -3,13 +3,13 @@
  * @package BC Security
  */
 
-namespace BlueChip\Security\Tests\Cases\Setup;
+namespace BlueChip\Security\Tests\Unit\Cases\Setup;
 
 use BlueChip\Security\Setup\IpAddress;
 
-class IpAddressTest extends \BlueChip\Security\Tests\TestCase
+class IpAddressTest extends \BlueChip\Security\Tests\Unit\TestCase
 {
-    public function setUp()
+    protected function setUp()
     {
         parent::setUp();
 
@@ -20,12 +20,14 @@ class IpAddressTest extends \BlueChip\Security\Tests\TestCase
     }
 
 
-    public function tearDown()
+    protected function tearDown()
     {
         unset($_SERVER[IpAddress::REMOTE_ADDR]);
         unset($_SERVER[IpAddress::HTTP_X_FORWARDED_FOR]);
         unset($_SERVER[IpAddress::HTTP_X_REAL_IP]);
         unset($_SERVER[IpAddress::HTTP_CF_CONNECTING_IP]);
+
+        parent::tearDown();
     }
 
 

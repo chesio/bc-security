@@ -3,11 +3,11 @@
  * @package BC Security
  */
 
-namespace BlueChip\Security\Tests\Cases\Modules\Log;
+namespace BlueChip\Security\Tests\Unit\Cases\Modules\Log;
 
 use BlueChip\Security\Modules\Log;
 
-class EventsTest extends \BlueChip\Security\Tests\TestCase
+class EventsTest extends \BlueChip\Security\Tests\Unit\TestCase
 {
     /**
      * Ensure that every event type (class) has the necessary constants: ID and LEVEL.
