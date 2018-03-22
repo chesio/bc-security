@@ -9,6 +9,9 @@ use Brain\Monkey;
 
 class TestCase extends \PHPUnit\Framework\TestCase
 {
+    // See: https://github.com/Brain-WP/BrainMonkey/issues/39
+    use \Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
+
     protected function setUp()
     {
         parent::setUp();
