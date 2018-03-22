@@ -32,15 +32,15 @@ class Core implements \BlueChip\Security\Modules\Initializable
     {
         if ($this->settings[Settings::DISABLE_PINGBACKS]) {
             // Disable pingbacks
-            add_filter('xmlrpc_methods', [$this, 'disablePingbacks']);
+            add_filter('xmlrpc_methods', [$this, 'disablePingbacks'], 10, 1);
         }
         if ($this->settings[Settings::DISABLE_XML_RPC]) {
             // Disable all XML-RPC methods requiring authentication
-            add_filter('xmlrpc_enabled', '__return_false');
+            add_filter('xmlrpc_enabled', '__return_false', 10, 0);
         }
         if ($this->settings[Settings::DISABLE_REST_API]) {
             // Disable REST API methods to anonymous users
-            add_filter('rest_authentication_errors', [$this, 'requireAuthForRestAccess']);
+            add_filter('rest_authentication_errors', [$this, 'requireAuthForRestAccess'], 10, 1);
         }
     }
 
