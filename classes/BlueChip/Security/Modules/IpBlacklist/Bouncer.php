@@ -44,9 +44,8 @@ class Bouncer implements \BlueChip\Security\Modules\Initializable, \BlueChip\Sec
             self::blockAccessTemporarily();
         }
 
-        // Check, if access to website is allowed as early as possible, but
-        // leave priority 0 to website maintainers.
-        add_filter('plugins_loaded', [$this, 'checkAccess'], 1, 0);
+        // Check, if access to website is allowed.
+        add_filter('plugins_loaded', [$this, 'checkAccess'], 1, 0); // Leave priority 0 for site maintainers.
     }
 
 
@@ -55,9 +54,7 @@ class Bouncer implements \BlueChip\Security\Modules\Initializable, \BlueChip\Sec
      */
     public function init()
     {
-        // Check, if access to login is allowed as early as possible, but
-        // leave priority 0 to website maintainers.
-        add_filter('authenticate', [$this, 'checkLoginAttempt'], 1, 1);
+        add_filter('authenticate', [$this, 'checkLoginAttempt'], 1, 1); // Leave priority 0 for site maintainers.
     }
 
 
