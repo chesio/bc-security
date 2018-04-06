@@ -46,7 +46,7 @@ abstract class Transients
      */
     public static function setForSite($value, ...$args): bool
     {
-        // If the first variable argument is int, take it as expiration value.
+        // If the first from variable arguments is plain integer, take it as expiration value.
         $expiration = is_int($args[0]) ? array_shift($args) : 0;
 
         return set_site_transient(self::name($args), $value, $expiration);
