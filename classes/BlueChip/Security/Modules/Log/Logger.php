@@ -6,6 +6,7 @@
 namespace BlueChip\Security\Modules\Log;
 
 use BlueChip\Security\Modules;
+use BlueChip\Security\Modules\Services\ReverseDnsLookup;
 use Psr\Log;
 
 /**
@@ -13,7 +14,7 @@ use Psr\Log;
  *
  * @link http://www.php-fig.org/psr/psr-3/
  */
-class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\Countable, Modules\Installable, Modules\Loadable, \Countable
+class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\Countable, Modules\Initializable, Modules\Installable, Modules\Loadable, \Countable
 {
     /** @var string Name of DB table where logs are stored */
     const LOG_TABLE = 'bc_security_log';
@@ -30,6 +31,9 @@ class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\
     /** @var string Remote IP address */
     private $remote_address;
 
+    /** @var \BlueChip\Security\Modules\Services\ReverseDnsLookup\Resolver */
+    private $hostname_resolver;
+
     /** @var \wpdb WordPress database access abstraction object */
     private $wpdb;
 
@@ -37,14 +41,16 @@ class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\
     /**
      * @param \wpdb $wpdb WordPress database access abstraction object
      * @param string $remote_address Remote IP address.
+     * @param \BlueChip\Security\Modules\Services\ReverseDnsLookup\Resolver $hostname_resolver
      */
-    public function __construct(\wpdb $wpdb, $remote_address)
+    public function __construct(\wpdb $wpdb, $remote_address, ReverseDnsLookup\Resolver $hostname_resolver)
     {
         $this->log_table = $wpdb->prefix . self::LOG_TABLE;
         $this->columns = [
-            'id', 'date_and_time', 'ip_address', 'event', 'level', 'message', 'context',
+            'id', 'date_and_time', 'ip_address', 'hostname', 'event', 'level', 'message', 'context',
         ];
         $this->remote_address = $remote_address;
+        $this->hostname_resolver = $hostname_resolver;
         $this->wpdb = $wpdb;
     }
 
@@ -64,6 +70,7 @@ class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\
             "id int unsigned NOT NULL AUTO_INCREMENT,",
             "date_and_time datetime NOT NULL,",
             "ip_address char(128) NOT NULL,",
+            "hostname char(255) NOT NULL",
             "event char(64) NOT NULL,",
             "level tinyint(3) NULL,",
             "message text NULL,",
@@ -98,6 +105,12 @@ class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\
     }
 
 
+    public function init()
+    {
+        add_action(Hooks::HOSTNAME_RESOLVED, [$this, 'processReverseDnsLookupResponse'], 10, 1);
+    }
+
+
     /**
      * Log generic event.
      *
@@ -107,12 +120,17 @@ class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\
      */
     public function log($level, $message, array $context = [])
     {
-        $this->wpdb->insert(
+        // Allow overriding of IP address via $context.
+        $ip_address = isset($context['ip_address']) ? $context['ip_address'] : $this->remote_address;
+        // Event is optional, though it makes little sense to log data without event type in the moment.
+        $event = $context['event'] ?? '';
+
+        $insertion_status = $this->wpdb->insert(
             $this->log_table,
             [
                 'date_and_time' => date(self::MYSQL_DATETIME_FORMAT, current_time('timestamp')),
-                'ip_address' => isset($context['ip_address']) ? $context['ip_address'] : $this->remote_address, // Allow overriding of IP address.
-                'event' => isset($context['event']) ? $context['event'] : '', // Event is optional.
+                'ip_address' => $ip_address,
+                'event' => $event,
                 'level' => $this->translateLogLevel($level),
                 'message' => $message,
                 'context' => serialize($context),
@@ -126,6 +144,23 @@ class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\
                 '%s',
             ]
         );
+
+        if ($insertion_status === 1) {
+            // Determine, whether hostname of remote IP address should be immediately resolved.
+            $events_with_hostname_resolving = apply_filters(
+                Hooks::EVENTS_WITH_HOSTNAME_RESOLUTION,
+                [Event::AUTH_BAD_COOKIE, Event::LOGIN_FAILURE, Event::LOGIN_LOCKOUT, Event::LOGIN_SUCCESSFUL,]
+            );
+
+            if (in_array($event, $events_with_hostname_resolving, true)) {
+                // Schedule hostname resolution for inserted log record.
+                $this->hostname_resolver->resolveHostnameInBackground(
+                    $ip_address,
+                    Hooks::HOSTNAME_RESOLVED,
+                    ['log_record_id' => $this->wpdb->insert_id,]
+                );
+            }
+        }
     }
 
 
@@ -171,6 +206,23 @@ class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\
                 _doing_it_wrong(__METHOD__, sprintf('Unknown log level: %s', $level), '0.2.0');
                 return null;
         }
+    }
+
+
+    /**
+     * Process response from (non-blocking) reverse DNS lookup - update hostname of record with resolved IP address.
+     *
+     * @param \BlueChip\Security\Modules\Services\ReverseDnsLookup\Response $response
+     */
+    public function processReverseDnsLookupResponse(ReverseDnsLookup\Response $response)
+    {
+        $this->wpdb->update(
+            $this->log_table,
+            ['hostname' => $response->getHostname()],
+            ['id' => $response->getContext()['log_record_id'], 'ip_address' => $response->getIpAddress()],
+            ['%s'],
+            ['%d', '%s']
+        );
     }
 
 
