@@ -6,7 +6,6 @@
 namespace BlueChip\Security\Modules\Log;
 
 use BlueChip\Security\Modules\Checksums;
-use BlueChip\Security\Modules\Log;
 use BlueChip\Security\Modules\Login;
 
 class EventsMonitor implements \BlueChip\Security\Modules\Initializable
@@ -72,7 +71,7 @@ class EventsMonitor implements \BlueChip\Security\Modules\Initializable
         global $wp_query;
 
         if ($wp_query->is_404() && apply_filters(Hooks::LOG_404_EVENT, true, $wp->request)) {
-            do_action(Log\Action::EVENT, Log\Event::QUERY_404, ['request' => $wp->request]);
+            do_action(Action::EVENT, (new Events\Query404())->setRequestUri($wp->request));
         }
     }
 
@@ -84,7 +83,7 @@ class EventsMonitor implements \BlueChip\Security\Modules\Initializable
      */
     public function logBadCookie(array $cookie_elements)
     {
-        do_action(Log\Action::EVENT, Log\Event::AUTH_BAD_COOKIE, ['username' => $cookie_elements['username']]);
+        do_action(Action::EVENT, (new Events\AuthBadCookie())->setUsername($cookie_elements['username']));
     }
 
 
@@ -95,7 +94,7 @@ class EventsMonitor implements \BlueChip\Security\Modules\Initializable
      */
     public function logFailedLogin(string $username)
     {
-        do_action(Log\Action::EVENT, Log\Event::LOGIN_FAILURE, ['username' => $username]);
+        do_action(Action::EVENT, (new Events\LoginFailure())->setUsername($username));
     }
 
 
@@ -106,7 +105,7 @@ class EventsMonitor implements \BlueChip\Security\Modules\Initializable
      */
     public function logSuccessfulLogin(string $username)
     {
-        do_action(Log\Action::EVENT, Log\Event::LOGIN_SUCCESSFUL, ['username' => $username]);
+        do_action(Action::EVENT, (new Events\LoginSuccessful())->setUsername($username));
     }
 
 
@@ -119,7 +118,7 @@ class EventsMonitor implements \BlueChip\Security\Modules\Initializable
      */
     public function logLockoutEvent(string $remote_address, string $username, int $duration)
     {
-        do_action(Log\Action::EVENT, Log\Event::LOGIN_LOCKOUT, ['ip_address' => $remote_address, 'duration' => $duration, 'username' => $username]);
+        do_action(Action::EVENT, (new Events\LoginLockout())->setDuration($duration)->setIpAddress($remote_address)->setUsername($username));
     }
 
 
@@ -131,7 +130,7 @@ class EventsMonitor implements \BlueChip\Security\Modules\Initializable
      */
     public function logCoreChecksumsVerificationAlert(array $modified_files, array $unknown_files)
     {
-        do_action(Log\Action::EVENT, Log\Event::CORE_CHECKSUMS_VERIFICATION_ALERT, ['modified_files' => $modified_files, 'unknown_files' => $unknown_files]);
+        do_action(Action::EVENT, (new Events\CoreChecksumsVerificationAlert())->setModifiedFiles($modified_files)->setUnknownFiles($unknown_files));
     }
 
 
@@ -143,7 +142,7 @@ class EventsMonitor implements \BlueChip\Security\Modules\Initializable
     public function logPluginChecksumsVerificationAlert(array $plugins)
     {
         foreach ($plugins as $plugin_data) {
-            do_action(Log\Action::EVENT, Log\Event::PLUGIN_CHECKSUMS_VERIFICATION_ALERT, ['plugin_name' => $plugin_data['Name'], 'plugin_version' => $plugin_data['Version'], 'modified_files' => $plugin_data['ModifiedFiles'], 'unknown_files' => $plugin_data['UnknownFiles']]);
+            do_action(Action::EVENT, (new Events\PluginChecksumsVerificationAlert())->setPluginName($plugin_data['Name'])->setPluginVersion($plugin_data['Version'])->setModifiedFiles($plugin_data['ModifiedFiles'])->setUnknownFiles($plugin_data['UnknownFiles']));
         }
     }
 }

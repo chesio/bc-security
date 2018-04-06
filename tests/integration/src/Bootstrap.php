@@ -1,28 +1,42 @@
 <?php
 /**
- * PHPUnit bootstrap file
- *
  * @package BC Security
  */
 
-class BcSecurityUnitTestsBootstrap {
+namespace BlueChip\Security\Tests\Integration;
 
-    /** @var BcSecurityUnitTestsBootstrap instance */
-    protected static $instance = null;
-
-    /** @var string testing directory */
-    public $tests_dir;
-
+class Bootstrap
+{
     /** @var string plugin directory */
     public $plugin_dir;
 
     /** @var string directory where wordpress-tests-lib is installed */
     public $wp_tests_dir;
 
+
     /**
-     * Setup the unit testing environment.
+     * @return string Path to where WordPress tests library is installed.
+     */
+    public static function getWordPressTestsDirectory(): string
+    {
+        return getenv('WP_TESTS_DIR') ?: rtrim(sys_get_temp_dir(), '/\\') . '/wordpress-tests-lib';
+    }
+
+
+    /**
+     * Construct the bootstraper.
      */
     public function __construct()
+    {
+        $this->plugin_dir   = dirname(dirname(dirname(__DIR__)));
+        $this->wp_tests_dir = self::getWordPressTestsDirectory();
+    }
+
+
+    /**
+     * Setup the integration testing environment.
+     */
+    public function run()
     {
         // Make sure strict standards are reported
         error_reporting(E_ALL);
@@ -31,13 +45,6 @@ class BcSecurityUnitTestsBootstrap {
         if (!isset($_SERVER['SERVER_NAME'])) {
             $_SERVER['SERVER_NAME'] = 'bc-security.test';
         }
-
-        $this->tests_dir    = __DIR__;
-        $this->plugin_dir   = dirname($this->tests_dir);
-        $this->wp_tests_dir = getenv('WP_TESTS_DIR') ?: rtrim(sys_get_temp_dir(), '/\\') . '/wordpress-tests-lib';
-
-        // Require Composer autoloader
-        require_once $this->plugin_dir . '/vendor/autoload.php';
 
         // Load test function so tests_add_filter() is available.
         require_once $this->wp_tests_dir . '/includes/functions.php';
@@ -58,20 +65,4 @@ class BcSecurityUnitTestsBootstrap {
         // Start up the WP testing environment.
         require_once $this->wp_tests_dir . '/includes/bootstrap.php';
     }
-
-    /**
-     * Get the single class instance.
-     *
-     * @return BcSecurityUnitTestsBootstrap
-     */
-    public static function getInstance()
-    {
-        if (is_null(self::$instance)) {
-            self::$instance = new self();
-        }
-
-        return self::$instance;
-    }
 }
-
-BcSecurityUnitTestsBootstrap::getInstance();

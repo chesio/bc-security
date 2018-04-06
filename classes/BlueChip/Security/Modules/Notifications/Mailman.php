@@ -26,7 +26,7 @@ abstract class Mailman
      */
     public static function send($to, string $subject, $message): bool
     {
-        return wp_mail(
+        return \wp_mail(
             $to,
             self::formatSubject($subject),
             self::formatMessage(is_array($message) ? $message : [$message])

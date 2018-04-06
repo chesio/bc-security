@@ -6,18 +6,42 @@
 namespace BlueChip\Security\Modules\Log\Events;
 
 use BlueChip\Security\Modules\Log\Event;
-use Psr\Log\LogLevel;
 
 class LoginSuccessful extends Event
 {
-    public function __construct()
+    /**
+     * @var string Static event identificator.
+     */
+    const ID = 'login_success';
+
+    /**
+     * @var string Event log level.
+     */
+    const LOG_LEVEL = \Psr\Log\LogLevel::INFO;
+
+    /**
+     * __('Username')
+     *
+     * @var string Username of user who logged in.
+     */
+    protected $username = '';
+
+
+    public function getName(): string
     {
-        parent::__construct(
-            self::LOGIN_SUCCESSFUL,
-            __('Successful login', 'bc-security'),
-            LogLevel::INFO,
-            __('User {username} logged in successfully.', 'bc-security'),
-            ['username' => __('Username', 'bc-security')]
-        );
+        return __('Successful login', 'bc-security');
+    }
+
+
+    public function getMessage(): string
+    {
+        return __('User {username} logged in successfully.', 'bc-security');
+    }
+
+
+    public function setUsername(string $username): self
+    {
+        $this->username = $username;
+        return $this;
     }
 }

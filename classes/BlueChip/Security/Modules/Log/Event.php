@@ -5,94 +5,92 @@
 
 namespace BlueChip\Security\Modules\Log;
 
-class Event
+/**
+ * Base class for events. Implement event types as subclasses of this class.
+ */
+abstract class Event
 {
-    const AUTH_BAD_COOKIE = 'auth_bad_cookie';
-    const LOGIN_FAILURE = 'login_failure';
-    const LOGIN_LOCKOUT = 'login_lockdown';
-    const LOGIN_SUCCESSFUL = 'login_success';
-    const QUERY_404 = 'query_404';
-    const CORE_CHECKSUMS_VERIFICATION_ALERT = 'core_checksums_verification_alert';
-    const PLUGIN_CHECKSUMS_VERIFICATION_ALERT = 'plugin_checksums_verification_alert';
-
-
     /**
-     * @var string Unique ID
-     */
-    private $id;
-
-    /**
-     * @var string Human readable name
-     */
-    private $name;
-
-    /**
-     * @var string Log level
-     */
-    private $level;
-
-    /**
-     * @var string Log message
-     */
-    private $message;
-
-    /**
-     * @var array Required context keys
-     */
-    private $context;
-
-
-    /**
-     * Create event instance.
+     * @internal Static identifier is used for event type identification wherever use of classname is a bit cumbersome
+     * like in database data or GET requests.
      *
-     * @param string $id
-     * @param string $name
-     * @param string $level
-     * @param string $message
-     * @param array $context
+     * @return string Static identifier for event type (class).
      */
-    protected function __construct(string $id, string $name, string $level, string $message, array $context)
-    {
-        $this->id = $id;
-        $this->name = $name;
-        $this->level = $level;
-        $this->message = $message;
-        $this->context = $context;
-    }
-
-
     public function getId(): string
     {
-        return $this->id;
+        return static::ID;
     }
 
 
-    public function getName(): string
+    /**
+     * @return string Log level for event type (class).
+     */
+    public function getLogLevel(): string
     {
-        return $this->name;
+        return static::LOG_LEVEL;
     }
 
 
-    public function getLevel(): string
-    {
-        return $this->level;
-    }
+    /**
+     * @return string Human readable name unique for event type (class).
+     */
+    abstract public function getName(): string;
 
 
-    public function getMessage(): string
-    {
-        return $this->message;
-    }
+    /**
+     * @return string Log message providing context to the event.
+     */
+    abstract public function getMessage(): string;
 
 
+    /**
+     * @return array Context data for this event.
+     */
     public function getContext(): array
     {
-        return $this->context;
+        $reflection = new \ReflectionClass(static::class);
+
+        $output = [];
+        foreach ($reflection->getProperties(\ReflectionProperty::IS_PROTECTED) as $property) {
+            $output[$property->getName()] = $this->{$property->getName()};
+        }
+
+        return $output;
     }
 
 
-    public function hasContext(string $key): bool
+    /**
+     * @return array Context columns with human readable descriptions (labels).
+     */
+    public function explainContext(): array
     {
-        return isset($this->context[$key]);
+        $reflection = new \ReflectionClass(static::class);
+
+        $output = [];
+        foreach ($reflection->getProperties(\ReflectionProperty::IS_PROTECTED) as $property) {
+            $output[$property->getName()] = self::getPropertyLabel($property);
+        }
+
+        return $output;
+    }
+
+
+    /**
+     * Extract context property label.
+     *
+     * @internal Property label must be enclosed in pseudo-call to translation function __('I am the label') placed in
+     * property PHPDoc comment.
+     *
+     * @param \ReflectionProperty $property
+     * @return string
+     */
+    private static function getPropertyLabel(\ReflectionProperty $property): string
+    {
+        $matches = [];
+        if (preg_match("/__\('(.+)'\)/i", $property->getDocComment(), $matches)) {
+            return __($matches[1], 'bc-security');
+        } else {
+            return '';
+        }
     }
 }

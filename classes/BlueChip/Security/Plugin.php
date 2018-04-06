@@ -16,11 +16,6 @@ class Plugin
     public $admin;
 
     /**
-     * @var \BlueChip\Security\Core\CronJob[] Plugin cron jobs
-     */
-    private $cron_jobs;
-
-    /**
      * @var array Plugin module objects
      */
     private $modules;
@@ -67,9 +62,6 @@ class Plugin
 
         // Construct modules.
         $this->modules = $this->constructModules($wpdb, $remote_address, $server_address, $this->settings);
-
-        // Construct cron jobs.
-        $this->cron_jobs = $this->constructCronJobs($this->settings, $this->modules);
     }
 
 
@@ -103,7 +95,8 @@ class Plugin
      */
     private function constructModules(\wpdb $wpdb, string $remote_address, string $server_address, array $settings): array
     {
-        $logger             = new Modules\Log\Logger($wpdb, $remote_address);
+        $cron_job_manager   = new Modules\Cron\Manager($settings['cron-jobs']);
+        $logger             = new Modules\Log\Logger($wpdb, $remote_address, $settings['log']);
         $checklist_manager  = new Modules\Checklist\Manager($settings['checklist-autorun'], $wpdb);
         $core_verifier      = new Modules\Checksums\CoreVerifier();
         $plugins_verifier   = new Modules\Checksums\PluginsVerifier();
@@ -116,6 +109,7 @@ class Plugin
         $gatekeeper         = new Modules\Login\Gatekeeper($settings['login'], $remote_address, $bookkeeper, $blacklist_manager);
 
         return [
+            'cron-job-manager'  => $cron_job_manager,
             'logger'            => $logger,
             'checklist-manager' => $checklist_manager,
             'core-verifier'     => $core_verifier,
@@ -127,64 +121,6 @@ class Plugin
             'blacklist-bouncer' => $blacklist_bouncer,
             'login-bookkeeper'  => $bookkeeper,
             'login-gatekeeper'  => $gatekeeper,
-        ];
-    }
-
-
-    /**
-     * Construct plugin cron jobs.
-     *
-     * @param array $settings
-     * @param array $modules
-     * @return array
-     */
-    private function constructCronJobs(array $settings, array $modules): array
-    {
-        return [
-            'checklist-checker' => new Modules\Cron\Job(
-                $settings['cron-jobs'],
-                Modules\Cron\Job::RUN_AT_NIGHT,
-                Modules\Cron\Recurrence::DAILY,
-                Modules\Cron\Jobs::CHECKLIST_CHECK,
-                [$modules['checklist-manager'], 'runChecks']
-            ),
-            'blacklist-cleaner' => new Modules\Cron\Job(
-                $settings['cron-jobs'],
-                Modules\Cron\Job::RUN_AT_NIGHT,
-                Modules\Cron\Recurrence::DAILY,
-                Modules\Cron\Jobs::IP_BLACKLIST_CLEAN_UP,
-                [$modules['blacklist-manager'], 'prune']
-            ),
-            'log-cleaner-by-age' => new Modules\Cron\Job(
-                $settings['cron-jobs'],
-                Modules\Cron\Job::RUN_AT_NIGHT,
-                Modules\Cron\Recurrence::DAILY,
-                Modules\Cron\Jobs::LOGS_CLEAN_UP_BY_AGE,
-                [$modules['logger'], 'pruneByAge'],
-                [$settings['log']->getMaxAge()]
-            ),
-            'log-cleaner-by-size' => new Modules\Cron\Job(
-                $settings['cron-jobs'],
-                Modules\Cron\Job::RUN_AT_NIGHT,
-                Modules\Cron\Recurrence::DAILY,
-                Modules\Cron\Jobs::LOGS_CLEAN_UP_BY_SIZE,
-                [$modules['logger'], 'pruneBySize'],
-                [$settings['log']->getMaxSize()]
-            ),
-            'core-checksums-verifier' => new Modules\Cron\Job(
-                $settings['cron-jobs'],
-                Modules\Cron\Job::RUN_AT_NIGHT,
-                Modules\Cron\Recurrence::DAILY,
-                Modules\Cron\Jobs::CORE_CHECKSUMS_VERIFIER,
-                [$modules['core-verifier'], 'runCheck']
-            ),
-            'plugin-checksums-verifier' => new Modules\Cron\Job(
-                $settings['cron-jobs'],
-                Modules\Cron\Job::RUN_AT_NIGHT,
-                Modules\Cron\Recurrence::DAILY,
-                Modules\Cron\Jobs::PLUGIN_CHECKSUMS_VERIFIER,
-                [$modules['plugins-verifier'], 'runCheck']
-            ),
         ];
     }
 
@@ -220,11 +156,6 @@ class Plugin
             }
         }
 
-        // Initialize cron jobs.
-        foreach ($this->cron_jobs as $cron_job) {
-            $cron_job->init();
-        }
-
         if ($this->admin) {
             // Initialize admin interface (set necessary hooks).
             $this->admin->init($this->plugin_filename)
@@ -234,7 +165,7 @@ class Plugin
                 ->addPage(new Modules\Checklist\AdminPage($this->modules['checklist-manager'], $this->settings['checklist-autorun']))
                 ->addPage(new Modules\Hardening\AdminPage($this->settings['hardening']))
                 ->addPage(new Modules\Login\AdminPage($this->settings['login']))
-                ->addPage(new Modules\IpBlacklist\AdminPage($this->modules['blacklist-manager'], $this->cron_jobs['blacklist-cleaner']))
+                ->addPage(new Modules\IpBlacklist\AdminPage($this->modules['blacklist-manager'], $this->modules['cron-job-manager']))
                 ->addPage(new Modules\Notifications\AdminPage($this->settings['notifications']))
                 ->addPage(new Modules\Log\AdminPage($this->settings['log'], $this->modules['logger']))
             ;
@@ -263,13 +194,6 @@ class Plugin
                 $module->activate();
             }
         }
-
-        // Schedule cron jobs that should be scheduled.
-        foreach ($this->cron_jobs as $cron_job) {
-            if ($cron_job->isOn()) {
-                $cron_job->schedule();
-            }
-        }
     }
 
 
@@ -281,13 +205,6 @@ class Plugin
      */
     public function deactivate()
     {
-        // Unschedule all scheduled cron jobs.
-        foreach ($this->cron_jobs as $cron_job) {
-            if ($cron_job->isScheduled()) {
-                $cron_job->unschedule();
-            }
-        }
-
         // Deactivate every module that requires it.
         foreach ($this->modules as $module) {
             if ($module instanceof Modules\Activable) {

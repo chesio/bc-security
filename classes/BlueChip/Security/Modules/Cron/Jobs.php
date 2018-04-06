@@ -5,7 +5,7 @@
 
 namespace BlueChip\Security\Modules\Cron;
 
-interface Jobs
+abstract class Jobs
 {
     /** string: Hook name for "Checklist autorun" cron job */
     const CHECKLIST_CHECK = 'bc-security/checklist-autorun';
@@ -24,4 +24,14 @@ interface Jobs
 
     /** string: Hook name for "Verify plugin checksums" cron job */
     const PLUGIN_CHECKSUMS_VERIFIER = 'bc-security/plugin-checksums-verifier';
+
+
+    /**
+     * @return array List of all implemented cron jobs.
+     */
+    public static function enlist(): array
+    {
+        $reflection = new \ReflectionClass(self::class);
+        return $reflection->getConstants();
+    }
 }

@@ -13,7 +13,7 @@ use Psr\Log;
  *
  * @link http://www.php-fig.org/psr/psr-3/
  */
-class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\Countable, Modules\Installable, Modules\Loadable, \Countable
+class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\Countable, Modules\Installable, Modules\Loadable, Modules\Initializable, \Countable
 {
     /** @var string Name of DB table where logs are stored */
     const LOG_TABLE = 'bc_security_log';
@@ -30,6 +30,9 @@ class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\
     /** @var string Remote IP address */
     private $remote_address;
 
+    /** @var \BlueChip\Security\Modules\Log\Settings Module settings */
+    private $settings;
+
     /** @var \wpdb WordPress database access abstraction object */
     private $wpdb;
 
@@ -37,14 +40,14 @@ class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\
     /**
      * @param \wpdb $wpdb WordPress database access abstraction object
      * @param string $remote_address Remote IP address.
+     * @param \BlueChip\Security\Modules\Log\Settings Module settings
      */
-    public function __construct(\wpdb $wpdb, $remote_address)
+    public function __construct(\wpdb $wpdb, $remote_address, Settings $settings)
     {
         $this->log_table = $wpdb->prefix . self::LOG_TABLE;
-        $this->columns = [
-            'id', 'date_and_time', 'ip_address', 'event', 'level', 'message', 'context',
-        ];
+        $this->columns = ['id', 'date_and_time', 'ip_address', 'event', 'level', 'message', 'context', ];
         $this->remote_address = $remote_address;
+        $this->settings = $settings;
         $this->wpdb = $wpdb;
     }
 
@@ -94,7 +97,15 @@ class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\
         add_action(Action::INFO, [$this, 'info'], 10, 2);
         add_action(Action::DEBUG, [$this, 'debug'], 10, 2);
         add_action(Action::LOG, [$this, 'log'], 10, 3);
-        add_action(Action::EVENT, [$this, 'logEvent'], 10, 2);
+        add_action(Action::EVENT, [$this, 'logEvent'], 10, 1);
+    }
+
+
+    public function init()
+    {
+        // Hook into cron job execution.
+        add_action(Modules\Cron\Jobs::LOGS_CLEAN_UP_BY_AGE, [$this, 'pruneByAge'], 10, 0);
+        add_action(Modules\Cron\Jobs::LOGS_CLEAN_UP_BY_SIZE, [$this, 'pruneBySize'], 10, 0);
     }
 
 
@@ -112,7 +123,7 @@ class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\
             [
                 'date_and_time' => date(self::MYSQL_DATETIME_FORMAT, current_time('timestamp')),
                 'ip_address' => isset($context['ip_address']) ? $context['ip_address'] : $this->remote_address, // Allow overriding of IP address.
-                'event' => isset($context['event']) ? $context['event'] : '', // Event is optional.
+                'event' => $context['event'] ?? '', // Event is optional.
                 'level' => $this->translateLogLevel($level),
                 'message' => $message,
                 'context' => serialize($context),
@@ -130,15 +141,14 @@ class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\
 
 
     /**
-     * Log event with $event_id and $context.
+     * Log $event.
      *
-     * @param string $event_id
-     * @param array $context
+     * @param \BlueChip\Security\Modules\Log\Event $event
      */
-    public function logEvent($event_id, array $context)
+    public function logEvent(Event $event)
     {
-        $event = EventsManager::create($event_id);
-        $this->log($event->getLevel(), $event->getMessage(), array_merge(['event' => $event_id], $context));
+        // Include event ID in context.
+        $this->log($event->getLogLevel(), $event->getMessage(), array_merge(['event' => $event->getId()], $event->getContext()));
     }
 
 
@@ -148,7 +158,7 @@ class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\
      * @param string $level Log level constant: emergency, alert, critical, error, warning, notice, info or debug.
      * @return mixed Integer code for given log level or null, if unknown level given.
      */
-    public function translateLogLevel($level)
+    public function translateLogLevel(string $level)
     {
         switch ($level) {
             case Log\LogLevel::EMERGENCY:
@@ -294,13 +304,14 @@ class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\
 
 
     /**
-     * Remove all log records that are older than $max_age seconds.
+     * Remove all log records that are older than configured maximum age.
      *
-     * @param int $max_age Maximum age of logs to keep in seconds.
      * @return bool True on success, false on failure.
      */
-    public function pruneByAge($max_age)
+    public function pruneByAge()
     {
+        $max_age = $this->settings->getMaxAge();
+
         // Note: $wpdb->delete cannot be used as it does not support "<=" comparison)
         $query = $this->wpdb->prepare(
             "DELETE FROM {$this->log_table} WHERE date_and_time <= %s",
@@ -312,13 +323,14 @@ class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\
 
 
     /**
-     * Remove all but recent $max_size records from the table.
+     * Remove all but configured number of recent records from the table.
      *
-     * @param int $max_size Maximum number of log records to keep.
      * @return bool True on success, false on failure.
      */
-    public function pruneBySize($max_size)
+    public function pruneBySize()
     {
+        $max_size = $this->settings->getMaxSize();
+
         // First check, if pruning makes sense at all.
         if ($this->countAll() <= $max_size) {
             return true;

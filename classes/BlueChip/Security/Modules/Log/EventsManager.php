@@ -6,54 +6,57 @@
 namespace BlueChip\Security\Modules\Log;
 
 /**
- * Every event must be constructed using event ID.
+ * Events manager helps to maintain event ID => event class/instance mapping.
  */
 abstract class EventsManager
 {
+    private static $mapping = [
+        Events\AuthBadCookie::ID => Events\AuthBadCookie::class,
+        Events\LoginFailure::ID => Events\LoginFailure::class,
+        Events\LoginLockout::ID => Events\LoginLockout::class,
+        Events\LoginSuccessful::ID => Events\LoginSuccessful::class,
+        Events\Query404::ID => Events\Query404::class,
+        Events\CoreChecksumsVerificationAlert::ID => Events\CoreChecksumsVerificationAlert::class,
+        Events\PluginChecksumsVerificationAlert::ID => Events\PluginChecksumsVerificationAlert::class,
+    ];
+
+
     /**
      * Create event object for given $id.
      *
-     * @param string $id Valid event ID.
+     * @param string $event_id Valid event ID.
      * @return \BlueChip\Security\Modules\Log\Event|null
      */
-    public static function create(string $id)
+    public static function create(string $event_id)
     {
-        switch ($id) {
-            case Event::AUTH_BAD_COOKIE:
-                return new Events\AuthBadCookie();
-            case Event::LOGIN_FAILURE:
-                return new Events\LoginFailure();
-            case Event::LOGIN_LOCKOUT:
-                return new Events\LoginLockout();
-            case Event::LOGIN_SUCCESSFUL:
-                return new Events\LoginSuccessful();
-            case Event::QUERY_404:
-                return new Events\Query404();
-            case Event::CORE_CHECKSUMS_VERIFICATION_ALERT:
-                return new Events\CoreChecksumsVerificationAlert();
-            case Event::PLUGIN_CHECKSUMS_VERIFICATION_ALERT:
-                return new Events\PluginChecksumsVerificationAlert();
-            default:
-                return null;
-        }
+        $classname = self::$mapping[$event_id] ?? '';
+        return $classname ? new $classname() : null;
     }
 
 
     /**
-     * Return a list of all events.
+     * Return list of event classes indexed by their IDs.
      *
      * @return array
      */
-    public static function enlist(): array
+    public static function getMapping(): array
     {
-        return [
-            Event::AUTH_BAD_COOKIE,
-            Event::LOGIN_FAILURE,
-            Event::LOGIN_SUCCESSFUL,
-            Event::LOGIN_LOCKOUT,
-            Event::QUERY_404,
-            Event::CORE_CHECKSUMS_VERIFICATION_ALERT,
-            Event::PLUGIN_CHECKSUMS_VERIFICATION_ALERT,
-        ];
+        return self::$mapping;
+    }
+
+
+    /**
+     * Return list of event instances indexed by their IDs.
+     *
+     * @return \BlueChip\Security\Modules\Log\Event[]
+     */
+    public static function getInstances(): array
+    {
+        return array_map(
+            function (string $classname): Event {
+                return new $classname();
+            },
+            self::$mapping
+        );
     }
 }

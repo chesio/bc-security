@@ -6,18 +6,56 @@
 namespace BlueChip\Security\Modules\Log\Events;
 
 use BlueChip\Security\Modules\Log\Event;
-use Psr\Log\LogLevel;
 
 class CoreChecksumsVerificationAlert extends Event
 {
-    public function __construct()
+    /**
+     * @var string Static event identificator.
+     */
+    const ID = 'core_checksums_verification_alert';
+
+    /**
+     * @var string Event log level.
+     */
+    const LOG_LEVEL = \Psr\Log\LogLevel::WARNING;
+
+    /**
+     * __('Modified files')
+     *
+     * @var string List of modified core files found during check.
+     */
+    protected $modified_files = [];
+
+    /**
+     * __('Unknown files')
+     *
+     * @var string List of unknown files found during check.
+     */
+    protected $unknown_files = [];
+
+
+    public function getName(): string
     {
-        parent::__construct(
-            self::CORE_CHECKSUMS_VERIFICATION_ALERT,
-            __('Core checksums verification alert', 'bc-security'),
-            LogLevel::WARNING,
-            __('Following files have been modified: {modified_files}. Following files are unknown: {unknown_files}.', 'bc-security'),
-            ['modified_files' => __('Modified files', 'bc-security'), 'unknown_files' => __('Unknown files', 'bc-security')]
-        );
+        return __('Core checksums verification alert', 'bc-security');
+    }
+
+
+    public function getMessage(): string
+    {
+        return __('Following files have been modified: {modified_files}. Following files are unknown: {unknown_files}.', 'bc-security');
+    }
+
+
+    public function setModifiedFiles(array $modified_files): self
+    {
+        $this->modified_files = $modified_files;
+        return $this;
+    }
+
+
+    public function setUnknownFiles(array $unknown_files): self
+    {
+        $this->unknown_files = $unknown_files;
+        return $this;
     }
 }
