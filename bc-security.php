@@ -2,7 +2,7 @@
 /**
  * Plugin Name: BC Security
  * Plugin URI: https://github.com/chesio/bc-security
- * Description: Helps keeping WordPress websites secure. Plugin requires PHP 7.0 or newer to run.
+ * Description: Helps keeping WordPress websites secure.
  * Version: develop
  * Author: Česlav Przywara <ceslav@przywara.cz>
  * Author URI: https://www.chesio.com
