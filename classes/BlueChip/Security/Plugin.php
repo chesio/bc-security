@@ -95,8 +95,9 @@ class Plugin
      */
     private function constructModules(\wpdb $wpdb, string $remote_address, string $server_address, array $settings): array
     {
+        $hostname_resolver  = new Modules\Services\ReverseDnsLookup\Resolver();
         $cron_job_manager   = new Modules\Cron\Manager($settings['cron-jobs']);
-        $logger             = new Modules\Log\Logger($wpdb, $remote_address, $settings['log']);
+        $logger             = new Modules\Log\Logger($wpdb, $remote_address, $settings['log'], $hostname_resolver);
         $checklist_manager  = new Modules\Checklist\Manager($settings['checklist-autorun'], $wpdb);
         $core_verifier      = new Modules\Checksums\CoreVerifier();
         $plugins_verifier   = new Modules\Checksums\PluginsVerifier();
@@ -110,6 +111,7 @@ class Plugin
 
         return [
             'cron-job-manager'  => $cron_job_manager,
+            'hostname-resolver' => $hostname_resolver,
             'logger'            => $logger,
             'checklist-manager' => $checklist_manager,
             'core-verifier'     => $core_verifier,

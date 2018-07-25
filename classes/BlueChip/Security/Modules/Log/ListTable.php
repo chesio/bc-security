@@ -92,6 +92,23 @@ class ListTable extends \BlueChip\Security\Core\ListTable
 
 
     /**
+     * Return content for IP address column.
+     *
+     * @param array $item
+     * @return string
+     */
+    public function column_ip_address(array $item): string // phpcs:ignore
+    {
+        $value = $item['ip_address'];
+        // Display hostname below IP address, but only if it has been successfully resolved.
+        if (!empty($item['hostname']) && ($item['hostname'] !== $item['ip_address'])) {
+            $value .= '<br><em>' . esc_html($item['hostname']) . '</em>';
+        }
+        return $value;
+    }
+
+
+    /**
      * Return content for message column.
      *
      * @param array $item

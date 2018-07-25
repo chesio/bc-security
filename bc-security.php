@@ -7,7 +7,7 @@
  * Author: Česlav Przywara <ceslav@przywara.cz>
  * Author URI: https://www.chesio.com
  * Requires PHP: 7.0
- * Requires WP: 4.7
+ * Requires WP: 4.9
  * Tested up to: 4.9
  * Text Domain: bc-security
  * GitHub Plugin URI: https://github.com/chesio/bc-security
