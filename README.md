@@ -23,6 +23,7 @@ BC Security features a checklist of common security practices. In the moment, th
 1. Is display of PHP errors off by default? This check is only run in production environment, ie. when `WP_ENV === 'production'`.
 1. Is error log file not publicly available? This check is only run if both `WP_DEBUG` and `WP_DEBUG_LOG` constants are set to true.
 1. Are there no common usernames like admin or administrator on the system?
+1. Are there no plugins installed that have been removed from [Plugin Directory](https://wordpress.org/plugins/)?
 1. Are user passwords hashed with some non-default hashing algorithm?
 
 Checklist check is run whenever a dedicated page in backend is visited, but can be also set to run periodically in the background. Note that in such case, only checks that passed at the time of activation (or update) of background monitoring are run as it makes little sense to report issues that are known already.
@@ -87,6 +88,7 @@ Some of the modules listed above come with settings panel. Further customization
 
 * `bc-security/filter:is-admin` - filters boolean value that determines whether current user is considered an admin user. This check determines whether admin login notification should be sent for particular user. By default, any user with `manage_options` capability is considered an admin (or `manage_network` on multisite).
 * `bc-security/filter:obvious-usernames` - filters array of common usernames that are being checked via [checklist check](#checklist). By default, the array consists of _admin_ and _administrator_ values.
+* `bc-security/filter:plugins-to-check-at-wordpress.org` - filters array of plugins to check for their presence in WordPress.org Plugins Directory. By default, the array consists of all installed plugins that have `readme.txt` file.
 * `bc-security/filter:modified-files-ignored-in-core-checksum-verification` - filters array of files that should not be reported as __modified__ in checksum verification of core WordPress files. By default, the array consist of _wp-config-sample.php_ and _wp-includes/version.php_ values.
 * `bc-security/filter:unknown-files-ignored-in-core-checksum-verification` - filters array of files that should not be reported as __unknown__ in checksum verification of core WordPress files. By default, the array consist of _.htaccess_, _wp-config.php_, _liesmich.html_, _olvasdel.html_ and _procitajme.html_ values.
 * `bc-security/filter:plugins-to-check-in-checksum-verification` - filters array of plugins to check in checksum verification. By default, the array consists of all installed plugins that have `readme.txt` file.
