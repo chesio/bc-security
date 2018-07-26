@@ -56,8 +56,8 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
 
         echo '<h1>' . esc_html($this->page_title) . '</h1>';
         echo '<p>';
-        /* translators: %s: tick icon */
         echo sprintf(
+            /* translators: %s: tick icon */
             esc_html__('The more %s you have, the better!'),
             '<span class="dashicons dashicons-yes"></span>'
         );
@@ -78,18 +78,16 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
         echo '</table>';
 
         echo '<p>';
-        echo esc_html__('You can monitor the checklist automatically - just click the button below.');
-        echo ' ';
         echo sprintf(
-            esc_html__('Checks that are currently monitored are marked with %s icon.'),
-            '<span class="dashicons dashicons-visibility"></span>'
+            /* translators: %s: inline button with "select all passing checks" label */
+            esc_html__('You can let BC Security monitor the checklist automatically. Just select the checks you want to monitor or simply %s and click the button below.', 'bc-security'),
+            '<button type="button" id="bc-security-mark-passing-checks">' . esc_html__('select all passing checks', 'bc-security') . '</button>'
         );
-        echo '</p>';
 
         // Output nonce, action and other hidden fields...
         $this->printSettingsFields();
         // ... and finally the submit button :)
-        submit_button(__('Keep an eye on all passing checks', 'bc-security'));
+        submit_button(__('Monitor selected checks in background', 'bc-security'));
 
         echo '</form>';
 
@@ -106,6 +104,8 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
         echo '</p>';
 
         echo '</div>';
+
+        $this->printInlineScript();
     }
 
 
@@ -136,28 +136,43 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
         $status = $result->getStatus();
         $message = $result->getMessage();
 
-        $run_automatically = $this->settings[$check->getId()];
-
         echo '<tr>';
 
         // Status may be undetermined, in such case render no icon.
         echo '<th>' . (is_bool($status) ? ('<span class="dashicons dashicons-' . ($status ? 'yes' : 'no') . '"></span>') : '' ) . '</th>';
         // Name should be short and descriptive and without HTML tags.
         echo '<th>' . esc_html($check->getName()) . '</th>';
-        // Background execution state
-        echo '<th><span class="dashicons dashicons-' . ($run_automatically ? 'visibility' : 'hidden') . '"></span></th>';
+        // Background monitoring state.
+        echo '<th>';
+        FormHelper::printCheckbox(array_merge(
+            $this->getFieldBaseProperties($check->getId(), intval($this->settings[$check->getId()])),
+            ['class' => $status === true ? 'status-passing' : '']
+        ));
+        echo '</th>';
         // Allow for HTML tags in $description.
         echo '<td>' . $check->getDescription() . '</td>';
         // Allow for HTML tags in result $message.
         echo '<td>' . $message . '</td>';
-        // Hidden input field with data for form submission.
-        echo '<td>';
-        FormHelper::printHiddenInput(
-            // The value to be submitted
-            array_merge($this->getFieldBaseProperties($check->getId(), intval($status)))
-        );
-        echo '</td>';
 
         echo '</tr>';
+    }
+
+
+    /**
+     * Print inline script that powers "select all passing checks" button.
+     */
+    private function printInlineScript()
+    {
+        echo <<<INLINE
+<script>
+document.getElementById('bc-security-mark-passing-checks').addEventListener('click', function() {
+   for (var i = 0; i < this.form.length; ++i) {
+        if (this.form[i].type === 'checkbox' && this.form[i].classList.contains('status-passing')) {
+            this.form[i].checked = true;
+        }
+   }
+});;
+</script>
+INLINE;
     }
 }
