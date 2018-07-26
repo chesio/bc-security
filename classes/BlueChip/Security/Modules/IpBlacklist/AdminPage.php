@@ -131,7 +131,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
         $scope = filter_input(INPUT_GET, self::DEFAULT_SCOPE, FILTER_VALIDATE_INT);
 
         // Default lock duration is 1 month, unless different value is provided by filter.
-        $duration = apply_filters(Hooks::DEFAULT_MANUAL_LOCK_DURATION, 1 * MONTH_IN_SECONDS);
+        $duration = apply_filters(Hooks::DEFAULT_MANUAL_LOCK_DURATION, MONTH_IN_SECONDS);
 
         // Offer the following time constants in <select> box:
         $units_in_seconds = [
