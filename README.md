@@ -26,6 +26,8 @@ BC Security features a checklist of common security practices. In the moment, th
 1. Are there no plugins installed that have been removed from [Plugin Directory](https://wordpress.org/plugins/)?
 1. Are user passwords hashed with some non-default hashing algorithm?
 
+#### Checklist monitoring
+
 Checklist check is run whenever a dedicated page in backend is visited, but can be also set to run periodically in the background. Note that in such case, only checks that passed at the time of activation (or update) of background monitoring are run as it makes little sense to report issues that are known already.
 
 ### WordPress hardening
@@ -66,6 +68,7 @@ BC Security allows to send automatic email notification to configured recipients
 1. User with administrator privileges has logged in.
 1. Known IP address has been locked out (see note below).
 1. [Checksums verification](#checksums-verification) fails or there are files with non-matching checksum.
+1. [Checklist monitoring](#checklist-monitoring) triggers an alert.
 1. BC Security plugin has been deactivated.
 
 Note: _Known IP address_ is an IP address from which a successful login attempt had been previously made. Information about successful login attempts is fetched from [event logs](#events-logging).
