@@ -22,11 +22,11 @@ abstract class RequestType
             case 'admin':
                 return is_admin();
             case 'ajax':
-                return defined('DOING_AJAX') && DOING_AJAX;
+                return wp_doing_ajax();
             case 'cron':
-                return defined('DOING_CRON') && DOING_CRON;
+                return wp_doing_cron();
             case 'frontend':
-                return (!is_admin() || (defined('DOING_AJAX') && DOING_AJAX)) && !(defined('DOING_CRON') && DOING_CRON);
+                return (!is_admin() || wp_doing_ajax()) && !wp_doing_cron();
             case 'wp-cli':
                 return defined('WP_CLI') && WP_CLI;
             default:
