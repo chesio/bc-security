@@ -16,6 +16,11 @@ abstract class AbstractPage
     const SLUG = 'bc-security';
 
     /**
+     * @var string Name of nonce used for any custom actions on admin pages
+     */
+    const NONCE_NAME = '_wpnonce';
+
+    /**
      * @var string Page title for menu
      */
     protected $menu_title;

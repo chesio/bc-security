@@ -23,11 +23,6 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
     const SLUG = 'bc-security-ip-blacklist';
 
     /**
-     * @var string Name of nonce used for any action on this page
-     */
-    const NONCE_NAME = '_wpnonce';
-
-    /**
      * @var Name for blacklist action (used for both nonce action and submit name)
      */
     const BLACKLIST_ACTION = 'add-to-ip-blacklist';
