@@ -13,7 +13,7 @@ use BlueChip\Security\Modules\Checklist;
 use BlueChip\Security\Modules\Checksums;
 use BlueChip\Security\Modules\Login;
 
-class Watchman implements Modules\Loadable, Modules\Initializable, Modules\Activable
+class Watchman implements Modules\Initializable, Modules\Activable
 {
     /**
      * @var string Remote IP address
@@ -73,7 +73,10 @@ class Watchman implements Modules\Loadable, Modules\Initializable, Modules\Activ
     }
 
 
-    public function load()
+    /**
+     * Initialize notification according to settings.
+     */
+    public function init()
     {
         // Bail early, if no recipients are set.
         if (empty($this->recipients)) {
@@ -89,19 +92,6 @@ class Watchman implements Modules\Loadable, Modules\Initializable, Modules\Activ
         if ($this->settings[Settings::THEME_UPDATE_AVAILABLE]) {
             add_action('set_site_transient_update_themes', [$this, 'watchThemeUpdatesAvailable'], 10, 1);
         }
-    }
-
-
-    /**
-     * Initialize notification according to settings.
-     */
-    public function init()
-    {
-        // Bail early, if no recipients are set.
-        if (empty($this->recipients)) {
-            return;
-        }
-
         if ($this->settings[Settings::ADMIN_USER_LOGIN]) {
             add_action('wp_login', [$this, 'watchWpLogin'], 10, 2);
         }
