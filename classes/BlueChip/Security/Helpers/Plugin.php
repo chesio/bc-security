@@ -4,7 +4,6 @@
  */
 namespace BlueChip\Security\Helpers;
 
-
 /**
  * Helper methods to deal with installed plugins.
  */

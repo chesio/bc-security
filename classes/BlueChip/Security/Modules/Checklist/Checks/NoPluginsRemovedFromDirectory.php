@@ -115,7 +115,7 @@ class NoPluginsRemovedFromDirectory extends Checklist\Check
         return implode(
             ', ',
             array_map(
-                function(array $plugin_data) use ($linkToPage): string {
+                function (array $plugin_data) use ($linkToPage): string {
                     return $linkToPage
                         ? '<a href="' . esc_url($plugin_data['DirectoryURI']) . '"><em>' . esc_html($plugin_data['Name']) . '</em></a>'
                         : '<em>' . esc_html($plugin_data['Name']) . '</em>'

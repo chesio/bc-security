@@ -22,7 +22,7 @@ class AutorunSettings extends \BlueChip\Security\Core\Settings
             function (string $check_id) use ($s): bool {
                 return $s[$check_id] ?? false;
             },
-            array_combine($check_ids, $check_ids) // Pass check IDs as values as well, so they can be used in callback.
+            array_combine($check_ids, $check_ids) // Pass check IDs as values too, so they can be used in callback.
         );
     }
 }
