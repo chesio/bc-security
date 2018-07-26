@@ -50,6 +50,7 @@ class Manager implements Modules\Initializable
                 Checks\DisplayOfPhpErrorsIsOff::getId(),
                 Checks\ErrorLogNotPubliclyAccessible::getId(),
                 Checks\NoObviousUsernamesCheck::getId(),
+                Checks\NoPluginsRemovedFromDirectory::getId(),
                 Checks\NoMd5HashedPasswords::getId(),
         ];
     }
