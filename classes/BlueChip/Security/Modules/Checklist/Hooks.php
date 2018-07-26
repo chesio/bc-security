@@ -23,4 +23,9 @@ interface Hooks
      * }, 10, 1);
      */
     const OBVIOUS_USERNAMES = 'bc-security/filter:obvious-usernames';
+
+    /**
+     * Filter: allows to filter list of plugins that are checked for removal from Plugins Directory at WordPress.org.
+     */
+    const PLUGINS_TO_CHECK_AT_WORDPRESS_ORG = 'bc-security/filter:plugins-to-check-at-wordpress.org';
 }

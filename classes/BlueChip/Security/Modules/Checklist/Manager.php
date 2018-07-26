@@ -81,6 +81,9 @@ class Manager implements Modules\Initializable
             // There should be no obvious usernames.
             Checks\NoObviousUsernamesCheck::getId() => new Checks\NoObviousUsernamesCheck(),
 
+            // There are no plugins installed that have been removed from plugins directory.
+            Checks\NoPluginsRemovedFromDirectory::getId() => new Checks\NoPluginsRemovedFromDirectory(),
+
             // No passwords should be hashed with (default) MD5 hash.
             Checks\NoMd5HashedPasswords::getId() => new Checks\NoMd5HashedPasswords($this->wpdb),
         ];
