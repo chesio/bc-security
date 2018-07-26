@@ -106,6 +106,7 @@ Some of the modules listed above come with settings panel. Further customization
 1. [Login Security](#login-security) feature is inspired by [Limit Login Attempts](https://wordpress.org/plugins/limit-login-attempts/) plugin by Johan Eenfeldt.
 1. Part of [psr/log](https://packagist.org/packages/psr/log) package codebase is shipped with the plugin.
 1. [Checksums verification](#checksums-verification) feature is heavily inspired by [Checksum Verifier](https://github.com/pluginkollektiv/checksum-verifier) plugin by Sergej Müller.
+1. Some features (like "plugins removed from Plugins Directory" check) are inspired by [Wordfence Security](https://wordpress.org/plugins/wordfence/) from [Defiant](https://www.defiant.com/).
 
 ## Alternatives (and why I do not use them)
 
