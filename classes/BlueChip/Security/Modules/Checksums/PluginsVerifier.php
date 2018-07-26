@@ -5,6 +5,7 @@
 
 namespace BlueChip\Security\Modules\Checksums;
 
+use BlueChip\Security\Helpers;
 use BlueChip\Security\Modules;
 
 /**
@@ -28,21 +29,6 @@ class PluginsVerifier extends Verifier implements Modules\Initializable
 
 
     /**
-     * Get absolute path to plugin directory for given $plugin_basename (for example "bc-security/bc-security.php").
-     * Obviously, the method works only for plugins that are in their own directory...
-     *
-     * @see get_plugins()
-     *
-     * @param string $plugin_basename
-     * @return string
-     */
-    public static function getPluginDirPath(string $plugin_basename): string
-    {
-        return wp_normalize_path(WP_PLUGIN_DIR . '/' . dirname($plugin_basename));
-    }
-
-
-    /**
      * Perform checksums check.
      *
      * @hook \BlueChip\Security\Modules\Checksums\Hooks::PLUGIN_CHECKSUMS_RETRIEVAL_FAILED
@@ -52,7 +38,7 @@ class PluginsVerifier extends Verifier implements Modules\Initializable
     public function runCheck()
     {
         // Grab a list of plugins to check.
-        $plugins = apply_filters(Hooks::PLUGINS_TO_VERIFY, $this->getPlugins());
+        $plugins = apply_filters(Hooks::PLUGINS_TO_VERIFY, Helpers\Plugin::getPluginsInstalledFromWordPressOrg());
 
         // Plugins for which checksums retrieval failed.
         $checksums_retrieval_failed = [];
@@ -61,9 +47,7 @@ class PluginsVerifier extends Verifier implements Modules\Initializable
         $checksums_verification_failed = [];
 
         foreach ($plugins as $plugin_basename => $plugin_data) {
-            // This is fine most of the time and WPCentral/WP-CLI-Security gets the slug the same way,
-            // but it does not seem to be guaranteed that slug is always equal to directory name...
-            $slug = dirname($plugin_basename);
+            $slug = Helpers\Plugin::getSlug($plugin_basename);
 
             // Add necessary arguments to request URL.
             $url = self::CHECKSUMS_API_URL_BASE . $slug . '/' . $plugin_data['Version'] . '.json';
@@ -75,7 +59,7 @@ class PluginsVerifier extends Verifier implements Modules\Initializable
             }
 
             // Get absolute path to plugin directory.
-            $plugin_dir = trailingslashit(self::getPluginDirPath($plugin_basename));
+            $plugin_dir = trailingslashit(Helpers\Plugin::getPluginDirPath($plugin_basename));
 
             // Use checksums to find any modified files.
             $modified_files = self::checkDirectoryForModifiedFiles($plugin_dir, $checksums, ['readme.txt']);
@@ -122,33 +106,5 @@ class PluginsVerifier extends Verifier implements Modules\Initializable
             $checksums[$filename] = $file_checksums->md5;
         }
         return (object) $checksums;
-    }
-
-
-    /**
-     * Get all installed plugins that seems to be hosted at WordPress.org repository (= have readme.txt file).
-     *
-     * Note: Method effectively filters out any plugins that are not in their own directory (like Hello Dolly).
-     *
-     * @return array
-     */
-    private function getPlugins(): array
-    {
-        // We're using some wp-admin stuff here, so make sure it's available.
-        if (!function_exists('get_plugins')) {
-            require_once ABSPATH . 'wp-admin/includes/plugin.php';
-        }
-
-        // There seem to be no easy way to find out if plugin is hosted at WordPress.org repository or not, see:
-        // https://core.trac.wordpress.org/ticket/32101
-
-        // To not leak data about installed plugins unnecessarily, only keep (check) plugins that have readme.txt file.
-        return array_filter(
-            get_plugins(),
-            function ($plugin_file) {
-                return is_file(self::getPluginDirPath($plugin_file) . '/readme.txt');
-            },
-            ARRAY_FILTER_USE_KEY
-        );
     }
 }
