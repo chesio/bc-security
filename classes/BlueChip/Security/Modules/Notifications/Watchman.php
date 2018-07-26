@@ -78,8 +78,8 @@ class Watchman implements Modules\Initializable, Modules\Activable
      */
     public function init()
     {
-        // Bail early, if no recipients are set.
-        if (empty($this->recipients)) {
+        // Bail early, if no recipients are set or we are explicitly ordered to not disturb.
+        if (empty($this->recipients) || defined('BC_SECURITY_MUTE_NOTIFICATIONS') && BC_SECURITY_MUTE_NOTIFICATIONS) {
             return;
         }
 

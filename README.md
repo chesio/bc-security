@@ -73,6 +73,8 @@ BC Security allows to send automatic email notification to configured recipients
 
 Note: _Known IP address_ is an IP address from which a successful login attempt had been previously made. Information about successful login attempts is fetched from [event logs](#events-logging).
 
+You can mute all email notifications by setting constant `BC_SECURITY_MUTE_NOTIFICATIONS` to `true` via `define('BC_SECURITY_MUTE_NOTIFICATIONS', true);`. If you run a website in multiple environments (development, staging, production etc.), you may find it disturbing to receive email notifications from development or any environment other than production. Declaring the constant for particular environment only is very easy, if you use a [multi-environment setup](https://github.com/chesio/wp-multi-env-config).
+
 ### Events logging
 
 BC Security logs both short and long lockout events (see [Login Security](#login-security) feature) and [checksums verification](#checksums-verification) alerts.
