@@ -19,12 +19,13 @@ abstract class FormHelper
      * its value overwrites hidden field value.
      * See: http://stackoverflow.com/a/1992745
      *
-     * @param array $args Required: label_for, name, value. Optional: plain.
+     * @param array $args Required: label_for, name, value. Optional: class, plain.
      */
     public static function printCheckbox(array $args)
     {
         // Field properties
         $properties = [
+            'class'     => $args['class'] ?? '',
             'type'      => 'checkbox',
             'value'     => 'true',
             'id'        => $args['label_for'],
@@ -49,12 +50,13 @@ abstract class FormHelper
     /**
      * Print <input type="hidden"> element.
      *
-     * @param array $args
+     * @param array $args Required: label_for, name, value. Optional: class.
      */
     public static function printHiddenInput(array $args)
     {
         // Field properties
         $properties = [
+            'class'     => $args['class'] ?? '',
             'type'      => 'hidden',
             'value'     => $args['value'],
             'id'        => $args['label_for'],
@@ -68,12 +70,13 @@ abstract class FormHelper
     /**
      * Print <input type="number> element.
      *
-     * @param array $args
+     * @param array $args Required: label_for, name, value. Optional: class.
      */
     public static function printNumberInput(array $args)
     {
         // Field properties
         $properties = [
+            'class'     => $args['class'] ?? '',
             'type'      => 'number',
             'value'     => $args['value'],
             'id'        => $args['label_for'],
@@ -90,11 +93,12 @@ abstract class FormHelper
     /**
      * Print <select /> element.
      *
-     * @param array $args
+     * @param array $args Required: label_for, name, value. Optional: class.
      */
     public static function printSelect(array $args)
     {
         $properties = [
+            'class'     => $args['class'] ?? '',
             'id'        => $args['label_for'],
             'name'      => $args['name'],
         ];
@@ -114,15 +118,15 @@ abstract class FormHelper
     /**
      * Print <textarea /> element.
      *
-     * Note: method expects the value argument ($args['value']) to be an array
-     * (of lines).
+     * Note: method expects the value argument `$args['value']` to be an array (of lines).
      *
-     * @param array $args
+     * @param array $args Required: label_for, name, value. Optional: class.
      */
     public static function printTextArea(array $args)
     {
         // Field properties
         $properties = [
+            'class'     => $args['class'] ?? '',
             'id'        => $args['label_for'],
             'name'      => $args['name'],
         ];
