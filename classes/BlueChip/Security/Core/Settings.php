@@ -155,6 +155,17 @@ abstract class Settings implements \ArrayAccess
 
 
     /**
+     * Persist the value of data into database.
+     *
+     * @return bool
+     */
+    protected function persist(): bool
+    {
+        return update_option($this->option_name, $this->data);
+    }
+
+
+    /**
      * Update setting under $name with $value. Store update values in DB.
      *
      * @param string $name
@@ -180,7 +191,7 @@ abstract class Settings implements \ArrayAccess
 
         // Sanitize new value and update cache
         $this->data = $this->sanitize($data);
-        // Update DB value
-        return update_option($this->option_name, $this->data);
+        // Make changes permanent.
+        return $this->persist();
     }
 }
