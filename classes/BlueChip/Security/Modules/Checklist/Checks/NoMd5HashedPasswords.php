@@ -43,7 +43,7 @@ class NoMd5HashedPasswords extends Checklist\Check
             self::WP_OLD_HASH_PREFIX
         ));
 
-        if ($result === false) {
+        if ($result === null) {
             return new Checklist\CheckResult(null, esc_html__('BC Security has failed to determine whether there are any users with password hashed with default MD5-based algorithm.', 'bc-security'));
         } else {
             return empty($result)
