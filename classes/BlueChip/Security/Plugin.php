@@ -11,11 +11,6 @@ namespace BlueChip\Security;
 class Plugin
 {
     /**
-     * @var \BlueChip\Security\Admin
-     */
-    public $admin;
-
-    /**
      * @var array Plugin module objects
      */
     private $modules;
@@ -56,9 +51,6 @@ class Plugin
         // IP addresses are at core interest within this plugin :)
         $remote_address = $setup->getRemoteAddress();
         $server_address = $setup->getServerAddress();
-
-        // Init admin, if necessary.
-        $this->admin = is_admin() ? new Admin() : null;
 
         // Construct modules.
         $this->modules = $this->constructModules($wpdb, $remote_address, $server_address, $this->settings);
@@ -160,18 +152,35 @@ class Plugin
             }
         }
 
-        if ($this->admin) {
+        if (is_admin()) {
             // Initialize admin interface (set necessary hooks).
-            $this->admin->init($this->plugin_filename)
+            (new Admin())->init($this->plugin_filename)
                 // Setup comes first...
-                ->addPage(new Setup\AdminPage($this->settings['setup']))
+                ->addPage(new Setup\AdminPage(
+                    $this->settings['setup']
+                ))
                 // ...then come admin pages.
-                ->addPage(new Modules\Checklist\AdminPage($this->modules['checklist-manager'], $this->settings['checklist-autorun']))
-                ->addPage(new Modules\Hardening\AdminPage($this->settings['hardening']))
-                ->addPage(new Modules\Login\AdminPage($this->settings['login']))
-                ->addPage(new Modules\IpBlacklist\AdminPage($this->modules['blacklist-manager'], $this->modules['cron-job-manager']))
-                ->addPage(new Modules\Notifications\AdminPage($this->settings['notifications']))
-                ->addPage(new Modules\Log\AdminPage($this->settings['log'], $this->modules['logger']))
+                ->addPage(new Modules\Checklist\AdminPage(
+                    $this->modules['checklist-manager'],
+                    $this->settings['checklist-autorun']
+                ))
+                ->addPage(new Modules\Hardening\AdminPage(
+                    $this->settings['hardening']
+                ))
+                ->addPage(new Modules\Login\AdminPage(
+                    $this->settings['login']
+                ))
+                ->addPage(new Modules\IpBlacklist\AdminPage(
+                    $this->modules['blacklist-manager'],
+                    $this->modules['cron-job-manager']
+                ))
+                ->addPage(new Modules\Notifications\AdminPage(
+                    $this->settings['notifications']
+                ))
+                ->addPage(new Modules\Log\AdminPage(
+                    $this->settings['log'],
+                    $this->modules['logger']
+                ))
             ;
         }
     }
