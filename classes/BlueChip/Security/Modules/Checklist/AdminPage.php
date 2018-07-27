@@ -112,11 +112,14 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
         echo '</table>';
 
         echo '<p>';
-        echo sprintf(
-            /* translators: %s: inline button with "select all passing checks" label */
-            esc_html__('You can let BC Security monitor the checklist automatically. Just select the checks you want to monitor or simply %s and click the button below.', 'bc-security'),
-            '<button type="button" id="bcs-mark-passing-checks" disabled="disabled">' . esc_html__('select all passing checks', 'bc-security') . '</button>'
-        );
+        echo esc_html__('You can let BC Security monitor the checklist automatically. Just select the checks you want to monitor:', 'bc-security');
+        echo ' ';
+        echo implode(' ', [
+            '<button type="button" id="bcs-mark-all-checks" disabled="disabled">' . esc_html__('select all', 'bc-security') . '</button>',
+            '<button type="button" id="bcs-mark-no-checks" disabled="disabled">' . esc_html__('select none', 'bc-security') . '</button>',
+            '<button type="button" id="bcs-mark-passing-checks" disabled="disabled">' . esc_html__('select only passing', 'bc-security') . '</button>',
+        ]);
+        echo '</p>';
 
         // Output nonce, action and other hidden fields...
         $this->printSettingsFields();

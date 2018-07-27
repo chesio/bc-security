@@ -3,8 +3,18 @@
         var $checklist = $('#bcs-checklist');
         var $checks = $checklist.find('.bcs-check');
 
-        // Activate "select all passing checks" button.
-        $('#bcs-mark-passing-checks').prop('disabled', false).on('click', function() {
+        // Activate "select all" button.
+        $('#bcs-mark-all-checks').prop('disabled', false).on('click', function() {
+            $checks.find('input[type="checkbox"]').prop('checked', true);
+        });
+
+        // Activate "select none" button.
+        $('#bcs-mark-no-checks').prop('disabled', false).on('click', function() {
+            $checks.find('input[type="checkbox"]').prop('checked', false);
+        });
+
+        // Activate "select only passing" button.
+        var $select_passing_checks_button = $('#bcs-mark-passing-checks').on('click', function() {
             $checks.find('input[type="checkbox"]').each(function() {
                $(this).prop('checked', $(this).closest('.bcs-check').hasClass('bcs-check--ok'));
             });
@@ -46,8 +56,10 @@
                 requests.push(request);
             });
 
-            // Re-enable button when all checks are processed.
-            $.when.apply($, requests).always(function() { $button.prop('disabled', false); });
+            $.when.apply($, requests).always(function() {
+                $button.prop('disabled', false);
+                $select_passing_checks_button.prop('disabled', false);
+            });
         });
     });
 })(jQuery, bc_security_checklist);
