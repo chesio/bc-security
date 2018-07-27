@@ -5,10 +5,16 @@
 
 namespace BlueChip\Security\Modules\Checklist;
 
+use BlueChip\Security\Helpers\AjaxHelper;
 use BlueChip\Security\Modules;
 
 class Manager implements Modules\Initializable
 {
+    /**
+     * @var string
+     */
+    const ASYNC_CHECK_ACTION = 'bc_security_run_check';
+
     /**
      * @var \BlueChip\Security\Modules\Checklist\AutorunSettings
      */
@@ -35,35 +41,20 @@ class Manager implements Modules\Initializable
     {
         // Hook into cron job execution.
         add_action(Modules\Cron\Jobs::CHECKLIST_CHECK, [$this, 'runChecks'], 10, 0);
-    }
-
-
-    /**
-     * @return array List of IDs of all implemented checks.
-     */
-    public static function getIds(): array
-    {
-        return [
-                Checks\PhpFilesEditationDisabled::getId(),
-                Checks\DirectoryListingDisabled::getId(),
-                Checks\NoAccessToPhpFilesInUploadsDirectory::getId(),
-                Checks\DisplayOfPhpErrorsIsOff::getId(),
-                Checks\ErrorLogNotPubliclyAccessible::getId(),
-                Checks\NoObviousUsernamesCheck::getId(),
-                Checks\NoPluginsRemovedFromDirectory::getId(),
-                Checks\NoMd5HashedPasswords::getId(),
-        ];
+        // Register AJAX handler.
+        AjaxHelper::addHandler(self::ASYNC_CHECK_ACTION, [$this, 'runCheck']);
     }
 
 
     /**
      * Return list of all implemented checks.
      *
+     * @param bool $meaningful_only If true, only checks that make sense in current context are returned.
      * @return \BlueChip\Security\Modules\Checklist\Check[]
      */
-    public function getChecks(): array
+    public function getChecks(bool $meaningful_only = false): array
     {
-        return [
+        $checks = [
             // PHP files editation should be off.
             Checks\PhpFilesEditationDisabled::getId() => new Checks\PhpFilesEditationDisabled(),
 
@@ -88,20 +79,29 @@ class Manager implements Modules\Initializable
             // No passwords should be hashed with (default) MD5 hash.
             Checks\NoMd5HashedPasswords::getId() => new Checks\NoMd5HashedPasswords($this->wpdb),
         ];
+
+        return $meaningful_only
+            ? array_filter($checks, function (Check $check): bool {
+                return $check->makesSense();
+            })
+            : $checks
+        ;
     }
 
 
     /**
-     * Run all checks that are not disabled in settings and make sense in current context.
+     * Run all checks that make sense in current context and are set to be monitored in non-interactive mode.
+     *
+     * @internal Method is intended to be run from within cron requests.
      */
     public function runChecks()
     {
-        $checks = $this->getChecks();
+        $checks = $this->getChecks(true);
         $issues = [];
 
         foreach ($checks as $check_id => $check) {
-            if (!$this->settings[$check_id] || !$check->makesSense()) {
-                // Skip checks that should not be monitored and checks that don't make sense in current context.
+            if (!$this->settings[$check_id]) {
+                // Skip checks that should not be monitored.
                 continue;
             }
 
@@ -120,5 +120,35 @@ class Manager implements Modules\Initializable
             // Trigger an action to report found issues.
             do_action(Hooks::CHECK_ALERT, $issues);
         }
+    }
+
+
+    /**
+     * Run check (asynchronously).
+     *
+     * @internal Method is intended to be run from within AJAX requests.
+     */
+    public function runCheck()
+    {
+        if (empty($check_id = filter_input(INPUT_POST, 'check_id', FILTER_SANITIZE_STRING))) {
+            wp_send_json_error([
+                'message' => __('No check ID provided!', 'bc-security'),
+            ]);
+        }
+
+        $checks = $this->getChecks();
+        if (!isset($checks[$check_id])) {
+            wp_send_json_error([
+                'message' => sprintf(__('Unknown check ID: %s', 'bc-security'), $check_id),
+            ]);
+        }
+
+        // Run check.
+        $result = $checks[$check_id]->run();
+
+        wp_send_json_success([
+            'status' => $result->getStatus(),
+            'message' => $result->getMessage(),
+        ]);
     }
 }
