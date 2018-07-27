@@ -32,11 +32,21 @@ abstract class Check
 
 
     /**
+     * @param string $classname
+     * @return string ID of check computed from given classname.
+     */
+    public static function getCheckId(string $classname): string
+    {
+        return basename(str_replace('\\', '/', $classname));
+    }
+
+
+    /**
      * @return string Check unique ID.
      */
     public static function getId(): string
     {
-        return basename(str_replace('\\', '/', static::class));
+        return self::getCheckId(static::class);
     }
 
 
@@ -71,6 +81,8 @@ abstract class Check
 
     /**
      * Perform the check.
+     *
+     * @return \BlueChip\Security\Modules\Checklist\CheckResult
      */
     abstract public function run(): CheckResult;
 }

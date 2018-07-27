@@ -1,0 +1,19 @@
+/* Check running */
+.bcs-check--running {
+    opacity: 0.5;
+}
+
+.bcs-checklist--initial .bcs-check__status,
+.bcs-checklist--initial .bcs-check__message {
+    display: none;
+}
+
+/* Check passed */
+.bcs-check--ok .dashicons:before {
+    content: "\f147";
+}
+
+/* Check failed */
+.bcs-check--ko .dashicons:before {
+    content: "\f158";
+}

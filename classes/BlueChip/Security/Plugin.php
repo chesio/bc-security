@@ -153,6 +153,8 @@ class Plugin
         }
 
         if (is_admin()) {
+            $assets_manager = new Core\AssetsManager($this->plugin_filename);
+
             // Initialize admin interface (set necessary hooks).
             (new Admin())->init($this->plugin_filename)
                 // Setup comes first...
@@ -162,7 +164,8 @@ class Plugin
                 // ...then come admin pages.
                 ->addPage(new Modules\Checklist\AdminPage(
                     $this->modules['checklist-manager'],
-                    $this->settings['checklist-autorun']
+                    $this->settings['checklist-autorun'],
+                    $assets_manager
                 ))
                 ->addPage(new Modules\Hardening\AdminPage(
                     $this->settings['hardening']
