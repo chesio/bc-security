@@ -55,6 +55,9 @@ class Admin
     }
 
 
+    /**
+     * @action https://developer.wordpress.org/reference/hooks/admin_init/
+     */
     public function initAdminPages()
     {
         foreach ($this->pages as $page) {
@@ -64,7 +67,9 @@ class Admin
 
 
     /**
-     * Make plugin menu - this method is hooked to `admin_menu` hook.
+     * Make plugin menu.
+     *
+     * @action https://developer.wordpress.org/reference/hooks/admin_menu/
      */
     public function makeAdminMenu()
     {
@@ -105,6 +110,8 @@ class Admin
 
     /**
      * Filter plugin action links: append link to setup page only.
+     *
+     * @filter https://developer.wordpress.org/reference/hooks/plugin_action_links_plugin_file/
      *
      * @param array $links
      * @return array

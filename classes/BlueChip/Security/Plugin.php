@@ -148,6 +148,8 @@ class Plugin
     /**
      * Perform initialization tasks.
      * Method should be run (early) in init hook.
+     *
+     * @action https://developer.wordpress.org/reference/hooks/init/
      */
     public function init()
     {

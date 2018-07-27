@@ -97,7 +97,7 @@ abstract class AbstractPage
 
 
     /**
-     * Run on admin initialization.
+     * Run on admin initialization (in `admin_init` hook).
      */
     public function initPage()
     {
@@ -107,6 +107,8 @@ abstract class AbstractPage
 
     /**
      * Run on page load.
+     *
+     * @action https://developer.wordpress.org/reference/hooks/load-page_hook/
      */
     public function loadPage()
     {
