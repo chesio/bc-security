@@ -10,12 +10,12 @@ use BlueChip\Security\Modules;
 /**
  * Cron job factory
  */
-class Manager implements Modules\Activable, Modules\Loadable
+class Manager implements Modules\Activable
 {
     /**
      * @var \BlueChip\Security\Core\CronJob[] Cron jobs
      */
-    private $jobs;
+    private $jobs = [];
 
     /**
      * @var \BlueChip\Security\Modules\Cron\Settings Module settings
@@ -28,7 +28,10 @@ class Manager implements Modules\Activable, Modules\Loadable
      */
     public function __construct(Settings $settings)
     {
-        $this->jobs = [];
+        // In the moment, all cron jobs can be scheduled in the same way (at night with daily recurrence).
+        foreach (Jobs::enlist() as $hook) {
+            $this->jobs[$hook] = new Job($hook, Job::RUN_AT_NIGHT, Recurrence::DAILY);
+        }
         $this->settings = $settings;
     }
 
@@ -51,15 +54,6 @@ class Manager implements Modules\Activable, Modules\Loadable
             if ($job->isScheduled()) {
                 $job->unschedule();
             }
-        }
-    }
-
-
-    public function load()
-    {
-        // In the moment, all cron jobs can be scheduled in the same way (at night with daily recurrence).
-        foreach (Jobs::enlist() as $hook) {
-            $this->jobs[$hook] = new Job($hook, Job::RUN_AT_NIGHT, Recurrence::DAILY);
         }
     }
 
