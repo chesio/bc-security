@@ -7,7 +7,7 @@ namespace BlueChip\Security\Modules\Checklist\Checks;
 
 use BlueChip\Security\Modules\Checklist;
 
-class NoMd5HashedPasswords extends Checklist\Check
+class NoMd5HashedPasswords extends Checklist\BasicCheck
 {
     /**
      * @var string Prefix of default, MD5-based hashes

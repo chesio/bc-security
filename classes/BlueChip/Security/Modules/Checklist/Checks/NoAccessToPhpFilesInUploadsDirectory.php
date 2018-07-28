@@ -7,7 +7,7 @@ namespace BlueChip\Security\Modules\Checklist\Checks;
 
 use BlueChip\Security\Modules\Checklist;
 
-class NoAccessToPhpFilesInUploadsDirectory extends Checklist\Check
+class NoAccessToPhpFilesInUploadsDirectory extends Checklist\BasicCheck
 {
     public function __construct()
     {

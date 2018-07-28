@@ -1,7 +1,7 @@
 (function($, bc_security_checklist) {
     $(function() {
-        var $checklist = $('#bcs-checklist');
-        var $checks = $checklist.find('.bcs-check');
+        var $checks = $('.bcs-check');
+        var $run_checks_buttons = $('button.bcs-run-checks');
 
         // Activate "select all" button.
         $('#bcs-mark-all-checks').prop('disabled', false).on('click', function() {
@@ -15,20 +15,19 @@
 
         // Activate "select only passing" button.
         var $select_passing_checks_button = $('#bcs-mark-passing-checks').on('click', function() {
-            $checks.find('input[type="checkbox"]').each(function() {
-               $(this).prop('checked', $(this).closest('.bcs-check').hasClass('bcs-check--ok'));
-            });
+            $checks.find('input[type="checkbox"]').prop('checked', function() { return $(this).closest('.bcs-check').hasClass('bcs-check--ok'); });
         });
 
-        // Run all checks that need to be executed asynchronously.
-        $('#bcs-run-checks').on('click', function() {
-            $checklist.removeClass('bcs-checklist--initial');
-            // Disable button while checks are running.
-            var $button = $(this).prop('disabled', true);
+        // Activate "Run checks" buttons.
+        $run_checks_buttons.on('click', function() {
+            // Disable all "Run checks" buttons.
+            $run_checks_buttons.prop('disabled', true);
+
+            var $button = $(this);
             var requests = [];
 
-            $checks.each(function() {
-                var $check = $(this).removeClass('bcs-check--init').addClass('bcs-check--running');
+            $checks.filter('.' + $button.data('check-class')).each(function() {
+                var $check = $(this).removeClass('bcs-check--ok').removeClass('bcs-check--ko').addClass('bcs-check--running');
                 var $message = $('.bcs-check__message', $check).html(bc_security_checklist.messages.check_is_running);
 
                 // https://api.jquery.com/jQuery.ajax/
@@ -49,6 +48,7 @@
                         $message.html(response.data.message);
                     },
                     complete : function() {
+                        $check.closest('table').removeClass('bcs-checklist--initial');
                         $check.removeClass('bcs-check--running').addClass('bcs-check--done');
                     }
                 });
@@ -57,7 +57,7 @@
             });
 
             $.when.apply($, requests).always(function() {
-                $button.prop('disabled', false);
+                $run_checks_buttons.prop('disabled', false);
                 $select_passing_checks_button.prop('disabled', false);
             });
         });

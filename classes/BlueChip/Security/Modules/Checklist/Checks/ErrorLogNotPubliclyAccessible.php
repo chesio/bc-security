@@ -7,7 +7,7 @@ namespace BlueChip\Security\Modules\Checklist\Checks;
 
 use BlueChip\Security\Modules\Checklist;
 
-class ErrorLogNotPubliclyAccessible extends Checklist\Check
+class ErrorLogNotPubliclyAccessible extends Checklist\BasicCheck
 {
     public function __construct()
     {

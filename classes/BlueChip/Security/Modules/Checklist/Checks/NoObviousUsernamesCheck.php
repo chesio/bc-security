@@ -7,7 +7,7 @@ namespace BlueChip\Security\Modules\Checklist\Checks;
 
 use BlueChip\Security\Modules\Checklist;
 
-class NoObviousUsernamesCheck extends Checklist\Check
+class NoObviousUsernamesCheck extends Checklist\BasicCheck
 {
     public function __construct()
     {

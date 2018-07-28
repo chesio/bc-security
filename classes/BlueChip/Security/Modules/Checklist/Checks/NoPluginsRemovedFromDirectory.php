@@ -8,7 +8,7 @@ namespace BlueChip\Security\Modules\Checklist\Checks;
 use BlueChip\Security\Helpers;
 use BlueChip\Security\Modules\Checklist;
 
-class NoPluginsRemovedFromDirectory extends Checklist\Check
+class NoPluginsRemovedFromDirectory extends Checklist\AdvancedCheck
 {
     /**
      * @var string

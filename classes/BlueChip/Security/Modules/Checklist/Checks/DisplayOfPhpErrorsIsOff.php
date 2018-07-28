@@ -7,7 +7,7 @@ namespace BlueChip\Security\Modules\Checklist\Checks;
 
 use BlueChip\Security\Modules\Checklist;
 
-class DisplayOfPhpErrorsIsOff extends Checklist\Check
+class DisplayOfPhpErrorsIsOff extends Checklist\BasicCheck
 {
     public function __construct()
     {

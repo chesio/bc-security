@@ -7,7 +7,7 @@ namespace BlueChip\Security\Modules\Checklist\Checks;
 
 use BlueChip\Security\Modules\Checklist;
 
-class DirectoryListingDisabled extends Checklist\Check
+class DirectoryListingDisabled extends Checklist\BasicCheck
 {
     public function __construct()
     {
