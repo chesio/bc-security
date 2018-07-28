@@ -40,7 +40,7 @@ class Manager implements Modules\Initializable
     public function init()
     {
         // Hook into cron job execution.
-        add_action(Modules\Cron\Jobs::CHECKLIST_CHECK, [$this, 'runChecks'], 10, 0);
+        add_action(Modules\Cron\Jobs::CHECKLIST_CHECK, [$this, 'runBasicChecks'], 10, 0);
         // Register AJAX handler.
         AjaxHelper::addHandler(self::ASYNC_CHECK_ACTION, [$this, 'runCheck']);
     }
@@ -98,13 +98,13 @@ class Manager implements Modules\Initializable
 
 
     /**
-     * Run all checks that make sense in current context and are set to be monitored in non-interactive mode.
+     * Run all basic checks that make sense in current context and are set to be monitored in non-interactive mode.
      *
-     * @internal Method is intended to be run from within cron requests.
+     * @internal Method is intended to be run from within cron request.
      */
-    public function runChecks()
+    public function runBasicChecks()
     {
-        $checks = $this->getChecks(true);
+        $checks = $this->getChecks(true, BasicCheck::class);
         $issues = [];
 
         foreach ($checks as $check_id => $check) {
