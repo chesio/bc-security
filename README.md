@@ -77,9 +77,7 @@ You can mute all email notifications by setting constant `BC_SECURITY_MUTE_NOTIF
 
 ### Events logging
 
-BC Security logs both short and long lockout events (see [Login Security](#login-security) feature) and [checksums verification](#checksums-verification) alerts.
-
-Also, the following events triggered by WordPress core are logged:
+BC Security logs both short and long lockout events (see [Login Security](#login-security) feature). Also, the following events triggered by WordPress core are logged:
 
 1. Attempts to authenticate with bad cookie
 1. Failed and successful login attempts
