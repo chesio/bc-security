@@ -28,7 +28,7 @@ BC Security features a checklist of common security practices. In the moment, th
 
 #### Checklist monitoring
 
-Checklist check is run whenever a dedicated page in backend is visited, but can be also set to run periodically in the background. Note that in such case, only checks that passed at the time of activation (or update) of background monitoring are run as it makes little sense to report issues that are known already.
+Checklist check can be run from a dedicated page in backend, but can be also configured to run periodically in the background.
 
 ### WordPress hardening
 
