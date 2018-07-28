@@ -10,6 +10,11 @@ abstract class Check
     /**
      * @var string
      */
+    const CHECK_CLASS = '';
+
+    /**
+     * @var string
+     */
     private $name;
 
     /**
@@ -47,6 +52,15 @@ abstract class Check
     public static function getId(): string
     {
         return self::getCheckId(static::class);
+    }
+
+
+    /**
+     * @return string Class of check.
+     */
+    public static function getClass(): string
+    {
+        return static::CHECK_CLASS;
     }
 
 

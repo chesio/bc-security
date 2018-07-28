@@ -7,7 +7,7 @@ namespace BlueChip\Security\Modules\Checklist\Checks;
 
 use BlueChip\Security\Modules\Checklist;
 
-class PhpFilesEditationDisabled extends Checklist\Check
+class PhpFilesEditationDisabled extends Checklist\BasicCheck
 {
     public function __construct()
     {
