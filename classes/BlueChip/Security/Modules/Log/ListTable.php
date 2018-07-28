@@ -87,7 +87,8 @@ class ListTable extends \BlueChip\Security\Core\ListTable
     public function column_event(array $item): string // phpcs:ignore
     {
         $event = EventsManager::create($item['event']);
-        return $event ? $event->getName() : '';
+        // In case of unknown event, just return event ID in italics.
+        return $event ? $event->getName() : ('<i>' . $item['event'] . '</i>');
     }
 
 

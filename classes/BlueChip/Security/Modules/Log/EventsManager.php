@@ -16,8 +16,6 @@ abstract class EventsManager
         Events\LoginLockout::ID => Events\LoginLockout::class,
         Events\LoginSuccessful::ID => Events\LoginSuccessful::class,
         Events\Query404::ID => Events\Query404::class,
-        Events\CoreChecksumsVerificationAlert::ID => Events\CoreChecksumsVerificationAlert::class,
-        Events\PluginChecksumsVerificationAlert::ID => Events\PluginChecksumsVerificationAlert::class,
     ];
 
 

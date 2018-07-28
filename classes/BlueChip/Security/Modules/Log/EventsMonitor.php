@@ -5,7 +5,6 @@
 
 namespace BlueChip\Security\Modules\Log;
 
-use BlueChip\Security\Modules\Checksums;
 use BlueChip\Security\Modules\Login;
 
 class EventsMonitor implements \BlueChip\Security\Modules\Initializable
@@ -50,9 +49,6 @@ class EventsMonitor implements \BlueChip\Security\Modules\Initializable
         // Log the following BC Security events:
         // - lockout event
         add_action(Login\Hooks::LOCKOUT_EVENT, [$this, 'logLockoutEvent'], 10, 3);
-        // - checksum verification alerts
-        add_action(Checksums\Hooks::CORE_CHECKSUMS_VERIFICATION_ALERT, [$this, 'logCoreChecksumsVerificationAlert'], 10, 2);
-        add_action(Checksums\Hooks::PLUGIN_CHECKSUMS_VERIFICATION_ALERT, [$this, 'logPluginChecksumsVerificationAlert'], 10, 1);
     }
 
 
@@ -119,30 +115,5 @@ class EventsMonitor implements \BlueChip\Security\Modules\Initializable
     public function logLockoutEvent(string $remote_address, string $username, int $duration)
     {
         do_action(Action::EVENT, (new Events\LoginLockout())->setDuration($duration)->setIpAddress($remote_address)->setUsername($username));
-    }
-
-
-    /**
-     * Log checksums verification alert for core files.
-     *
-     * @param array $modified_files Files for which official checksums do not match.
-     * @param array $unknown_files Files that are present on file system but not in official checksums.
-     */
-    public function logCoreChecksumsVerificationAlert(array $modified_files, array $unknown_files)
-    {
-        do_action(Action::EVENT, (new Events\CoreChecksumsVerificationAlert())->setModifiedFiles($modified_files)->setUnknownFiles($unknown_files));
-    }
-
-
-    /**
-     * Log checksums verification alert for plugin files.
-     *
-     * @param array $plugins Plugins for which checksums verification triggered an alert.
-     */
-    public function logPluginChecksumsVerificationAlert(array $plugins)
-    {
-        foreach ($plugins as $plugin_data) {
-            do_action(Action::EVENT, (new Events\PluginChecksumsVerificationAlert())->setPluginName($plugin_data['Name'])->setPluginVersion($plugin_data['Version'])->setModifiedFiles($plugin_data['ModifiedFiles'])->setUnknownFiles($plugin_data['UnknownFiles']));
-        }
     }
 }
