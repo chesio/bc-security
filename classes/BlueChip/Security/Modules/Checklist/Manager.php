@@ -47,12 +47,13 @@ class Manager implements Modules\Initializable
 
 
     /**
-     * Return list of all implemented checks.
+     * Return list of all implemented checks, optionally filtered.
      *
      * @param bool $meaningful_only If true, only checks that make sense in current context are returned.
+     * @param string $class If given, only checks of that class are returned.
      * @return \BlueChip\Security\Modules\Checklist\Check[]
      */
-    public function getChecks(bool $meaningful_only = false): array
+    public function getChecks(bool $meaningful_only = false, string $class = ''): array
     {
         $checks = [
             // PHP files editation should be off.
@@ -80,12 +81,19 @@ class Manager implements Modules\Initializable
             Checks\NoMd5HashedPasswords::getId() => new Checks\NoMd5HashedPasswords($this->wpdb),
         ];
 
-        return $meaningful_only
-            ? array_filter($checks, function (Check $check): bool {
+        if (!empty($class)) {
+            $checks = array_filter($checks, function (Check $check) use ($class): bool {
+                return $check instanceof $class;
+            });
+        }
+
+        if ($meaningful_only) {
+            $checks = array_filter($checks, function (Check $check): bool {
                 return $check->makesSense();
-            })
-            : $checks
-        ;
+            });
+        }
+
+        return $checks;
     }
 
 
