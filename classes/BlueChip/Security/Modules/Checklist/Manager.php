@@ -7,6 +7,7 @@ namespace BlueChip\Security\Modules\Checklist;
 
 use BlueChip\Security\Helpers\AjaxHelper;
 use BlueChip\Security\Modules;
+use BlueChip\Security\Modules\Cron;
 
 class Manager implements Modules\Initializable
 {
@@ -21,6 +22,11 @@ class Manager implements Modules\Initializable
     private $settings;
 
     /**
+     * @var \BlueChip\Security\Modules\Cron\Manager
+     */
+    private $cron_manager;
+
+    /**
      * @var \wpdb WordPress database access abstraction object
      */
     private $wpdb;
@@ -28,17 +34,21 @@ class Manager implements Modules\Initializable
 
     /**
      * @param \BlueChip\Security\Modules\Checklist\AutorunSettings $settings
+     * @param \BlueChip\Security\Modules\Cron\Manager $cron_manager
      * @param \wpdb $wpdb WordPress database access abstraction object
      */
-    public function __construct(AutorunSettings $settings, \wpdb $wpdb)
+    public function __construct(AutorunSettings $settings, Cron\Manager $cron_manager, \wpdb $wpdb)
     {
         $this->settings = $settings;
+        $this->cron_manager = $cron_manager;
         $this->wpdb = $wpdb;
     }
 
 
     public function init()
     {
+        // When settings are updated, ensure that cron jobs for advanced checks are properly (de)activated.
+        $this->settings->addUpdateHook([$this, 'updateCronJobs']);
         // Hook into cron job execution.
         add_action(Modules\Cron\Jobs::CHECKLIST_CHECK, [$this, 'runBasicChecks'], 10, 0);
         // Register AJAX handler.
@@ -158,5 +168,20 @@ class Manager implements Modules\Initializable
             'status' => $result->getStatus(),
             'message' => $result->getMessage(),
         ]);
+    }
+
+
+    /**
+     * Activate or deactivate cron jobs for advanced checks according to settings.
+     */
+    public function updateCronJobs()
+    {
+        foreach ($this->getChecks(false, AdvancedCheck::class) as $advanced_check) {
+            if ($this->settings[$advanced_check->getId()]) {
+                $this->cron_manager->activateJob($advanced_check->getCronJobHook());
+            } else {
+                $this->cron_manager->deactivateJob($advanced_check->getCronJobHook());
+            }
+        }
     }
 }
