@@ -16,6 +16,11 @@ interface Hooks
     const CHECK_ALERT = 'bc-security/action:checklist-check-alert';
 
     /**
+     * Action: triggers when automatic checklist check encounters a problem.
+     */
+    const ADVANCED_CHECK_ALERT = 'bc-security/action:checklist-advanced-check-alert';
+
+    /**
      * Filter: allows to add/remove usernames to the list of obvious usernames.
      *
      * add_filter(\BlueChip\Security\Modules\Checklist\Hooks::OBVIOUS_USERNAMES, function ($usernames) {

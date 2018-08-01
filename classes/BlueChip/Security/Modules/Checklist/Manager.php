@@ -51,6 +51,9 @@ class Manager implements Modules\Initializable
         $this->settings->addUpdateHook([$this, 'updateCronJobs']);
         // Hook into cron job execution.
         add_action(Modules\Cron\Jobs::CHECKLIST_CHECK, [$this, 'runBasicChecks'], 10, 0);
+        foreach ($this->getChecks(false, AdvancedCheck::class) as $advanced_check) {
+            add_action($advanced_check->getCronJobHook(), [$advanced_check, 'runInCron'], 10, 0);
+        }
         // Register AJAX handler.
         AjaxHelper::addHandler(self::ASYNC_CHECK_ACTION, [$this, 'runCheck']);
     }
