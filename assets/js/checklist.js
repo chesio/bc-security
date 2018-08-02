@@ -30,6 +30,8 @@
                 var $check = $(this).removeClass('bcs-check--ok').removeClass('bcs-check--ko').addClass('bcs-check--running');
                 var $message = $('.bcs-check__message', $check).html(bc_security_checklist.messages.check_is_running);
 
+                $check.closest('table').removeClass('bcs-checklist--initial');
+
                 // https://api.jquery.com/jQuery.ajax/
                 var request = $.ajax({
                     url     : bc_security_checklist.ajaxurl,
@@ -39,7 +41,7 @@
                     cache   : false,
                     timeout : 0, // no timeout
                     error   : function() {
-                        $message.html(bc_security_checklist.message.check_failed);
+                        $message.html(bc_security_checklist.messages.check_failed);
                     },
                     success  : function(response) {
                         if (response.success && response.data.status !== null) {
@@ -48,7 +50,6 @@
                         $message.html(response.data.message);
                     },
                     complete : function() {
-                        $check.closest('table').removeClass('bcs-checklist--initial');
                         $check.removeClass('bcs-check--running').addClass('bcs-check--done');
                     }
                 });
