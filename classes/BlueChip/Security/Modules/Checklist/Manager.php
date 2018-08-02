@@ -87,11 +87,17 @@ class Manager implements Modules\Initializable
             // There should be no obvious usernames.
             Checks\NoObviousUsernamesCheck::getId() => new Checks\NoObviousUsernamesCheck(),
 
-            // There are no plugins installed that have been removed from plugins directory.
-            Checks\NoPluginsRemovedFromDirectory::getId() => new Checks\NoPluginsRemovedFromDirectory(),
-
             // No passwords should be hashed with (default) MD5 hash.
             Checks\NoMd5HashedPasswords::getId() => new Checks\NoMd5HashedPasswords($this->wpdb),
+
+            // There are no modified or unknown WordPress core files.
+            Checks\CoreIntegrity::getId() => new Checks\CoreIntegrity(),
+
+            // There are no plugins installed (from WordPress.org) with modified or unknown files.
+            Checks\PluginsIntegrity::getId() => new Checks\PluginsIntegrity(),
+
+            // There are no plugins installed that have been removed from plugins directory.
+            Checks\NoPluginsRemovedFromDirectory::getId() => new Checks\NoPluginsRemovedFromDirectory(),
         ];
 
         if (!empty($class)) {
