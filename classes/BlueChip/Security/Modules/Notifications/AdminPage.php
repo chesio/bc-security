@@ -94,16 +94,6 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
             [FormHelper::class, 'printCheckbox']
         );
         $this->addSettingsField(
-            Settings::CORE_CHECKSUMS_VERIFICATION_ERROR,
-            __('Core checksums verification results in error', 'bc-security'),
-            [FormHelper::class, 'printCheckbox']
-        );
-        $this->addSettingsField(
-            Settings::PLUGIN_CHECKSUMS_VERIFICATION_ERROR,
-            __('Plugin checksums verification results in error', 'bc-security'),
-            [FormHelper::class, 'printCheckbox']
-        );
-        $this->addSettingsField(
             Settings::CHECKLIST_ALERT,
             __('Checklist monitoring triggers an alert', 'bc-security'),
             [FormHelper::class, 'printCheckbox']

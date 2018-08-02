@@ -25,12 +25,6 @@ class Settings extends \BlueChip\Security\Core\Settings
     /** bool: Notify when there is a theme update available [Yes] */
     const THEME_UPDATE_AVAILABLE = 'theme_update_available';
 
-    /** bool: Notify when there is any error during core checksums verification [Yes] */
-    const CORE_CHECKSUMS_VERIFICATION_ERROR = 'core_checksums_verification_error';
-
-    /** bool: Notify when there is any error during plugin checksums verification [Yes] */
-    const PLUGIN_CHECKSUMS_VERIFICATION_ERROR = 'plugin_checksums_verification_error';
-
     /** bool: Notify when automatic checklist check triggers an alert [Yes] */
     const CHECKLIST_ALERT = 'checklist_alert';
 
@@ -63,10 +57,6 @@ class Settings extends \BlueChip\Security\Core\Settings
                 => isset($s[self::PLUGIN_UPDATE_AVAILABLE]) ? boolval($s[self::PLUGIN_UPDATE_AVAILABLE]) : true,
             self::THEME_UPDATE_AVAILABLE
                 => isset($s[self::THEME_UPDATE_AVAILABLE]) ? boolval($s[self::THEME_UPDATE_AVAILABLE]) : true,
-            self::CORE_CHECKSUMS_VERIFICATION_ERROR
-                => isset($s[self::CORE_CHECKSUMS_VERIFICATION_ERROR]) ? boolval($s[self::CORE_CHECKSUMS_VERIFICATION_ERROR]) : true,
-            self::PLUGIN_CHECKSUMS_VERIFICATION_ERROR
-                => isset($s[self::PLUGIN_CHECKSUMS_VERIFICATION_ERROR]) ? boolval($s[self::PLUGIN_CHECKSUMS_VERIFICATION_ERROR]) : true,
             self::CHECKLIST_ALERT
                 => isset($s[self::CHECKLIST_ALERT]) ? boolval($s[self::CHECKLIST_ALERT]) : true,
             self::PLUGIN_DEACTIVATED
