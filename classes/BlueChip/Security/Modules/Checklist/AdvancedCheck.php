@@ -6,7 +6,12 @@
 namespace BlueChip\Security\Modules\Checklist;
 
 /**
- * Base class for advanced checks. Advanced checks depend on data from external resources.
+ * Base class for advanced checks.
+ *
+ * Every advanced check depend on data from external resources and therefore is run from within separate execution
+ * thread, ie:
+ * - AJAX request when run interactively
+ * - cron job when run non-interactively
  */
 abstract class AdvancedCheck extends Check
 {
@@ -17,7 +22,7 @@ abstract class AdvancedCheck extends Check
 
 
     /**
-     * @return string Hook of cron job performing the check.
+     * @return string Hook of cron job this check is bind to.
      */
     public function getCronJobHook(): string
     {
