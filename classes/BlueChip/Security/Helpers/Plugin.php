@@ -10,6 +10,22 @@ namespace BlueChip\Security\Helpers;
 abstract class Plugin
 {
     /**
+     * @var string
+     */
+    const PLUGINS_DIRECTORY_URL = 'https://wordpress.org/plugins/';
+
+
+    /**
+     * @param string $plugin_basename
+     * @return string Presumable URL of the plugin in WordPress.org Plugins Directory.
+     */
+    public static function getDirectoryUrl(string $plugin_basename): string
+    {
+        return trailingslashit(self::PLUGINS_DIRECTORY_URL . self::getSlug($plugin_basename));
+    }
+
+
+    /**
      * Get slug (ie. bc-security) for plugin with given basename (ie. bc-security/bc-security.php).
      *
      * @param string $plugin_basename
@@ -70,5 +86,31 @@ abstract class Plugin
     public static function getPluginDirPath(string $plugin_basename): string
     {
         return wp_normalize_path(WP_PLUGIN_DIR . '/' . dirname($plugin_basename));
+    }
+
+
+    /**
+     * Create comma separated list of plugin names optionally with a link to plugin page.
+     *
+     * @param array $plugins
+     * @param bool $linkToPage
+     * @return string
+     */
+    public static function implodeList(array $plugins, bool $linkToPage = false): string
+    {
+        return implode(
+            ', ',
+            array_map(
+                function (array $plugin_data, string $plugin_basename) use ($linkToPage): string {
+                    $plugin_name = '<em>' . esc_html($plugin_data['Name']) . '</em>';
+                    return $linkToPage
+                        ? '<a href="' . esc_url(self::getDirectoryUrl($plugin_basename)) . '" target="_blank">' . $plugin_name . '</a>'
+                        : $plugin_name
+                    ;
+                },
+                $plugins,
+                array_keys($plugins)
+            )
+        );
     }
 }
