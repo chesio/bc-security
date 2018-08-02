@@ -35,32 +35,35 @@ class Settings extends \BlueChip\Security\Core\Settings
     const GENERIC_LOGIN_ERROR_MESSAGE = 'display_generic_error_message';
 
 
-    /**
-     * Sanitize settings array: only return known keys, provide default values for missing keys.
-     *
-     * @param array $s
-     * @return array
-     */
-    public function sanitize(array $s): array
+    public function getDefaults(): array
     {
         return [
-            self::SHORT_LOCKOUT_AFTER
-                => isset($s[self::SHORT_LOCKOUT_AFTER]) ? intval($s[self::SHORT_LOCKOUT_AFTER]) : 5,
-            self::SHORT_LOCKOUT_DURATION
-                => isset($s[self::SHORT_LOCKOUT_DURATION]) ? intval($s[self::SHORT_LOCKOUT_DURATION]) : 10,
-            self::LONG_LOCKOUT_AFTER
-                => isset($s[self::LONG_LOCKOUT_AFTER]) ? intval($s[self::LONG_LOCKOUT_AFTER]) : 20,
-            self::LONG_LOCKOUT_DURATION
-                => isset($s[self::LONG_LOCKOUT_DURATION]) ? intval($s[self::LONG_LOCKOUT_DURATION]) : 24,
-            self::RESET_TIMEOUT
-                => isset($s[self::RESET_TIMEOUT]) ? intval($s[self::RESET_TIMEOUT]) : 3,
-            self::CHECK_COOKIES
-                => isset($s[self::CHECK_COOKIES]) ? boolval($s[self::CHECK_COOKIES]) : true,
-            self::USERNAME_BLACKLIST
-                => isset($s[self::USERNAME_BLACKLIST]) ? array_filter($this->parseList($s[self::USERNAME_BLACKLIST]), '\validate_username') : [],
-            self::GENERIC_LOGIN_ERROR_MESSAGE
-                => isset($s[self::GENERIC_LOGIN_ERROR_MESSAGE]) ? boolval($s[self::GENERIC_LOGIN_ERROR_MESSAGE]) : false,
+            self::SHORT_LOCKOUT_AFTER => 5,
+            self::SHORT_LOCKOUT_DURATION => 10,
+            self::LONG_LOCKOUT_AFTER => 20,
+            self::LONG_LOCKOUT_DURATION => 24,
+            self::RESET_TIMEOUT => 3,
+            self::CHECK_COOKIES => true,
+            self::USERNAME_BLACKLIST => [],
+            self::GENERIC_LOGIN_ERROR_MESSAGE => false,
         ];
+    }
+
+
+    /**
+     * @param string $key
+     * @param mixed $value
+     * @param mixed $default
+     * @return mixed
+     */
+    public function sanitizeSingleValue(string $key, $value, $default)
+    {
+        switch ($key) {
+            case self::USERNAME_BLACKLIST:
+                return array_filter($this->parseList($value), '\validate_username');
+            default:
+                return parent::sanitizeSingleValue($key, $value, $default);
+        }
     }
 
 

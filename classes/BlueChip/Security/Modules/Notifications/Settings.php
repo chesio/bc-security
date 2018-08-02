@@ -39,32 +39,31 @@ class Settings extends \BlueChip\Security\Core\Settings
 
 
     /**
-     * Sanitize settings array: only return known keys, provide default values for missing keys.
-     *
-     * @param array $s
      * @return array
      */
-    public function sanitize(array $s): array
+    public function getDefaults(): array
     {
         return [
-            self::ADMIN_USER_LOGIN
-                => isset($s[self::ADMIN_USER_LOGIN]) ? boolval($s[self::ADMIN_USER_LOGIN]) : true,
-            self::KNOWN_IP_LOCKOUT
-                => isset($s[self::KNOWN_IP_LOCKOUT]) ? boolval($s[self::KNOWN_IP_LOCKOUT]) : true,
-            self::CORE_UPDATE_AVAILABLE
-                => isset($s[self::CORE_UPDATE_AVAILABLE]) ? boolval($s[self::CORE_UPDATE_AVAILABLE]) : true,
-            self::PLUGIN_UPDATE_AVAILABLE
-                => isset($s[self::PLUGIN_UPDATE_AVAILABLE]) ? boolval($s[self::PLUGIN_UPDATE_AVAILABLE]) : true,
-            self::THEME_UPDATE_AVAILABLE
-                => isset($s[self::THEME_UPDATE_AVAILABLE]) ? boolval($s[self::THEME_UPDATE_AVAILABLE]) : true,
-            self::CHECKLIST_ALERT
-                => isset($s[self::CHECKLIST_ALERT]) ? boolval($s[self::CHECKLIST_ALERT]) : true,
-            self::PLUGIN_DEACTIVATED
-                => isset($s[self::PLUGIN_DEACTIVATED]) ? boolval($s[self::PLUGIN_DEACTIVATED]) : true,
-            self::NOTIFY_SITE_ADMIN
-                => isset($s[self::NOTIFY_SITE_ADMIN]) ? boolval($s[self::NOTIFY_SITE_ADMIN]) : false,
-            self::NOTIFICATION_RECIPIENTS
-                => isset($s[self::NOTIFICATION_RECIPIENTS]) ? array_filter($this->parseList($s[self::NOTIFICATION_RECIPIENTS]), '\is_email') : [],
+            self::ADMIN_USER_LOGIN => true,
+            self::KNOWN_IP_LOCKOUT => true,
+            self::CORE_UPDATE_AVAILABLE => true,
+            self::PLUGIN_UPDATE_AVAILABLE => true,
+            self::THEME_UPDATE_AVAILABLE => true,
+            self::CHECKLIST_ALERT => true,
+            self::PLUGIN_DEACTIVATED => true,
+            self::NOTIFY_SITE_ADMIN => false,
+            self::NOTIFICATION_RECIPIENTS => [],
         ];
+    }
+
+
+    public function sanitizeSingleValue(string $key, $value, $default)
+    {
+        switch ($key) {
+            case self::NOTIFICATION_RECIPIENTS:
+                return array_filter($this->parseList($value), '\is_email');
+            default:
+                return parent::sanitizeSingleValue($key, $value, $default);
+        }
     }
 }

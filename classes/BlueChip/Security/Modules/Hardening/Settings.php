@@ -26,20 +26,14 @@ class Settings extends \BlueChip\Security\Core\Settings
 
 
     /**
-     * Sanitize settings array: only return known keys, provide default values for missing keys.
-     *
-     * @param array $s
      * @return array
      */
-    public function sanitize(array $s): array
+    public function getDefaults(): array
     {
         return [
-            self::DISABLE_PINGBACKS
-                => isset($s[self::DISABLE_PINGBACKS]) ? boolval($s[self::DISABLE_PINGBACKS]) : false,
-            self::DISABLE_XML_RPC
-                => isset($s[self::DISABLE_XML_RPC]) ? boolval($s[self::DISABLE_XML_RPC]) : false,
-            self::DISABLE_REST_API
-                => isset($s[self::DISABLE_REST_API]) ? boolval($s[self::DISABLE_REST_API]) : false,
+            self::DISABLE_PINGBACKS => false,
+            self::DISABLE_XML_RPC => false,
+            self::DISABLE_REST_API => false,
         ];
     }
 }

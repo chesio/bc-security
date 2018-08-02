@@ -28,23 +28,12 @@ class AutorunSettings extends \BlueChip\Security\Core\Settings
 
 
     /**
-     * @param array $s
-     * @return array A hashmap with [ (string) check_id => (bool) is_monitoring_active ] values
+     * By default, no checks are monitored.
+     *
+     * @return array
      */
-    public function sanitize(array $s): array
+    public function getDefaults(): array
     {
-        $check_ids = array_map(
-            function (string $classname): string {
-                return call_user_func([Check::class, 'getCheckId'], $classname);
-            },
-            self::CHECKS
-        );
-
-        return array_map(
-            function (string $check_id) use ($s): bool {
-                return $s[$check_id] ?? false;
-            },
-            array_combine($check_ids, $check_ids) // Pass check IDs as values too, so they can be used in callback.
-        );
+        return array_fill_keys(array_map([Check::class, 'getCheckId'], self::CHECKS), false);
     }
 }

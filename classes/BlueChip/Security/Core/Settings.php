@@ -26,9 +26,9 @@ abstract class Settings implements \ArrayAccess
      */
     public function __construct(string $option_name)
     {
-        // Read settings from wp_options table and sanitize them right away.
         $this->option_name = $option_name;
-        $this->data = $this->sanitize(get_option($option_name, []));
+        // Read settings from wp_options table and sanitize them right away using default values.
+        $this->data = $this->sanitize(get_option($option_name, []), $this->getDefaults());
     }
 
 
@@ -134,12 +134,60 @@ abstract class Settings implements \ArrayAccess
 
 
     /**
-     * Sanitize $settings array: only return known keys, provide default values for missing keys.
+     * Return array with default values.
      *
-     * @param array $settings
+     * @internal Default values determine both valid settings keys and expected type of every value.
+     *
      * @return array
      */
-    abstract public function sanitize(array $settings): array;
+    abstract public function getDefaults(): array;
+
+
+    /**
+     * Sanitize $settings array: only keep known keys, provide default values for missing keys.
+     *
+     * @param array $settings Items to sanitize.
+     * @param array $defaults [optional] If provided, used as default values for sanitization instead of local data.
+     * @return array
+     */
+    public function sanitize(array $settings, array $defaults = []): array
+    {
+        //
+        $values = empty($defaults) ? $this->data : $defaults;
+
+        foreach ($values as $key => $default_value) {
+            $values[$key] = isset($settings[$key])
+                ? $this->sanitizeSingleValue($key, $settings[$key], $default_value)
+                : $default_value
+            ;
+        }
+
+        return $values;
+    }
+
+
+    /**
+     * Sanitize single $value according to type of $default value.
+     *
+     * @internal If a particular setting needs a special sanitization, simply override this method.
+     *
+     * @param string $key
+     * @param mixed $value
+     * @param mixed $default
+     * @return mixed
+     */
+    public function sanitizeSingleValue(string $key, $value, $default)
+    {
+        if (is_bool($default)) {
+            return boolval($value);
+        } elseif (is_int($default)) {
+            return intval($value);
+        } elseif (is_array($default)) {
+            return $this->parseList($value);
+        } else {
+            return $value;
+        }
+    }
 
 
     /**

@@ -18,18 +18,13 @@ class Settings extends \BlueChip\Security\Core\Settings
 
 
     /**
-     * Sanitize settings array: only return known keys, provide default values for missing keys.
-     *
-     * @param array $s
      * @return array
      */
-    public function sanitize(array $s): array
+    public function getDefaults(): array
     {
         return [
-            self::LOG_MAX_SIZE
-                => isset($s[self::LOG_MAX_SIZE]) ? intval($s[self::LOG_MAX_SIZE]) : 20,
-            self::LOG_MAX_AGE
-                => isset($s[self::LOG_MAX_AGE]) ? intval($s[self::LOG_MAX_AGE]) : 365,
+            self::LOG_MAX_SIZE => 20,
+            self::LOG_MAX_AGE => 365,
         ];
     }
 

@@ -14,17 +14,21 @@ class Settings extends \BlueChip\Security\Core\Settings
     const CONNECTION_TYPE = 'connection-type';
 
 
-    /**
-     * Sanitize settings array: only return known keys, provide default values for missing keys.
-     *
-     * @param array $s
-     * @return array
-     */
-    public function sanitize(array $s): array
+    public function getDefaults(): array
     {
         return [
-            self::CONNECTION_TYPE
-                => isset($s[self::CONNECTION_TYPE]) && in_array($s[self::CONNECTION_TYPE], IpAddress::enlist(), true) ? $s[self::CONNECTION_TYPE] : IpAddress::REMOTE_ADDR,
+            self::CONNECTION_TYPE => IpAddress::REMOTE_ADDR,
         ];
+    }
+
+
+    public function sanitizeSingleValue(string $key, $value, $default)
+    {
+        switch ($key) {
+            case self::CONNECTION_TYPE:
+                return in_array($value, IpAddress::enlist(), true) ? $value : $default;
+            default:
+                return parent::sanitizeSingleValue($key, $value, $default);
+        }
     }
 }
