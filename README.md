@@ -78,7 +78,7 @@ BC Security allows to send automatic email notification to configured recipients
 1. User with administrator privileges has logged in.
 1. Known IP address has been locked out (see note below).
 1. [Checksums verification](#checksums-verification) fails or there are files with non-matching checksum.
-1. [Checklist monitoring](#checklist-monitoring) triggers an alert.
+1. [Checklist monitoring](#checklist-monitoring) triggers an alert. Note: there is one notification sent if any of basic checks fails, but separate notification is sent if any of advanced checks fails.
 1. BC Security plugin has been deactivated.
 
 Note: _Known IP address_ is an IP address from which a successful login attempt had been previously made. Information about successful login attempts is fetched from [event logs](#events-logging).

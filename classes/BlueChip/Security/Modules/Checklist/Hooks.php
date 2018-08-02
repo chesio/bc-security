@@ -11,14 +11,14 @@ namespace BlueChip\Security\Modules\Checklist;
 interface Hooks
 {
     /**
-     * Action: triggers when automatic checklist check encounters a problem.
-     */
-    const CHECK_ALERT = 'bc-security/action:checklist-check-alert';
-
-    /**
-     * Action: triggers when automatic checklist check encounters a problem.
+     * Action: triggers when a single advanced check does not pass during checklist monitoring run.
      */
     const ADVANCED_CHECK_ALERT = 'bc-security/action:checklist-advanced-check-alert';
+
+    /**
+     * Action: triggers when any of basic checks does not pass during checklist monitoring run.
+     */
+    const BASIC_CHECKS_ALERT = 'bc-security/action:checklist-basic-checks-alert';
 
     /**
      * Filter: allows to add/remove usernames to the list of obvious usernames.

@@ -139,7 +139,7 @@ class Manager implements Modules\Initializable
 
         if (!empty($issues)) {
             // Trigger an action to report found issues.
-            do_action(Hooks::CHECK_ALERT, $issues);
+            do_action(Hooks::BASIC_CHECKS_ALERT, $issues);
         }
     }
 
