@@ -25,6 +25,9 @@ abstract class Jobs
     /** string: Hook name for "Verify plugin checksums" cron job */
     const PLUGIN_CHECKSUMS_VERIFIER = 'bc-security/plugin-checksums-verifier';
 
+    /** string: Hook name for "No plugins removed from WordPress.org installed" check monitor */
+    const NO_REMOVED_PLUGINS_CHECK = 'bc-security/no-removed-plugins-check';
+
 
     /**
      * @return array List of all implemented cron jobs.

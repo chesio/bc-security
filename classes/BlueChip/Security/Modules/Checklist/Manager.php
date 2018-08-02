@@ -7,6 +7,7 @@ namespace BlueChip\Security\Modules\Checklist;
 
 use BlueChip\Security\Helpers\AjaxHelper;
 use BlueChip\Security\Modules;
+use BlueChip\Security\Modules\Cron;
 
 class Manager implements Modules\Initializable
 {
@@ -21,6 +22,11 @@ class Manager implements Modules\Initializable
     private $settings;
 
     /**
+     * @var \BlueChip\Security\Modules\Cron\Manager
+     */
+    private $cron_manager;
+
+    /**
      * @var \wpdb WordPress database access abstraction object
      */
     private $wpdb;
@@ -28,31 +34,39 @@ class Manager implements Modules\Initializable
 
     /**
      * @param \BlueChip\Security\Modules\Checklist\AutorunSettings $settings
+     * @param \BlueChip\Security\Modules\Cron\Manager $cron_manager
      * @param \wpdb $wpdb WordPress database access abstraction object
      */
-    public function __construct(AutorunSettings $settings, \wpdb $wpdb)
+    public function __construct(AutorunSettings $settings, Cron\Manager $cron_manager, \wpdb $wpdb)
     {
         $this->settings = $settings;
+        $this->cron_manager = $cron_manager;
         $this->wpdb = $wpdb;
     }
 
 
     public function init()
     {
+        // When settings are updated, ensure that cron jobs for advanced checks are properly (de)activated.
+        $this->settings->addUpdateHook([$this, 'updateCronJobs']);
         // Hook into cron job execution.
-        add_action(Modules\Cron\Jobs::CHECKLIST_CHECK, [$this, 'runChecks'], 10, 0);
+        add_action(Modules\Cron\Jobs::CHECKLIST_CHECK, [$this, 'runBasicChecks'], 10, 0);
+        foreach ($this->getChecks(false, AdvancedCheck::class) as $advanced_check) {
+            add_action($advanced_check->getCronJobHook(), [$advanced_check, 'runInCron'], 10, 0);
+        }
         // Register AJAX handler.
         AjaxHelper::addHandler(self::ASYNC_CHECK_ACTION, [$this, 'runCheck']);
     }
 
 
     /**
-     * Return list of all implemented checks.
+     * Return list of all implemented checks, optionally filtered.
      *
      * @param bool $meaningful_only If true, only checks that make sense in current context are returned.
+     * @param string $class If given, only checks of that class are returned.
      * @return \BlueChip\Security\Modules\Checklist\Check[]
      */
-    public function getChecks(bool $meaningful_only = false): array
+    public function getChecks(bool $meaningful_only = false, string $class = ''): array
     {
         $checks = [
             // PHP files editation should be off.
@@ -80,23 +94,30 @@ class Manager implements Modules\Initializable
             Checks\NoMd5HashedPasswords::getId() => new Checks\NoMd5HashedPasswords($this->wpdb),
         ];
 
-        return $meaningful_only
-            ? array_filter($checks, function (Check $check): bool {
+        if (!empty($class)) {
+            $checks = array_filter($checks, function (Check $check) use ($class): bool {
+                return $check instanceof $class;
+            });
+        }
+
+        if ($meaningful_only) {
+            $checks = array_filter($checks, function (Check $check): bool {
                 return $check->makesSense();
-            })
-            : $checks
-        ;
+            });
+        }
+
+        return $checks;
     }
 
 
     /**
-     * Run all checks that make sense in current context and are set to be monitored in non-interactive mode.
+     * Run all basic checks that make sense in current context and are set to be monitored in non-interactive mode.
      *
-     * @internal Method is intended to be run from within cron requests.
+     * @internal Method is intended to be run from within cron request.
      */
-    public function runChecks()
+    public function runBasicChecks()
     {
-        $checks = $this->getChecks(true);
+        $checks = $this->getChecks(true, BasicCheck::class);
         $issues = [];
 
         foreach ($checks as $check_id => $check) {
@@ -118,7 +139,7 @@ class Manager implements Modules\Initializable
 
         if (!empty($issues)) {
             // Trigger an action to report found issues.
-            do_action(Hooks::CHECK_ALERT, $issues);
+            do_action(Hooks::BASIC_CHECKS_ALERT, $issues);
         }
     }
 
@@ -150,5 +171,20 @@ class Manager implements Modules\Initializable
             'status' => $result->getStatus(),
             'message' => $result->getMessage(),
         ]);
+    }
+
+
+    /**
+     * Activate or deactivate cron jobs for advanced checks according to settings.
+     */
+    public function updateCronJobs()
+    {
+        foreach ($this->getChecks(false, AdvancedCheck::class) as $advanced_check) {
+            if ($this->settings[$advanced_check->getId()]) {
+                $this->cron_manager->activateJob($advanced_check->getCronJobHook());
+            } else {
+                $this->cron_manager->deactivateJob($advanced_check->getCronJobHook());
+            }
+        }
     }
 }

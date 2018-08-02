@@ -16,19 +16,29 @@ Helps keeping WordPress websites secure.
 
 ### Checklist
 
-BC Security features a checklist of common security practices. In the moment, the list consists of following checks:
+BC Security features a checklist of common security practices. The list is split in two parts: basic and advanced checks.
+
+#### Basic checks
+
+Basic checks do not require any information from third party sources to run and thus do not leak any data about your website:
+
 1. Is editation of plugin and theme PHP files disabled?
 1. Are directory listings disabled?
 1. Is execution of PHP files from uploads directory forbidden?
 1. Is display of PHP errors off by default? This check is only run in production environment, ie. when `WP_ENV === 'production'`.
 1. Is error log file not publicly available? This check is only run if both `WP_DEBUG` and `WP_DEBUG_LOG` constants are set to true.
 1. Are there no common usernames like admin or administrator on the system?
-1. Are there no plugins installed that have been removed from [Plugin Directory](https://wordpress.org/plugins/)?
 1. Are user passwords hashed with some non-default hashing algorithm?
+
+#### Advanced checks
+
+Advanced checks depend on data that has to be fetched from external servers (in the moment from WordPress.org only). Because of this, advanced checks may leak some data about your website (in the moment list of installed plugins that have `readme.txt` file) and are slower to perform.
+
+1. Are there no plugins installed that have been removed from [Plugin Directory](https://wordpress.org/plugins/)?
 
 #### Checklist monitoring
 
-Checklist check can be run from a dedicated page in backend, but can be also configured to run periodically in the background.
+Both basic and advanced checks can be run from a dedicated page in backend, but can be also configured to run periodically in the background. Basic checks are run in via single cron job, while each of advanced checks is run via separate cron job.
 
 ### WordPress hardening
 
@@ -68,7 +78,7 @@ BC Security allows to send automatic email notification to configured recipients
 1. User with administrator privileges has logged in.
 1. Known IP address has been locked out (see note below).
 1. [Checksums verification](#checksums-verification) fails or there are files with non-matching checksum.
-1. [Checklist monitoring](#checklist-monitoring) triggers an alert.
+1. [Checklist monitoring](#checklist-monitoring) triggers an alert. Note: there is one notification sent if any of basic checks fails, but separate notification is sent if any of advanced checks fails.
 1. BC Security plugin has been deactivated.
 
 Note: _Known IP address_ is an IP address from which a successful login attempt had been previously made. Information about successful login attempts is fetched from [event logs](#events-logging).

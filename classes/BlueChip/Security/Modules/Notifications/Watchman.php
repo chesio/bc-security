@@ -107,7 +107,8 @@ class Watchman implements Modules\Initializable, Modules\Activable
             add_action(Checksums\Hooks::PLUGIN_CHECKSUMS_VERIFICATION_ALERT, [$this, 'watchPluginChecksumsVerificationAlert'], 10, 1);
         }
         if ($this->settings[Settings::CHECKLIST_ALERT]) {
-            add_action(Checklist\Hooks::CHECK_ALERT, [$this, 'watchChecklistAlert'], 10, 1);
+            add_action(Checklist\Hooks::ADVANCED_CHECK_ALERT, [$this, 'watchChecklistSingleCheckAlert'], 10, 2);
+            add_action(Checklist\Hooks::BASIC_CHECKS_ALERT, [$this, 'watchChecklistMultipleChecksAlert'], 10, 1);
         }
     }
 
@@ -444,15 +445,33 @@ class Watchman implements Modules\Initializable, Modules\Activable
 
 
     /**
-     * Send notification if there has been checklist alert triggered.
+     * Send notification about single check that failed during checklist monitoring.
+     *
+     * @param \BlueChip\Security\Modules\Checklist\Check $check
+     * @param \BlueChip\Security\Modules\Checklist\CheckResult $result
+     */
+    public function watchChecklistSingleCheckAlert(Checklist\Check $check, Checklist\CheckResult $result)
+    {
+        $subject = __('Checklist monitoring alert', 'bc-security');
+        $message = [
+            sprintf(__('An issue has been found when running "%s" check:', 'bc-security'), $check->getName()),
+            strip_tags($result->getMessage())
+        ];
+
+        $this->notify($subject, $message);
+    }
+
+
+    /**
+     * Send notification about multiple checks that failed during checklist monitoring.
      *
      * @param array $issues Issues which triggered the alert (issue is an array with 'check' and 'result' keys).
      */
-    public function watchChecklistAlert(array $issues)
+    public function watchChecklistMultipleChecksAlert(array $issues)
     {
-        $subject = __('Checklist alert', 'bc-security');
+        $subject = __('Checklist monitoring alert', 'bc-security');
         $message = [
-            __('Following issues have been found by automatic checklist check:'),
+            __('Following issues have been found by automatic checklist check:', 'bc-security'),
         ];
 
         foreach ($issues as $issue) {

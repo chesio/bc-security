@@ -166,6 +166,17 @@ abstract class Settings implements \ArrayAccess
 
 
     /**
+     * Execute provided $callback as soon as settings are updated and persisted.
+     *
+     * @param callable $callback Callback that accepts up to three parameters: $old_value, $value, $option_name.
+     */
+    public function addUpdateHook(callable $callback)
+    {
+        add_action("update_option_{$this->option_name}", $callback, 10, 3);
+    }
+
+
+    /**
      * Update setting under $name with $value. Store update values in DB.
      *
      * @param string $name

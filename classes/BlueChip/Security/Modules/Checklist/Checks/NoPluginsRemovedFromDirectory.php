@@ -7,9 +7,15 @@ namespace BlueChip\Security\Modules\Checklist\Checks;
 
 use BlueChip\Security\Helpers;
 use BlueChip\Security\Modules\Checklist;
+use BlueChip\Security\Modules\Cron\Jobs;
 
 class NoPluginsRemovedFromDirectory extends Checklist\AdvancedCheck
 {
+    /**
+     * @var string
+     */
+    const CRON_JOB_HOOK = Jobs::NO_REMOVED_PLUGINS_CHECK;
+
     /**
      * @var string
      */
