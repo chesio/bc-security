@@ -10,6 +10,39 @@ namespace BlueChip\Security\Helpers;
 abstract class Plugin
 {
     /**
+     * @var string URL of checksum API
+     */
+    const CHECKSUMS_API_URL_BASE = 'https://downloads.wordpress.org/plugin-checksums/';
+
+
+    /**
+     * @var string
+     */
+    const PLUGINS_DIRECTORY_URL = 'https://wordpress.org/plugins/';
+
+
+    /**
+     * @param string $plugin_basename
+     * @return string Presumable URL of the plugin in WordPress.org Plugins Directory.
+     */
+    public static function getDirectoryUrl(string $plugin_basename): string
+    {
+        return trailingslashit(self::PLUGINS_DIRECTORY_URL . self::getSlug($plugin_basename));
+    }
+
+
+    /**
+     * @param string $plugin_basename
+     * @param array $plugin_data
+     * @return string Presumable URL of the plugin checksums file at WordPress.org.
+     */
+    public static function getChecksumsUrl(string $plugin_basename, array $plugin_data): string
+    {
+        return self::CHECKSUMS_API_URL_BASE . self::getSlug($plugin_basename) . '/' . $plugin_data['Version'] . '.json';
+    }
+
+
+    /**
      * Get slug (ie. bc-security) for plugin with given basename (ie. bc-security/bc-security.php).
      *
      * @param string $plugin_basename
@@ -70,5 +103,30 @@ abstract class Plugin
     public static function getPluginDirPath(string $plugin_basename): string
     {
         return wp_normalize_path(WP_PLUGIN_DIR . '/' . dirname($plugin_basename));
+    }
+
+
+    /**
+     * Create comma separated list of plugin names optionally with a link to plugin related URL.
+     *
+     * @param array $plugins
+     * @param string $linkTo [optional] If provided, plugin name will be turned into link to URL under given data key.
+     * @return string
+     */
+    public static function implodeList(array $plugins, string $linkTo = ''): string
+    {
+        return implode(
+            ', ',
+            array_map(
+                function (array $plugin_data) use ($linkTo): string {
+                    $plugin_name = '<em>' . esc_html($plugin_data['Name']) . '</em>';
+                    return $linkTo
+                        ? '<a href="' . esc_url($plugin_data[$linkTo]) . '" target="_blank">' . $plugin_name . '</a>'
+                        : $plugin_name
+                    ;
+                },
+                $plugins
+            )
+        );
     }
 }

@@ -29,10 +29,10 @@ class Settings extends \BlueChip\Security\Core\Settings
                 => isset($s[Jobs::LOGS_CLEAN_UP_BY_AGE]) ? boolval($s[Jobs::LOGS_CLEAN_UP_BY_AGE]) : true,
             Jobs::LOGS_CLEAN_UP_BY_SIZE
                 => isset($s[Jobs::LOGS_CLEAN_UP_BY_SIZE]) ? boolval($s[Jobs::LOGS_CLEAN_UP_BY_SIZE]) : true,
-            Jobs::CORE_CHECKSUMS_VERIFIER
-                => isset($s[Jobs::CORE_CHECKSUMS_VERIFIER]) ? boolval($s[Jobs::CORE_CHECKSUMS_VERIFIER]) : true,
-            Jobs::PLUGIN_CHECKSUMS_VERIFIER
-                => isset($s[Jobs::PLUGIN_CHECKSUMS_VERIFIER]) ? boolval($s[Jobs::PLUGIN_CHECKSUMS_VERIFIER]) : true,
+            Jobs::CORE_INTEGRITY_CHECK
+                => isset($s[Jobs::CORE_INTEGRITY_CHECK]) ? boolval($s[Jobs::CORE_INTEGRITY_CHECK]) : false,
+            Jobs::PLUGINS_INTEGRITY_CHECK
+                => isset($s[Jobs::PLUGINS_INTEGRITY_CHECK]) ? boolval($s[Jobs::PLUGINS_INTEGRITY_CHECK]) : false,
             Jobs::NO_REMOVED_PLUGINS_CHECK
                 => isset($s[Jobs::NO_REMOVED_PLUGINS_CHECK]) ? boolval($s[Jobs::NO_REMOVED_PLUGINS_CHECK]) : false,
         ];

@@ -127,7 +127,7 @@ class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\
      * @param string $message
      * @param array $context
      */
-    public function log($level, $message, array $context = [])
+    public function log(string $level, string $message, array $context = [])
     {
         // Allow overriding of IP address via $context.
         $ip_address = $context['ip_address'] ?? $this->remote_address;

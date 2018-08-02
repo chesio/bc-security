@@ -30,7 +30,22 @@ interface Hooks
     const OBVIOUS_USERNAMES = 'bc-security/filter:obvious-usernames';
 
     /**
+     * Filter: filters list of files that should be ignored during check for modified core files.
+     */
+    const IGNORED_CORE_MODIFIED_FILES = 'bc-security/filter:modified-files-ignored-in-core-integrity-check';
+
+    /**
+     * Filter: filters list of files that should be ignored during check for unknown core files.
+     */
+    const IGNORED_CORE_UNKNOWN_FILES = 'bc-security/filter:unknown-files-ignored-in-core-integrity-check';
+
+    /**
+     * Filter: filters list of plugins to check in integrity check.
+     */
+    const PLUGINS_TO_CHECK_FOR_INTEGRITY = 'bc-security/filter:plugins-to-check-for-integrity';
+
+    /**
      * Filter: allows to filter list of plugins that are checked for removal from Plugins Directory at WordPress.org.
      */
-    const PLUGINS_TO_CHECK_AT_WORDPRESS_ORG = 'bc-security/filter:plugins-to-check-at-wordpress.org';
+    const PLUGINS_TO_CHECK_FOR_REMOVAL = 'bc-security/filter:plugins-to-check-for-removal';
 }

@@ -10,7 +10,6 @@ use BlueChip\Security\Helpers\Transients;
 use BlueChip\Security\Modules;
 use BlueChip\Security\Modules\Log\Logger;
 use BlueChip\Security\Modules\Checklist;
-use BlueChip\Security\Modules\Checksums;
 use BlueChip\Security\Modules\Login;
 
 class Watchman implements Modules\Initializable, Modules\Activable
@@ -97,14 +96,6 @@ class Watchman implements Modules\Initializable, Modules\Activable
         }
         if ($this->settings[Settings::KNOWN_IP_LOCKOUT]) {
             add_action(Login\Hooks::LOCKOUT_EVENT, [$this, 'watchLockoutEvents'], 10, 3);
-        }
-        if ($this->settings[Settings::CORE_CHECKSUMS_VERIFICATION_ERROR]) {
-            add_action(Checksums\Hooks::CORE_CHECKSUMS_RETRIEVAL_FAILED, [$this, 'watchCoreChecksumsRetrievalFailed'], 10, 1);
-            add_action(Checksums\Hooks::CORE_CHECKSUMS_VERIFICATION_ALERT, [$this, 'watchCoreChecksumsVerificationAlert'], 10, 2);
-        }
-        if ($this->settings[Settings::PLUGIN_CHECKSUMS_VERIFICATION_ERROR]) {
-            add_action(Checksums\Hooks::PLUGIN_CHECKSUMS_RETRIEVAL_FAILED, [$this, 'watchPluginChecksumsRetrievalFailed'], 10, 1);
-            add_action(Checksums\Hooks::PLUGIN_CHECKSUMS_VERIFICATION_ALERT, [$this, 'watchPluginChecksumsVerificationAlert'], 10, 1);
         }
         if ($this->settings[Settings::CHECKLIST_ALERT]) {
             add_action(Checklist\Hooks::ADVANCED_CHECK_ALERT, [$this, 'watchChecklistSingleCheckAlert'], 10, 2);
@@ -338,113 +329,6 @@ class Watchman implements Modules\Initializable, Modules\Activable
 
 
     /**
-     * Send notification if checksums verification found modified or unknown files in WordPress directories.
-     *
-     * @param array $modified_files Files for which official checksums do not match.
-     * @param array $unknown_files Files that are present on file system but not in official checksums.
-     */
-    public function watchCoreChecksumsVerificationAlert(array $modified_files, array $unknown_files)
-    {
-        $subject = __('Checksums verification alert', 'bc-security');
-        $message = [
-            __('There have been modified or unknown files found in directories where WordPress is installed.'),
-        ];
-
-        if (!empty($modified_files)) {
-            $message[] = __('Official checksums do not match for the following files:', 'bc-security');
-            $message = array_merge($message, $modified_files);
-        }
-
-        if (!empty($unknown_files)) {
-            if (!empty($message)) {
-                $message[] = '';
-            }
-            $message[] = __('Following files are present on the file system, but not in official checksums:', 'bc-security');
-            $message = array_merge($message, $unknown_files);
-        }
-
-        // Append list of matched files to the message and send an email.
-        $this->notify($subject, $message);
-    }
-
-
-    /**
-     * Send notification if checksums verification found modified or unknown files in plugin directories.
-     *
-     * @param array $plugins Plugins for which checksums verification triggered an alert.
-     */
-    public function watchPluginChecksumsVerificationAlert(array $plugins)
-    {
-        $subject = __('Plugin checksums verification alert', 'bc-security');
-        $message = [
-            __('Checksums verification for the following plugins triggered an alert:', 'bc-security'),
-        ];
-
-        foreach ($plugins as $plugin_basename => $plugin_data) {
-            $message[] = '';
-            $message[] = sprintf("%s (%s)", $plugin_data['Name'], $plugin_basename);
-
-            if (!empty($plugin_data['ModifiedFiles'])) {
-                $message[] = __('Checksums do not match for the following files:', 'bc-security');
-                $message = array_merge($message, $plugin_data['ModifiedFiles']);
-            }
-
-            if (!empty($plugin_data['UnknownFiles'])) {
-                $message[] = __('Following files are present on the file system, but not in checksums:', 'bc-security');
-                $message = array_merge($message, $plugin_data['UnknownFiles']);
-            }
-        }
-
-        // Append list of matched files to the message and send an email.
-        $this->notify($subject, $message);
-    }
-
-
-    /**
-     * Send notification if checksums retrieval via WordPress.org API failed.
-     *
-     * @param string $url
-     */
-    public function watchCoreChecksumsRetrievalFailed(string $url)
-    {
-        $subject = __('Checksums verification failed', 'bc-security');
-        $message = sprintf(
-            __('Checksums verification for WordPress core has been aborted, because checksums could not be fetched from %s.', 'bc-security'),
-            $url
-        );
-
-        $this->notify($subject, $message);
-    }
-
-
-    /**
-     * Send notification if checksums retrieval for plugins via WordPress.org failed.
-     *
-     * @param array $plugins Plugins for which checksums could not be retrieved.
-     */
-    public function watchPluginChecksumsRetrievalFailed(array $plugins)
-    {
-        $subject = __('Plugin checksums verification failed', 'bc-security');
-        $message = [
-            __('Checksums verification for the following plugins has been aborted, because checksums could not be fetched from remote server:', 'bc-security'),
-            '',
-        ];
-
-        foreach ($plugins as $plugin_basename => $plugin_data) {
-            $message[] = sprintf(
-                __("%s (%s, version %s): failed to fetch checksums from %s", 'bc-security'),
-                $plugin_basename,
-                $plugin_data['Name'],
-                $plugin_data['Version'],
-                $plugin_data['Checksums URL']
-            );
-        }
-
-        $this->notify($subject, $message);
-    }
-
-
-    /**
      * Send notification about single check that failed during checklist monitoring.
      *
      * @param \BlueChip\Security\Modules\Checklist\Check $check
@@ -454,8 +338,9 @@ class Watchman implements Modules\Initializable, Modules\Activable
     {
         $subject = __('Checklist monitoring alert', 'bc-security');
         $message = [
-            sprintf(__('An issue has been found when running "%s" check:', 'bc-security'), $check->getName()),
-            strip_tags($result->getMessage())
+            sprintf(__('An issue has been found during checklist monitoring of "%s" check:', 'bc-security'), $check->getName()),
+            '',
+            $result->getMessageAsPlainText(),
         ];
 
         $this->notify($subject, $message);
@@ -471,12 +356,12 @@ class Watchman implements Modules\Initializable, Modules\Activable
     {
         $subject = __('Checklist monitoring alert', 'bc-security');
         $message = [
-            __('Following issues have been found by automatic checklist check:', 'bc-security'),
+            __('Following checks had failed during checklist monitoring:', 'bc-security'),
         ];
 
         foreach ($issues as $issue) {
             $message[] = '';
-            $message[] = sprintf("%s: %s", $issue['check']->getName(), strip_tags($issue['result']->getMessage()));
+            $message[] = sprintf("%s: %s", $issue['check']->getName(), $issue['result']->getMessageAsPlainText());
         }
 
         $this->notify($subject, $message);
