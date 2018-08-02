@@ -5,26 +5,17 @@
 
 namespace BlueChip\Security\Modules\Checksums;
 
-use BlueChip\Security\Modules;
-
 /**
  * Core verifier gets (official) checksums from WordPress.org.
  *
  * @link https://codex.wordpress.org/WordPress.org_API#Checksum
  */
-class CoreVerifier extends Verifier implements Modules\Initializable
+class CoreVerifier extends Verifier
 {
     /**
      * @var string URL of checksum API
      */
     const CHECKSUMS_API_URL = 'https://api.wordpress.org/core/checksums/1.0/';
-
-
-    public function init()
-    {
-        // Hook into cron job execution.
-        add_action(Modules\Cron\Jobs::CORE_CHECKSUMS_VERIFIER, [$this, 'runCheck'], 10, 0);
-    }
 
 
     /**
