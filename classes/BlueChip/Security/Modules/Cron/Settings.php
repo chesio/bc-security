@@ -34,7 +34,7 @@ class Settings extends \BlueChip\Security\Core\Settings
             Jobs::PLUGIN_CHECKSUMS_VERIFIER
                 => isset($s[Jobs::PLUGIN_CHECKSUMS_VERIFIER]) ? boolval($s[Jobs::PLUGIN_CHECKSUMS_VERIFIER]) : true,
             Jobs::NO_REMOVED_PLUGINS_CHECK
-                => isset($s[Jobs::NO_REMOVED_PLUGINS_CHECK]) ? boolval($s[Jobs::NO_REMOVED_PLUGINS_CHECK]) : true,
+                => isset($s[Jobs::NO_REMOVED_PLUGINS_CHECK]) ? boolval($s[Jobs::NO_REMOVED_PLUGINS_CHECK]) : false,
         ];
     }
 }
