@@ -175,7 +175,7 @@ class Manager implements Modules\Initializable
 
         wp_send_json_success([
             'status' => $result->getStatus(),
-            'message' => $result->getMessage(),
+            'message' => $result->getMessageAsHtml(),
         ]);
     }
 

@@ -10,28 +10,46 @@ class CheckResult
     private $status;
 
     /**
-     * @var string
+     * @var array Human readable message explaining the result as list of (hyper)text lines.
      */
     private $message;
 
 
     /**
      * @param bool|null $status Check result status: false, if check failed; true, if check passed; null for undetermined status.
-     * @param string $message Human readable message explaining the result - HTML tags are allowed/expected.
+     * @param array|string $message Human readable message explaining the result - inline HTML tags are allowed/expected.
      */
-    public function __construct($status, string $message = '')
+    public function __construct($status, $message)
     {
         $this->status = $status;
-        $this->message = $message;
+        $this->message = is_array($message) ? $message : [$message];
     }
 
 
     /**
-     * @return string Human readable message explaining the result - may contain HTML tags!
+     * @return array Human readable message as list of (hyper)text lines.
      */
-    public function getMessage(): string
+    public function getMessage(): array
     {
         return $this->message;
+    }
+
+
+    /**
+     * @return array Human readable message as single string with HTML tags.
+     */
+    public function getMessageAsHtml(): string
+    {
+        return implode('<br>', $this->message);
+    }
+
+
+    /**
+     * @return array Human readable message as single string without HTML tags.
+     */
+    public function getMessageAsPlainText(): string
+    {
+        return strip_tags(implode(PHP_EOL, $this->message));
     }
 
 

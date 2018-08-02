@@ -339,8 +339,9 @@ class Watchman implements Modules\Initializable, Modules\Activable
     {
         $subject = __('Checklist monitoring alert', 'bc-security');
         $message = [
-            sprintf(__('An issue has been found when running "%s" check:', 'bc-security'), $check->getName()),
-            strip_tags($result->getMessage())
+            sprintf(__('An issue has been found during checklist monitoring of "%s" check:', 'bc-security'), $check->getName()),
+            '',
+            $result->getMessageAsPlainText(),
         ];
 
         $this->notify($subject, $message);
@@ -356,12 +357,12 @@ class Watchman implements Modules\Initializable, Modules\Activable
     {
         $subject = __('Checklist monitoring alert', 'bc-security');
         $message = [
-            __('Following issues have been found by automatic checklist check:', 'bc-security'),
+            __('Following checks had failed during checklist monitoring:', 'bc-security'),
         ];
 
         foreach ($issues as $issue) {
             $message[] = '';
-            $message[] = sprintf("%s: %s", $issue['check']->getName(), strip_tags($issue['result']->getMessage()));
+            $message[] = sprintf("%s: %s", $issue['check']->getName(), $issue['result']->getMessageAsPlainText());
         }
 
         $this->notify($subject, $message);
