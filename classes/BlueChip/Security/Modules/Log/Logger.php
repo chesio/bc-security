@@ -127,7 +127,7 @@ class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\
      * @param string $message
      * @param array $context
      */
-    public function log($level, $message, array $context = [])
+    public function log(string $level, string $message, array $context = [])
     {
         // Allow overriding of IP address via $context.
         $ip_address = $context['ip_address'] ?? $this->remote_address;
@@ -289,13 +289,13 @@ class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\
      * Fetch log records that match provided arguments.
      *
      * @param string $event Only fetch records under event name (empty string is allowed).
-     * @param int $from
-     * @param int $limit
-     * @param string $order_by
-     * @param string $order
+     * @param int $from [optional] Zero-based index for first record to be returned. Default value is 0.
+     * @param int $limit [optional] Maximum number of items to be returned. Default value is 20.
+     * @param string $order_by [optional] Column name to order the records by.
+     * @param string $order [optional] Order direction, either "asc" or "desc".
      * @return array
      */
-    public function fetch($event = null, $from = 0, $limit = 20, $order_by = null, $order = null)
+    public function fetch($event = null, int $from = 0, int $limit = 20, string $order_by = '', string $order = ''): array
     {
         // Prepare query
         $query = "SELECT * FROM {$this->log_table}";
@@ -327,12 +327,11 @@ class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\
 
 
     /**
-     * Return list of distinct IP addresses from which a successful login has
-     * been made.
+     * Return list of distinct IP addresses from which a successful login has been made.
      *
      * @return array
      */
-    public function getKnownIps()
+    public function getKnownIps(): array
     {
         $result = $this->wpdb->get_results(
             $this->wpdb->prepare("SELECT DISTINCT(ip_address) FROM {$this->log_table} WHERE event = %s", Events\LoginSuccessful::ID)
@@ -347,7 +346,7 @@ class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\
      *
      * @return bool True on success, false on failure.
      */
-    public function pruneAll()
+    public function pruneAll(): bool
     {
         return $this->wpdb->query("TRUNCATE {$this->log_table}") !== false;
     }
@@ -358,7 +357,7 @@ class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\
      *
      * @return bool True on success, false on failure.
      */
-    public function pruneByAge()
+    public function pruneByAge(): bool
     {
         $max_age = $this->settings->getMaxAge();
 
@@ -377,7 +376,7 @@ class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\
      *
      * @return bool True on success, false on failure.
      */
-    public function pruneBySize()
+    public function pruneBySize(): bool
     {
         $max_size = $this->settings->getMaxSize();
 
