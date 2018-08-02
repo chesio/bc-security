@@ -26,7 +26,6 @@ class PluginsIntegrity extends Checklist\AdvancedCheck
                 esc_html__('By comparing %1$s of local plugin files with checksums provided by WordPress.org it is possible to determine, if any of plugin files have been modified or if there are any unknown files in plugin directories. Note that this check works only with plugins installed from %2$s.', 'bc-security'),
                 '<a href="' . esc_url(__('https://en.wikipedia.org/wiki/Md5sum', 'bc-security')) . '" target="_blank">' . esc_html__('MD5 checksums', 'bc-security') . '</a>',
                 '<a href="' . esc_url(__('https://wordpress.org/plugins/', 'bc-security')) . '" target="_blank">' . esc_html__('Plugins Directory', 'bc-security') . '</a>'
-
             )
         );
     }

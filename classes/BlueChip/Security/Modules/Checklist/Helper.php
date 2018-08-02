@@ -38,9 +38,10 @@ abstract class Helper
     public static function formatListOfFiles(array $list): string
     {
         return implode(', ', array_map(
-            function(string $file): string {
+            function (string $file): string {
                 return '<em>' . esc_html($file) . '</em>';
-            }, $list
+            },
+            $list
         ));
     }
 
