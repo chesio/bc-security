@@ -43,8 +43,8 @@ class NoPluginsRemovedFromDirectory extends Checklist\AdvancedCheck
         $problematic_plugins = $this->getProblematicPlugins($plugins);
 
         // Format check results into human-readable output.
-        $list_of_removed_plugins = Helpers\Plugin::implodeList($problematic_plugins['removed_plugins'], true);
-        $list_of_unknown_plugins = Helpers\Plugin::implodeList($problematic_plugins['unknown_plugins'], false);
+        $list_of_removed_plugins = Helpers\Plugin::implodeList($problematic_plugins['removed_plugins'], 'DirectoryURL');
+        $list_of_unknown_plugins = Helpers\Plugin::implodeList($problematic_plugins['unknown_plugins'], 'DirectoryURL');
 
         if (!empty($list_of_removed_plugins)) {
             $message = sprintf(
@@ -86,8 +86,11 @@ class NoPluginsRemovedFromDirectory extends Checklist\AdvancedCheck
         $removed_plugins = []; // List of plugins for which the check failed.
 
         foreach ($plugins as $plugin_basename => $plugin_data) {
+            $plugin_url = Helpers\Plugin::getDirectoryUrl($plugin_basename);
+            // Save plugin URL along with plugin data for later.
+            $plugin_data['DirectoryURL'] = $plugin_url;
             // Try to fetch plugin page.
-            $response = wp_remote_get(Helpers\Plugin::getDirectoryUrl($plugin_basename));
+            $response = wp_remote_get($plugin_url);
 
             if (wp_remote_retrieve_response_code($response) !== 200) {
                 // Plugin does not seem to be hosted on WordPress.org.

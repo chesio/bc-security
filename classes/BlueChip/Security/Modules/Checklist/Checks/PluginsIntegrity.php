@@ -16,11 +16,6 @@ class PluginsIntegrity extends Checklist\AdvancedCheck
      */
     const CRON_JOB_HOOK = Jobs::PLUGINS_INTEGRITY_CHECK;
 
-    /**
-     * @var string URL of checksum API
-     */
-    const CHECKSUMS_API_URL_BASE = 'https://downloads.wordpress.org/plugin-checksums/';
-
 
     public function __construct()
     {
@@ -52,14 +47,14 @@ class PluginsIntegrity extends Checklist\AdvancedCheck
         $checksums_verification_failed = [];
 
         foreach ($plugins as $plugin_basename => $plugin_data) {
-            $slug = Helpers\Plugin::getSlug($plugin_basename);
-
-            // Add necessary arguments to request URL.
-            $url = self::CHECKSUMS_API_URL_BASE . $slug . '/' . $plugin_data['Version'] . '.json';
+            // Get checksums URL.
+            $checksums_url = Helpers\Plugin::getChecksumsUrl($plugin_basename, $plugin_data);
+            // Save checksums URL along with plugin data for later.
+            $plugin_data['ChecksumsURL'] = $checksums_url;
 
             // Get checksums.
-            if (empty($checksums = $this->getChecksums($url))) {
-                $checksums_retrieval_failed[$plugin_basename] = array_merge($plugin_data, ['Checksums URL' => $url]);
+            if (empty($checksums = $this->getChecksums($checksums_url))) {
+                $checksums_retrieval_failed[$plugin_basename] = $plugin_data;
                 continue;
             }
 
@@ -75,35 +70,46 @@ class PluginsIntegrity extends Checklist\AdvancedCheck
             if (!empty($modified_files) || !empty($unknown_files)) {
                 $checksums_verification_failed[$plugin_basename] = array_merge(
                     $plugin_data,
-                    ['ModifiedFiles' => $modified_files, 'UnknownFiles' => $unknown_files]
+                    [
+                        'ModifiedFiles' => Checklist\Helper::formatListOfFiles($modified_files),
+                        'UnknownFiles' => Checklist\Helper::formatListOfFiles($unknown_files),
+                    ]
                 );
             }
         }
 
         // Format check results into human-readable output.
-        $list_of_touched_plugins = Helpers\Plugin::implodeList($checksums_verification_failed, true);
-        $list_of_unknown_plugins = Helpers\Plugin::implodeList($checksums_retrieval_failed, false);
+        if (!empty($checksums_verification_failed)) {
+            $message_parts = [
+                esc_html__('The following plugins seem to have been altered in some way.', 'bc-security'),
+            ];
 
-        if (!empty($list_of_touched_plugins)) {
-            $message = sprintf(
-                esc_html__('Following plugins seem to have been altered in some way: %s', 'bc-security'),
-                $list_of_touched_plugins
-            );
-            if (!empty($list_of_unknown_plugins)) {
+            foreach ($checksums_verification_failed as $plugin_basename => $plugin_data) {
+                $message_parts[] = '';
+                $message_parts[] = sprintf('<strong>%s</strong> <code>%s</code>', esc_html($plugin_data['Name']), $plugin_basename);
+                if (!empty($plugin_data['ModifiedFiles'])) {
+                    $message_parts[] = sprintf(esc_html__('Modified files: %s', 'bc-security'), $plugin_data['ModifiedFiles']);
+                }
+                if (!empty($plugin_data['UnknownFiles'])) {
+                    $message_parts[] = sprintf(esc_html__('Unknown files: %s', 'bc-security'), $plugin_data['UnknownFiles']);
+                }
+            }
+
+            if (!empty($checksums_retrieval_failed)) {
                 // Also report any plugins that could not be checked, just in case.
-                $message .= '<br>';
-                $message .= sprintf(
-                    esc_html__('Furthermore, following plugins could not be checked: %s', 'bc-security'),
-                    $list_of_unknown_plugins
+                $message_parts[] = '';
+                $message_parts[] = sprintf(
+                    esc_html__('Furthermore, checksums for the following plugins could not be fetched: %s', 'bc-security'),
+                    Helpers\Plugin::implodeList($checksums_retrieval_failed, 'ChecksumsURL')
                 );
             }
-            return new Checklist\CheckResult(false, $message);
+            return new Checklist\CheckResult(false, $message_parts);
         }
 
-        if (!empty($list_of_unknown_plugins)) {
+        if (!empty($checksums_retrieval_failed)) {
             $message = sprintf(
-                esc_html__('No modified plugins found, but following plugins could not be checked: %s', 'bc-security'),
-                $list_of_unknown_plugins
+                esc_html__('No modified plugins found, but checksums for the following plugins could not be fetched: %s', 'bc-security'),
+                Helpers\Plugin::implodeList($checksums_retrieval_failed, 'ChecksumsURL')
             );
             return new Checklist\CheckResult(null, $message);
         }

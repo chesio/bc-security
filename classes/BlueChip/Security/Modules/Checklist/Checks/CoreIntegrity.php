@@ -53,13 +53,24 @@ class CoreIntegrity extends Checklist\AdvancedCheck
         // Scan WordPress directories to find any files unknown to WordPress.
         $unknown_files = self::findUnknownFiles($checksums);
 
-        // Trigger alert, if any suspicious files have been found.
-        if (!empty($modified_files) || !empty($unknown_files)) {
-            $message = esc_html__('Some of WordPress core files have been modified and/or there are unknown files present.', 'bc-security');
-            return new Checklist\CheckResult(false, $message);
+        if (empty($modified_files) && empty($unknown_files)) {
+            return new Checklist\CheckResult(true, esc_html__('WordPress core files seem to be genuine.', 'bc-security'));
+        } else {
+            $message_parts = [];
+            if (!empty($modified_files)) {
+                $message_parts[] = sprintf(
+                    esc_html__('The following WordPress core files have been modified: %s', 'bc-security'),
+                    Checklist\Helper::formatListOfFiles($modified_files)
+                );
+            }
+            if (!empty($unknown_files)) {
+                $message_parts[] = sprintf(
+                    esc_html__('There are following unknown files present in WordPress core directory: %s', 'bc-security'),
+                    Checklist\Helper::formatListOfFiles($unknown_files)
+                );
+            }
+            return new Checklist\CheckResult(false, $message_parts);
         }
-
-        return new Checklist\CheckResult(true, esc_html__('WordPress core files seem to be genuine.', 'bc-security'));
     }
 
 

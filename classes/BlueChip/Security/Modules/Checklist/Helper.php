@@ -32,6 +32,20 @@ abstract class Helper
 
 
     /**
+     * @param array $list
+     * @return string
+     */
+    public static function formatListOfFiles(array $list): string
+    {
+        return implode(', ', array_map(
+            function(string $file): string {
+                return '<em>' . esc_html($file) . '</em>';
+            }, $list
+        ));
+    }
+
+
+    /**
      * Check, if HTTP request to $url results in 403 forbidden response.
      *
      * Method returns:
