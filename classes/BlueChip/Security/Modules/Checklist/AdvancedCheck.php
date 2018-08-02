@@ -40,7 +40,7 @@ abstract class AdvancedCheck extends Check
         $result = $this->run();
 
         if ($result->getStatus() !== true) {
-            do_action(Checklist\Hooks::ADVANCED_CHECK_ALERT, $this, $result);
+            do_action(Hooks::ADVANCED_CHECK_ALERT, $this, $result);
         }
     }
 }
