@@ -10,7 +10,6 @@ use BlueChip\Security\Helpers\Transients;
 use BlueChip\Security\Modules;
 use BlueChip\Security\Modules\Log\Logger;
 use BlueChip\Security\Modules\Checklist;
-use BlueChip\Security\Modules\Checksums;
 use BlueChip\Security\Modules\Login;
 
 class Watchman implements Modules\Initializable, Modules\Activable
