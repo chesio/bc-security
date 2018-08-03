@@ -119,7 +119,8 @@ abstract class Check
      *
      * @return \BlueChip\Security\Modules\Checklist\CheckResult
      */
-    public function run(): CheckResult {
+    public function run(): CheckResult
+    {
         // Run the check...
         $this->last_run = current_time('timestamp');
         $this->result = $this->runInternal();
