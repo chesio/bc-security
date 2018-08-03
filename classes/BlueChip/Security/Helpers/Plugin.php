@@ -69,6 +69,17 @@ abstract class Plugin
 
 
     /**
+     * @param string $plugin_basename
+     * @return bool True, if directory of given plugin seems to be under version control (Subversion or Git).
+     */
+    public static function isVersionControlled(string $plugin_basename): bool
+    {
+        $plugin_dir = self::getPluginDirPath($plugin_basename);
+        return is_dir($plugin_dir . '/.git') || is_dir($plugin_dir . '/.svn');
+    }
+
+
+    /**
      * Get all installed plugins that seems to be hosted at WordPress.org repository (= have readme.txt file).
      * Method effectively discards any plugins that are not in their own directory (like Hello Dolly) from output.
      *
