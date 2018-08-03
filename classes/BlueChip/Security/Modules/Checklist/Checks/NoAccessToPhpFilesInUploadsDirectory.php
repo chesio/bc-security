@@ -18,7 +18,7 @@ class NoAccessToPhpFilesInUploadsDirectory extends Checklist\BasicCheck
     }
 
 
-    public function run(): Checklist\CheckResult
+    protected function runInternal(): Checklist\CheckResult
     {
         $php_file_message = 'It is more secure to not allow PHP files to be accessed from within WordPress uploads directory.';
 

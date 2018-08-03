@@ -32,6 +32,21 @@ abstract class Helper
 
 
     /**
+     * @param \BlueChip\Security\Modules\Checklist\Check $check
+     * @return string
+     */
+    public static function formatLastRunTimestamp(Check $check): string
+    {
+        if (empty($timestamp = $check->getTimeOfLastRun())) {
+            return '--';
+        } else {
+            $format = sprintf('%s %s', get_option('date_format'), get_option('time_format'));
+            return date_i18n($format, $timestamp);
+        }
+    }
+
+
+    /**
      * @param array $list
      * @return string
      */

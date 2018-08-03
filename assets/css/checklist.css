@@ -3,11 +3,6 @@
     opacity: 0.5;
 }
 
-.bcs-checklist--initial .bcs-check__status,
-.bcs-checklist--initial .bcs-check__message {
-    display: none;
-}
-
 /* Check passed */
 .bcs-check--ok .dashicons:before {
     content: "\f147";

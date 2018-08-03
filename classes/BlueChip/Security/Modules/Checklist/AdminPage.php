@@ -187,7 +187,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
 
     private function printChecklistTable(array $checks, string $checks_class)
     {
-        echo '<table class="wp-list-table widefat striped bcs-checklist--initial">';
+        echo '<table class="wp-list-table widefat striped">';
 
         echo '<thead>';
         $this->printLabelsRow();
@@ -215,11 +215,12 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
     private function printLabelsRow()
     {
         echo '<tr>';
-        echo '<th class="bcs-check__status">' . esc_html__('Status', 'bc-security') . '</th>';
         echo '<th>' . esc_html__('Name', 'bc-security') . '</th>';
         echo '<th>' . esc_html__('Monitor', 'bc-security') . '</th>';
-        echo '<td>' . esc_html__('Description', 'bc-security') . '</td>';
-        echo '<td class="bcs-check__message">' . esc_html__('Result', 'bc-security') . '</td>';
+        echo '<th>' . esc_html__('Description', 'bc-security') . '</th>';
+        echo '<th>' . esc_html__('Last run', 'bc-security') . '</th>';
+        echo '<th>' . esc_html__('Status', 'bc-security') . '</th>';
+        echo '<th>' . esc_html__('Result', 'bc-security') . '</th>';
         echo '<tr>';
     }
 
@@ -232,11 +233,12 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
     private function printCheckRow(Check $check, string $check_class)
     {
         $check_id = $check::getId();
+        $result = $check->getResult();
+        $status = $result->getStatus();
+        $status_class = is_bool($status) ? ($status ? 'bcs-check--ok' : 'bcs-check--ko') : '';
 
-        echo '<tr class="bcs-check ' . esc_attr($check_class) . '" data-check-id="' . esc_attr($check_id) . '">';
+        echo '<tr class="bcs-check ' . esc_attr($check_class) . ' ' . $status_class . '" data-check-id="' . esc_attr($check_id) . '">';
 
-        // Status icon.
-        echo '<th class="bcs-check__status"><span class="dashicons"></span></th>';
         // Name should be short and descriptive and without HTML tags.
         echo '<th>' . esc_html($check->getName()) . '</th>';
         // Background monitoring toggle.
@@ -247,8 +249,12 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
         echo '</th>';
         // Allow for HTML tags in $description.
         echo '<td>' . $check->getDescription() . '</td>';
+        // Last time the check has been run.
+        echo '<td class="bcs-check__last-run">' . Helper::formatLastRunTimestamp($check) . '</td>';
+        // Status icon.
+        echo '<td class="bcs-check__status"><span class="dashicons"></span></td>';
         // Check result message.
-        echo '<td class="bcs-check__message">---</td>';
+        echo '<td class="bcs-check__message">' . $result->getMessageAsHtml() . '</td>';
 
         echo '</tr>';
     }
