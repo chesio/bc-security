@@ -14,7 +14,7 @@
         });
 
         // Activate "select only passing" button.
-        var $select_passing_checks_button = $('#bcs-mark-passing-checks').on('click', function() {
+        $('#bcs-mark-passing-checks').prop('disabled', false).on('click', function() {
             $checks.find('input[type="checkbox"]').prop('checked', function() { return $(this).closest('.bcs-check').hasClass('bcs-check--ok'); });
         });
 
@@ -28,9 +28,8 @@
 
             $checks.filter('.' + $button.data('check-class')).each(function() {
                 var $check = $(this).removeClass('bcs-check--ok').removeClass('bcs-check--ko').addClass('bcs-check--running');
+                var $last_run = $('.bcs-check__last-run', $check);
                 var $message = $('.bcs-check__message', $check).html(bc_security_checklist.messages.check_is_running);
-
-                $check.closest('table').removeClass('bcs-checklist--initial');
 
                 // https://api.jquery.com/jQuery.ajax/
                 var request = $.ajax({
@@ -44,8 +43,11 @@
                         $message.html(bc_security_checklist.messages.check_failed);
                     },
                     success  : function(response) {
-                        if (response.success && response.data.status !== null) {
-                            $check.addClass('bcs-check--' + (response.data.status ? 'ok' : 'ko'));
+                        if (response.success) {
+                            $last_run.text(response.data.timestamp);
+                            if (response.data.status !== null) {
+                                $check.addClass('bcs-check--' + (response.data.status ? 'ok' : 'ko'));
+                            }
                         }
                         $message.html(response.data.message);
                     },
@@ -59,7 +61,6 @@
 
             $.when.apply($, requests).always(function() {
                 $run_checks_buttons.prop('disabled', false);
-                $select_passing_checks_button.prop('disabled', false);
             });
         });
     });

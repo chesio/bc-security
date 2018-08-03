@@ -35,7 +35,7 @@ class CoreIntegrity extends Checklist\AdvancedCheck
     }
 
 
-    public function run(): Checklist\CheckResult
+    protected function runInternal(): Checklist\CheckResult
     {
         $url = self::getChecksumsUrl();
 

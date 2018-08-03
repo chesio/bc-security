@@ -33,7 +33,7 @@ class DisplayOfPhpErrorsIsOff extends Checklist\BasicCheck
     }
 
 
-    public function run(): Checklist\CheckResult
+    protected function runInternal(): Checklist\CheckResult
     {
         // Craft temporary file name.
         $name = sprintf('bc-security-checklist-test-error-display-%s.php', md5(rand()));

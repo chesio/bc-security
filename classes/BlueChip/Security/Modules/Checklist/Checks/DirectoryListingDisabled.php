@@ -18,7 +18,7 @@ class DirectoryListingDisabled extends Checklist\BasicCheck
     }
 
 
-    public function run(): Checklist\CheckResult
+    protected function runInternal(): Checklist\CheckResult
     {
         $upload_paths = wp_upload_dir();
         if (!isset($upload_paths['baseurl'])) {

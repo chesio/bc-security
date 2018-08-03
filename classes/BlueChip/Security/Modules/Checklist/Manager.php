@@ -184,6 +184,7 @@ class Manager implements Modules\Initializable
         $result = $check->run();
 
         wp_send_json_success([
+            'timestamp' => Helper::formatLastRunTimestamp($check),
             'status' => $result->getStatus(),
             'message' => $result->getMessageAsHtml(),
         ]);

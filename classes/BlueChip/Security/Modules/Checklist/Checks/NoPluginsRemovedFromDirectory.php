@@ -31,7 +31,7 @@ class NoPluginsRemovedFromDirectory extends Checklist\AdvancedCheck
     }
 
 
-    public function run(): Checklist\CheckResult
+    protected function runInternal(): Checklist\CheckResult
     {
         // Get filtered list of installed plugins.
         $plugins = apply_filters(

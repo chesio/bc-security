@@ -18,7 +18,7 @@ class NoObviousUsernamesCheck extends Checklist\BasicCheck
     }
 
 
-    public function run(): Checklist\CheckResult
+    protected function runInternal(): Checklist\CheckResult
     {
         // Get (filtered) list of obvious usernames to test.
         $obvious = apply_filters(Checklist\Hooks::OBVIOUS_USERNAMES, ['admin', 'administrator']);

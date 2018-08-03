@@ -31,7 +31,7 @@ class PluginsIntegrity extends Checklist\AdvancedCheck
     }
 
 
-    public function run(): Checklist\CheckResult
+    protected function runInternal(): Checklist\CheckResult
     {
         // Grab a list of plugins to check.
         $plugins = apply_filters(
