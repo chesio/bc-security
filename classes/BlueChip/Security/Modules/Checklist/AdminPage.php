@@ -146,7 +146,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
         echo '<button type="button" class="button button-large bcs-run-checks" data-check-class="bcs-check--basic">' . esc_html__('Run basic checks', 'bc-security') . '</button>';
         echo '</p>';
 
-        $this->printChecklistTable($basic_checks);
+        $this->printChecklistTable($basic_checks, 'bcs-check--basic');
     }
 
 
@@ -165,7 +165,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
         echo '<button type="button" class="button button-large bcs-run-checks" data-check-class="bcs-check--advanced">' . esc_html__('Run advanced checks', 'bc-security') . '</button>';
         echo '</p>';
 
-        $this->printChecklistTable($advanced_checks);
+        $this->printChecklistTable($advanced_checks, 'bcs-check--advanced');
     }
 
 
@@ -185,7 +185,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
     }
 
 
-    private function printChecklistTable(array $checks)
+    private function printChecklistTable(array $checks, string $checks_class)
     {
         echo '<table class="wp-list-table widefat striped bcs-checklist--initial">';
 
@@ -196,7 +196,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
         echo '<tbody>';
 
         foreach ($checks as $check) {
-            $this->printCheckRow($check);
+            $this->printCheckRow($check, $checks_class);
         }
 
         echo '</tbody>';
@@ -229,12 +229,11 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
      *
      * @param \BlueChip\Security\Modules\Checklist\Check $check
      */
-    private function printCheckRow(Check $check)
+    private function printCheckRow(Check $check, string $check_class)
     {
-        $check_id = $check->getId();
-        $check_class = $check::getClass();
+        $check_id = $check::getId();
 
-        echo '<tr class="bcs-check bcs-check--' . esc_attr($check_class) . '" data-check-id="' . esc_attr($check_id) . '">';
+        echo '<tr class="bcs-check ' . esc_attr($check_class) . '" data-check-id="' . esc_attr($check_id) . '">';
 
         // Status icon.
         echo '<th class="bcs-check__status"><span class="dashicons"></span></th>';

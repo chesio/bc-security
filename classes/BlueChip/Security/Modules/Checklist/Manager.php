@@ -17,6 +17,11 @@ class Manager implements Modules\Initializable
     const ASYNC_CHECK_ACTION = 'bc_security_run_check';
 
     /**
+     * @var \BlueChip\Security\Modules\Checklist\Check[]
+     */
+    private $checks;
+
+    /**
      * @var \BlueChip\Security\Modules\Checklist\AutorunSettings
      */
     private $settings;
@@ -26,11 +31,6 @@ class Manager implements Modules\Initializable
      */
     private $cron_manager;
 
-    /**
-     * @var \wpdb WordPress database access abstraction object
-     */
-    private $wpdb;
-
 
     /**
      * @param \BlueChip\Security\Modules\Checklist\AutorunSettings $settings
@@ -39,9 +39,9 @@ class Manager implements Modules\Initializable
      */
     public function __construct(AutorunSettings $settings, Cron\Manager $cron_manager, \wpdb $wpdb)
     {
+        $this->checks = $this->constructChecks($wpdb);
         $this->settings = $settings;
         $this->cron_manager = $cron_manager;
-        $this->wpdb = $wpdb;
     }
 
 
@@ -51,7 +51,7 @@ class Manager implements Modules\Initializable
         $this->settings->addUpdateHook([$this, 'updateCronJobs']);
         // Hook into cron job execution.
         add_action(Modules\Cron\Jobs::CHECKLIST_CHECK, [$this, 'runBasicChecks'], 10, 0);
-        foreach ($this->getChecks(false, AdvancedCheck::class) as $advanced_check) {
+        foreach ($this->getChecks(true, AdvancedCheck::class) as $advanced_check) {
             add_action($advanced_check->getCronJobHook(), [$advanced_check, 'runInCron'], 10, 0);
         }
         // Register AJAX handler.
@@ -60,15 +60,13 @@ class Manager implements Modules\Initializable
 
 
     /**
-     * Return list of all implemented checks, optionally filtered.
+     * Construct all checks.
      *
-     * @param bool $meaningful_only If true, only checks that make sense in current context are returned.
-     * @param string $class If given, only checks of that class are returned.
-     * @return \BlueChip\Security\Modules\Checklist\Check[]
+     * @param \wpdb $wpdb WordPress database access abstraction object
      */
-    public function getChecks(bool $meaningful_only = false, string $class = ''): array
+    public function constructChecks(\wpdb $wpdb): array
     {
-        $checks = [
+        return [
             // PHP files editation should be off.
             Checks\PhpFilesEditationDisabled::getId() => new Checks\PhpFilesEditationDisabled(),
 
@@ -88,7 +86,7 @@ class Manager implements Modules\Initializable
             Checks\NoObviousUsernamesCheck::getId() => new Checks\NoObviousUsernamesCheck(),
 
             // No passwords should be hashed with (default) MD5 hash.
-            Checks\NoMd5HashedPasswords::getId() => new Checks\NoMd5HashedPasswords($this->wpdb),
+            Checks\NoMd5HashedPasswords::getId() => new Checks\NoMd5HashedPasswords($wpdb),
 
             // There are no modified or unknown WordPress core files.
             Checks\CoreIntegrity::getId() => new Checks\CoreIntegrity(),
@@ -99,6 +97,18 @@ class Manager implements Modules\Initializable
             // There are no plugins installed that have been removed from plugins directory.
             Checks\NoPluginsRemovedFromDirectory::getId() => new Checks\NoPluginsRemovedFromDirectory(),
         ];
+    }
+
+    /**
+     * Return list of all implemented checks, optionally filtered.
+     *
+     * @param bool $meaningful_only If true, only checks that make sense in current context are returned.
+     * @param string $class [optional] Return only checks of given class.
+     * @return \BlueChip\Security\Modules\Checklist\Check[]
+     */
+    public function getChecks(bool $meaningful_only = false, string $class = ''): array
+    {
+        $checks = $this->checks;
 
         if (!empty($class)) {
             $checks = array_filter($checks, function (Check $check) use ($class): bool {
@@ -164,14 +174,14 @@ class Manager implements Modules\Initializable
         }
 
         $checks = $this->getChecks();
-        if (!isset($checks[$check_id])) {
+        if (empty($check = $checks[$check_id])) {
             wp_send_json_error([
                 'message' => sprintf(__('Unknown check ID: %s', 'bc-security'), $check_id),
             ]);
         }
 
-        // Run check.
-        $result = $checks[$check_id]->run();
+        // Run check, grab result.
+        $result = $check->run();
 
         wp_send_json_success([
             'status' => $result->getStatus(),
@@ -185,8 +195,8 @@ class Manager implements Modules\Initializable
      */
     public function updateCronJobs()
     {
-        foreach ($this->getChecks(false, AdvancedCheck::class) as $advanced_check) {
-            if ($this->settings[$advanced_check->getId()]) {
+        foreach ($this->getChecks(false, AdvancedCheck::class) as $check_id => $advanced_check) {
+            if ($this->settings[$check_id]) {
                 $this->cron_manager->activateJob($advanced_check->getCronJobHook());
             } else {
                 $this->cron_manager->deactivateJob($advanced_check->getCronJobHook());

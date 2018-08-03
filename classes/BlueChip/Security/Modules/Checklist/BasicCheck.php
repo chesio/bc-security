@@ -12,8 +12,4 @@ namespace BlueChip\Security\Modules\Checklist;
  */
 abstract class BasicCheck extends Check
 {
-    /**
-     * @var string
-     */
-    const CHECK_CLASS = 'basic';
 }
