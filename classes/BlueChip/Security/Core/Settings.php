@@ -6,29 +6,44 @@
 namespace BlueChip\Security\Core;
 
 /**
- * Basis (abstract) class for setting objects
+ * Basis (abstract) class for setting objects.
+ *
+ * Every setting object's data are internally stored as single option in `wp_options` table using Settings API.
+ *
+ * @link https://developer.wordpress.org/plugins/settings/settings-api/
  */
 abstract class Settings implements \ArrayAccess
 {
     /**
-     * @var string Option name under which settings are stored
+     * @var array Default values for all settings. Descendant classes should override it.
+     */
+    const DEFAULTS = [];
+
+    /**
+     * @var array Sanitization routines for settings that cannot be just sanitized based on type of their default value.
+     */
+    const SANITIZERS = [];
+
+
+    /**
+     * @var string Option name under which settings are stored.
      */
     private $option_name;
 
     /**
-     * @var array Cache for get_option() result.
+     * @var array Settings data (kind of cache for get_option() result).
      */
     protected $data;
 
 
     /**
-     * @param string $option_name
+     * @param string $option_name Option name under which to store the settings.
      */
     public function __construct(string $option_name)
     {
         $this->option_name = $option_name;
-        // Read settings from wp_options table and sanitize them right away using default values.
-        $this->data = $this->sanitize(get_option($option_name, []), $this->getDefaults());
+        // Read settings from `wp_options` table and sanitize them right away using default values.
+        $this->data = $this->sanitize(get_option($option_name, []), static::DEFAULTS);
     }
 
 
@@ -134,17 +149,14 @@ abstract class Settings implements \ArrayAccess
 
 
     /**
-     * Return array with default values.
-     *
-     * @internal Default values determine both valid settings keys and expected type of every value.
-     *
-     * @return array
-     */
-    abstract public function getDefaults(): array;
-
-
-    /**
      * Sanitize $settings array: only keep known keys, provide default values for missing keys.
+     *
+     * @internal This method serves two purposes: it sanitizes data read from database and it sanitizes POST-ed data.
+     * When using the method for database data sanitization, make sure that you provide default values. However,
+     * when using the method for POST-ed data sanitization (ie. as `sanitize_callback` in `register_setting` function),
+     * you should not provide explicit defaults, as the method will implicitly use data from database (that are already
+     * sanitized) as default values. This way, it is not necessary for POST-ed data to be complete, because any missing
+     * key-value pairs will be correctly preserved.
      *
      * @param array $settings Items to sanitize.
      * @param array $defaults [optional] If provided, used as default values for sanitization instead of local data.
@@ -152,14 +164,19 @@ abstract class Settings implements \ArrayAccess
      */
     public function sanitize(array $settings, array $defaults = []): array
     {
-        //
+        // If no default values are provided, use data from internal cache as default values.
         $values = empty($defaults) ? $this->data : $defaults;
 
         foreach ($values as $key => $default_value) {
-            $values[$key] = isset($settings[$key])
-                ? $this->sanitizeSingleValue($key, $settings[$key], $default_value)
-                : $default_value
-            ;
+            if (isset($settings[$key])) {
+                // New value is provided, sanitize it either...
+                $values[$key] = isset(static::SANITIZERS[$key])
+                    // ...using provided callback...
+                    ? call_user_func(static::SANITIZERS[$key], $settings[$key])
+                    // ...or by type.
+                    : self::sanitizeByType($settings[$key], $default_value)
+                ;
+            }
         }
 
         return $values;
@@ -167,23 +184,22 @@ abstract class Settings implements \ArrayAccess
 
 
     /**
-     * Sanitize single $value according to type of $default value.
+     * Sanitize the $value according to type of $default value.
      *
-     * @internal If a particular setting needs a special sanitization, simply override this method.
-     *
-     * @param string $key
      * @param mixed $value
      * @param mixed $default
      * @return mixed
      */
-    public function sanitizeSingleValue(string $key, $value, $default)
+    protected static function sanitizeByType($value, $default)
     {
         if (is_bool($default)) {
             return boolval($value);
+        } elseif (is_float($default)) {
+            return floatval($value);
         } elseif (is_int($default)) {
             return intval($value);
-        } elseif (is_array($default)) {
-            return $this->parseList($value);
+        } elseif (is_array($default) && is_string($value)) {
+            return self::parseList($value);
         } else {
             return $value;
         }
@@ -196,7 +212,7 @@ abstract class Settings implements \ArrayAccess
      * @param array|string $list
      * @return array
      */
-    protected function parseList($list): array
+    protected static function parseList($list): array
     {
         return is_array($list) ? $list : array_filter(array_map('trim', explode(PHP_EOL, $list)));
     }

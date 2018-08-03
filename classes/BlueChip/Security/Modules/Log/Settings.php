@@ -18,15 +18,12 @@ class Settings extends \BlueChip\Security\Core\Settings
 
 
     /**
-     * @return array
+     * @var array Default values for all settings.
      */
-    public function getDefaults(): array
-    {
-        return [
-            self::LOG_MAX_SIZE => 20,
-            self::LOG_MAX_AGE => 365,
-        ];
-    }
+    const DEFAULTS = [
+        self::LOG_MAX_SIZE => 20,
+        self::LOG_MAX_AGE => 365,
+    ];
 
 
     /**

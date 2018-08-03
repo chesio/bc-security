@@ -8,9 +8,10 @@ namespace BlueChip\Security\Modules\Checklist;
 abstract class Check
 {
     /**
-     * @var string
+     * @var string Check class (either basic or advanced).
      */
     const CHECK_CLASS = '';
+
 
     /**
      * @var string
@@ -37,21 +38,11 @@ abstract class Check
 
 
     /**
-     * @param string $classname
-     * @return string ID of check computed from given classname.
-     */
-    public static function getCheckId(string $classname): string
-    {
-        return basename(str_replace('\\', '/', $classname));
-    }
-
-
-    /**
-     * @return string Check unique ID.
+     * @return string Check unique ID. Basically name of class implementing the check.
      */
     public static function getId(): string
     {
-        return self::getCheckId(static::class);
+        return static::class;
     }
 
 

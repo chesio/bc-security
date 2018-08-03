@@ -6,34 +6,23 @@
 namespace BlueChip\Security\Modules\Checklist;
 
 /**
- * Every setting has a boolean value: true = perform check monitoring, false = do not perform check monitoring
+ * Every setting has a boolean value: true = monitor given check, false = do not monitor given check.
  */
 class AutorunSettings extends \BlueChip\Security\Core\Settings
 {
     /**
-     * @var string[] List of checks that can be monitored in background.
+     * @var array Default values for all settings. By default, no checks are monitored.
      */
-    const CHECKS = [
-        Checks\PhpFilesEditationDisabled::class,
-        Checks\DirectoryListingDisabled::class,
-        Checks\NoAccessToPhpFilesInUploadsDirectory::class,
-        Checks\DisplayOfPhpErrorsIsOff::class,
-        Checks\ErrorLogNotPubliclyAccessible::class,
-        Checks\NoObviousUsernamesCheck::class,
-        Checks\NoMd5HashedPasswords::class,
-        Checks\NoPluginsRemovedFromDirectory::class,
-        Checks\CoreIntegrity::class,
-        Checks\PluginsIntegrity::class,
+    const DEFAULTS = [
+        Checks\PhpFilesEditationDisabled::class => false,
+        Checks\DirectoryListingDisabled::class => false,
+        Checks\NoAccessToPhpFilesInUploadsDirectory::class => false,
+        Checks\DisplayOfPhpErrorsIsOff::class => false,
+        Checks\ErrorLogNotPubliclyAccessible::class => false,
+        Checks\NoObviousUsernamesCheck::class => false,
+        Checks\NoMd5HashedPasswords::class => false,
+        Checks\NoPluginsRemovedFromDirectory::class => false,
+        Checks\CoreIntegrity::class => false,
+        Checks\PluginsIntegrity::class => false,
     ];
-
-
-    /**
-     * By default, no checks are monitored.
-     *
-     * @return array
-     */
-    public function getDefaults(): array
-    {
-        return array_fill_keys(array_map([Check::class, 'getCheckId'], self::CHECKS), false);
-    }
 }

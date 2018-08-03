@@ -37,33 +37,37 @@ class Settings extends \BlueChip\Security\Core\Settings
     /** array: List of email addresses of any additional notifications [empty] */
     const NOTIFICATION_RECIPIENTS = 'notification_recipients';
 
+    /**
+     * @var array Default values for all settings.
+     */
+    const DEFAULTS = [
+        self::ADMIN_USER_LOGIN => true,
+        self::KNOWN_IP_LOCKOUT => true,
+        self::CORE_UPDATE_AVAILABLE => true,
+        self::PLUGIN_UPDATE_AVAILABLE => true,
+        self::THEME_UPDATE_AVAILABLE => true,
+        self::CHECKLIST_ALERT => true,
+        self::PLUGIN_DEACTIVATED => true,
+        self::NOTIFY_SITE_ADMIN => false,
+        self::NOTIFICATION_RECIPIENTS => [],
+    ];
 
     /**
+     * @var array Custom sanitizers.
+     */
+    const SANITIZERS = [
+        self::NOTIFICATION_RECIPIENTS => [self::class, 'sanitizeNotificationRecipient'],
+    ];
+
+
+    /**
+     * Sanitize "notification recipients" setting. Must be list of emails.
+     *
+     * @param array|string $value
      * @return array
      */
-    public function getDefaults(): array
+    public static function sanitizeNotificationRecipient($value): array
     {
-        return [
-            self::ADMIN_USER_LOGIN => true,
-            self::KNOWN_IP_LOCKOUT => true,
-            self::CORE_UPDATE_AVAILABLE => true,
-            self::PLUGIN_UPDATE_AVAILABLE => true,
-            self::THEME_UPDATE_AVAILABLE => true,
-            self::CHECKLIST_ALERT => true,
-            self::PLUGIN_DEACTIVATED => true,
-            self::NOTIFY_SITE_ADMIN => false,
-            self::NOTIFICATION_RECIPIENTS => [],
-        ];
-    }
-
-
-    public function sanitizeSingleValue(string $key, $value, $default)
-    {
-        switch ($key) {
-            case self::NOTIFICATION_RECIPIENTS:
-                return array_filter($this->parseList($value), '\is_email');
-            default:
-                return parent::sanitizeSingleValue($key, $value, $default);
-        }
+        return array_filter(self::parseList($value), '\is_email');
     }
 }

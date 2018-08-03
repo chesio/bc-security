@@ -26,14 +26,11 @@ class Settings extends \BlueChip\Security\Core\Settings
 
 
     /**
-     * @return array
+     * @var array Default values for all settings.
      */
-    public function getDefaults(): array
-    {
-        return [
-            self::DISABLE_PINGBACKS => false,
-            self::DISABLE_XML_RPC => false,
-            self::DISABLE_REST_API => false,
-        ];
-    }
+    const DEFAULTS = [
+        self::DISABLE_PINGBACKS => false,
+        self::DISABLE_XML_RPC => false,
+        self::DISABLE_REST_API => false,
+    ];
 }

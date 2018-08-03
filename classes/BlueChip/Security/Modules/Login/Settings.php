@@ -35,35 +35,37 @@ class Settings extends \BlueChip\Security\Core\Settings
     const GENERIC_LOGIN_ERROR_MESSAGE = 'display_generic_error_message';
 
 
-    public function getDefaults(): array
-    {
-        return [
-            self::SHORT_LOCKOUT_AFTER => 5,
-            self::SHORT_LOCKOUT_DURATION => 10,
-            self::LONG_LOCKOUT_AFTER => 20,
-            self::LONG_LOCKOUT_DURATION => 24,
-            self::RESET_TIMEOUT => 3,
-            self::CHECK_COOKIES => true,
-            self::USERNAME_BLACKLIST => [],
-            self::GENERIC_LOGIN_ERROR_MESSAGE => false,
-        ];
-    }
+    /**
+     * @var array Default values for all settings.
+     */
+    const DEFAULTS = [
+        self::SHORT_LOCKOUT_AFTER => 5,
+        self::SHORT_LOCKOUT_DURATION => 10,
+        self::LONG_LOCKOUT_AFTER => 20,
+        self::LONG_LOCKOUT_DURATION => 24,
+        self::RESET_TIMEOUT => 3,
+        self::CHECK_COOKIES => true,
+        self::USERNAME_BLACKLIST => [],
+        self::GENERIC_LOGIN_ERROR_MESSAGE => false,
+    ];
+
+    /**
+     * @var array Custom sanitizers.
+     */
+    const SANITIZERS = [
+        self::USERNAME_BLACKLIST => [self::class, 'sanitizeUsernameBlacklist'],
+    ];
 
 
     /**
-     * @param string $key
-     * @param mixed $value
-     * @param mixed $default
-     * @return mixed
+     * Sanitize "username blacklist" setting. Must be list of valid usernames.
+     *
+     * @param array|string $value
+     * @return array
      */
-    public function sanitizeSingleValue(string $key, $value, $default)
+    public static function sanitizeUsernameBlacklist($value): array
     {
-        switch ($key) {
-            case self::USERNAME_BLACKLIST:
-                return array_filter($this->parseList($value), '\validate_username');
-            default:
-                return parent::sanitizeSingleValue($key, $value, $default);
-        }
+        return array_filter(self::parseList($value), '\validate_username');
     }
 
 

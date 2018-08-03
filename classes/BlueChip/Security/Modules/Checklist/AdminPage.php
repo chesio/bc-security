@@ -234,7 +234,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
         $check_id = $check->getId();
         $check_class = $check::getClass();
 
-        echo '<tr class="bcs-check bcs-check--' . $check_class . '" data-check-id="' . $check_id . '">';
+        echo '<tr class="bcs-check bcs-check--' . esc_attr($check_class) . '" data-check-id="' . esc_attr($check_id) . '">';
 
         // Status icon.
         echo '<th class="bcs-check__status"><span class="dashicons"></span></th>';
