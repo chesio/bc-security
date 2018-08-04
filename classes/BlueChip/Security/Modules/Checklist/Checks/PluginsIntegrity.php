@@ -39,12 +39,10 @@ class PluginsIntegrity extends Checklist\AdvancedCheck
             Helpers\Plugin::getPluginsInstalledFromWordPressOrg()
         );
 
-        if (defined('WP_ENV') && (WP_ENV === 'development')) {
-            // In development, do not check plugins that are under version control.
-            $plugins = array_filter($plugins, function (string $plugin_basename): bool {
-                return !Helpers\Plugin::isVersionControlled($plugin_basename);
-            }, ARRAY_FILTER_USE_KEY);
-        }
+        // Do not check plugins that are under version control.
+        $plugins = array_filter($plugins, function (string $plugin_basename): bool {
+            return !Helpers\Plugin::isVersionControlled($plugin_basename);
+        }, ARRAY_FILTER_USE_KEY);
 
         // Plugins for which checksums retrieval failed.
         $checksums_retrieval_failed = [];
