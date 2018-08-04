@@ -32,15 +32,15 @@ Basic checks cover common security practices. They do not require any informatio
 
 #### Advanced checks
 
-Advanced checks require data from external servers (in the moment from WordPress.org only). Because of this, they leak some information about your website. In the moment, **list of installed plugins** (but only those with `readme.txt` file) is shared with WordPress.org. Also, because of the external HTTP request, the checks take more time to execute.
+Advanced checks require data from external servers (in the moment from WordPress.org only). Because of this, they leak some information about your website. In the moment, **list of installed plugins** (but only those with _readme.txt_ file) is shared with WordPress.org. Also, because of the external HTTP request, the checks take more time to execute.
 
 ##### WordPress core integrity check
 
 WordPress core files verification is done in two phases:
 1. Official md5 checksums from WordPress.org are used to determine if any of core files have been modified.
-1. All files in root directory, `wp-admin` directory (including subdirectories) and `wp-includes` directory (including subdirectories) are checked against official checksums list in order to find out any unknown files.
+1. All files in root directory, _wp-admin_ directory (including subdirectories) and _wp-includes_ directory (including subdirectories) are checked against official checksums list in order to find out any unknown files.
 
-The check uses the same checksums API as [`core verify-checksums`](https://developer.wordpress.org/cli/commands/core/verify-checksums/) command from _WP-CLI_.
+The check uses the same checksums API as [`core verify-checksums`](https://developer.wordpress.org/cli/commands/core/verify-checksums/) command from [WP-CLI](https://wp-cli.org/).
 
 ##### Plugins integrity check
 
@@ -106,14 +106,13 @@ Some of the modules listed above come with settings panel. Further customization
 
 * `bc-security/filter:is-admin` - filters boolean value that determines whether current user is considered an admin user. This check determines whether admin login notification should be sent for particular user. By default, any user with `manage_options` capability is considered an admin (or `manage_network` on multisite).
 * `bc-security/filter:obvious-usernames` - filters array of common usernames that are being checked via [checklist check](#basic-checks). By default, the array consists of _admin_ and _administrator_ values.
-* `bc-security/filter:plugins-to-check-for-integrity` - filters array of plugins that should have their integrity checked. By default, the array consists of all installed plugins that have `readme.txt` file. Note that plugins under version control are automatically omitted.
-* `bc-security/filter:plugins-to-check-for-removal` - filters array of plugins to check for their presence in WordPress.org Plugins Directory. By default, the array consists of all installed plugins that have `readme.txt` file.
+* `bc-security/filter:plugins-to-check-for-integrity` - filters array of plugins that should have their integrity checked. By default, the array consists of all installed plugins that have _readme.txt_ file. Note that plugins under version control are automatically omitted.
+* `bc-security/filter:plugins-to-check-for-removal` - filters array of plugins to check for their presence in WordPress.org Plugins Directory. By default, the array consists of all installed plugins that have _readme.txt_ file.
 * `bc-security/filter:modified-files-ignored-in-core-integrity-check` - filters array of files that should not be reported as __modified__ in checksum verification of core WordPress files. By default, the array consist of _wp-config-sample.php_ and _wp-includes/version.php_ values.
 * `bc-security/filter:unknown-files-ignored-in-core-integrity-check` - filters array of files that should not be reported as __unknown__ in checksum verification of core WordPress files. By default, the array consist of _.htaccess_, _wp-config.php_, _liesmich.html_, _olvasdel.html_ and _procitajme.html_ values.
-* `bc-security/filter:plugins-to-check-for-integrity` - filters array of plugins to check in checksum verification. By default, the array consists of all installed plugins that have `readme.txt` file.
 * `bc-security/filter:ip-blacklist-default-manual-lock-duration` - filters number of seconds that is used as default value in lock duration field of manual IP blacklisting form. By default, the value is equal to one month in seconds.
 * `bc-security/filter:is-ip-address-locked` - filters boolean value that determines whether given IP address is currently locked within given scope. By default, the value is based on plugin bookkeeping data.
-* `bc-security/filter:log-404-event` - filters boolean value that determines whether current HTTP request that resulted in [404 response](https://en.wikipedia.org/wiki/HTTP_404) should be logged or not. To completely disable logging of 404 events, you can attach [__return_false](https://developer.wordpress.org/reference/functions/__return_false/) function to the filter.
+* `bc-security/filter:log-404-event` - filters boolean value that determines whether current HTTP request that resulted in [404 response](https://en.wikipedia.org/wiki/HTTP_404) should be logged or not. To completely disable logging of 404 events, you can attach [`__return_false`](https://developer.wordpress.org/reference/functions/__return_false/) function to the filter.
 * `bc-security/filter:events-with-hostname-resolution` - filters array of IDs of events for which hostname of involved IP address should be resolved via reverse DNS lookup. By default the following events are registered: attempts to authenticate with bad cookie, failed and successful login attempts and lockout events. Note that this functionality only relates to event logs report in backend - in case email notification is sent, hostname of reported IP address (if any) is always resolved separately.
 * `bc-security/filter:login-username-blacklist` - filters array of blacklisted usernames that are being immediately locked on login. There are no default values, but the filter operates on usernames set via module settings, so it can be used to enforce blacklisting of particular usernames.
 
