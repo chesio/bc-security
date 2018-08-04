@@ -16,13 +16,13 @@ Helps keeping WordPress websites secure.
 
 ### Checklist
 
-BC Security features a checklist of common security practices. The list is split in two parts: basic and advanced checks.
+BC Security can help you find potential security issues or even signs of breach.
 
 #### Basic checks
 
-Basic checks do not require any information from third party sources to run and thus do not leak any data about your website:
+Basic checks cover common security practices. They do not require any information from third party sources to proceed and thus do not leak any information about your website:
 
-1. Is editation of plugin and theme PHP files disabled?
+1. Is backend editing of plugin and theme PHP files disabled?
 1. Are directory listings disabled?
 1. Is execution of PHP files from uploads directory forbidden?
 1. Is display of PHP errors off by default? This check is only run in production environment, ie. when `WP_ENV === 'production'`.
@@ -32,13 +32,29 @@ Basic checks do not require any information from third party sources to run and 
 
 #### Advanced checks
 
-Advanced checks depend on data that has to be fetched from external servers (in the moment from WordPress.org only). Because of this, advanced checks may leak some data about your website (in the moment list of installed plugins that have `readme.txt` file) and are slower to perform.
+Advanced checks require data from external servers (in the moment from WordPress.org only). Because of this, they leak some information about your website. In the moment, **list of installed plugins** (but only those with `readme.txt` file) is shared with WordPress.org. Also, because of the external HTTP request, the checks take more time to execute.
 
-1. Are there no plugins installed that have been removed from [Plugin Directory](https://wordpress.org/plugins/)?
+##### WordPress core integrity check
+
+WordPress core files verification is done in two phases:
+1. Official md5 checksums from WordPress.org are used to determine if any of core files have been modified.
+1. All files in root directory, `wp-admin` directory (including subdirectories) and `wp-includes` directory (including subdirectories) are checked against official checksums list in order to find out any unknown files.
+
+The check uses the same checksums API as [`core verify-checksums`](https://developer.wordpress.org/cli/commands/core/verify-checksums/) command from _WP-CLI_.
+
+##### Plugins integrity check
+
+Plugin files verification works only for plugins installed from [Plugins Directory](https://wordpress.org/plugins/). The verification process is akin to the core files verification, although the API is slightly different (see [related Trac ticket](https://meta.trac.wordpress.org/ticket/3192) and [specification](https://docs.google.com/document/d/14-SMpaPtDGEBm8hE9ZwnA-vik5OvECDig32KqX8uFlg/edit)).
+
+Important: any plugins under version control (Git or Subversion) are automatically omitted from the check.
+
+##### Removed plugins check
+
+Although plugins can be removed from [Plugins Directory](https://wordpress.org/plugins/) for several reasons (not only because they have [security vulnerability](https://www.wordfence.com/blog/2017/09/display-widgets-malware/)), use of removed plugins is discouraged. Obviously, this check also works only for plugins installed from Plugins Directory.
 
 #### Checklist monitoring
 
-Both basic and advanced checks can be run from a dedicated page in backend, but can be also configured to run periodically in the background. Basic checks are run in via single cron job, while each of advanced checks is run via separate cron job.
+Both basic and advanced checks can be run manually from a dedicated page in backend, but can be also configured to run periodically (once a day) in the background. Basic checks are run via a single cron job, while each of advanced checks is run via a separate cron job.
 
 ### WordPress hardening
 
@@ -46,16 +62,6 @@ BC Security allows you to:
 1. Disable pingbacks
 1. Disable XML RPC methods that require authentication
 1. Disable access to REST API to anonymous users
-
-### Checksums verification
-
-BC Security once a day performs integrity check of WordPress core and plugin files. Any file that is evaluated as modified or unknown is [logged](#events-logging) and (optionally) reported via [email notification](#notifications).
-
-WordPress core files verification is done in two phases:
-1. Official md5 checksums from WordPress.org are used to determine if any of core files have been modified.
-1. All files in root directory, `wp-admin` directory (including subdirectories) and `wp-includes` directory (including subdirectories) are checked against official checksums list to determine if the file is official (known) file.
-
-Plugin files verification works only for plugins hosted at [WordPress Plugins](https://wordpress.org/plugins/) directory. The verification process is akin to the core files verification, although the API is slightly different (see [related Trac ticket](https://meta.trac.wordpress.org/ticket/3192) and [specification](https://docs.google.com/document/d/14-SMpaPtDGEBm8hE9ZwnA-vik5OvECDig32KqX8uFlg/edit)).
 
 ### Login security
 
@@ -77,7 +83,6 @@ BC Security allows to send automatic email notification to configured recipients
 1. Theme update is available.
 1. User with administrator privileges has logged in.
 1. Known IP address has been locked out (see note below).
-1. [Checksums verification](#checksums-verification) fails or there are files with non-matching checksum.
 1. [Checklist monitoring](#checklist-monitoring) triggers an alert. Note: there is one notification sent if any of basic checks fails, but separate notification is sent if any of advanced checks fails.
 1. BC Security plugin has been deactivated.
 
@@ -100,7 +105,8 @@ Logs are stored in database and can be viewed on backend. Logs are automatically
 Some of the modules listed above come with settings panel. Further customization can be done with filters provided by plugin:
 
 * `bc-security/filter:is-admin` - filters boolean value that determines whether current user is considered an admin user. This check determines whether admin login notification should be sent for particular user. By default, any user with `manage_options` capability is considered an admin (or `manage_network` on multisite).
-* `bc-security/filter:obvious-usernames` - filters array of common usernames that are being checked via [checklist check](#checklist). By default, the array consists of _admin_ and _administrator_ values.
+* `bc-security/filter:obvious-usernames` - filters array of common usernames that are being checked via [checklist check](#basic-checks). By default, the array consists of _admin_ and _administrator_ values.
+* `bc-security/filter:plugins-to-check-for-integrity` - filters array of plugins that should have their integrity checked. By default, the array consists of all installed plugins that have `readme.txt` file. Note that plugins under version control are automatically omitted.
 * `bc-security/filter:plugins-to-check-for-removal` - filters array of plugins to check for their presence in WordPress.org Plugins Directory. By default, the array consists of all installed plugins that have `readme.txt` file.
 * `bc-security/filter:modified-files-ignored-in-core-integrity-check` - filters array of files that should not be reported as __modified__ in checksum verification of core WordPress files. By default, the array consist of _wp-config-sample.php_ and _wp-includes/version.php_ values.
 * `bc-security/filter:unknown-files-ignored-in-core-integrity-check` - filters array of files that should not be reported as __unknown__ in checksum verification of core WordPress files. By default, the array consist of _.htaccess_, _wp-config.php_, _liesmich.html_, _olvasdel.html_ and _procitajme.html_ values.
@@ -115,8 +121,8 @@ Some of the modules listed above come with settings panel. Further customization
 
 1. [Login Security](#login-security) feature is inspired by [Limit Login Attempts](https://wordpress.org/plugins/limit-login-attempts/) plugin by Johan Eenfeldt.
 1. Part of [psr/log](https://packagist.org/packages/psr/log) package codebase is shipped with the plugin.
-1. [Checksums verification](#checksums-verification) feature is heavily inspired by [Checksum Verifier](https://github.com/pluginkollektiv/checksum-verifier) plugin by Sergej Müller.
-1. Some features (like "plugins removed from Plugins Directory" check) are inspired by [Wordfence Security](https://wordpress.org/plugins/wordfence/) from [Defiant](https://www.defiant.com/).
+1. [WordPress core integrity check](#wordpress-core-integrity-check) is heavily inspired by [Checksum Verifier](https://github.com/pluginkollektiv/checksum-verifier) plugin by Sergej Müller.
+1. Some features (like "[Removed plugins check](#removed-plugins-check)") are inspired by [Wordfence Security](https://wordpress.org/plugins/wordfence/) from [Defiant](https://www.defiant.com/).
 
 ## Alternatives (and why I do not use them)
 
