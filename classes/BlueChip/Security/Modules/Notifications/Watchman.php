@@ -56,6 +56,15 @@ class Watchman implements Modules\Initializable, Modules\Activable
 
 
     /**
+     * @return bool True, if notifications are muted via `BC_SECURITY_MUTE_NOTIFICATIONS` constant, false otherwise.
+     */
+    public static function isMuted(): bool
+    {
+        return defined('BC_SECURITY_MUTE_NOTIFICATIONS') && BC_SECURITY_MUTE_NOTIFICATIONS;
+    }
+
+
+    /**
      * Format remote IP address - append result of reverse DNS lookup, if successful.
      *
      * @param string $remote_address
@@ -78,7 +87,7 @@ class Watchman implements Modules\Initializable, Modules\Activable
     public function init()
     {
         // Bail early, if no recipients are set or we are explicitly ordered to not disturb.
-        if (empty($this->recipients) || defined('BC_SECURITY_MUTE_NOTIFICATIONS') && BC_SECURITY_MUTE_NOTIFICATIONS) {
+        if (empty($this->recipients) || self::isMuted()) {
             return;
         }
 
