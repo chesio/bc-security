@@ -23,13 +23,22 @@ class Core
 
 
     /**
-     * Get remote IP address according to configured connection type.
+     * @return string Connection type as set by `BC_SECURITY_CONNECTION_TYPE` constant or empty string if constant is not set.
+     */
+    public static function getConnectionType(): string
+    {
+        return defined('BC_SECURITY_CONNECTION_TYPE') ? BC_SECURITY_CONNECTION_TYPE : '';
+    }
+
+
+    /**
+     * Get remote IP address according to connection type configured either by constant or backend setting.
      *
      * @return string
      */
     public function getRemoteAddress(): string
     {
-        return IpAddress::get($this->connection_type);
+        return IpAddress::get(self::getConnectionType() ?: $this->connection_type);
     }
 
 

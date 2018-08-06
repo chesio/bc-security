@@ -12,6 +12,10 @@ Helps keeping WordPress websites secure.
 * BC Security has not been tested on WordPress multisite installation.
 * BC Security is primarily being developed for Apache webserver and Unix-like environments.
 
+## Setup
+
+Several features of BC Security depends on the knowledge of remote IP address, so it is important that you let the plugin know how your server is connected to the Internet. You can either set connection type via _Setup_ page or with via `BC_SECURITY_CONNECTION_TYPE` constant.
+
 ## Features
 
 ### Checklist
