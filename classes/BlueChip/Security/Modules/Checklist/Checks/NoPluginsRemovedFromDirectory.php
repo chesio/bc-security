@@ -90,7 +90,8 @@ class NoPluginsRemovedFromDirectory extends Checklist\AdvancedCheck
             // Save plugin URL along with plugin data for later.
             $plugin_data['DirectoryURL'] = $plugin_url;
             // Try to fetch plugin page.
-            $response = wp_remote_get($plugin_url);
+            // Do not allow redirections, as non-existing slugs are automatically redirected to search page.
+            $response = wp_remote_get($plugin_url, ['redirection' => 0]);
 
             if (wp_remote_retrieve_response_code($response) !== 200) {
                 // Plugin does not seem to be hosted on WordPress.org.
