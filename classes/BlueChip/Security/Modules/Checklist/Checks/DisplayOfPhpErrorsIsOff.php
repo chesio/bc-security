@@ -27,7 +27,7 @@ class DisplayOfPhpErrorsIsOff extends Checklist\BasicCheck
      *
      * @return bool
      */
-    public function makesSense(): bool
+    public function isMeaningful(): bool
     {
         return defined('WP_ENV') && (WP_ENV === 'production');
     }

@@ -81,6 +81,15 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
 
 
     /**
+     * @return int Number of meaningful checks that are monitored and failed the last time they have been executed.
+     */
+    public function getCount(): int
+    {
+        return count($this->checklist_manager->getChecks(['meaningful' => true, 'monitored' => true, 'status' => false]));
+    }
+
+
+    /**
      * Output admin page.
      */
     public function printContents()
@@ -102,9 +111,9 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
 
         echo '<form method="post" action="' . admin_url('options.php') .'">';
 
-        $this->printBasicChecksSection($this->checklist_manager->getChecks(true, BasicCheck::class));
+        $this->printBasicChecksSection($this->checklist_manager->getBasicChecks());
 
-        $this->printAdvancedChecksSection($this->checklist_manager->getChecks(true, AdvancedCheck::class));
+        $this->printAdvancedChecksSection($this->checklist_manager->getAdvancedChecks());
 
         $this->printChecklistMonitoringSection();
 

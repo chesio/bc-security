@@ -23,7 +23,7 @@ class ErrorLogNotPubliclyAccessible extends Checklist\BasicCheck
      *
      * @return bool
      */
-    public function makesSense(): bool
+    public function isMeaningful(): bool
     {
         return WP_DEBUG && WP_DEBUG_LOG;
     }

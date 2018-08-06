@@ -51,7 +51,7 @@ class Manager implements Modules\Initializable
         $this->settings->addUpdateHook([$this, 'updateCronJobs']);
         // Hook into cron job execution.
         add_action(Modules\Cron\Jobs::CHECKLIST_CHECK, [$this, 'runBasicChecks'], 10, 0);
-        foreach ($this->getChecks(true, AdvancedCheck::class) as $advanced_check) {
+        foreach ($this->getAdvancedChecks() as $advanced_check) {
             add_action($advanced_check->getCronJobHook(), [$advanced_check, 'runInCron'], 10, 0);
         }
         // Register AJAX handler.
@@ -103,23 +103,40 @@ class Manager implements Modules\Initializable
     /**
      * Return list of all implemented checks, optionally filtered.
      *
-     * @param bool $meaningful_only If true, only checks that make sense in current context are returned.
-     * @param string $class [optional] Return only checks of given class.
+     * @param array $filters [optional] Extra conditions to filter the list by: class (string), meaningful (boolean),
+     *   monitored (boolean), status (null|boolean).
      * @return \BlueChip\Security\Modules\Checklist\Check[]
      */
-    public function getChecks(bool $meaningful_only = false, string $class = ''): array
+    public function getChecks(array $filters = []): array
     {
         $checks = $this->checks;
 
-        if (!empty($class)) {
+        if (isset($filters['class'])) {
+            $class = $filters['class'];
             $checks = array_filter($checks, function (Check $check) use ($class): bool {
                 return $check instanceof $class;
             });
         }
 
-        if ($meaningful_only) {
-            $checks = array_filter($checks, function (Check $check): bool {
-                return $check->makesSense();
+        if (isset($filters['meaningful'])) {
+            $is_meaningful = $filters['meaningful'];
+            $checks = array_filter($checks, function (Check $check) use ($is_meaningful): bool {
+                return $is_meaningful ? $check->isMeaningful() : !$check->isMeaningful();
+            });
+        }
+
+        if (isset($filters['monitored'])) {
+            $monitored = $filters['monitored'];
+            $settings = $this->settings;
+            $checks = array_filter($checks, function (string $check_id) use ($monitored, $settings): bool {
+                return $monitored ? $settings[$check_id] : !$settings[$check_id];
+            }, ARRAY_FILTER_USE_KEY);
+        }
+
+        if (isset($filters['status'])) {
+            $status = $filters['status'];
+            $checks = array_filter($checks, function (Check $check) use ($status): bool {
+                return $check->getResult()->getStatus() === $status;
             });
         }
 
@@ -128,13 +145,33 @@ class Manager implements Modules\Initializable
 
 
     /**
-     * Run all basic checks that make sense in current context and are set to be monitored in non-interactive mode.
+     * @param bool $meaningful
+     * @return \BlueChip\Security\Modules\Checklist\Check[]
+     */
+    public function getAdvancedChecks(bool $meaningful = true): array
+    {
+        return $this->getChecks(['meaningful' => $meaningful, 'class' => AdvancedCheck::class]);
+    }
+
+
+    /**
+     * @param bool $meaningful
+     * @return \BlueChip\Security\Modules\Checklist\Check[]
+     */
+    public function getBasicChecks(bool $meaningful = true): array
+    {
+        return $this->getChecks(['meaningful' => $meaningful, 'class' => BasicCheck::class]);
+    }
+
+
+    /**
+     * Run all basic checks that are meaningful and are set to be monitored in non-interactive mode.
      *
      * @internal Method is intended to be run from within cron request.
      */
     public function runBasicChecks()
     {
-        $checks = $this->getChecks(true, BasicCheck::class);
+        $checks = $this->getBasicChecks();
         $issues = [];
 
         foreach ($checks as $check_id => $check) {
@@ -197,7 +234,7 @@ class Manager implements Modules\Initializable
      */
     public function updateCronJobs()
     {
-        foreach ($this->getChecks(false, AdvancedCheck::class) as $check_id => $advanced_check) {
+        foreach ($this->getAdvancedChecks(false) as $check_id => $advanced_check) {
             if ($this->settings[$check_id]) {
                 $this->cron_manager->activateJob($advanced_check->getCronJobHook());
             } else {
