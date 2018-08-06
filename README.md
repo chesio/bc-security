@@ -122,6 +122,7 @@ Some of the modules listed above come with settings panel. Further customization
 1. Part of [psr/log](https://packagist.org/packages/psr/log) package codebase is shipped with the plugin.
 1. [WordPress core integrity check](#wordpress-core-integrity-check) is heavily inspired by [Checksum Verifier](https://github.com/pluginkollektiv/checksum-verifier) plugin by Sergej Müller.
 1. Some features (like "[Removed plugins check](#removed-plugins-check)") are inspired by [Wordfence Security](https://wordpress.org/plugins/wordfence/) from [Defiant](https://www.defiant.com/).
+1. Big thanks to [Vincent Driessen](https://nvie.com/about/) for his "[A successful Git branching model](https://nvie.com/posts/a-successful-git-branching-model/)" article that I find particularly useful every time I do some work on BC Security.
 
 ## Alternatives (and why I do not use them)
 
