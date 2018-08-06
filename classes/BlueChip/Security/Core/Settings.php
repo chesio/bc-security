@@ -230,17 +230,6 @@ abstract class Settings implements \ArrayAccess
 
 
     /**
-     * Execute provided $callback as soon as settings are updated and persisted.
-     *
-     * @param callable $callback Callback that accepts up to three parameters: $old_value, $value, $option_name.
-     */
-    public function addUpdateHook(callable $callback)
-    {
-        add_action("update_option_{$this->option_name}", $callback, 10, 3);
-    }
-
-
-    /**
      * Update setting under $name with $value. Store update values in DB.
      *
      * @param string $name
@@ -268,5 +257,34 @@ abstract class Settings implements \ArrayAccess
         $this->data = $this->sanitize($data);
         // Make changes permanent.
         return $this->persist();
+    }
+
+
+    /**
+     * Execute provided $callback as soon as settings are updated and persisted.
+     *
+     * @internal When option is updated via Settings API (that is within request to `options.php`), internal cache
+     * becomes out-dated. Normally, this is not a problem, because Settings API immediately redirects back to settings
+     * page that initiated the request to `options.php` and the internal cache is populated anew. The only exception to
+     * this processing order is this update hook - the hook is going to be executed in the scope of the `options.php`
+     * request and thus the cache has to be updated before provided callback is fired.
+     *
+     * @param callable $callback Callback that accepts up to three parameters: $old_value, $value, $option_name.
+     */
+    public function addUpdateHook(callable $callback)
+    {
+        add_action("update_option_{$this->option_name}", [$this, 'updateOption'], 10, 2);
+        add_action("update_option_{$this->option_name}", $callback, 10, 3);
+    }
+
+
+    /**
+     * @action https://developer.wordpress.org/reference/hooks/update_option_option/
+     * @param array $old_value
+     * @param array $new_value
+     */
+    public function updateOption(array $old_value, array $new_value)
+    {
+        $this->data = $new_value;
     }
 }

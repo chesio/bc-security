@@ -75,7 +75,7 @@ class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\
             "id int unsigned NOT NULL AUTO_INCREMENT,",
             "date_and_time datetime NOT NULL,",
             "ip_address char(128) NOT NULL,",
-            "hostname char(255) NOT NULL",
+            "hostname char(255) NOT NULL,",
             "event char(64) NOT NULL,",
             "level tinyint(3) NULL,",
             "message text NULL,",

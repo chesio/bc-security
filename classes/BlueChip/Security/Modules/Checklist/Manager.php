@@ -99,6 +99,7 @@ class Manager implements Modules\Initializable
         ];
     }
 
+
     /**
      * Return list of all implemented checks, optionally filtered.
      *
