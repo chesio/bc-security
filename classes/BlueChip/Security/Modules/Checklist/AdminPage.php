@@ -215,8 +215,8 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
     private function printLabelsRow()
     {
         echo '<tr>';
-        echo '<th>' . esc_html__('Name', 'bc-security') . '</th>';
         echo '<th>' . esc_html__('Monitor', 'bc-security') . '</th>';
+        echo '<th>' . esc_html__('Name', 'bc-security') . '</th>';
         echo '<th>' . esc_html__('Description', 'bc-security') . '</th>';
         echo '<th>' . esc_html__('Last run', 'bc-security') . '</th>';
         echo '<th>' . esc_html__('Status', 'bc-security') . '</th>';
@@ -239,14 +239,14 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
 
         echo '<tr class="bcs-check ' . esc_attr($check_class) . ' ' . $status_class . '" data-check-id="' . esc_attr($check_id) . '">';
 
-        // Name should be short and descriptive and without HTML tags.
-        echo '<th>' . esc_html($check->getName()) . '</th>';
         // Background monitoring toggle.
         echo '<th>';
         if (isset($this->settings[$check_id])) {
             FormHelper::printCheckbox($this->getFieldBaseProperties($check_id, intval($this->settings[$check_id])));
         }
         echo '</th>';
+        // Name should be short and descriptive and without HTML tags.
+        echo '<th>' . esc_html($check->getName()) . '</th>';
         // Allow for HTML tags in $description.
         echo '<td>' . $check->getDescription() . '</td>';
         // Last time the check has been run.
