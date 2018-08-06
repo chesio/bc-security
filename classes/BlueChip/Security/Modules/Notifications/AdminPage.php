@@ -5,6 +5,7 @@
 
 namespace BlueChip\Security\Modules\Notifications;
 
+use BlueChip\Security\Helpers\AdminNotices;
 use BlueChip\Security\Helpers\FormHelper;
 
 class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
@@ -34,6 +35,15 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
     public function loadPage()
     {
         $this->displaySettingsErrors();
+
+        if (Watchman::isMuted()) {
+            AdminNotices::add(
+                __('You have set <code>BC_SECURITY_MUTE_NOTIFICATIONS</code> to true, therefore all notifications are muted.', 'bc-security'),
+                AdminNotices::INFO,
+                false, // ~ not dismissible
+                false // ~ do not escape HTML
+            );
+        }
     }
 
 
@@ -91,16 +101,6 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
         $this->addSettingsField(
             Settings::THEME_UPDATE_AVAILABLE,
             __('Theme update is available', 'bc-security'),
-            [FormHelper::class, 'printCheckbox']
-        );
-        $this->addSettingsField(
-            Settings::CORE_CHECKSUMS_VERIFICATION_ERROR,
-            __('Core checksums verification results in error', 'bc-security'),
-            [FormHelper::class, 'printCheckbox']
-        );
-        $this->addSettingsField(
-            Settings::PLUGIN_CHECKSUMS_VERIFICATION_ERROR,
-            __('Plugin checksums verification results in error', 'bc-security'),
             [FormHelper::class, 'printCheckbox']
         );
         $this->addSettingsField(

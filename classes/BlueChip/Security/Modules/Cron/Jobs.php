@@ -5,7 +5,7 @@
 
 namespace BlueChip\Security\Modules\Cron;
 
-interface Jobs
+abstract class Jobs
 {
     /** string: Hook name for "Checklist autorun" cron job */
     const CHECKLIST_CHECK = 'bc-security/checklist-autorun';
@@ -19,9 +19,22 @@ interface Jobs
     /** string: Hook name for "Clean logs by size" cron job */
     const LOGS_CLEAN_UP_BY_SIZE = 'bc-security/logs-clean-up-by-size';
 
-    /** string: Hook name for "Verify core checksums" cron job */
-    const CORE_CHECKSUMS_VERIFIER = 'bc-security/core-checksums-verifier';
+    /** string: Hook name for "WordPress core files are untouched" check monitor */
+    const CORE_INTEGRITY_CHECK = 'bc-security/core-integrity-check';
 
-    /** string: Hook name for "Verify plugin checksums" cron job */
-    const PLUGIN_CHECKSUMS_VERIFIER = 'bc-security/plugin-checksums-verifier';
+    /** string: Hook name for "Plugin files are untouched" check monitor */
+    const PLUGINS_INTEGRITY_CHECK = 'bc-security/plugin-integrity-check';
+
+    /** string: Hook name for "No plugins removed from WordPress.org installed" check monitor */
+    const NO_REMOVED_PLUGINS_CHECK = 'bc-security/no-removed-plugins-check';
+
+
+    /**
+     * @return array List of all implemented cron jobs.
+     */
+    public static function enlist(): array
+    {
+        $reflection = new \ReflectionClass(self::class);
+        return $reflection->getConstants();
+    }
 }

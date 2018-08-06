@@ -5,53 +5,66 @@
 
 namespace BlueChip\Security\Modules\Checklist;
 
-class Manager
+use BlueChip\Security\Helpers\AjaxHelper;
+use BlueChip\Security\Modules;
+use BlueChip\Security\Modules\Cron;
+
+class Manager implements Modules\Initializable
 {
+    /**
+     * @var string
+     */
+    const ASYNC_CHECK_ACTION = 'bc_security_run_check';
+
+    /**
+     * @var \BlueChip\Security\Modules\Checklist\Check[]
+     */
+    private $checks;
+
     /**
      * @var \BlueChip\Security\Modules\Checklist\AutorunSettings
      */
     private $settings;
 
     /**
-     * @var \wpdb WordPress database access abstraction object
+     * @var \BlueChip\Security\Modules\Cron\Manager
      */
-    private $wpdb;
+    private $cron_manager;
 
 
     /**
      * @param \BlueChip\Security\Modules\Checklist\AutorunSettings $settings
+     * @param \BlueChip\Security\Modules\Cron\Manager $cron_manager
      * @param \wpdb $wpdb WordPress database access abstraction object
      */
-    public function __construct(AutorunSettings $settings, \wpdb $wpdb)
+    public function __construct(AutorunSettings $settings, Cron\Manager $cron_manager, \wpdb $wpdb)
     {
+        $this->checks = $this->constructChecks($wpdb);
         $this->settings = $settings;
-        $this->wpdb = $wpdb;
+        $this->cron_manager = $cron_manager;
     }
 
 
-    /**
-     * @return array List of IDs of all implemented checks.
-     */
-    public static function getIds(): array
+    public function init()
     {
-        return [
-                Checks\PhpFilesEditationDisabled::getId(),
-                Checks\DirectoryListingDisabled::getId(),
-                Checks\NoAccessToPhpFilesInUploadsDirectory::getId(),
-                Checks\DisplayOfPhpErrorsIsOff::getId(),
-                Checks\ErrorLogNotPubliclyAccessible::getId(),
-                Checks\NoObviousUsernamesCheck::getId(),
-                Checks\NoMd5HashedPasswords::getId(),
-        ];
+        // When settings are updated, ensure that cron jobs for advanced checks are properly (de)activated.
+        $this->settings->addUpdateHook([$this, 'updateCronJobs']);
+        // Hook into cron job execution.
+        add_action(Modules\Cron\Jobs::CHECKLIST_CHECK, [$this, 'runBasicChecks'], 10, 0);
+        foreach ($this->getChecks(true, AdvancedCheck::class) as $advanced_check) {
+            add_action($advanced_check->getCronJobHook(), [$advanced_check, 'runInCron'], 10, 0);
+        }
+        // Register AJAX handler.
+        AjaxHelper::addHandler(self::ASYNC_CHECK_ACTION, [$this, 'runCheck']);
     }
 
 
     /**
-     * Return list of all implemented checks.
+     * Construct all checks.
      *
-     * @return \BlueChip\Security\Modules\Checklist\Check[]
+     * @param \wpdb $wpdb WordPress database access abstraction object
      */
-    public function getChecks(): array
+    public function constructChecks(\wpdb $wpdb): array
     {
         return [
             // PHP files editation should be off.
@@ -73,22 +86,60 @@ class Manager
             Checks\NoObviousUsernamesCheck::getId() => new Checks\NoObviousUsernamesCheck(),
 
             // No passwords should be hashed with (default) MD5 hash.
-            Checks\NoMd5HashedPasswords::getId() => new Checks\NoMd5HashedPasswords($this->wpdb),
+            Checks\NoMd5HashedPasswords::getId() => new Checks\NoMd5HashedPasswords($wpdb),
+
+            // There are no modified or unknown WordPress core files.
+            Checks\CoreIntegrity::getId() => new Checks\CoreIntegrity(),
+
+            // There are no plugins installed (from WordPress.org) with modified or unknown files.
+            Checks\PluginsIntegrity::getId() => new Checks\PluginsIntegrity(),
+
+            // There are no plugins installed that have been removed from plugins directory.
+            Checks\NoPluginsRemovedFromDirectory::getId() => new Checks\NoPluginsRemovedFromDirectory(),
         ];
     }
 
 
     /**
-     * Run all checks that are not disabled in settings and make sense in current context.
+     * Return list of all implemented checks, optionally filtered.
+     *
+     * @param bool $meaningful_only If true, only checks that make sense in current context are returned.
+     * @param string $class [optional] Return only checks of given class.
+     * @return \BlueChip\Security\Modules\Checklist\Check[]
      */
-    public function runChecks()
+    public function getChecks(bool $meaningful_only = false, string $class = ''): array
     {
-        $checks = $this->getChecks();
+        $checks = $this->checks;
+
+        if (!empty($class)) {
+            $checks = array_filter($checks, function (Check $check) use ($class): bool {
+                return $check instanceof $class;
+            });
+        }
+
+        if ($meaningful_only) {
+            $checks = array_filter($checks, function (Check $check): bool {
+                return $check->makesSense();
+            });
+        }
+
+        return $checks;
+    }
+
+
+    /**
+     * Run all basic checks that make sense in current context and are set to be monitored in non-interactive mode.
+     *
+     * @internal Method is intended to be run from within cron request.
+     */
+    public function runBasicChecks()
+    {
+        $checks = $this->getChecks(true, BasicCheck::class);
         $issues = [];
 
         foreach ($checks as $check_id => $check) {
-            if (!$this->settings[$check_id] || !$check->makesSense()) {
-                // Skip checks that should not be monitored and checks that don't make sense in current context.
+            if (!$this->settings[$check_id]) {
+                // Skip checks that should not be monitored.
                 continue;
             }
 
@@ -105,7 +156,53 @@ class Manager
 
         if (!empty($issues)) {
             // Trigger an action to report found issues.
-            do_action(Hooks::CHECK_ALERT, $issues);
+            do_action(Hooks::BASIC_CHECKS_ALERT, $issues);
+        }
+    }
+
+
+    /**
+     * Run check (asynchronously).
+     *
+     * @internal Method is intended to be run from within AJAX requests.
+     */
+    public function runCheck()
+    {
+        if (empty($check_id = filter_input(INPUT_POST, 'check_id', FILTER_SANITIZE_STRING))) {
+            wp_send_json_error([
+                'message' => __('No check ID provided!', 'bc-security'),
+            ]);
+        }
+
+        $checks = $this->getChecks();
+        if (empty($check = $checks[$check_id])) {
+            wp_send_json_error([
+                'message' => sprintf(__('Unknown check ID: %s', 'bc-security'), $check_id),
+            ]);
+        }
+
+        // Run check, grab result.
+        $result = $check->run();
+
+        wp_send_json_success([
+            'timestamp' => Helper::formatLastRunTimestamp($check),
+            'status' => $result->getStatus(),
+            'message' => $result->getMessageAsHtml(),
+        ]);
+    }
+
+
+    /**
+     * Activate or deactivate cron jobs for advanced checks according to settings.
+     */
+    public function updateCronJobs()
+    {
+        foreach ($this->getChecks(false, AdvancedCheck::class) as $check_id => $advanced_check) {
+            if ($this->settings[$check_id]) {
+                $this->cron_manager->activateJob($advanced_check->getCronJobHook());
+            } else {
+                $this->cron_manager->deactivateJob($advanced_check->getCronJobHook());
+            }
         }
     }
 }

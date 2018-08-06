@@ -7,7 +7,7 @@ namespace BlueChip\Security\Modules\Checklist\Checks;
 
 use BlueChip\Security\Modules\Checklist;
 
-class ErrorLogNotPubliclyAccessible extends Checklist\Check
+class ErrorLogNotPubliclyAccessible extends Checklist\BasicCheck
 {
     public function __construct()
     {
@@ -29,7 +29,7 @@ class ErrorLogNotPubliclyAccessible extends Checklist\Check
     }
 
 
-    public function run(): Checklist\CheckResult
+    protected function runInternal(): Checklist\CheckResult
     {
         // Path and filename is hardcoded in wp-includes/load.php
         $url = WP_CONTENT_URL . '/debug.log';

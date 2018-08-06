@@ -5,11 +5,15 @@
 
 namespace BlueChip\Security\Modules\Checklist;
 
+use BlueChip\Security\Helpers\AjaxHelper;
 use BlueChip\Security\Helpers\FormHelper;
 use BlueChip\Security\Modules\Hardening;
 
 class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
 {
+    /** Page has assets */
+    use \BlueChip\Security\Core\Admin\PageWithAssets;
+
     /** Page has settings section */
     use \BlueChip\Security\Core\Admin\SettingsPage;
 
@@ -29,20 +33,49 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
     /**
      * @param \BlueChip\Security\Modules\Checklist\Manager $checklist_manager
      * @param \BlueChip\Security\Modules\Checklist\AutorunSettings $settings
+     * @param \BlueChip\Security\Core\AssetsManager $assets_manager
      */
-    public function __construct(Manager $checklist_manager, AutorunSettings $settings)
+    public function __construct(Manager $checklist_manager, AutorunSettings $settings, \BlueChip\Security\Core\AssetsManager $assets_manager)
     {
         $this->page_title = _x('Security Checklist', 'Dashboard page title', 'bc-security');
         $this->menu_title = _x('Checklist', 'Dashboard menu item name', 'bc-security');
 
         $this->checklist_manager = $checklist_manager;
 
+        $this->useAssetsManager($assets_manager);
         $this->useSettings($settings);
+    }
+
+
+    /**
+     * Initialize settings page: register settings etc.
+     */
+    public function initPage()
+    {
+        // Register settings.
+        $this->registerSettings();
+
+        // Set page as current.
+        $this->setSettingsPage(self::SLUG);
     }
 
 
     public function loadPage()
     {
+        $this->enqueueCssAssets(['checklist' => 'checklist.css',]);
+        $this->enqueueJsAssets(['checklist' => 'checklist.js',]);
+        AjaxHelper::injectSetup(
+            'checklist',
+            'bc_security_checklist',
+            Manager::ASYNC_CHECK_ACTION,
+            [
+                'messages' => [
+                    'check_is_running' => '<em>' . esc_html__('Check is running ...', 'bc-security') . '</em>',
+                    'check_failed' => '<em>' . esc_html__('Check failed! Please try again later.', 'bc-security') . '</em>',
+                ],
+            ]
+        );
+
         $this->displaySettingsErrors();
     }
 
@@ -56,40 +89,29 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
 
         echo '<h1>' . esc_html($this->page_title) . '</h1>';
         echo '<p>';
-        /* translators: %s: tick icon */
         echo sprintf(
+            /* translators: %s: tick icon */
             esc_html__('The more %s you have, the better!'),
             '<span class="dashicons dashicons-yes"></span>'
         );
         echo '</p>';
 
+        echo '<p>';
+        echo '<button type="button" class="button button-large bcs-run-checks" data-check-class="bcs-check">' . esc_html__('Run all checks', 'bc-security') . '</button>';
+        echo '</p>';
+
         echo '<form method="post" action="' . admin_url('options.php') .'">';
 
-        echo '<table class="wp-list-table widefat striped">';
+        $this->printBasicChecksSection($this->checklist_manager->getChecks(true, BasicCheck::class));
 
-        $checks = $this->checklist_manager->getChecks();
+        $this->printAdvancedChecksSection($this->checklist_manager->getChecks(true, AdvancedCheck::class));
 
-        foreach ($checks as $check) {
-            if ($check->makesSense()) {
-                $this->printCheckRow($check);
-            }
-        }
-
-        echo '</table>';
-
-        echo '<p>';
-        echo esc_html__('You can monitor the checklist automatically - just click the button below.');
-        echo ' ';
-        echo sprintf(
-            esc_html__('Checks that are currently monitored are marked with %s icon.'),
-            '<span class="dashicons dashicons-visibility"></span>'
-        );
-        echo '</p>';
+        $this->printChecklistMonitoringSection();
 
         // Output nonce, action and other hidden fields...
         $this->printSettingsFields();
         // ... and finally the submit button :)
-        submit_button(__('Keep an eye on all passing checks', 'bc-security'));
+        submit_button(__('Monitor selected checks in background', 'bc-security'));
 
         echo '</form>';
 
@@ -110,53 +132,129 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
 
 
     /**
-     * Initialize settings page: register settings etc.
+     * @param array $basic_checks
      */
-    public function initPage()
+    private function printBasicChecksSection(array $basic_checks)
     {
-        // Register settings.
-        $this->registerSettings();
+        echo '<h2>' . esc_html__('Basic checks', 'bc-security') . '</h2>';
 
-        // Set page as current.
-        $this->setSettingsPage(self::SLUG);
+        echo '<p>';
+        echo esc_html__('Basic checks do not require any information from WordPress.org to proceed.', 'bc-security');
+        echo '</p>';
+
+        echo '<p>';
+        echo '<button type="button" class="button button-large bcs-run-checks" data-check-class="bcs-check--basic">' . esc_html__('Run basic checks', 'bc-security') . '</button>';
+        echo '</p>';
+
+        $this->printChecklistTable($basic_checks, 'bcs-check--basic');
     }
 
 
     /**
-     * Output single table row with status information for given $check.
-     *
-     * @param \BlueChip\Security\Modules\Checklist\Check $check Check to evaluate and display results of.
+     * @param array $advanced_checks
      */
-    private function printCheckRow(Check $check)
+    private function printAdvancedChecksSection(array $advanced_checks)
     {
-        // Run check and get result;
-        $result = $check->run();
+        echo '<h2>' . esc_html__('Advanced checks', 'bc-security') . '</h2>';
 
-        // Get result status and message.
-        $status = $result->getStatus();
-        $message = $result->getMessage();
+        echo '<p>';
+        echo esc_html__('In order to run advanced checks, a list of all installed plugins and their versions is shared with WordPress.org.', 'bc-security');
+        echo '</p>';
 
-        $run_automatically = $this->settings[$check->getId()];
+        echo '<p>';
+        echo '<button type="button" class="button button-large bcs-run-checks" data-check-class="bcs-check--advanced">' . esc_html__('Run advanced checks', 'bc-security') . '</button>';
+        echo '</p>';
 
+        $this->printChecklistTable($advanced_checks, 'bcs-check--advanced');
+    }
+
+
+    private function printChecklistMonitoringSection()
+    {
+        echo '<h2>' . esc_html__('Checklist monitoring', 'bc-security') . '</h2>';
+
+        echo '<p>';
+        echo esc_html__('You can let BC Security monitor the checklist automatically. Just select the checks you want to monitor:', 'bc-security');
+        echo ' ';
+        echo implode(' ', [
+            '<button type="button" id="bcs-mark-all-checks" disabled="disabled">' . esc_html__('select all', 'bc-security') . '</button>',
+            '<button type="button" id="bcs-mark-no-checks" disabled="disabled">' . esc_html__('select none', 'bc-security') . '</button>',
+            '<button type="button" id="bcs-mark-passing-checks" disabled="disabled">' . esc_html__('select only passing', 'bc-security') . '</button>',
+        ]);
+        echo '</p>';
+    }
+
+
+    private function printChecklistTable(array $checks, string $checks_class)
+    {
+        echo '<table class="wp-list-table widefat striped">';
+
+        echo '<thead>';
+        $this->printLabelsRow();
+        echo '</thead>';
+
+        echo '<tbody>';
+
+        foreach ($checks as $check) {
+            $this->printCheckRow($check, $checks_class);
+        }
+
+        echo '</tbody>';
+
+        echo '<tfoot>';
+        $this->printLabelsRow();
+        echo '</tfoot>';
+
+        echo '</table>';
+    }
+
+
+    /**
+     * Output single table row with data labels.
+     */
+    private function printLabelsRow()
+    {
         echo '<tr>';
+        echo '<th>' . esc_html__('Monitor', 'bc-security') . '</th>';
+        echo '<th>' . esc_html__('Name', 'bc-security') . '</th>';
+        echo '<th>' . esc_html__('Description', 'bc-security') . '</th>';
+        echo '<th>' . esc_html__('Last run', 'bc-security') . '</th>';
+        echo '<th>' . esc_html__('Status', 'bc-security') . '</th>';
+        echo '<th>' . esc_html__('Result', 'bc-security') . '</th>';
+        echo '<tr>';
+    }
 
-        // Status may be undetermined, in such case render no icon.
-        echo '<th>' . (is_bool($status) ? ('<span class="dashicons dashicons-' . ($status ? 'yes' : 'no') . '"></span>') : '' ) . '</th>';
+
+    /**
+     * Output single table row with $check data.
+     *
+     * @param \BlueChip\Security\Modules\Checklist\Check $check
+     */
+    private function printCheckRow(Check $check, string $check_class)
+    {
+        $check_id = $check::getId();
+        $result = $check->getResult();
+        $status = $result->getStatus();
+        $status_class = is_bool($status) ? ($status ? 'bcs-check--ok' : 'bcs-check--ko') : '';
+
+        echo '<tr class="bcs-check ' . esc_attr($check_class) . ' ' . $status_class . '" data-check-id="' . esc_attr($check_id) . '">';
+
+        // Background monitoring toggle.
+        echo '<th>';
+        if (isset($this->settings[$check_id])) {
+            FormHelper::printCheckbox($this->getFieldBaseProperties($check_id, intval($this->settings[$check_id])));
+        }
+        echo '</th>';
         // Name should be short and descriptive and without HTML tags.
         echo '<th>' . esc_html($check->getName()) . '</th>';
-        // Background execution state
-        echo '<th><span class="dashicons dashicons-' . ($run_automatically ? 'visibility' : 'hidden') . '"></span></th>';
         // Allow for HTML tags in $description.
         echo '<td>' . $check->getDescription() . '</td>';
-        // Allow for HTML tags in result $message.
-        echo '<td>' . $message . '</td>';
-        // Hidden input field with data for form submission.
-        echo '<td>';
-        FormHelper::printHiddenInput(
-            // The value to be submitted
-            array_merge($this->getFieldBaseProperties($check->getId(), intval($status)))
-        );
-        echo '</td>';
+        // Last time the check has been run.
+        echo '<td class="bcs-check__last-run">' . Helper::formatLastRunTimestamp($check) . '</td>';
+        // Status icon.
+        echo '<td class="bcs-check__status"><span class="dashicons"></span></td>';
+        // Check result message.
+        echo '<td class="bcs-check__message">' . $result->getMessageAsHtml() . '</td>';
 
         echo '</tr>';
     }

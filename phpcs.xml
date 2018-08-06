@@ -4,7 +4,8 @@
 
   <!-- Scan these files -->
   <file>classes</file>
-  <file>tests/src</file>
+  <file>tests/integration/src</file>
+  <file>tests/unit/src</file>
   <file>autoload.php</file>
   <file>bc-security.php</file>
   <file>uninstall.php</file>

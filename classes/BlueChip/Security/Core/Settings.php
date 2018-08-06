@@ -6,29 +6,44 @@
 namespace BlueChip\Security\Core;
 
 /**
- * Basis (abstract) class for setting objects
+ * Basis (abstract) class for setting objects.
+ *
+ * Every setting object's data are internally stored as single option in `wp_options` table using Settings API.
+ *
+ * @link https://developer.wordpress.org/plugins/settings/settings-api/
  */
 abstract class Settings implements \ArrayAccess
 {
     /**
-     * @var string Option name under which settings are stored
+     * @var array Default values for all settings. Descendant classes should override it.
+     */
+    const DEFAULTS = [];
+
+    /**
+     * @var array Sanitization routines for settings that cannot be just sanitized based on type of their default value.
+     */
+    const SANITIZERS = [];
+
+
+    /**
+     * @var string Option name under which settings are stored.
      */
     private $option_name;
 
     /**
-     * @var array Cache for get_option() result.
+     * @var array Settings data (kind of cache for get_option() result).
      */
     protected $data;
 
 
     /**
-     * @param string $option_name
+     * @param string $option_name Option name under which to store the settings.
      */
     public function __construct(string $option_name)
     {
-        // Read settings from wp_options table and sanitize them right away.
         $this->option_name = $option_name;
-        $this->data = $this->sanitize(get_option($option_name, []));
+        // Read settings from `wp_options` table and sanitize them right away using default values.
+        $this->data = $this->sanitize(get_option($option_name, []), static::DEFAULTS);
     }
 
 
@@ -134,12 +149,61 @@ abstract class Settings implements \ArrayAccess
 
 
     /**
-     * Sanitize $settings array: only return known keys, provide default values for missing keys.
+     * Sanitize $settings array: only keep known keys, provide default values for missing keys.
      *
-     * @param array $settings
+     * @internal This method serves two purposes: it sanitizes data read from database and it sanitizes POST-ed data.
+     * When using the method for database data sanitization, make sure that you provide default values. However,
+     * when using the method for POST-ed data sanitization (ie. as `sanitize_callback` in `register_setting` function),
+     * you should not provide explicit defaults, as the method will implicitly use data from database (that are already
+     * sanitized) as default values. This way, it is not necessary for POST-ed data to be complete, because any missing
+     * key-value pairs will be correctly preserved.
+     *
+     * @param array $settings Items to sanitize.
+     * @param array $defaults [optional] If provided, used as default values for sanitization instead of local data.
      * @return array
      */
-    abstract public function sanitize(array $settings): array;
+    public function sanitize(array $settings, array $defaults = []): array
+    {
+        // If no default values are provided, use data from internal cache as default values.
+        $values = empty($defaults) ? $this->data : $defaults;
+
+        foreach ($values as $key => $default_value) {
+            if (isset($settings[$key])) {
+                // New value is provided, sanitize it either...
+                $values[$key] = isset(static::SANITIZERS[$key])
+                    // ...using provided callback...
+                    ? call_user_func(static::SANITIZERS[$key], $settings[$key])
+                    // ...or by type.
+                    : self::sanitizeByType($settings[$key], $default_value)
+                ;
+            }
+        }
+
+        return $values;
+    }
+
+
+    /**
+     * Sanitize the $value according to type of $default value.
+     *
+     * @param mixed $value
+     * @param mixed $default
+     * @return mixed
+     */
+    protected static function sanitizeByType($value, $default)
+    {
+        if (is_bool($default)) {
+            return boolval($value);
+        } elseif (is_float($default)) {
+            return floatval($value);
+        } elseif (is_int($default)) {
+            return intval($value);
+        } elseif (is_array($default) && is_string($value)) {
+            return self::parseList($value);
+        } else {
+            return $value;
+        }
+    }
 
 
     /**
@@ -148,9 +212,20 @@ abstract class Settings implements \ArrayAccess
      * @param array|string $list
      * @return array
      */
-    protected function parseList($list): array
+    protected static function parseList($list): array
     {
         return is_array($list) ? $list : array_filter(array_map('trim', explode(PHP_EOL, $list)));
+    }
+
+
+    /**
+     * Persist the value of data into database.
+     *
+     * @return bool
+     */
+    protected function persist(): bool
+    {
+        return update_option($this->option_name, $this->data);
     }
 
 
@@ -180,7 +255,36 @@ abstract class Settings implements \ArrayAccess
 
         // Sanitize new value and update cache
         $this->data = $this->sanitize($data);
-        // Update DB value
-        return update_option($this->option_name, $this->data);
+        // Make changes permanent.
+        return $this->persist();
+    }
+
+
+    /**
+     * Execute provided $callback as soon as settings are updated and persisted.
+     *
+     * @internal When option is updated via Settings API (that is within request to `options.php`), internal cache
+     * becomes out-dated. Normally, this is not a problem, because Settings API immediately redirects back to settings
+     * page that initiated the request to `options.php` and the internal cache is populated anew. The only exception to
+     * this processing order is this update hook - the hook is going to be executed in the scope of the `options.php`
+     * request and thus the cache has to be updated before provided callback is fired.
+     *
+     * @param callable $callback Callback that accepts up to three parameters: $old_value, $value, $option_name.
+     */
+    public function addUpdateHook(callable $callback)
+    {
+        add_action("update_option_{$this->option_name}", [$this, 'updateOption'], 10, 2);
+        add_action("update_option_{$this->option_name}", $callback, 10, 3);
+    }
+
+
+    /**
+     * @action https://developer.wordpress.org/reference/hooks/update_option_option/
+     * @param array $old_value
+     * @param array $new_value
+     */
+    public function updateOption(array $old_value, array $new_value)
+    {
+        $this->data = $new_value;
     }
 }

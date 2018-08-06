@@ -1,0 +1,14 @@
+/* Check running */
+.bcs-check--running {
+    opacity: 0.5;
+}
+
+/* Check passed */
+.bcs-check--ok .dashicons:before {
+    content: "\f147";
+}
+
+/* Check failed */
+.bcs-check--ko .dashicons:before {
+    content: "\f158";
+}

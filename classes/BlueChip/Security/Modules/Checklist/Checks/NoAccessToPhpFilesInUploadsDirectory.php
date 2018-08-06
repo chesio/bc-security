@@ -7,7 +7,7 @@ namespace BlueChip\Security\Modules\Checklist\Checks;
 
 use BlueChip\Security\Modules\Checklist;
 
-class NoAccessToPhpFilesInUploadsDirectory extends Checklist\Check
+class NoAccessToPhpFilesInUploadsDirectory extends Checklist\BasicCheck
 {
     public function __construct()
     {
@@ -18,7 +18,7 @@ class NoAccessToPhpFilesInUploadsDirectory extends Checklist\Check
     }
 
 
-    public function run(): Checklist\CheckResult
+    protected function runInternal(): Checklist\CheckResult
     {
         $php_file_message = 'It is more secure to not allow PHP files to be accessed from within WordPress uploads directory.';
 

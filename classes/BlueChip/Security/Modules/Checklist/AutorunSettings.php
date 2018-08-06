@@ -6,23 +6,23 @@
 namespace BlueChip\Security\Modules\Checklist;
 
 /**
- * Every setting has a boolean value: true = perform check monitoring, false = do not perform check monitoring
+ * Every setting has a boolean value: true = monitor given check, false = do not monitor given check.
  */
 class AutorunSettings extends \BlueChip\Security\Core\Settings
 {
     /**
-     * @param array $s
-     * @return array A hashmap with [ (string) check_id => (bool) is_monitoring_active ] values
+     * @var array Default values for all settings. By default, no checks are monitored.
      */
-    public function sanitize(array $s): array
-    {
-        $check_ids = Manager::getIds();
-
-        return array_map(
-            function (string $check_id) use ($s): bool {
-                return $s[$check_id] ?? false;
-            },
-            array_combine($check_ids, $check_ids) // Pass check IDs as values as well, so they can be used in callback.
-        );
-    }
+    const DEFAULTS = [
+        Checks\PhpFilesEditationDisabled::class => false,
+        Checks\DirectoryListingDisabled::class => false,
+        Checks\NoAccessToPhpFilesInUploadsDirectory::class => false,
+        Checks\DisplayOfPhpErrorsIsOff::class => false,
+        Checks\ErrorLogNotPubliclyAccessible::class => false,
+        Checks\NoObviousUsernamesCheck::class => false,
+        Checks\NoMd5HashedPasswords::class => false,
+        Checks\NoPluginsRemovedFromDirectory::class => false,
+        Checks\CoreIntegrity::class => false,
+        Checks\PluginsIntegrity::class => false,
+    ];
 }

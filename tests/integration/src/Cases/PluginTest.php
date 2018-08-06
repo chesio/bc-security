@@ -3,11 +3,11 @@
  * @package BC Security
  */
 
-namespace BlueChip\Security\Tests\Cases;
+namespace BlueChip\Security\Tests\Integration\Cases;
 
 use BlueChip\Security\Plugin;
 
-class PluginTest extends \BlueChip\Security\Tests\TestCase
+class PluginTest extends \BlueChip\Security\Tests\Integration\TestCase
 {
     /**
      * @var \BlueChip\Security\Plugin

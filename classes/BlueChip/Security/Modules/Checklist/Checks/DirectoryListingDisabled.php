@@ -7,7 +7,7 @@ namespace BlueChip\Security\Modules\Checklist\Checks;
 
 use BlueChip\Security\Modules\Checklist;
 
-class DirectoryListingDisabled extends Checklist\Check
+class DirectoryListingDisabled extends Checklist\BasicCheck
 {
     public function __construct()
     {
@@ -18,7 +18,7 @@ class DirectoryListingDisabled extends Checklist\Check
     }
 
 
-    public function run(): Checklist\CheckResult
+    protected function runInternal(): Checklist\CheckResult
     {
         $upload_paths = wp_upload_dir();
         if (!isset($upload_paths['baseurl'])) {

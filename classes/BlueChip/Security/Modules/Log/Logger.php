@@ -6,6 +6,7 @@
 namespace BlueChip\Security\Modules\Log;
 
 use BlueChip\Security\Modules;
+use BlueChip\Security\Modules\Services\ReverseDnsLookup;
 use Psr\Log;
 
 /**
@@ -13,7 +14,7 @@ use Psr\Log;
  *
  * @link http://www.php-fig.org/psr/psr-3/
  */
-class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\Countable, Modules\Installable, Modules\Loadable, \Countable
+class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\Countable, Modules\Installable, Modules\Loadable, Modules\Initializable, \Countable
 {
     /** @var string Name of DB table where logs are stored */
     const LOG_TABLE = 'bc_security_log';
@@ -30,6 +31,12 @@ class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\
     /** @var string Remote IP address */
     private $remote_address;
 
+    /** @var \BlueChip\Security\Modules\Log\Settings Module settings */
+    private $settings;
+
+    /** @var \BlueChip\Security\Modules\Services\ReverseDnsLookup\Resolver */
+    private $hostname_resolver;
+
     /** @var \wpdb WordPress database access abstraction object */
     private $wpdb;
 
@@ -37,14 +44,18 @@ class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\
     /**
      * @param \wpdb $wpdb WordPress database access abstraction object
      * @param string $remote_address Remote IP address.
+     * @param \BlueChip\Security\Modules\Log\Settings Module settings
+     * @param \BlueChip\Security\Modules\Services\ReverseDnsLookup\Resolver $hostname_resolver
      */
-    public function __construct(\wpdb $wpdb, $remote_address)
+    public function __construct(\wpdb $wpdb, $remote_address, Settings $settings, ReverseDnsLookup\Resolver $hostname_resolver)
     {
         $this->log_table = $wpdb->prefix . self::LOG_TABLE;
         $this->columns = [
-            'id', 'date_and_time', 'ip_address', 'event', 'level', 'message', 'context',
+            'id', 'date_and_time', 'ip_address', 'hostname', 'event', 'level', 'message', 'context',
         ];
         $this->remote_address = $remote_address;
+        $this->settings = $settings;
+        $this->hostname_resolver = $hostname_resolver;
         $this->wpdb = $wpdb;
     }
 
@@ -64,6 +75,7 @@ class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\
             "id int unsigned NOT NULL AUTO_INCREMENT,",
             "date_and_time datetime NOT NULL,",
             "ip_address char(128) NOT NULL,",
+            "hostname char(255) NOT NULL,",
             "event char(64) NOT NULL,",
             "level tinyint(3) NULL,",
             "message text NULL,",
@@ -94,7 +106,17 @@ class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\
         add_action(Action::INFO, [$this, 'info'], 10, 2);
         add_action(Action::DEBUG, [$this, 'debug'], 10, 2);
         add_action(Action::LOG, [$this, 'log'], 10, 3);
-        add_action(Action::EVENT, [$this, 'logEvent'], 10, 2);
+        add_action(Action::EVENT, [$this, 'logEvent'], 10, 1);
+    }
+
+
+    public function init()
+    {
+        // Hook into cron job execution.
+        add_action(Modules\Cron\Jobs::LOGS_CLEAN_UP_BY_AGE, [$this, 'pruneByAge'], 10, 0);
+        add_action(Modules\Cron\Jobs::LOGS_CLEAN_UP_BY_SIZE, [$this, 'pruneBySize'], 10, 0);
+        // Hook into reverse DNS lookup.
+        add_action(Hooks::HOSTNAME_RESOLVED, [$this, 'processReverseDnsLookupResponse'], 10, 1);
     }
 
 
@@ -107,12 +129,17 @@ class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\
      */
     public function log($level, $message, array $context = [])
     {
-        $this->wpdb->insert(
+        // Allow overriding of IP address via $context.
+        $ip_address = $context['ip_address'] ?? $this->remote_address;
+        // Event is optional, though it makes little sense to log data without event type in the moment.
+        $event = $context['event'] ?? '';
+
+        $insertion_status = $this->wpdb->insert(
             $this->log_table,
             [
                 'date_and_time' => date(self::MYSQL_DATETIME_FORMAT, current_time('timestamp')),
-                'ip_address' => isset($context['ip_address']) ? $context['ip_address'] : $this->remote_address, // Allow overriding of IP address.
-                'event' => isset($context['event']) ? $context['event'] : '', // Event is optional.
+                'ip_address' => $ip_address,
+                'event' => $event,
                 'level' => $this->translateLogLevel($level),
                 'message' => $message,
                 'context' => serialize($context),
@@ -126,19 +153,35 @@ class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\
                 '%s',
             ]
         );
+
+        if ($insertion_status === 1) {
+            // Determine, whether hostname of remote IP address should be immediately resolved.
+            $events_with_hostname_resolving = apply_filters(
+                Hooks::EVENTS_WITH_HOSTNAME_RESOLUTION,
+                [Events\AuthBadCookie::ID, Events\LoginFailure::ID, Events\LoginLockout::ID, Events\LoginSuccessful::ID,]
+            );
+
+            if (in_array($event, $events_with_hostname_resolving, true)) {
+                // Schedule hostname resolution for inserted log record.
+                $this->hostname_resolver->resolveHostnameInBackground(
+                    $ip_address,
+                    Hooks::HOSTNAME_RESOLVED,
+                    ['log_record_id' => $this->wpdb->insert_id,]
+                );
+            }
+        }
     }
 
 
     /**
-     * Log event with $event_id and $context.
+     * Log $event.
      *
-     * @param string $event_id
-     * @param array $context
+     * @param \BlueChip\Security\Modules\Log\Event $event
      */
-    public function logEvent($event_id, array $context)
+    public function logEvent(Event $event)
     {
-        $event = Event::create($event_id);
-        $this->log($event->getLevel(), $event->getMessage(), array_merge(['event' => $event_id], $context));
+        // Include event ID in context.
+        $this->log($event->getLogLevel(), $event->getMessage(), array_merge(['event' => $event->getId()], $event->getContext()));
     }
 
 
@@ -148,7 +191,7 @@ class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\
      * @param string $level Log level constant: emergency, alert, critical, error, warning, notice, info or debug.
      * @return mixed Integer code for given log level or null, if unknown level given.
      */
-    public function translateLogLevel($level)
+    public function translateLogLevel(string $level)
     {
         switch ($level) {
             case Log\LogLevel::EMERGENCY:
@@ -171,6 +214,23 @@ class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\
                 _doing_it_wrong(__METHOD__, sprintf('Unknown log level: %s', $level), '0.2.0');
                 return null;
         }
+    }
+
+
+    /**
+     * Process response from (non-blocking) reverse DNS lookup - update hostname of record with resolved IP address.
+     *
+     * @param \BlueChip\Security\Modules\Services\ReverseDnsLookup\Response $response
+     */
+    public function processReverseDnsLookupResponse(ReverseDnsLookup\Response $response)
+    {
+        $this->wpdb->update(
+            $this->log_table,
+            ['hostname' => $response->getHostname()],
+            ['id' => $response->getContext()['log_record_id'], 'ip_address' => $response->getIpAddress()],
+            ['%s'],
+            ['%d', '%s']
+        );
     }
 
 
@@ -229,13 +289,13 @@ class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\
      * Fetch log records that match provided arguments.
      *
      * @param string $event Only fetch records under event name (empty string is allowed).
-     * @param int $from
-     * @param int $limit
-     * @param string $order_by
-     * @param string $order
+     * @param int $from [optional] Zero-based index for first record to be returned. Default value is 0.
+     * @param int $limit [optional] Maximum number of items to be returned. Default value is 20.
+     * @param string $order_by [optional] Column name to order the records by.
+     * @param string $order [optional] Order direction, either "asc" or "desc".
      * @return array
      */
-    public function fetch($event = null, $from = 0, $limit = 20, $order_by = null, $order = null)
+    public function fetch($event = null, int $from = 0, int $limit = 20, string $order_by = '', string $order = ''): array
     {
         // Prepare query
         $query = "SELECT * FROM {$this->log_table}";
@@ -267,30 +327,14 @@ class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\
 
 
     /**
-     * Return list of distinct event types present in logs table.
-     *
-     * @todo Probably obsolete.
+     * Return list of distinct IP addresses from which a successful login has been made.
      *
      * @return array
      */
-    public function getEventIds()
-    {
-        $result = $this->wpdb->get_results("SELECT DISTINCT(event) FROM {$this->log_table}");
-
-        return is_array($result) ? wp_list_pluck($result, 'event') : [];
-    }
-
-
-    /**
-     * Return list of distinct IP addresses from which a successful login has
-     * been made.
-     *
-     * @return array
-     */
-    public function getKnownIps()
+    public function getKnownIps(): array
     {
         $result = $this->wpdb->get_results(
-            $this->wpdb->prepare("SELECT DISTINCT(ip_address) FROM {$this->log_table} WHERE event = %s", Event::LOGIN_SUCCESSFUL)
+            $this->wpdb->prepare("SELECT DISTINCT(ip_address) FROM {$this->log_table} WHERE event = %s", Events\LoginSuccessful::ID)
         );
 
         return is_array($result) ? wp_list_pluck($result, 'ip_address') : [];
@@ -302,20 +346,21 @@ class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\
      *
      * @return bool True on success, false on failure.
      */
-    public function pruneAll()
+    public function pruneAll(): bool
     {
         return $this->wpdb->query("TRUNCATE {$this->log_table}") !== false;
     }
 
 
     /**
-     * Remove all log records that are older than $max_age seconds.
+     * Remove all log records that are older than configured maximum age.
      *
-     * @param int $max_age Maximum age of logs to keep in seconds.
      * @return bool True on success, false on failure.
      */
-    public function pruneByAge($max_age)
+    public function pruneByAge(): bool
     {
+        $max_age = $this->settings->getMaxAge();
+
         // Note: $wpdb->delete cannot be used as it does not support "<=" comparison)
         $query = $this->wpdb->prepare(
             "DELETE FROM {$this->log_table} WHERE date_and_time <= %s",
@@ -327,13 +372,14 @@ class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\
 
 
     /**
-     * Remove all but recent $max_size records from the table.
+     * Remove all but configured number of recent records from the table.
      *
-     * @param int $max_size Maximum number of log records to keep.
      * @return bool True on success, false on failure.
      */
-    public function pruneBySize($max_size)
+    public function pruneBySize(): bool
     {
+        $max_size = $this->settings->getMaxSize();
+
         // First check, if pruning makes sense at all.
         if ($this->countAll() <= $max_size) {
             return true;

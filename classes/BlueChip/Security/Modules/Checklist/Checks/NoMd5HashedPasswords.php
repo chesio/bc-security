@@ -7,7 +7,7 @@ namespace BlueChip\Security\Modules\Checklist\Checks;
 
 use BlueChip\Security\Modules\Checklist;
 
-class NoMd5HashedPasswords extends Checklist\Check
+class NoMd5HashedPasswords extends Checklist\BasicCheck
 {
     /**
      * @var string Prefix of default, MD5-based hashes
@@ -35,7 +35,7 @@ class NoMd5HashedPasswords extends Checklist\Check
     }
 
 
-    public function run(): Checklist\CheckResult
+    protected function runInternal(): Checklist\CheckResult
     {
         // Get all users with old hash prefix
         $result = $this->wpdb->get_results(sprintf(
@@ -43,7 +43,7 @@ class NoMd5HashedPasswords extends Checklist\Check
             self::WP_OLD_HASH_PREFIX
         ));
 
-        if ($result === false) {
+        if ($result === null) {
             return new Checklist\CheckResult(null, esc_html__('BC Security has failed to determine whether there are any users with password hashed with default MD5-based algorithm.', 'bc-security'));
         } else {
             return empty($result)

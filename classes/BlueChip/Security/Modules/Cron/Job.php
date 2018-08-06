@@ -22,24 +22,9 @@ class Job
 
 
     /**
-     * @var callback Callback to be executed on cron job run.
-     */
-    private $action;
-
-    /**
-     * @var array Arguments to pass to the hook's callback function.
-     */
-    private $args;
-
-    /**
      * @var string Action hook to execute when cron job is run.
      */
     private $hook;
-
-    /**
-     * @var \BlueChip\Security\Modules\Cron\Settings
-     */
-    private $settings;
 
     /**
      * @var string How often the cron job should recur.
@@ -53,43 +38,15 @@ class Job
 
 
     /**
-     * @param \BlueChip\Security\Modules\Cron\Settings $settings
+     * @param string $hook
      * @param int|string $time
      * @param string $recurrence
-     * @param string $hook
-     * @param callable $action
-     * @param array $args
      */
-    public function __construct(Settings $settings, $time, string $recurrence, string $hook, callable $action, array $args = [])
+    public function __construct(string $hook, $time, string $recurrence)
     {
-        $this->action = $action;
-        $this->args = $args;
         $this->hook = $hook;
-        $this->settings = $settings;
         $this->recurrence = $recurrence;
         $this->time = $time;
-    }
-
-
-    /**
-     * Activate this cron job: schedule and mark the job as permanently active.
-     *
-     * @return bool True, if cron job has been activated or was already active, false otherwise.
-     */
-    public function activate(): bool
-    {
-        $this->settings[$this->hook] = true;
-        return $this->schedule();
-    }
-
-
-    /**
-     * Deactivate this cron job: unschedule and mark the job as permanently inactive.
-     */
-    public function deactivate()
-    {
-        $this->settings[$this->hook] = false;
-        $this->unschedule();
     }
 
 
@@ -108,34 +65,19 @@ class Job
         // Compute Unix timestamp (UTC) for when to run the cron job based on $time value.
         $timestamp = is_int($this->time) ? $this->time : self::getTimestamp($this->time);
 
-        return wp_schedule_event($timestamp, $this->recurrence, $this->hook, $this->args) !== false;
+        return wp_schedule_event($timestamp, $this->recurrence, $this->hook) !== false;
     }
 
 
     /**
      * Unschedule this cron job.
+     *
+     * @return bool True (always).
      */
-    public function unschedule()
+    public function unschedule(): bool
     {
-        wp_clear_scheduled_hook($this->hook, $this->args);
-    }
-
-
-    /**
-     * Add action into registered cron job hook.
-     */
-    public function init()
-    {
-        add_action($this->hook, $this->action);
-    }
-
-
-    /**
-     * @return bool True, if cron job should be scheduled, when plugin is active, false otherwise.
-     */
-    public function isOn(): bool
-    {
-        return $this->settings[$this->hook];
+        wp_clear_scheduled_hook($this->hook);
+        return true;
     }
 
 
@@ -144,7 +86,7 @@ class Job
      */
     public function isScheduled(): bool
     {
-        return is_int(wp_next_scheduled($this->hook, $this->args));
+        return is_int(wp_next_scheduled($this->hook));
     }
 
 

@@ -7,7 +7,7 @@ namespace BlueChip\Security\Modules\Checklist\Checks;
 
 use BlueChip\Security\Modules\Checklist;
 
-class DisplayOfPhpErrorsIsOff extends Checklist\Check
+class DisplayOfPhpErrorsIsOff extends Checklist\BasicCheck
 {
     public function __construct()
     {
@@ -33,7 +33,7 @@ class DisplayOfPhpErrorsIsOff extends Checklist\Check
     }
 
 
-    public function run(): Checklist\CheckResult
+    protected function runInternal(): Checklist\CheckResult
     {
         // Craft temporary file name.
         $name = sprintf('bc-security-checklist-test-error-display-%s.php', md5(rand()));

@@ -7,7 +7,7 @@ namespace BlueChip\Security\Modules\Checklist\Checks;
 
 use BlueChip\Security\Modules\Checklist;
 
-class NoObviousUsernamesCheck extends Checklist\Check
+class NoObviousUsernamesCheck extends Checklist\BasicCheck
 {
     public function __construct()
     {
@@ -18,7 +18,7 @@ class NoObviousUsernamesCheck extends Checklist\Check
     }
 
 
-    public function run(): Checklist\CheckResult
+    protected function runInternal(): Checklist\CheckResult
     {
         // Get (filtered) list of obvious usernames to test.
         $obvious = apply_filters(Checklist\Hooks::OBVIOUS_USERNAMES, ['admin', 'administrator']);

@@ -25,12 +25,6 @@ class Settings extends \BlueChip\Security\Core\Settings
     /** bool: Notify when there is a theme update available [Yes] */
     const THEME_UPDATE_AVAILABLE = 'theme_update_available';
 
-    /** bool: Notify when there is any error during core checksums verification [Yes] */
-    const CORE_CHECKSUMS_VERIFICATION_ERROR = 'core_checksums_verification_error';
-
-    /** bool: Notify when there is any error during plugin checksums verification [Yes] */
-    const PLUGIN_CHECKSUMS_VERIFICATION_ERROR = 'plugin_checksums_verification_error';
-
     /** bool: Notify when automatic checklist check triggers an alert [Yes] */
     const CHECKLIST_ALERT = 'checklist_alert';
 
@@ -43,38 +37,37 @@ class Settings extends \BlueChip\Security\Core\Settings
     /** array: List of email addresses of any additional notifications [empty] */
     const NOTIFICATION_RECIPIENTS = 'notification_recipients';
 
+    /**
+     * @var array Default values for all settings.
+     */
+    const DEFAULTS = [
+        self::ADMIN_USER_LOGIN => true,
+        self::KNOWN_IP_LOCKOUT => true,
+        self::CORE_UPDATE_AVAILABLE => true,
+        self::PLUGIN_UPDATE_AVAILABLE => true,
+        self::THEME_UPDATE_AVAILABLE => true,
+        self::CHECKLIST_ALERT => true,
+        self::PLUGIN_DEACTIVATED => true,
+        self::NOTIFY_SITE_ADMIN => false,
+        self::NOTIFICATION_RECIPIENTS => [],
+    ];
 
     /**
-     * Sanitize settings array: only return known keys, provide default values for missing keys.
+     * @var array Custom sanitizers.
+     */
+    const SANITIZERS = [
+        self::NOTIFICATION_RECIPIENTS => [self::class, 'sanitizeNotificationRecipient'],
+    ];
+
+
+    /**
+     * Sanitize "notification recipients" setting. Must be list of emails.
      *
-     * @param array $s
+     * @param array|string $value
      * @return array
      */
-    public function sanitize(array $s): array
+    public static function sanitizeNotificationRecipient($value): array
     {
-        return [
-            self::ADMIN_USER_LOGIN
-                => isset($s[self::ADMIN_USER_LOGIN]) ? boolval($s[self::ADMIN_USER_LOGIN]) : true,
-            self::KNOWN_IP_LOCKOUT
-                => isset($s[self::KNOWN_IP_LOCKOUT]) ? boolval($s[self::KNOWN_IP_LOCKOUT]) : true,
-            self::CORE_UPDATE_AVAILABLE
-                => isset($s[self::CORE_UPDATE_AVAILABLE]) ? boolval($s[self::CORE_UPDATE_AVAILABLE]) : true,
-            self::PLUGIN_UPDATE_AVAILABLE
-                => isset($s[self::PLUGIN_UPDATE_AVAILABLE]) ? boolval($s[self::PLUGIN_UPDATE_AVAILABLE]) : true,
-            self::THEME_UPDATE_AVAILABLE
-                => isset($s[self::THEME_UPDATE_AVAILABLE]) ? boolval($s[self::THEME_UPDATE_AVAILABLE]) : true,
-            self::CORE_CHECKSUMS_VERIFICATION_ERROR
-                => isset($s[self::CORE_CHECKSUMS_VERIFICATION_ERROR]) ? boolval($s[self::CORE_CHECKSUMS_VERIFICATION_ERROR]) : true,
-            self::PLUGIN_CHECKSUMS_VERIFICATION_ERROR
-                => isset($s[self::PLUGIN_CHECKSUMS_VERIFICATION_ERROR]) ? boolval($s[self::PLUGIN_CHECKSUMS_VERIFICATION_ERROR]) : true,
-            self::CHECKLIST_ALERT
-                => isset($s[self::CHECKLIST_ALERT]) ? boolval($s[self::CHECKLIST_ALERT]) : true,
-            self::PLUGIN_DEACTIVATED
-                => isset($s[self::PLUGIN_DEACTIVATED]) ? boolval($s[self::PLUGIN_DEACTIVATED]) : true,
-            self::NOTIFY_SITE_ADMIN
-                => isset($s[self::NOTIFY_SITE_ADMIN]) ? boolval($s[self::NOTIFY_SITE_ADMIN]) : false,
-            self::NOTIFICATION_RECIPIENTS
-                => isset($s[self::NOTIFICATION_RECIPIENTS]) ? array_filter($this->parseList($s[self::NOTIFICATION_RECIPIENTS]), '\is_email') : [],
-        ];
+        return array_filter(self::parseList($value), '\is_email');
     }
 }

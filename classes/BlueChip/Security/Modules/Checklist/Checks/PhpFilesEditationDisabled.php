@@ -7,7 +7,7 @@ namespace BlueChip\Security\Modules\Checklist\Checks;
 
 use BlueChip\Security\Modules\Checklist;
 
-class PhpFilesEditationDisabled extends Checklist\Check
+class PhpFilesEditationDisabled extends Checklist\BasicCheck
 {
     public function __construct()
     {
@@ -18,7 +18,7 @@ class PhpFilesEditationDisabled extends Checklist\Check
     }
 
 
-    public function run(): Checklist\CheckResult
+    protected function runInternal(): Checklist\CheckResult
     {
         return defined('DISALLOW_FILE_EDIT') && DISALLOW_FILE_EDIT
             ? new Checklist\CheckResult(true, esc_html__('Theme and plugin files cannot be edited from backend.', 'bc-security'))

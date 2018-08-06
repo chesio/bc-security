@@ -5,189 +5,92 @@
 
 namespace BlueChip\Security\Modules\Log;
 
-use Psr\Log\LogLevel;
-
 /**
- * Every event must be constructed using event ID. All other event properties can be inferred from event ID.
+ * Base class for events. Implement event types as subclasses of this class.
  */
-class Event
+abstract class Event
 {
-    const AUTH_BAD_COOKIE = 'auth_bad_cookie';
-    const LOGIN_FAILURE = 'login_failure';
-    const LOGIN_LOCKOUT = 'login_lockdown';
-    const LOGIN_SUCCESSFUL = 'login_success';
-    const QUERY_404 = 'query_404';
-    const CORE_CHECKSUMS_VERIFICATION_ALERT = 'core_checksums_verification_alert';
-    const PLUGIN_CHECKSUMS_VERIFICATION_ALERT = 'plugin_checksums_verification_alert';
-
-
     /**
-     * @var string Unique ID
-     */
-    private $id;
-
-    /**
-     * @var string Human readable name
-     */
-    private $name;
-
-    /**
-     * @var string Log level
-     */
-    private $level;
-
-    /**
-     * @var string Log message
-     */
-    private $message;
-
-    /**
-     * @var array Required context keys
-     */
-    private $context;
-
-
-    /**
-     * Create event instance.
+     * @internal Static identifier is used for event type identification wherever use of classname is a bit cumbersome
+     * like in database data or GET requests.
      *
-     * @param string $id
-     * @param string $name
-     * @param string $level
-     * @param string $message
-     * @param array $context
+     * @return string Static identifier for event type (class).
      */
-    private function __construct(string $id, string $name, string $level, string $message, array $context)
-    {
-        $this->id = $id;
-        $this->name = $name;
-        $this->level = $level;
-        $this->message = $message;
-        $this->context = $context;
-    }
-
-
     public function getId(): string
     {
-        return $this->id;
+        return static::ID;
     }
 
 
-    public function getName(): string
+    /**
+     * @return string Log level for event type (class).
+     */
+    public function getLogLevel(): string
     {
-        return $this->name;
+        return static::LOG_LEVEL;
     }
 
 
-    public function getLevel(): string
-    {
-        return $this->level;
-    }
+    /**
+     * @return string Human readable name unique for event type (class).
+     */
+    abstract public function getName(): string;
 
 
-    public function getMessage(): string
-    {
-        return $this->message;
-    }
+    /**
+     * @return string Log message providing context to the event.
+     */
+    abstract public function getMessage(): string;
 
 
+    /**
+     * @return array Context data for this event.
+     */
     public function getContext(): array
     {
-        return $this->context;
-    }
+        $reflection = new \ReflectionClass(static::class);
 
-
-    public function hasContext(string $key): bool
-    {
-        return isset($this->context[$key]);
-    }
-
-
-    /**
-     * Create event object for given $id.
-     *
-     * @param string $id Valid event ID.
-     * @return \BlueChip\Security\Modules\Log\Event|null
-     */
-    public static function create(string $id)
-    {
-        switch ($id) {
-            case self::AUTH_BAD_COOKIE:
-                return new self(
-                    $id,
-                    __('Bad authentication cookie', 'bc-security'),
-                    LogLevel::NOTICE,
-                    __('Bad authentication cookie used with {username}.', 'bc-security'),
-                    ['username' => __('Username', 'bc-security')]
-                );
-            case self::LOGIN_FAILURE:
-                return new self(
-                    $id,
-                    __('Failed login', 'bc-security'),
-                    LogLevel::NOTICE,
-                    __('Login attempt with username {username} failed.', 'bc-security'),
-                    ['username' => __('Username', 'bc-security')]
-                );
-            case self::LOGIN_LOCKOUT:
-                return new self(
-                    $id,
-                    __('Login lockout', 'bc-security'),
-                    LogLevel::WARNING,
-                    __('Remote IP address {ip_address} has been locked out from login for {duration} seconds. Last username used for login was {username}.', 'bc-security'),
-                    ['ip_address' => __('IP Address', 'bc-security'), 'username' => __('Username', 'bc-security'), 'duration' => __('Duration', 'bc-security')]
-                );
-            case self::LOGIN_SUCCESSFUL:
-                return new self(
-                    $id,
-                    __('Successful login', 'bc-security'),
-                    LogLevel::INFO,
-                    __('User {username} logged in successfully.', 'bc-security'),
-                    ['username' => __('Username', 'bc-security')]
-                );
-            case self::QUERY_404:
-                return new self(
-                    $id,
-                    __('404 page', 'bc-security'),
-                    LogLevel::INFO,
-                    __('Main query returned no results (404 page) for request {request}.', 'bc-security'),
-                    ['request' => __('Request URI', 'bc-security')]
-                );
-            case self::CORE_CHECKSUMS_VERIFICATION_ALERT:
-                return new self(
-                    $id,
-                    __('Core checksums verification alert', 'bc-security'),
-                    LogLevel::WARNING,
-                    __('Following files have been modified: {modified_files}. Following files are unknown: {unknown_files}.', 'bc-security'),
-                    ['modified_files' => __('Modified files', 'bc-security'), 'unknown_files' => __('Unknown files', 'bc-security')]
-                );
-            case self::PLUGIN_CHECKSUMS_VERIFICATION_ALERT:
-                return new self(
-                    $id,
-                    __('Plugin checksums verification alert', 'bc-security'),
-                    LogLevel::WARNING,
-                    __('Plugin: {plugin_name} (ver. {plugin_version}). Following files have been modified: {modified_files}. Following files are unknown: {unknown_files}.', 'bc-security'),
-                    ['plugin_name' => __('Plugin name', 'bc-security'), 'plugin_version' => __('Plugin version', 'bc-security'), 'modified_files' => __('Modified files', 'bc-security'), 'unknown_files' => __('Unknown files', 'bc-security')]
-                );
-            default:
-                return null;
+        $output = [];
+        foreach ($reflection->getProperties(\ReflectionProperty::IS_PROTECTED) as $property) {
+            $output[$property->getName()] = $this->{$property->getName()};
         }
+
+        return $output;
     }
 
 
     /**
-     * Return a list of all declared events.
-     *
-     * @return array
+     * @return array Context columns with human readable descriptions (labels).
      */
-    public static function enlist(): array
+    public function explainContext(): array
     {
-        return [
-            self::AUTH_BAD_COOKIE,
-            self::LOGIN_FAILURE,
-            self::LOGIN_SUCCESSFUL,
-            self::LOGIN_LOCKOUT,
-            self::QUERY_404,
-            self::CORE_CHECKSUMS_VERIFICATION_ALERT,
-            self::PLUGIN_CHECKSUMS_VERIFICATION_ALERT,
-        ];
+        $reflection = new \ReflectionClass(static::class);
+
+        $output = [];
+        foreach ($reflection->getProperties(\ReflectionProperty::IS_PROTECTED) as $property) {
+            $output[$property->getName()] = self::getPropertyLabel($property);
+        }
+
+        return $output;
+    }
+
+
+    /**
+     * Extract context property label.
+     *
+     * @internal Property label must be enclosed in pseudo-call to translation function __('I am the label') placed in
+     * property PHPDoc comment.
+     *
+     * @param \ReflectionProperty $property
+     * @return string
+     */
+    private static function getPropertyLabel(\ReflectionProperty $property): string
+    {
+        $matches = [];
+        if (preg_match("/__\('(.+)'\)/i", $property->getDocComment(), $matches)) {
+            return __($matches[1], 'bc-security');
+        } else {
+            return '';
+        }
     }
 }
