@@ -15,6 +15,7 @@ abstract class Transients
      */
     const NAME_PREFIX = 'bc-security_';
 
+
     /**
      * Delete transient.
      *
@@ -26,6 +27,32 @@ abstract class Transients
         return delete_site_transient(self::name($key));
     }
 
+
+    /**
+     * Remove all stored transients from database. Entire object cache is flushed as well, so use with caution.
+     *
+     * @link https://css-tricks.com/the-deal-with-wordpress-transients/
+     *
+     * @param \wpdb $wpdb WordPress database access abstraction object
+     */
+    public static function flush(\wpdb $wpdb)
+    {
+        $table_name = is_multisite() ? $wpdb->sitemeta : $wpdb->options;
+
+        // First, delete all transients from database...
+        $wpdb->query(
+            sprintf(
+                "DELETE FROM {$table_name} WHERE (option_name LIKE '%s' OR option_name LIKE '%s')",
+                '_site_transient_' . self::NAME_PREFIX . '%',
+                '_site_transient_timeout_' . self::NAME_PREFIX . '%'
+            )
+        );
+
+        // ...then flush object cache, because transients may be stored there as well.
+        wp_cache_flush();
+    }
+
+
     /**
      * Get transient.
      *
@@ -36,6 +63,7 @@ abstract class Transients
     {
         return get_site_transient(self::name($key));
     }
+
 
     /**
      * Set transient.
@@ -51,6 +79,7 @@ abstract class Transients
 
         return set_site_transient(self::name($args), $value, $expiration);
     }
+
 
     /**
      * Create transient name from $key.

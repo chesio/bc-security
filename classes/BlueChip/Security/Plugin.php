@@ -240,13 +240,7 @@ class Plugin
         }
 
         // Remove site transients set by plugin.
-        $this->wpdb->query(
-            sprintf(
-                "DELETE FROM {$this->wpdb->options} WHERE (option_name LIKE '%s' OR option_name LIKE '%s')",
-                '_site_transient_' . Helpers\Transients::NAME_PREFIX . '%',
-                '_site_transient_timeout_' . Helpers\Transients::NAME_PREFIX . '%'
-            )
-        );
+        Helpers\Transients::flush($this->wpdb);
 
         // Uninstall every module that requires it.
         foreach ($this->modules as $module) {
