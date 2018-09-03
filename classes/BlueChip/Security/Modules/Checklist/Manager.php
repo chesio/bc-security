@@ -145,22 +145,30 @@ class Manager implements Modules\Initializable
 
 
     /**
-     * @param bool $meaningful
+     * @param bool $only_meaningful
      * @return \BlueChip\Security\Modules\Checklist\Check[]
      */
-    public function getAdvancedChecks(bool $meaningful = true): array
+    public function getAdvancedChecks(bool $only_meaningful = true): array
     {
-        return $this->getChecks(['meaningful' => $meaningful, 'class' => AdvancedCheck::class]);
+        $filters = ['class' => AdvancedCheck::class];
+        if ($only_meaningful) {
+            $filters['meaningful'] = true;
+        }
+        return $this->getChecks($filters);
     }
 
 
     /**
-     * @param bool $meaningful
+     * @param bool $only_meaningful
      * @return \BlueChip\Security\Modules\Checklist\Check[]
      */
-    public function getBasicChecks(bool $meaningful = true): array
+    public function getBasicChecks(bool $only_meaningful = true): array
     {
-        return $this->getChecks(['meaningful' => $meaningful, 'class' => BasicCheck::class]);
+        $filters = ['class' => BasicCheck::class];
+        if ($only_meaningful) {
+            $filters['meaningful'] = true;
+        }
+        return $this->getChecks($filters);
     }
 
 
