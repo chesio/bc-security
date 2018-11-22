@@ -16,4 +16,12 @@ interface Hooks
      * @see \BlueChip\Security\Helpers\Is::admin()
      */
     const IS_ADMIN = 'bc-security/filter:is-admin';
+
+
+    /**
+     * Filter: allows to change plugin's changelog URL.
+     *
+     * @see \BlueChip\Security\Helpers\Plugin::getChangelogUrl()
+     */
+    const PLUGIN_CHANGELOG_URL = 'bc-security/filter:plugin-changelog-url';
 }
