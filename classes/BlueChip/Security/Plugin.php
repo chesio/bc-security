@@ -176,7 +176,7 @@ class Plugin
                     $this->settings['log'],
                     $this->modules['logger']
                 ))
-                ->addPage(new Modules\Tools\AdminPage())
+                ->addPage(new Modules\Tools\AdminPage($this->settings))
             ;
         }
     }

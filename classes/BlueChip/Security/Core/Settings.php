@@ -149,6 +149,42 @@ abstract class Settings implements \ArrayAccess
 
 
     /**
+     * Get option data.
+     *
+     * @return array
+     */
+    public function get(): array
+    {
+        return $this->data;
+    }
+
+
+    /**
+     * Set $data as option data.
+     *
+     * @param array $data
+     * @return bool
+     */
+    public function set(array $data): bool
+    {
+        $this->data = $this->sanitize($data);
+        return $this->persist();
+    }
+
+
+    /**
+     * Reset option data.
+     *
+     * @return bool
+     */
+    public function reset(): bool
+    {
+        $this->data = static::DEFAULTS;
+        return $this->persist();
+    }
+
+
+    /**
      * Sanitize $settings array: only keep known keys, provide default values for missing keys.
      *
      * @internal This method serves two purposes: it sanitizes data read from database and it sanitizes POST-ed data.
@@ -221,7 +257,7 @@ abstract class Settings implements \ArrayAccess
     /**
      * Persist the value of data into database.
      *
-     * @return bool
+     * @return bool True, if settings have been updated (= changed), false otherwise.
      */
     protected function persist(): bool
     {
