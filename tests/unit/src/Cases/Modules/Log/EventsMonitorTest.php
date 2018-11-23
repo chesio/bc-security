@@ -32,14 +32,6 @@ class EventsMonitorTest extends \BlueChip\Security\Tests\Unit\TestCase
     }
 
 
-    public function testCoreChecksumsVerificationAlert()
-    {
-        Actions\expectDone(Log\Action::EVENT)->once()->with(\Mockery::type(Log\Events\CoreChecksumsVerificationAlert::class));
-
-        $this->monitor->logCoreChecksumsVerificationAlert([], []);
-    }
-
-
     public function testFailedLogin()
     {
         Actions\expectDone(Log\Action::EVENT)->once()->with(\Mockery::type(Log\Events\LoginFailure::class));
@@ -53,17 +45,6 @@ class EventsMonitorTest extends \BlueChip\Security\Tests\Unit\TestCase
         Actions\expectDone(Log\Action::EVENT)->once()->with(\Mockery::type(Log\Events\LoginLockout::class));
 
         $this->monitor->logLockoutEvent('4.3.2.1', 'test-user', 600);
-    }
-
-
-    public function testPluginChecksumsVerificationAlert()
-    {
-        // No plugins with alert to report...
-        $plugins = [];
-        // ... so no event should be recorded.
-        Actions\expectDone(Log\Action::EVENT)->never()->with(\Mockery::type(Log\Events\PluginChecksumsVerificationAlert::class));
-
-        $this->monitor->logPluginChecksumsVerificationAlert($plugins);
     }
 
 
