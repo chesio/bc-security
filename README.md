@@ -111,6 +111,7 @@ Logs are stored in database and can be viewed on backend. Logs are automatically
 Some of the modules listed above come with settings panel. Further customization can be done with filters provided by plugin:
 
 * `bc-security/filter:is-admin` - filters boolean value that determines whether current user is considered an admin user. This check determines whether admin login notification should be sent for particular user. By default, any user with `manage_options` capability is considered an admin (or `manage_network` on multisite).
+* `bc-security/filter:plugin-changelog-url` - filters changelog URL of given plugin. Might come handy in case of plugins not hosted in Plugins Directory.
 * `bc-security/filter:obvious-usernames` - filters array of common usernames that are being checked via [checklist check](#basic-checks). By default, the array consists of _admin_ and _administrator_ values.
 * `bc-security/filter:plugins-to-check-for-integrity` - filters array of plugins that should have their integrity checked. By default, the array consists of all installed plugins that have _readme.txt_ file. Note that plugins under version control are automatically omitted.
 * `bc-security/filter:plugins-to-check-for-removal` - filters array of plugins to check for their presence in WordPress.org Plugins Directory. By default, the array consists of all installed plugins that have _readme.txt_ file.
