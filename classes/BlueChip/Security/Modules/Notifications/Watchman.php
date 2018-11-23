@@ -6,6 +6,7 @@
 namespace BlueChip\Security\Modules\Notifications;
 
 use BlueChip\Security\Helpers\Is;
+use BlueChip\Security\Helpers\Plugin;
 use BlueChip\Security\Helpers\Transients;
 use BlueChip\Security\Modules;
 use BlueChip\Security\Modules\Log\Logger;
@@ -223,14 +224,22 @@ class Watchman implements Modules\Initializable, Modules\Activable
         $message = [];
 
         foreach ($plugin_updates as $plugin_file => $plugin_update_data) {
-            // Note: get_plugin_data() function is only defined in admin,
-            // but it seems that it is always available in this context...
-            $plugin_data = get_plugin_data(WP_PLUGIN_DIR . '/' . $plugin_file);
-            $message[] = sprintf(
+            $plugin_data = Plugin::getPluginData($plugin_file);
+            $plugin_message = sprintf(
                 __('Plugin "%1$s" has an update to version %2$s available.', 'bc-security'),
                 $plugin_data['Name'],
                 $plugin_update_data->new_version
             );
+
+            if (!empty($plugin_changelog_url = Plugin::getChangelogUrl($plugin_file))) {
+                // Append link to changelog, if available.
+                $plugin_message .= ' ' . sprintf(
+                    __('Changelog: %1$s', 'bc-security'),
+                    $plugin_changelog_url
+                );
+            }
+
+            $message[] = $plugin_message;
         }
 
         // Now it is time to make sure the method is not invoked anymore.

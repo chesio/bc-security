@@ -14,11 +14,34 @@ abstract class Plugin
      */
     const CHECKSUMS_API_URL_BASE = 'https://downloads.wordpress.org/plugin-checksums/';
 
-
     /**
-     * @var string
+     * @var string URL of Plugins Directory.
      */
     const PLUGINS_DIRECTORY_URL = 'https://wordpress.org/plugins/';
+
+    /**
+     * @var string Path (although not technically) to changelog page relative to URL of plugin homepage at Plugins Directory.
+     */
+    const PLUGINS_DIRECTORY_CHANGELOG_PATH = '#developers';
+
+
+    /**
+     * @param string $plugin_basename
+     * @return string URL of the plugin changelog page or empty string, if it cannot be determined.
+     */
+    public static function getChangelogUrl(string $plugin_basename): string
+    {
+        // By default, changelog URL is unknown.
+        $url = '';
+
+        if (self::hasReadmeTxt($plugin_basename)) {
+            // Assume that any plugin with readme.txt comes from Plugins Directory.
+            $url = self::getDirectoryUrl($plugin_basename) . self::PLUGINS_DIRECTORY_CHANGELOG_PATH;
+        }
+
+        // Allow the changelog URL to be filtered.
+        return apply_filters(Hooks::PLUGIN_CHANGELOG_URL, $url, $plugin_basename);
+    }
 
 
     /**
@@ -100,6 +123,18 @@ abstract class Plugin
             [self::class, 'hasReadmeTxt'],
             ARRAY_FILTER_USE_KEY
         );
+    }
+
+
+    /**
+     * @internal Only use in admin (back-end) context.
+     * @param string $plugin_basename
+     * @return array
+     */
+    public static function getPluginData(string $plugin_basename): array
+    {
+        // Note: get_plugin_data() function is only defined in admin.
+        return get_plugin_data(WP_PLUGIN_DIR . '/' . $plugin_basename);
     }
 
 

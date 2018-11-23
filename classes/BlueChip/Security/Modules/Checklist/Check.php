@@ -102,11 +102,11 @@ abstract class Check
 
 
     /**
-     * By default, every check makes sense.
+     * By default, every check is meaningful.
      *
      * @return bool
      */
-    public function makesSense(): bool
+    public function isMeaningful(): bool
     {
         return true;
     }

@@ -5,6 +5,7 @@
 
 namespace BlueChip\Security\Setup;
 
+use BlueChip\Security\Helpers\AdminNotices;
 use BlueChip\Security\Helpers\FormHelper;
 
 class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
@@ -34,6 +35,19 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
     public function loadPage()
     {
         $this->displaySettingsErrors();
+
+        if (!empty($connection_type = Core::getConnectionType())) {
+            // Connection type is set via constant.
+            AdminNotices::add(
+                sprintf(
+                    __('You have set <code>BC_SECURITY_CONNECTION_TYPE</code> to <code>%s</code>, therefore the setting below is ignored.', 'bc-security'),
+                    $connection_type
+                ),
+                AdminNotices::WARNING,
+                false, // ~ not dismissible
+                false // ~ do not escape HTML
+            );
+        }
     }
 
 

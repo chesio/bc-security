@@ -43,17 +43,13 @@ class Plugin
         $this->wpdb = $wpdb;
 
         // Read plugin settings.
-        $this->settings = $this->constructSettings();
+        $this->settings = $settings = self::constructSettings();
 
         // Get setup info.
-        $setup = new Setup\Core($this->settings['setup']);
-
-        // IP addresses are at core interest within this plugin :)
-        $remote_address = $setup->getRemoteAddress();
-        $server_address = $setup->getServerAddress();
+        $setup = new Setup\Core($settings['setup']);
 
         // Construct modules.
-        $this->modules = $this->constructModules($wpdb, $remote_address, $server_address, $this->settings);
+        $this->modules = self::constructModules($wpdb, $setup->getRemoteAddress(), $setup->getServerAddress(), $settings);
     }
 
 
@@ -62,7 +58,7 @@ class Plugin
      *
      * @return array
      */
-    private function constructSettings(): array
+    private static function constructSettings(): array
     {
         return [
             'cron-jobs'         => new Modules\Cron\Settings('bc-security-cron-jobs'),
@@ -85,7 +81,7 @@ class Plugin
      * @param array $settings
      * @return array
      */
-    private function constructModules(\wpdb $wpdb, string $remote_address, string $server_address, array $settings): array
+    private static function constructModules(\wpdb $wpdb, string $remote_address, string $server_address, array $settings): array
     {
         $hostname_resolver  = new Modules\Services\ReverseDnsLookup\Resolver();
         $cron_job_manager   = new Modules\Cron\Manager($settings['cron-jobs']);
@@ -180,6 +176,7 @@ class Plugin
                     $this->settings['log'],
                     $this->modules['logger']
                 ))
+                ->addPage(new Modules\Tools\AdminPage($this->settings))
             ;
         }
     }
@@ -240,13 +237,7 @@ class Plugin
         }
 
         // Remove site transients set by plugin.
-        $this->wpdb->query(
-            sprintf(
-                "DELETE FROM {$this->wpdb->options} WHERE (option_name LIKE '%s' OR option_name LIKE '%s')",
-                '_site_transient_' . Helpers\Transients::NAME_PREFIX . '%',
-                '_site_transient_timeout_' . Helpers\Transients::NAME_PREFIX . '%'
-            )
-        );
+        Helpers\Transients::flush($this->wpdb);
 
         // Uninstall every module that requires it.
         foreach ($this->modules as $module) {

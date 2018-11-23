@@ -4,13 +4,19 @@ Helps keeping WordPress websites secure.
 
 ## Requirements
 
-* [PHP](https://secure.php.net/) 7.0 or newer
+* [PHP](https://secure.php.net/) 7.1 or newer
 * [WordPress](https://wordpress.org/) 4.9 or newer
 
 ## Limitations
 
 * BC Security has not been tested on WordPress multisite installation.
 * BC Security is primarily being developed for Apache webserver and Unix-like environments.
+
+## Setup
+
+Several features of BC Security depends on the knowledge of remote IP address, so it is important that you let the plugin know how your server is connected to the Internet. You can either set connection type via _Setup_ page or with via `BC_SECURITY_CONNECTION_TYPE` constant.
+
+**Note:** If you already have an installation with BC Security set up and would like to set up another installation in the same way, you can export plugin settings (including connection type) from the former installation and import them to the latter.
 
 ## Features
 
@@ -122,6 +128,7 @@ Some of the modules listed above come with settings panel. Further customization
 1. Part of [psr/log](https://packagist.org/packages/psr/log) package codebase is shipped with the plugin.
 1. [WordPress core integrity check](#wordpress-core-integrity-check) is heavily inspired by [Checksum Verifier](https://github.com/pluginkollektiv/checksum-verifier) plugin by Sergej Müller.
 1. Some features (like "[Removed plugins check](#removed-plugins-check)") are inspired by [Wordfence Security](https://wordpress.org/plugins/wordfence/) from [Defiant](https://www.defiant.com/).
+1. Big thanks to [Vincent Driessen](https://nvie.com/about/) for his "[A successful Git branching model](https://nvie.com/posts/a-successful-git-branching-model/)" article that I find particularly useful every time I do some work on BC Security.
 
 ## Alternatives (and why I do not use them)
 
