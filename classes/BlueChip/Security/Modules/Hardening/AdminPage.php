@@ -112,5 +112,23 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
             __('Disable REST API access', 'bc-security'),
             [FormHelper::class, 'printCheckbox']
         );
+
+        // Section: Validate user passwords against Pwned Passwords database
+        $this->addSettingsSection(
+            'validate-passwords',
+            __('Validate user passwords against Pwned Passwords database', 'bc-security'),
+            function () {
+                echo '<p>' . sprintf(
+                    __('<a href="%1$s">Pwned Passwords</a> is a large database of passwords previously exposed in data breaches. This exposure makes them unsuitable for ongoing use as they are at much greater risk of being used to take over other accounts. By enabling this option, no user will be able to <strong>change</strong> or <strong>reset</strong> its password to a password present in the Pwned Passwords database. Validation is done against <a href="%2$s">Pwned Passwords API v2</a> using "range search", thus the actual password is never exposed to the Pwned Passwords service.', 'bc-security'),
+                    'https://haveibeenpwned.com/Passwords',
+                    'https://haveibeenpwned.com/API/v2#PwnedPasswords'
+                ) . '</p>';
+            }
+        );
+        $this->addSettingsField(
+            Settings::VALIDATE_PASSWORDS,
+            __('Validate user passwords', 'bc-security'),
+            [FormHelper::class, 'printCheckbox']
+        );
     }
 }

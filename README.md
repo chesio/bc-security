@@ -68,6 +68,11 @@ BC Security allows you to:
 1. Disable pingbacks
 1. Disable XML RPC methods that require authentication
 1. Disable access to REST API to anonymous users
+1. Validate user passwords using [Pwned Passwords](https://haveibeenpwned.com/Passwords) database
+
+#### Passwords validation
+
+Passwords are validated on user creation, password change or password reset. If password fails to validate (ie. password is present in the Pwned Passwords database), the operation is aborted. Note that only the first 5 characters of SHA-1 password hash are ever shared with Pwned Passwords service (see [the documentation](https://haveibeenpwned.com/API/v2#SearchingPwnedPasswordsByRange) for implementation details).
 
 ### Login security
 
@@ -126,10 +131,11 @@ Some of the modules listed above come with settings panel. Further customization
 ## Credits
 
 1. [Login Security](#login-security) feature is inspired by [Limit Login Attempts](https://wordpress.org/plugins/limit-login-attempts/) plugin by Johan Eenfeldt.
-1. Part of [psr/log](https://packagist.org/packages/psr/log) package codebase is shipped with the plugin.
 1. [WordPress core integrity check](#wordpress-core-integrity-check) is heavily inspired by [Checksum Verifier](https://github.com/pluginkollektiv/checksum-verifier) plugin by Sergej Müller.
 1. Some features (like "[Removed plugins check](#removed-plugins-check)") are inspired by [Wordfence Security](https://wordpress.org/plugins/wordfence/) from [Defiant](https://www.defiant.com/).
+1. [Passwords verification](#passwords-verification) feature uses API and data made available by [Have I Been Pwned](https://haveibeenpwned.com) project by [Troy Hunt](https://www.troyhunt.com).
 1. Big thanks to [Vincent Driessen](https://nvie.com/about/) for his "[A successful Git branching model](https://nvie.com/posts/a-successful-git-branching-model/)" article that I find particularly useful every time I do some work on BC Security.
+1. Part of [psr/log](https://packagist.org/packages/psr/log) package codebase is shipped with the plugin.
 
 ## Alternatives (and why I do not use them)
 
