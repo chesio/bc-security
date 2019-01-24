@@ -25,7 +25,7 @@ abstract class EventsManager
      * @param string $event_id Valid event ID.
      * @return \BlueChip\Security\Modules\Log\Event|null
      */
-    public static function create(string $event_id)
+    public static function create(string $event_id): ?Event
     {
         $classname = self::$mapping[$event_id] ?? '';
         return $classname ? new $classname() : null;

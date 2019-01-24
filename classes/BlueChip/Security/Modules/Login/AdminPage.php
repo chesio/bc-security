@@ -110,8 +110,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
         // Section: Authentication cookies
         $this->addSettingsSection(
             'auth-cookies',
-            _x('Auth cookies', 'Settings section title', 'bc-security'),
-            null
+            _x('Auth cookies', 'Settings section title', 'bc-security')
         );
         $this->addSettingsField(
             Settings::CHECK_COOKIES,

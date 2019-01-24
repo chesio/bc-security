@@ -168,7 +168,7 @@ class CoreIntegrity extends Checklist\AdvancedCheck
                 // Scan wp-include directory recursively.
                 Checklist\Helper::scanDirectoryForUnknownFiles(ABSPATH . WPINC, ABSPATH, $checksums, true)
             ),
-            function ($filename) use ($ignored_files) {
+            function (string $filename) use ($ignored_files): bool {
                 return !in_array($filename, $ignored_files, true);
             }
         );

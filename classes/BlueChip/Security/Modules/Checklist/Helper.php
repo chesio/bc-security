@@ -72,10 +72,10 @@ abstract class Helper
      *   is returned. Null is also returned for HTTP status 200 if response body is different than $body (if given).
      *
      * @param string $url URL to check.
-     * @param string $body Response body to check [optional].
-     * @return null|bool
+     * @param string|null $body Response body to check [optional].
+     * @return bool|null
      */
-    public static function isAccessToUrlForbidden(string $url, $body = null)
+    public static function isAccessToUrlForbidden(string $url, ?string $body = null): ?bool
     {
         // Try to get provided URL. Use HEAD request for simplicity, if response body is of no interest.
         $response = is_string($body) ? wp_remote_get($url) : wp_remote_head($url);

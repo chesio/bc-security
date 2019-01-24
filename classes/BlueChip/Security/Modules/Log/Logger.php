@@ -189,9 +189,9 @@ class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\
      * Return integer code for given log level.
      *
      * @param string $level Log level constant: emergency, alert, critical, error, warning, notice, info or debug.
-     * @return mixed Integer code for given log level or null, if unknown level given.
+     * @return int|null Integer code for given log level or null, if unknown level given.
      */
-    public function translateLogLevel(string $level)
+    public function translateLogLevel(string $level): ?int
     {
         switch ($level) {
             case Log\LogLevel::EMERGENCY:
@@ -250,10 +250,10 @@ class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\
      *
      * @internal Implements \BlueChip\Security\Modules\Countable interface.
      *
-     * @param mixed $event Only count records under event name (empty string is allowed).
+     * @param string|null $event Only count records under event name (empty string is allowed).
      * @return int
      */
-    public function countAll($event = null): int
+    public function countAll(?string $event = null): int
     {
         $query = "SELECT COUNT(id) AS total FROM {$this->log_table}";
 
@@ -288,14 +288,14 @@ class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\
     /**
      * Fetch log records that match provided arguments.
      *
-     * @param string $event Only fetch records under event name (empty string is allowed).
+     * @param string|null $event Only fetch records under event name (empty string is allowed).
      * @param int $from [optional] Zero-based index for first record to be returned. Default value is 0.
      * @param int $limit [optional] Maximum number of items to be returned. Default value is 20.
      * @param string $order_by [optional] Column name to order the records by.
      * @param string $order [optional] Order direction, either "asc" or "desc".
      * @return array
      */
-    public function fetch($event = null, int $from = 0, int $limit = 20, string $order_by = '', string $order = ''): array
+    public function fetch(?string $event = null, int $from = 0, int $limit = 20, string $order_by = '', string $order = ''): array
     {
         // Prepare query
         $query = "SELECT * FROM {$this->log_table}";

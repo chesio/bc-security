@@ -22,7 +22,7 @@ class ListTable extends \BlueChip\Security\Core\ListTable
     /** @var \BlueChip\Security\Modules\Log\Logger */
     private $logger;
 
-    /** @var \BlueChip\Security\Modules\Log\Event */
+    /** @var \BlueChip\Security\Modules\Log\Event|null */
     private $event = null;
 
 
