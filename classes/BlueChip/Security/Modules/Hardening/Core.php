@@ -56,6 +56,8 @@ class Core implements \BlueChip\Security\Modules\Initializable
     /**
      * Remove pingback.ping from allowed/supported XML-RPC methods.
      *
+     * @filter https://developer.wordpress.org/reference/hooks/xmlrpc_methods/
+     *
      * @param array $methods
      * @return array
      */
@@ -69,8 +71,10 @@ class Core implements \BlueChip\Security\Modules\Initializable
     /**
      * Return an authentication error if a user who is not logged in tries to query the REST API.
      *
+     * @filter https://developer.wordpress.org/reference/hooks/rest_authentication_errors/
+     *
      * @param mixed $access
-     * @return WP_Error
+     * @return \WP_Error
      */
     public function requireAuthForRestAccess($access)
     {
