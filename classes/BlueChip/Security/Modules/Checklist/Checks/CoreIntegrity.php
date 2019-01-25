@@ -94,7 +94,10 @@ class CoreIntegrity extends Checklist\AdvancedCheck
     {
         $json = Checklist\Helper::getJson($url);
 
-        return $json && !empty($json->checksums) ? $json->checksums : null;
+        // When no locale is specified in API request, checksums are stored under additional version number key.
+        $version = get_bloginfo('version');
+
+        return $json && !empty($json->checksums) && !empty($json->checksums->$version) ? $json->checksums->$version : null;
     }
 
 
