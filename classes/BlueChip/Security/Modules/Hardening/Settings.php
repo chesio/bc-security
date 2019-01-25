@@ -25,7 +25,12 @@ class Settings extends \BlueChip\Security\Core\Settings
     const DISABLE_REST_API = 'disable_rest_api';
 
     /**
-     * bool: Validate passwords against Pwned Passwords database? [No]
+     * bool: Check existing passwords against Pwned Passwords database? [No]
+     */
+    const CHECK_PASSWORDS = 'check_passwords';
+
+    /**
+     * bool: Validate new/updated passwords against Pwned Passwords database? [No]
      */
     const VALIDATE_PASSWORDS = 'validate_passwords';
 
@@ -36,6 +41,7 @@ class Settings extends \BlueChip\Security\Core\Settings
         self::DISABLE_PINGBACKS => false,
         self::DISABLE_XML_RPC => false,
         self::DISABLE_REST_API => false,
+        self::CHECK_PASSWORDS => false,
         self::VALIDATE_PASSWORDS => false,
     ];
 }

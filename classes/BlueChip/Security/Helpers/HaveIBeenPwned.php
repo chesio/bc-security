@@ -10,9 +10,15 @@ namespace BlueChip\Security\Helpers;
 abstract class HaveIBeenPwned
 {
     /**
-     * @var string
+     * @var string URL of Pwned Passwords home page
      */
-    const PWNEDPASSWORDS_RANGE_SEARCH_URL = 'https://api.pwnedpasswords.com/range/';
+    const PWNEDPASSWORDS_HOME_URL = 'https://haveibeenpwned.com/Passwords';
+
+    /**
+     * @link https://haveibeenpwned.com/API/v2#SearchingPwnedPasswordsByRange
+     * @var string URL of Pwned Passwords API range search end-point
+     */
+    const PWNEDPASSWORDS_API_RANGE_SEARCH_URL = 'https://api.pwnedpasswords.com/range/';
 
 
     /**
@@ -27,7 +33,7 @@ abstract class HaveIBeenPwned
         // Only first 5 characters of the hash are required.
         $sha1_prefix = substr($sha1, 0, 5);
 
-        $response = wp_remote_get(esc_url(self::PWNEDPASSWORDS_RANGE_SEARCH_URL . $sha1_prefix));
+        $response = wp_remote_get(esc_url(self::PWNEDPASSWORDS_API_RANGE_SEARCH_URL . $sha1_prefix));
 
         if (wp_remote_retrieve_response_code($response) !== 200) {
             // Note: "there is no circumstance in which the API should return HTTP 404",
