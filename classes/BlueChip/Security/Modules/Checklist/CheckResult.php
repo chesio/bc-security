@@ -19,7 +19,7 @@ class CheckResult
      * @param bool|null $status Check result status: false, if check failed; true, if check passed; null for undetermined status.
      * @param array|string $message Human readable message explaining the result - inline HTML tags are allowed/expected.
      */
-    public function __construct($status, $message)
+    public function __construct(?bool $status, $message)
     {
         $this->status = $status;
         $this->message = is_array($message) ? $message : [$message];
@@ -56,7 +56,7 @@ class CheckResult
     /**
      * @return bool|null Check result status: false, if check failed; true, if check passed; null means status is undetermined.
      */
-    public function getStatus()
+    public function getStatus(): ?bool
     {
         return $this->status;
     }

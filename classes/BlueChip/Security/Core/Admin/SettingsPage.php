@@ -119,9 +119,9 @@ trait SettingsPage
      *
      * @param string $section
      * @param string $title
-     * @param callable $callback
+     * @param callable|null $callback [optional]
      */
-    public function addSettingsSection(string $section, string $title, $callback = null)
+    public function addSettingsSection(string $section, string $title, ?callable $callback = null)
     {
         if (!is_string($this->recent_page)) {
             _doing_it_wrong(__METHOD__, 'No recent page set yet!', '0.1.0');

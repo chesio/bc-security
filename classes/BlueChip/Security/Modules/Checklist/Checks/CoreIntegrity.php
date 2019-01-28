@@ -75,18 +75,12 @@ class CoreIntegrity extends Checklist\AdvancedCheck
 
 
     /**
-     * @return string URL to checksums file at api.wordpress.org for current WordPress version and locale.
+     * @return string URL to checksums file at api.wordpress.org for current WordPress version.
      */
     public static function getChecksumsUrl(): string
     {
-        // Add necessary arguments to request URL.
-        return add_query_arg(
-            [
-                'version' => get_bloginfo('version'),
-                'locale'  => get_locale(), // TODO: What about multilanguage sites?
-            ],
-            self::CHECKSUMS_API_URL
-        );
+        // Add version number to request URL.
+        return add_query_arg('version', get_bloginfo('version'), self::CHECKSUMS_API_URL);
     }
 
 
@@ -100,7 +94,10 @@ class CoreIntegrity extends Checklist\AdvancedCheck
     {
         $json = Checklist\Helper::getJson($url);
 
-        return $json && !empty($json->checksums) ? $json->checksums : null;
+        // When no locale is specified in API request, checksums are stored under additional version number key.
+        $version = get_bloginfo('version');
+
+        return $json && !empty($json->checksums) && !empty($json->checksums->$version) ? $json->checksums->$version : null;
     }
 
 
@@ -109,6 +106,9 @@ class CoreIntegrity extends Checklist\AdvancedCheck
      *
      * Files in wp-content directory are automatically excluded, see:
      * https://github.com/pluginkollektiv/checksum-verifier/pull/11
+     *
+     * Some files are ignored automatically, because they may differ between localized version of WordPress, see:
+     * https://meta.trac.wordpress.org/ticket/4008
      *
      * @hook \BlueChip\Security\Modules\Checklist\Hooks::IGNORED_CORE_MODIFIED_FILES
      *
@@ -121,6 +121,7 @@ class CoreIntegrity extends Checklist\AdvancedCheck
         $ignored_files = apply_filters(
             Checklist\Hooks::IGNORED_CORE_MODIFIED_FILES,
             [
+                'readme.html',
                 'wp-config-sample.php',
                 'wp-includes/version.php',
             ]
@@ -170,7 +171,7 @@ class CoreIntegrity extends Checklist\AdvancedCheck
                 // Scan wp-include directory recursively.
                 Checklist\Helper::scanDirectoryForUnknownFiles(ABSPATH . WPINC, ABSPATH, $checksums, true)
             ),
-            function ($filename) use ($ignored_files) {
+            function (string $filename) use ($ignored_files): bool {
                 return !in_array($filename, $ignored_files, true);
             }
         );

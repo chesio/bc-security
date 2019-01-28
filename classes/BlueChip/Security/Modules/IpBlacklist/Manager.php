@@ -403,9 +403,9 @@ class Manager implements Modules\Countable, Modules\Installable, Modules\Initial
      * @param string $ip_address IP address to check.
      * @param int $scope
      * @param int $reason
-     * @return int|null
+     * @return int|null Record ID or null, if no record with given $ip_address, $scope and ban $reason exists.
      */
-    protected function getId(string $ip_address, int $scope, int $reason)
+    protected function getId(string $ip_address, int $scope, int $reason): ?int
     {
         // Prepare query.
         $query = $this->wpdb->prepare(

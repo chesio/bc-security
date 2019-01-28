@@ -65,7 +65,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
         // Section: Automatic clean-up configuration
         $this->addSettingsSection(
             'log-cleanup-configuration',
-            _x('Automatic clean-up configuration', 'Settings section title', 'bc-security'),
+            _x('Automatic clean-up', 'Settings section title', 'bc-security'),
             function () {
                 echo '<p>';
                 echo esc_html__('Logs are cleaned automatically once a day based on the configuration below.', 'bc-security');

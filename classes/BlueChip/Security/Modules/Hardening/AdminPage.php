@@ -6,6 +6,7 @@
 namespace BlueChip\Security\Modules\Hardening;
 
 use BlueChip\Security\Helpers\FormHelper;
+use BlueChip\Security\Helpers\HaveIBeenPwned;
 
 class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
 {
@@ -110,6 +111,37 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
         $this->addSettingsField(
             Settings::DISABLE_REST_API,
             __('Disable REST API access', 'bc-security'),
+            [FormHelper::class, 'printCheckbox']
+        );
+
+        // Section: Check/validate user passwords against Pwned Passwords database
+        $this->addSettingsSection(
+            'pwned-passwords',
+            __('Validate user passwords against Pwned Passwords database', 'bc-security'),
+            function () {
+                echo '<p>' . sprintf(
+                    __('<a href="%1$s">Pwned Passwords</a> is a large database of passwords previously exposed in data breaches. This exposure makes them unsuitable for ongoing use as they are at much greater risk of being used to take over other accounts.', 'bc-security'),
+                    HaveIBeenPwned::PWNEDPASSWORDS_HOME_URL
+                ) . '</p>';
+                echo '<p>' . __('BC Security allows you to utilize this database in two ways:', 'bc-security');
+                echo '<ol>';
+                echo '<li>' . __("When <strong>password validation</strong> is enabled, passwords are checked against the Pwned Passwords database when new user is being created or existing user's password is being changed via profile update page or through password reset form. If there is a match, the operation is aborted with an error message asking for a different password.", 'bc-security') . '</li>';
+                echo '<li>' . __("When <strong>password check</strong> is enabled, passwords are checked against the Pwned Passwords database when user logs in to the backend. If there is a match, a non-dismissible warning is displayed on all back-end pages encouraging the user to change its password.", 'bc-security') . '</li>';
+                echo '</ol>';
+                echo '<p>' . sprintf(
+                    __('Important: Only the first 5 characters of SHA-1 hash of the actual password are ever shared with Pwned Passwords service. See <a href="%s">Pwned Passwords API documentation</a> for more details.', 'bc-security'),
+                    'https://haveibeenpwned.com/API/v2#PwnedPasswords'
+                ) . '</p>';
+            }
+        );
+        $this->addSettingsField(
+            Settings::VALIDATE_PASSWORDS,
+            __('Validate passwords on user creation or password change', 'bc-security'),
+            [FormHelper::class, 'printCheckbox']
+        );
+        $this->addSettingsField(
+            Settings::CHECK_PASSWORDS,
+            __('Check passwords of existing users', 'bc-security'),
             [FormHelper::class, 'printCheckbox']
         );
     }

@@ -391,9 +391,9 @@ class Watchman implements Modules\Initializable, Modules\Activable
      *
      * @param string $subject
      * @param array|string $message
-     * @return null|false|true Null, if there are no recipients configured. True, if email has been sent, false otherwise.
+     * @return bool|null Null, if there are no recipients configured. True, if email has been sent, false otherwise.
      */
-    private function notify(string $subject, $message)
+    private function notify(string $subject, $message): ?bool
     {
         return empty($this->recipients) ? null : Mailman::send($this->recipients, $subject, $message);
     }

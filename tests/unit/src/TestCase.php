@@ -18,10 +18,21 @@ class TestCase extends \PHPUnit\Framework\TestCase
         Monkey\setUp();
 
         // Mock some more WordPress functions
+        // https://brain-wp.github.io/BrainMonkey/docs/functions-stubs.html
+
+        // Functions that always return their first argument.
         Monkey\Functions\stubs(
             [
                 '__', // https://github.com/Brain-WP/BrainMonkey/issues/25
             ]
+        );
+
+        // Functions that always return false.
+        Monkey\Functions\stubs(
+            [
+                'is_multisite',
+            ],
+            false
         );
     }
 
