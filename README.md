@@ -10,7 +10,7 @@ Helps keeping WordPress websites secure.
 ## Limitations
 
 * BC Security has not been tested on WordPress multisite installation.
-* BC Security is primarily being developed for Apache webserver and Unix-like environments.
+* BC Security is primarily being developed for Unix-like environments.
 
 ## Setup
 
