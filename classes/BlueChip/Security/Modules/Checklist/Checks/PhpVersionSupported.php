@@ -42,7 +42,7 @@ class PhpVersionSupported extends Checklist\BasicCheck
 
         if (version_compare(PHP_VERSION, $oldest_supported_version, '>=')) {
             // PHP version is supported, but do we have end-of-life date?
-            $eol_date = self::SUPPORTED_VERSIONS[PHP_VERSION] ?? null;
+            $eol_date = self::SUPPORTED_VERSIONS[sprintf("%s.%s", PHP_MAJOR_VERSION, PHP_MINOR_VERSION)] ?? null;
             // Format message accordingly.
             $message = $eol_date
                 ? sprintf(
