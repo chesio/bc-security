@@ -30,36 +30,40 @@ class PhpVersionSupported extends Checklist\BasicCheck
 
     protected function runInternal(): Checklist\CheckResult
     {
-        $oldest_supported_version = $this->getOldestSupportedVersion();
+        // Get oldest supported version (as <major>.<minor>):
+        $oldest_supported_version = self::getOldestSupportedPhpVersion();
 
         if (is_null($oldest_supported_version)) {
             $message = sprintf(
-                esc_html__('List of supported PHP versions is out-dated. Consider updating the plugin. Btw. you are running PHP %s.', 'bc-security'),
-                PHP_VERSION
+                esc_html__('List of supported PHP versions is out-dated. Consider updating the plugin. Btw. you are running PHP %1$s.', 'bc-security'),
+                self::formatPhpVersion()
             );
             return new Checklist\CheckResult(null, $message);
         }
 
-        if (version_compare(PHP_VERSION, $oldest_supported_version, '>=')) {
+        // Get active PHP version as <major>.<minor> string:
+        $php_version = sprintf("%s.%s", PHP_MAJOR_VERSION, PHP_MINOR_VERSION);
+
+        if (version_compare($php_version, $oldest_supported_version, '>=')) {
             // PHP version is supported, but do we have end-of-life date?
-            $eol_date = self::SUPPORTED_VERSIONS[sprintf("%s.%s", PHP_MAJOR_VERSION, PHP_MINOR_VERSION)] ?? null;
+            $eol_date = self::SUPPORTED_VERSIONS[$php_version] ?? null;
             // Format message accordingly.
             $message = $eol_date
                 ? sprintf(
                     esc_html__('You are running PHP %1$s, which is supported until %2$s.', 'bc-security'),
-                    PHP_VERSION,
+                    self::formatPhpVersion(),
                     date_i18n(get_option('date_format'), strtotime($eol_date))
                 )
                 : sprintf(
                     esc_html__('You are running PHP %1$s, which is still supported.', 'bc-security'),
-                    PHP_VERSION
+                    self::formatPhpVersion()
                 )
             ;
             return new Checklist\CheckResult(true, $message);
         } else {
             $message = sprintf(
-                esc_html__('You are running PHP %s, which is no longer supported! Consider upgrading your PHP version.', 'bc-security'),
-                PHP_VERSION
+                esc_html__('You are running PHP %1$s, which is no longer supported! Consider upgrading your PHP version.', 'bc-security'),
+                self::formatPhpVersion()
             );
             return new Checklist\CheckResult(false, $message);
         }
@@ -67,9 +71,18 @@ class PhpVersionSupported extends Checklist\BasicCheck
 
 
     /**
+     * @return string HTML tag with PHP version as <major>.<minor> string with full version in title attribute.
+     */
+    private static function formatPhpVersion(): string
+    {
+        return sprintf('<em title="%s">%s.%s</em>', PHP_VERSION, PHP_MAJOR_VERSION, PHP_MINOR_VERSION);
+    }
+
+
+    /**
      * @return string Oldest supported version of PHP as of today or null, if it can not be determined from data available.
      */
-    private function getOldestSupportedVersion(): ?string
+    private static function getOldestSupportedPhpVersion(): ?string
     {
         $now = current_time('timestamp');
 
