@@ -88,6 +88,9 @@ class Manager implements Modules\Initializable
             // No passwords should be hashed with (default) MD5 hash.
             Checks\NoMd5HashedPasswords::getId() => new Checks\NoMd5HashedPasswords($wpdb),
 
+            // PHP version should be supported.
+            Checks\PhpVersionSupported::getId() => new Checks\PhpVersionSupported(),
+
             // There are no modified or unknown WordPress core files.
             Checks\CoreIntegrity::getId() => new Checks\CoreIntegrity(),
 
