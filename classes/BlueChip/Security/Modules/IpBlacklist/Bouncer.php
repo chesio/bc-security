@@ -5,6 +5,8 @@
 
 namespace BlueChip\Security\Modules\IpBlacklist;
 
+use BlueChip\Security\Helpers;
+
 /**
  * Bouncer takes care of bouncing uninvited guests by:
  * 1) Blocking access to website, if remote IP address cannot be determined.
@@ -39,8 +41,8 @@ class Bouncer implements \BlueChip\Security\Modules\Initializable, \BlueChip\Sec
      */
     public function load()
     {
-        // If remote IP address is invalid, die immediately.
-        if (empty($this->remote_address)) {
+        // In case of non-cli context, if remote IP address is invalid, die immediately.
+        if (!Helpers\Is::cli() && empty($this->remote_address)) {
             self::blockAccessTemporarily();
         }
 
