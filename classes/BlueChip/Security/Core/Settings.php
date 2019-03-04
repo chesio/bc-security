@@ -185,6 +185,17 @@ abstract class Settings implements \ArrayAccess
 
 
     /**
+     * Remove the data from database (= hard reset).
+     *
+     * @return bool True, if settings have been deleted, false otherwise.
+     */
+    public function destroy(): bool
+    {
+        return delete_option($this->option_name);
+    }
+
+
+    /**
      * Persist the value of data into database.
      *
      * @return bool True, if settings have been updated (= changed), false otherwise.

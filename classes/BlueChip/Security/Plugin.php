@@ -238,7 +238,7 @@ class Plugin
     {
         // Remove plugin settings.
         foreach ($this->settings as $settings) {
-            delete_option($settings->getOptionName());
+            $settings->destroy();
         }
 
         // Remove site transients set by plugin.
