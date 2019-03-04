@@ -190,6 +190,11 @@ class Plugin
      */
     public function activate()
     {
+        // Explicitly persist every setting object, so related option is autoloaded.
+        foreach ($this->settings as $settings) {
+            $settings->persist();
+        }
+
         // Install every module that requires it.
         foreach ($this->modules as $module) {
             if ($module instanceof Modules\Installable) {
