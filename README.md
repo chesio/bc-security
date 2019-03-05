@@ -10,7 +10,7 @@ Helps keeping WordPress websites secure.
 ## Limitations
 
 * BC Security has not been tested on WordPress multisite installation.
-* BC Security is primarily being developed for Apache webserver and Unix-like environments.
+* BC Security has not been tested on Windows server.
 
 ## Setup
 
@@ -35,6 +35,7 @@ Basic checks cover common security practices. They do not require any informatio
 1. Is error log file not publicly available? This check is only run if both `WP_DEBUG` and `WP_DEBUG_LOG` constants are set to true.
 1. Are there no common usernames like admin or administrator on the system?
 1. Are user passwords hashed with some non-default hashing algorithm?
+1. Is PHP version still supported?
 
 #### Advanced checks
 

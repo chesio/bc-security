@@ -2,6 +2,7 @@
 /**
  * @package BC_Security
  */
+
 namespace BlueChip\Security\Helpers;
 
 /**
@@ -21,6 +22,15 @@ class Is
             Hooks::IS_ADMIN,
             is_multisite() ? user_can($user, 'manage_network') : user_can($user, 'manage_options')
         );
+    }
+
+
+    /**
+     * @return bool True, if current webserver interface is CLI, false otherwise.
+     */
+    public static function cli(): bool
+    {
+        return php_sapi_name() === 'cli';
     }
 
 

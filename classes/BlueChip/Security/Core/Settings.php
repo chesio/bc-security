@@ -185,6 +185,28 @@ abstract class Settings implements \ArrayAccess
 
 
     /**
+     * Remove the data from database (= hard reset).
+     *
+     * @return bool True, if settings have been deleted, false otherwise.
+     */
+    public function destroy(): bool
+    {
+        return delete_option($this->option_name);
+    }
+
+
+    /**
+     * Persist the value of data into database.
+     *
+     * @return bool True, if settings have been updated (= changed), false otherwise.
+     */
+    public function persist(): bool
+    {
+        return update_option($this->option_name, $this->data);
+    }
+
+
+    /**
      * Sanitize $settings array: only keep known keys, provide default values for missing keys.
      *
      * @internal This method serves two purposes: it sanitizes data read from database and it sanitizes POST-ed data.
@@ -251,17 +273,6 @@ abstract class Settings implements \ArrayAccess
     protected static function parseList($list): array
     {
         return is_array($list) ? $list : array_filter(array_map('trim', explode(PHP_EOL, $list)));
-    }
-
-
-    /**
-     * Persist the value of data into database.
-     *
-     * @return bool True, if settings have been updated (= changed), false otherwise.
-     */
-    protected function persist(): bool
-    {
-        return update_option($this->option_name, $this->data);
     }
 
 

@@ -8,6 +8,23 @@ namespace BlueChip\Security\Helpers;
 abstract class FormHelper
 {
     /**
+     * @link https://developer.mozilla.org/en-US/docs/Web/HTML/Element/textarea
+     * @var int Default value of "cols" attribute of <textarea> element.
+     */
+    const TEXTAREA_COLS_DEFAULT_VALUE = 20;
+
+    /**
+     * @var int Maximum for content-based value of "rows" attribute of <textarea> element.
+     */
+    const TEXTAREA_ROWS_MAXIMUM_VALUE = 20;
+
+    /**
+     * @var int Minimum for content-based value of "rows" attribute of <textarea> element.
+     */
+    const TEXTAREA_ROWS_MINIMUM_VALUE = 4;
+
+
+    /**
      * Print <input type="checkbox" /> element.
      *
      * Unless "plain" is set as $args key, an extra hidden field with the same
@@ -120,7 +137,7 @@ abstract class FormHelper
      *
      * Note: method expects the value argument `$args['value']` to be an array (of lines).
      *
-     * @param array $args Required: label_for, name, value. Optional: class.
+     * @param array $args Required: label_for, name, value. Optional: class, cols, rows.
      */
     public static function printTextArea(array $args)
     {
@@ -129,6 +146,8 @@ abstract class FormHelper
             'class'     => $args['class'] ?? '',
             'id'        => $args['label_for'],
             'name'      => $args['name'],
+            'cols'      => $args['cols'] ?? self::TEXTAREA_COLS_DEFAULT_VALUE,
+            'rows'      => $args['rows'] ?? max(min(count($args['value']), self::TEXTAREA_ROWS_MAXIMUM_VALUE), self::TEXTAREA_ROWS_MINIMUM_VALUE),
         ];
 
         echo '<textarea ' . self::renderFieldProperties($properties) . '>';

@@ -21,6 +21,7 @@ class AutorunSettings extends \BlueChip\Security\Core\Settings
         Checks\ErrorLogNotPubliclyAccessible::class => false,
         Checks\NoObviousUsernamesCheck::class => false,
         Checks\NoMd5HashedPasswords::class => false,
+        Checks\PhpVersionSupported::class => false,
         Checks\NoPluginsRemovedFromDirectory::class => false,
         Checks\CoreIntegrity::class => false,
         Checks\PluginsIntegrity::class => false,

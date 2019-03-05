@@ -155,6 +155,7 @@ class CoreIntegrity extends Checklist\AdvancedCheck
             Checklist\Hooks::IGNORED_CORE_UNKNOWN_FILES,
             [
                 '.htaccess',
+                'composer.json', // WordPress might be installed via Composer
                 'wp-config.php',
                 'liesmich.html', // German readme (de_DE)
                 'olvasdel.html', // Hungarian readme (hu_HU)

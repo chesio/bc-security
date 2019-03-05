@@ -51,8 +51,8 @@ abstract class Check
     {
         $this->name = $name;
         $this->description = $description;
-        $this->last_run = Transients::getForSite(self::LAST_RUN_TRANSIENT_ID, self::getId()) ?: 0;
-        $this->result = Transients::getForSite(self::RESULT_TRANSIENT_ID, self::getId()) ?: new CheckResult(null, '<em>' . esc_html__('Check has not been run yet or the bookkeeping data has been lost.', 'bc-security') . '</em>');
+        $this->last_run = null; // Is lazy-loaded.
+        $this->result = null; // Is lazy-loaded.
     }
 
 
@@ -88,6 +88,10 @@ abstract class Check
      */
     public function getTimeOfLastRun(): int
     {
+        if ($this->last_run === null) {
+            $this->last_run = Transients::getForSite(self::LAST_RUN_TRANSIENT_ID, self::getId()) ?: 0;
+        }
+
         return $this->last_run;
     }
 
@@ -97,6 +101,10 @@ abstract class Check
      */
     public function getResult(): CheckResult
     {
+        if ($this->result === null) {
+            $this->result = Transients::getForSite(self::RESULT_TRANSIENT_ID, self::getId()) ?: new CheckResult(null, '<em>' . esc_html__('Check has not been run yet or the bookkeeping data has been lost.', 'bc-security') . '</em>');
+        }
+
         return $this->result;
     }
 
