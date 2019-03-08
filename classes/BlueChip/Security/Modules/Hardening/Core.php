@@ -166,7 +166,7 @@ class Core implements \BlueChip\Security\Modules\Initializable
      *
      * @param \WP_Error $errors WP_Error object (passed by reference).
      * @param bool $update Whether this is a user update.
-     * @param stdClass $user User object (passed by reference).
+     * @param \stdClass $user User object (passed by reference).
      */
     public function validatePasswordUpdate(\WP_Error &$errors, bool $update, &$user)
     {

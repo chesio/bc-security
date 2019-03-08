@@ -11,6 +11,16 @@ namespace BlueChip\Security\Modules\Log;
 abstract class Event
 {
     /**
+     * @var string Static event identificator.
+     */
+    const ID = null;
+
+    /**
+     * @var string Log level.
+     */
+    const LOG_LEVEL = null;
+
+    /**
      * @internal Static identifier is used for event type identification wherever use of classname is a bit cumbersome
      * like in database data or GET requests.
      *

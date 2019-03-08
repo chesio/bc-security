@@ -188,7 +188,7 @@ class Watchman implements Modules\Initializable, Modules\Activable
         );
 
         // Now it is time to make sure the method is not invoked anymore.
-        remove_action('set_site_transient_update_core', [$this, 'watchCoreUpdateAvailable'], 10, 1);
+        remove_action('set_site_transient_update_core', [$this, 'watchCoreUpdateAvailable'], 10);
 
         // Send notification.
         if ($this->notify($subject, $message) !== false) {
@@ -243,7 +243,7 @@ class Watchman implements Modules\Initializable, Modules\Activable
         }
 
         // Now it is time to make sure the method is not invoked anymore.
-        remove_action('set_site_transient_update_plugins', [$this, 'watchPluginUpdatesAvailable'], 10, 1);
+        remove_action('set_site_transient_update_plugins', [$this, 'watchPluginUpdatesAvailable'], 10);
 
         // Send notification.
         if ($this->notify($subject, $message) !== false) {
@@ -290,7 +290,7 @@ class Watchman implements Modules\Initializable, Modules\Activable
         }
 
         // Now it is time to make sure the method is not invoked anymore.
-        remove_action('set_site_transient_update_themes', [$this, 'watchThemeUpdatesAvailable'], 10, 1);
+        remove_action('set_site_transient_update_themes', [$this, 'watchThemeUpdatesAvailable'], 10);
 
         // Send notification.
         if ($this->notify($subject, $message) !== false) {

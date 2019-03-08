@@ -145,9 +145,9 @@ class Gatekeeper implements \BlueChip\Security\Modules\Initializable, \BlueChip\
      *
      * Filter is called from wp_authenticate().
      *
-     * @param WP_Error|WP_User $user
+     * @param \WP_Error|\WP_User $user
      * @param string $username
-     * @return WP_Error|WP_User
+     * @return \WP_Error|\WP_User
      */
     public function lockIpIfUsernameOnBlacklist($user, string $username)
     {
@@ -169,8 +169,8 @@ class Gatekeeper implements \BlueChip\Security\Modules\Initializable, \BlueChip\
      * invalid username, email or password forcing WP to display generic error
      * message.
      *
-     * @param WP_Error|WP_User $user
-     * @return WP_Error|WP_User
+     * @param \WP_Error|\WP_User $user
+     * @return \WP_Error|\WP_User
      */
     public function muteStandardErrorMessages($user)
     {
