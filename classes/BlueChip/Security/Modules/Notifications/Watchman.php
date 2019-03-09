@@ -168,7 +168,7 @@ class Watchman implements Modules\Initializable, Modules\Activable
 
         // Get first update item (should be "upgrade" response).
         $update = $update_transient->updates[0];
-        if (!isset($update->response) || ($update->response !== 'upgrade')) {
+        if (!isset($update->response) || ($update->response !== 'upgrade') || !isset($update->current)) {
             // Not the expected response.
             return;
         }
