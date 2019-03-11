@@ -47,7 +47,7 @@ class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\
      * @param \BlueChip\Security\Modules\Log\Settings $settings Module settings.
      * @param \BlueChip\Security\Modules\Services\ReverseDnsLookup\Resolver $hostname_resolver
      */
-    public function __construct(\wpdb $wpdb, $remote_address, Settings $settings, ReverseDnsLookup\Resolver $hostname_resolver)
+    public function __construct(\wpdb $wpdb, string $remote_address, Settings $settings, ReverseDnsLookup\Resolver $hostname_resolver)
     {
         $this->log_table = $wpdb->prefix . self::LOG_TABLE;
         $this->columns = [
