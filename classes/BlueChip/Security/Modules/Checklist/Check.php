@@ -22,11 +22,6 @@ abstract class Check
     /**
      * @var string
      */
-    const CRON_JOB_HOOK = null;
-
-    /**
-     * @var string
-     */
     private $name;
 
     /**
