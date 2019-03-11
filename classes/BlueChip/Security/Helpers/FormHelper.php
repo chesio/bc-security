@@ -93,12 +93,11 @@ abstract class FormHelper
     {
         // Field properties
         $properties = [
-            'class'     => $args['class'] ?? '',
+            'class'     => $args['class'] ?? 'small-text',
             'type'      => 'number',
             'value'     => $args['value'],
             'id'        => $args['label_for'],
             'name'      => $args['name'],
-            'class'     => 'small-text',
         ];
 
         echo '<input ' . self::renderFieldProperties($properties) . '>';

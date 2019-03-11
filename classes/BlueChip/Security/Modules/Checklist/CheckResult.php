@@ -36,7 +36,7 @@ class CheckResult
 
 
     /**
-     * @return array Human readable message as single string with HTML tags.
+     * @return string Human readable message as single string with HTML tags.
      */
     public function getMessageAsHtml(): string
     {
@@ -45,7 +45,7 @@ class CheckResult
 
 
     /**
-     * @return array Human readable message as single string without HTML tags.
+     * @return string Human readable message as single string without HTML tags.
      */
     public function getMessageAsPlainText(): string
     {

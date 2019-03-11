@@ -171,7 +171,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
 
         // Lock scope
         echo '<span class="bc-security">';
-        echo '<label for="ip-blacklist-scope">' . esc_html('Lock scope', 'bc-security') . '</label>';
+        echo '<label for="ip-blacklist-scope">' . esc_html__('Lock scope', 'bc-security') . '</label>';
         echo '<select id="ip-blacklist-scope" name="scope">';
         echo '<option value="' . LockScope::ADMIN . '"' . selected(LockScope::ADMIN, $scope, false) . '>' . esc_html__('Admin', 'bc-security') . '</option>';
         echo '<option value="' . LockScope::COMMENTS . '"' . selected(LockScope::COMMENTS, $scope, false) . '>' . esc_html__('Comments', 'bc-security') . '</option>';
@@ -181,7 +181,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
 
         // Optional comment
         echo '<span class="bc-security">';
-        echo '<label for="ip-blacklist-comment">' . esc_html('Comment', 'bc-security') . '</label>';
+        echo '<label for="ip-blacklist-comment">' . esc_html__('Comment', 'bc-security') . '</label>';
         echo '<input type="text" id="ip-blacklist-comment" name="comment" size="30" placeholder="' . esc_attr__('Comment is optional...', 'bc-security') . '" maxlength="255">';
         echo '</span>';
 

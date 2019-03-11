@@ -20,7 +20,7 @@ abstract class AjaxHelper
      * Register callback as handler for AJAX action. Handler will be only executed, if nonce check passes.
      *
      * @param string $action
-     * @param \BlueChip\Security\Helpers\callable $handler
+     * @param callable $handler
      */
     public static function addHandler(string $action, callable $handler)
     {

@@ -19,7 +19,6 @@ abstract class Check
      */
     const RESULT_TRANSIENT_ID = 'check-result';
 
-
     /**
      * @var string
      */
