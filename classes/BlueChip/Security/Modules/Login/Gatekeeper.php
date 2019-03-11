@@ -170,7 +170,7 @@ class Gatekeeper implements \BlueChip\Security\Modules\Initializable, \BlueChip\
      * message.
      *
      * @param \WP_Error|\WP_User $user
-     * @return \WP_Error|\WP_User
+     * @return \WP_Error|\WP_User|null
      */
     public function muteStandardErrorMessages($user)
     {
