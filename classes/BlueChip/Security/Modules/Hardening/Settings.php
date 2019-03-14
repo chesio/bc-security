@@ -20,9 +20,9 @@ class Settings extends \BlueChip\Security\Core\Settings
     const DISABLE_XML_RPC = 'disable_xml_rpc';
 
     /**
-     * bool: Disable REST API methods to anonymous users? [No]
+     * bool: Disable users listings via REST API `/wp/v2/users` endpoint and author scan via author=N query? [No]
      */
-    const DISABLE_REST_API = 'disable_rest_api';
+    const DISABLE_USERNAMES_DISCOVERY = 'disable_usernames_discovery';
 
     /**
      * bool: Check existing passwords against Pwned Passwords database? [No]
@@ -40,7 +40,7 @@ class Settings extends \BlueChip\Security\Core\Settings
     const DEFAULTS = [
         self::DISABLE_PINGBACKS => false,
         self::DISABLE_XML_RPC => false,
-        self::DISABLE_REST_API => false,
+        self::DISABLE_USERNAMES_DISCOVERY => false,
         self::CHECK_PASSWORDS => false,
         self::VALIDATE_PASSWORDS => false,
     ];
