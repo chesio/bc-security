@@ -68,7 +68,7 @@ Both basic and advanced checks can be run manually from a dedicated page in back
 BC Security allows you to:
 1. Disable pingbacks
 1. Disable XML RPC methods that require authentication
-1. Disable access to REST API to anonymous users
+1. Prevent usernames discovery via [REST API requests](https://developer.wordpress.org/rest-api/reference/users/) and [username enumeration](https://hackertarget.com/wordpress-user-enumeration/)
 1. Check and/or validate user passwords using [Pwned Passwords](https://haveibeenpwned.com/Passwords) database and [API](https://haveibeenpwned.com/API/v2#PwnedPasswords)
 
 #### Passwords check
@@ -138,7 +138,7 @@ Some of the modules listed above come with settings panel. Further customization
 
 1. [Login Security](#login-security) feature is inspired by [Limit Login Attempts](https://wordpress.org/plugins/limit-login-attempts/) plugin by Johan Eenfeldt.
 1. [WordPress core integrity check](#wordpress-core-integrity-check) is heavily inspired by [Checksum Verifier](https://github.com/pluginkollektiv/checksum-verifier) plugin by Sergej Müller.
-1. Some features (like "[Removed plugins check](#removed-plugins-check)") are inspired by [Wordfence Security](https://wordpress.org/plugins/wordfence/) from [Defiant](https://www.defiant.com/).
+1. Some features (like "[Removed plugins check](#removed-plugins-check)" or "[Usernames discovery prevention](#wordpress-hardening)") are inspired by [Wordfence Security](https://wordpress.org/plugins/wordfence/) from [Defiant](https://www.defiant.com/).
 1. [Passwords check](#passwords-check) and [passwords validation](#passwords-validation) features uses API and data made available by [Have I Been Pwned](https://haveibeenpwned.com) project by [Troy Hunt](https://www.troyhunt.com).
 1. Big thanks to [Vincent Driessen](https://nvie.com/about/) for his "[A successful Git branching model](https://nvie.com/posts/a-successful-git-branching-model/)" article that I find particularly useful every time I do some work on BC Security.
 1. Part of [psr/log](https://packagist.org/packages/psr/log) package codebase is shipped with the plugin.

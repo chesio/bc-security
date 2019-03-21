@@ -96,21 +96,28 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
             [FormHelper::class, 'printCheckbox']
         );
 
-        // Section: Disable REST API to anonymous users
+        // Section: Disable usernames discovery
         $this->addSettingsSection(
-            'disable-rest-api',
-            __('Disable access to REST API to anonymous users', 'bc-security'),
+            'disable-usernames-discovery',
+            __('Disable usernames discovery', 'bc-security'),
             function () {
-                echo '<p>' . sprintf(
-                    __('<a href="%1$s">REST API</a> is a powerful feature, but soon after its introduction to WordPress it proved to also be <a href="%2$s">yet another attack surface</a>. By enabling this option, an authentication error is forcibly returned to any REST API requests from sources who are not logged into your website.', 'bc-security'),
-                    'https://developer.wordpress.org/rest-api/',
-                    'https://blog.sucuri.net/2017/02/content-injection-vulnerability-wordpress-rest-api.html'
-                ) . '</p>';
+                echo '<p>' . esc_html__('There are two ways for anonymous users to find out a list of usernames on your website:', 'bc-security') . '</p>';
+                echo '<ol>';
+                echo '<li>' . sprintf(
+                    __('Through <code><a href="%s">wp/users</a></code> REST API endpoint', 'bc-security'),
+                    'https://developer.wordpress.org/rest-api/reference/users/#list-users'
+                ) . '</li>';
+                echo '<li>' . sprintf(
+                    __('Via <a href="%s">username enumeration</a> technique', 'bc-security'),
+                    'https://hackertarget.com/wordpress-user-enumeration/'
+                ) . '</li>';
+                echo '</ol>';
+                echo '<p>' . esc_html__('This feature disables both of them.', 'bc-security') . '</p>';
             }
         );
         $this->addSettingsField(
-            Settings::DISABLE_REST_API,
-            __('Disable REST API access', 'bc-security'),
+            Settings::DISABLE_USERNAMES_DISCOVERY,
+            __('Disable usernames discovery', 'bc-security'),
             [FormHelper::class, 'printCheckbox']
         );
 
