@@ -126,7 +126,7 @@ class Core implements \BlueChip\Security\Modules\Initializable
      * @param \WP_REST_Request $request
      * @return \WP_HTTP_Response|\WP_Error
      */
-    public function filterJsonAPIAuthor($response, $handler, $request)
+    public function filterJsonAPIAuthor($response, array $handler, \WP_REST_Request $request)
     {
         $route = $request->get_route();
 
@@ -140,7 +140,7 @@ class Core implements \BlueChip\Security\Modules\Initializable
 
             if (preg_match('#' . preg_quote($url_base, '#') . '/*$#i', $route)) {
                 $this->rest_api_supressed = true;
-                return rest_ensure_response(new WP_Error(
+                return rest_ensure_response(new \WP_Error(
                     'rest_user_cannot_view',
                     __('Sorry, you are not allowed to list users.'), // WP core message
                     ['status' => rest_authorization_required_code()]
@@ -151,7 +151,7 @@ class Core implements \BlueChip\Security\Modules\Initializable
             if (preg_match('#' . preg_quote($url_base, '#') . '/+(\d+)/*$#i', $route, $matches)) {
                 if (get_current_user_id() !== intval($matches[1])) {
                     $this->rest_api_supressed = true;
-                    return rest_ensure_response(new WP_Error(
+                    return rest_ensure_response(new \WP_Error(
                         'rest_user_invalid_id',
                         __('Invalid user ID.'), // WP core message.
                         ['status' => 404]
@@ -212,7 +212,7 @@ class Core implements \BlueChip\Security\Modules\Initializable
 
 
     /**
-     * Force "404 Not Found" response, if query is marked as "author scan". If 404 template file exists, it is output.
+     * Force "404 Not Found" response if query is marked as "author scan". If 404 template file exists, it is output.
      *
      * @param \WP $wp
      */
