@@ -133,7 +133,8 @@ class Core implements \BlueChip\Security\Modules\Initializable
         if (!current_user_can('list_users')) {
             // I <3 PHP 7!
             $url_base = (new class extends \WP_REST_Users_Controller {
-                public function getUrlBase(): string {
+                public function getUrlBase(): string
+                {
                     return rtrim($this->namespace . '/' . $this->rest_base, '/');
                 }
             })->getUrlBase();
@@ -216,7 +217,8 @@ class Core implements \BlueChip\Security\Modules\Initializable
      *
      * @param \WP $wp
      */
-    public function stopAuthorScan(\WP $wp) {
+    public function stopAuthorScan(\WP $wp)
+    {
         if ($wp->query_vars[self::AUTHOR_SCAN_QUERY_VAR] ?? false) {
             status_header(404);
             nocache_headers();
