@@ -28,7 +28,11 @@ class NoMd5HashedPasswords extends Checklist\BasicCheck
     {
         parent::__construct(
             __('No default MD5 password hashes', 'bc-security'),
-            sprintf(__('WordPress by default uses an MD5 based password hashing scheme that is too cheap and fast to generate cryptographically secure hashes. For modern PHP versions, there are <a href="%s">more secure alternatives</a> available.', 'bc-security'), 'https://github.com/roots/wp-password-bcrypt')
+            sprintf(
+                /* translators: 1: link to plugin with alternative implementation of password hashing scheme */
+                esc_html__('WordPress by default uses an MD5 based password hashing scheme that is too cheap and fast to generate cryptographically secure hashes. For modern PHP versions, there are %1$s available.', 'bc-security'),
+                '<a href="https://github.com/roots/wp-password-bcrypt" rel="noreferrer">' . esc_html__('more secure alternatives', 'bc-security') . '</a>'
+            )
         );
 
         $this->wpdb = $wpdb;

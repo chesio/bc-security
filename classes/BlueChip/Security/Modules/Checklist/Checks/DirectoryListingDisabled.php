@@ -13,7 +13,11 @@ class DirectoryListingDisabled extends Checklist\BasicCheck
     {
         parent::__construct(
             __('Directory listing disabled', 'bc-security'),
-            sprintf(__('A sensible security practice is to disable <a href="%s">directory listings</a>.', 'bc-security'), 'https://wiki.apache.org/httpd/DirectoryListings')
+            sprintf(
+                /* translators: 1: link to documentation about DirectoryListings at apache.org */
+                esc_html__('A sensible security practice is to disable %1$s.', 'bc-security'),
+                '<a href="' . esc_url(__('https://wiki.apache.org/httpd/DirectoryListings', 'bc-security')) . '" rel="noreferrer">' . esc_html__('directory listings', 'bc-security') . '</a>'
+            )
         );
     }
 

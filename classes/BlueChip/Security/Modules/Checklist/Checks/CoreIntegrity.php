@@ -28,8 +28,8 @@ class CoreIntegrity extends Checklist\AdvancedCheck
             sprintf(
                 /* translators: 1: link to Wikipedia article about md5sum, 2: link to checksums file at WordPress.org */
                 esc_html__('By comparing %1$s of local core files with %2$s it is possible to determine, if any of core files have been modified or if there are any unknown files in core directories.', 'bc-security'),
-                '<a href="' . esc_url(__('https://en.wikipedia.org/wiki/Md5sum', 'bc-security')) . '" target="_blank">' . esc_html__('MD5 checksums', 'bc-security') . '</a>',
-                '<a href="' . esc_url(self::getChecksumsUrl()) . '" target="_blank">' . esc_html__('checksums downloaded from WordPress.org', 'bc-security') . '</a>'
+                '<a href="' . esc_url(__('https://en.wikipedia.org/wiki/Md5sum', 'bc-security')) . '" rel="noreferrer">' . esc_html__('MD5 checksums', 'bc-security') . '</a>',
+                '<a href="' . esc_url(self::getChecksumsUrl()) . '" rel="noreferrer">' . esc_html__('checksums downloaded from WordPress.org', 'bc-security') . '</a>'
             )
         );
     }
@@ -42,8 +42,9 @@ class CoreIntegrity extends Checklist\AdvancedCheck
         // Get checksums via WordPress.org API.
         if (empty($checksums = self::getChecksums($url))) {
             $message = sprintf(
+                /* translators: 1: link to checksums file at WordPress.org */
                 esc_html__('Failed to get core file checksums from %1$s.', 'bc-security'),
-                '<a href="' . esc_url($url) . '" target="_blank">' . esc_html($url) . '</a>'
+                '<a href="' . esc_url($url) . '" rel="noreferrer">' . esc_html($url) . '</a>'
             );
             return new Checklist\CheckResult(null, $message);
         }

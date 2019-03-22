@@ -281,9 +281,10 @@ class Core implements \BlueChip\Security\Modules\Initializable
         if (apply_filters(Hooks::SHOW_PWNED_PASSWORD_WARNING, true, $screen, $user)) {
             // Show the warning for current user on current screen.
             $notice = sprintf(
-                __('Your password is present in a <a href="%1$s">large database of passwords</a> previously exposed in data breaches. Please, consider <a href="%2$s">changing your password</a>.', 'bc-security'),
-                HaveIBeenPwned::PWNEDPASSWORDS_HOME_URL,
-                get_edit_profile_url($user->ID)
+                /* translators: 1: link to Pwned Passwords homepage, 2: link to profile editation page */
+                esc_html__('Your password is present in a %1$s previously exposed in data breaches. Please, consider %2$s.', 'bc-security'),
+                '<a href="' . HaveIBeenPwned::PWNEDPASSWORDS_HOME_URL . '" rel="noreferrer">' . esc_html__('large database of passwords', 'bc-security') . '</a>',
+                '<a href="' . get_edit_profile_url($user->ID) . '">' . esc_html__('changing your password', 'bc-security') . '</a>'
             );
 
             AdminNotices::add($notice, AdminNotices::WARNING, false, false);
@@ -348,8 +349,10 @@ class Core implements \BlueChip\Security\Modules\Initializable
     {
         if (HaveIBeenPwned::hasPasswordBeenPwned($password)) {
             $message = sprintf(
-                __('<strong>ERROR</strong>: Provided password is present in a <a href="%1$s">large database of passwords</a>large database of passwords</a> previously exposed in data breaches. Please, pick a different one.', 'bc-security'),
-                HaveIBeenPwned::PWNEDPASSWORDS_HOME_URL
+                /* translators: 1: Error label, 2: link to Pwned Passwords homepage */
+                esc_html__('%1$s: Provided password is present in a %2$s previously exposed in data breaches. Please, pick a different one.', 'bc-security'),
+                '<strong>' . esc_html__('ERROR', 'bc-security') . '</strong>',
+                '<a href="' . HaveIBeenPwned::PWNEDPASSWORDS_HOME_URL . '" rel="noreferrer">' . esc_html__('large database of passwords', 'bc-security') . '</a>'
             );
             $errors->add('password_has_been_pwned', $message);
         }

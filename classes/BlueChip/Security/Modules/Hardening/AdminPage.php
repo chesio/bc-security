@@ -68,8 +68,10 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
             __('Disable pingbacks', 'bc-security'),
             function () {
                 echo '<p>' . sprintf(
-                    __('<strong>Pingbacks</strong> can be <a href="%s">misused for DDoS attacks</a>. Although the "Allow link notifications from other blogs" setting can be used to disable them, it does not affect configuration of existing posts.', 'bc-security'),
-                    'http://blog.sucuri.net/2014/03/more-than-162000-wordpress-sites-used-for-distributed-denial-of-service-attack.html'
+                    /* translators: 1: Pingbacks label, 2: link to Sucuri Blog article on DDOSing via pingbacks */
+                    esc_html__('%1$s can be %2$s. Although the "Allow link notifications from other blogs" setting can be used to disable them, it does not affect configuration of existing posts.', 'bc-security'),
+                    '<strong>' . esc_html__('Pingbacks', 'bc-security') . '</strong>',
+                    '<a href="https://blog.sucuri.net/2014/03/more-than-162000-wordpress-sites-used-for-distributed-denial-of-service-attack.html" rel="noreferrer">' . esc_html__('misused for DDoS attacks', 'bc-security') . '</a>'
                 ) . '</p>';
             }
         );
@@ -85,8 +87,10 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
             __('Disable XML-RPC methods that require authentication', 'bc-security'),
             function () {
                 echo '<p>' . sprintf(
-                    __('Disabling methods that require <strong>XML-RPC authentication</strong> helps to prevent <a href="%s">brute force attacks</a>.', 'bc-security'),
-                    'https://blog.sucuri.net/2015/10/brute-force-amplification-attacks-against-wordpress-xmlrpc.html'
+                    /* translators: 1: XML-RPC authentication label, 2: link to Sucuri Blog article on brute force amplification attacks */
+                    esc_html__('Disabling methods that require %1$s helps to prevent %2$s.', 'bc-security'),
+                    '<strong>' . esc_html__('XML-RPC authentication', 'bc-security') . '</strong>',
+                    '<a href="https://blog.sucuri.net/2015/10/brute-force-amplification-attacks-against-wordpress-xmlrpc.html" rel="noreferrer">' . esc_html__('brute force attacks', 'bc-security') . '</a>'
                 ) . '</p>';
             }
         );
@@ -104,12 +108,14 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
                 echo '<p>' . esc_html__('There are two ways for anonymous users to find out a list of usernames on your website:', 'bc-security') . '</p>';
                 echo '<ol>';
                 echo '<li>' . sprintf(
-                    __('Through <code><a href="%s">wp/users</a></code> REST API endpoint', 'bc-security'),
-                    'https://developer.wordpress.org/rest-api/reference/users/#list-users'
+                    /* translators: 1: link to wp/users REST API endpoint */
+                    esc_html__('Through %1$s REST API endpoint', 'bc-security'),
+                    '<a href="https://developer.wordpress.org/rest-api/reference/users/#list-users" rel="noreferrer"><code>wp/users</code></a>'
                 ) . '</li>';
                 echo '<li>' . sprintf(
-                    __('Via <a href="%s">username enumeration</a> technique', 'bc-security'),
-                    'https://hackertarget.com/wordpress-user-enumeration/'
+                    /* translators: 1: link to blog article explaining username enumeration attack */
+                    esc_html__('Via %1$s technique', 'bc-security'),
+                    '<a href="https://hackertarget.com/wordpress-user-enumeration/" rel="noreferrer">' . esc_html__('username enumeration', 'bc-security') . '</a>'
                 ) . '</li>';
                 echo '</ol>';
                 echo '<p>' . esc_html__('This feature disables both of them.', 'bc-security') . '</p>';
@@ -127,17 +133,27 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
             __('Validate user passwords against Pwned Passwords database', 'bc-security'),
             function () {
                 echo '<p>' . sprintf(
-                    __('<a href="%1$s">Pwned Passwords</a> is a large database of passwords previously exposed in data breaches. This exposure makes them unsuitable for ongoing use as they are at much greater risk of being used to take over other accounts.', 'bc-security'),
-                    HaveIBeenPwned::PWNEDPASSWORDS_HOME_URL
+                    /* translators: 1: link to Pwned Passwords homepage */
+                    esc_html__('%1$s is a large database of passwords previously exposed in data breaches. This exposure makes them unsuitable for ongoing use as they are at much greater risk of being used to take over other accounts.', 'bc-security'),
+                    '<a href="' . HaveIBeenPwned::PWNEDPASSWORDS_HOME_URL . '" rel="noreferrer">Pwned Passwords</a>'
                 ) . '</p>';
-                echo '<p>' . __('BC Security allows you to utilize this database in two ways:', 'bc-security');
+                echo '<p>' . esc_html__('BC Security allows you to utilize this database in two ways:', 'bc-security');
                 echo '<ol>';
-                echo '<li>' . __("When <strong>password validation</strong> is enabled, passwords are checked against the Pwned Passwords database when new user is being created or existing user's password is being changed via profile update page or through password reset form. If there is a match, the operation is aborted with an error message asking for a different password.", 'bc-security') . '</li>';
-                echo '<li>' . __("When <strong>password check</strong> is enabled, passwords are checked against the Pwned Passwords database when user logs in to the backend. If there is a match, a non-dismissible warning is displayed on all back-end pages encouraging the user to change its password.", 'bc-security') . '</li>';
+                echo '<li>' . sprintf(
+                    /* translators: 1: password validation label */
+                    esc_html__('When %1$s is enabled, passwords are checked against the Pwned Passwords database when new user is being created or existing user\'s password is being changed via profile update page or through password reset form. If there is a match, the operation is aborted with an error message asking for a different password.', 'bc-security'),
+                    '<strong>' . esc_html__('password validation', 'bc-security') . '</strong>'
+                ). '</li>';
+                echo '<li>' . sprintf(
+                    /* translators: 1: password check label */
+                    esc_html__('When %1$s is enabled, passwords are checked against the Pwned Passwords database when user logs in to the backend. If there is a match, a non-dismissible warning is displayed on all back-end pages encouraging the user to change its password.', 'bc-security'),
+                    '<strong>' . esc_html__('password check', 'bc-security') . '</strong>'
+                ) . '</li>';
                 echo '</ol>';
                 echo '<p>' . sprintf(
-                    __('Important: Only the first 5 characters of SHA-1 hash of the actual password are ever shared with Pwned Passwords service. See <a href="%s">Pwned Passwords API documentation</a> for more details.', 'bc-security'),
-                    'https://haveibeenpwned.com/API/v2#PwnedPasswords'
+                    /* translators: 1: link to Pwned Passwords API documentation */
+                    esc_html__('Important: Only the first 5 characters of SHA-1 hash of the actual password are ever shared with Pwned Passwords service. See %1$s for more details.', 'bc-security'),
+                    '<a href="https://haveibeenpwned.com/API/v2#PwnedPasswords" rel="noreferrer">' . esc_html__('Pwned Passwords API documentation', 'bc-security') . '</a>'
                 ) . '</p>';
             }
         );

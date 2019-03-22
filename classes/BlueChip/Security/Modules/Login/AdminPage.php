@@ -124,8 +124,9 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
             __('Display generic error message on failed login', 'bc-security'),
             function () {
                 echo '<p>' . sprintf(
-                    __('This is a <a href="%s">security by obscurity</a> approach, but it may make it harder for attackers to guess user credentials.', 'bc-security'),
-                    'https://en.wikipedia.org/wiki/Security_through_obscurity'
+                    /* translators: 1: link to Wikipedia page on Security through obscurity */
+                    esc_html__('This is a %1$s approach, but it may make it harder for attackers to guess user credentials.', 'bc-security'),
+                    '<a href="' . esc_url(__('https://en.wikipedia.org/wiki/Security_through_obscurity', 'bc-security')) . '" rel="noreferrer">' . esc_html__('security through obscurity', 'bc-security') . '</a>'
                 ) . '</p>';
                 echo '<p>' . esc_html__('Generic error message is displayed only for default authentication errors: invalid username, invalid email or invalid password. Display of any other authentication errors is not affected.', 'bc-security') . '</p>';
             }
