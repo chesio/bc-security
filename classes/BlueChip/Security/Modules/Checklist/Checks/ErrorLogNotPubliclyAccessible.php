@@ -39,19 +39,27 @@ class ErrorLogNotPubliclyAccessible extends Checklist\BasicCheck
 
     protected function runInternal(): Checklist\CheckResult
     {
-        // Path and filename is hardcoded in wp-includes/load.php
-        $url = WP_CONTENT_URL . '/debug.log';
+        $is_wordpress_51 = version_compare(get_bloginfo('version'), '5.1', '>=');
 
-        // Report status.
-        $status = Checklist\Helper::isAccessToUrlForbidden($url);
+        if (!$is_wordpress_51 || in_array(strtolower((string) WP_DEBUG_LOG), ['true', '1'], true)) {
+            // `WP_DEBUG_LOG` is set truthy value (or we are on WordPress older than 5.1).
+            // Path to debug.log and filename is hardcoded in `wp-includes/load.php`.
+            $url = WP_CONTENT_URL . '/debug.log';
 
-        if (is_bool($status)) {
-            return $status
-                ? new Checklist\CheckResult(true, esc_html__('It seems that error log is not publicly accessible.', 'bc-security'))
-                : new Checklist\CheckResult(false, esc_html__('It seems that error log is publicly accessible!', 'bc-security'))
-            ;
+            // Report status.
+            $status = Checklist\Helper::isAccessToUrlForbidden($url);
+
+            if (is_bool($status)) {
+                return $status
+                    ? new Checklist\CheckResult(true, esc_html__('It seems that error log is not publicly accessible.', 'bc-security'))
+                    : new Checklist\CheckResult(false, esc_html__('It seems that error log is publicly accessible!', 'bc-security'))
+                ;
+            } else {
+                return new Checklist\CheckResult(null, esc_html__('BC Security has failed to determine whether error log is publicly accessible.', 'bc-security'));
+            }
         } else {
-            return new Checklist\CheckResult(null, esc_html__('BC Security has failed to determine whether error log is publicly accessible.', 'bc-security'));
+            // `WP_DEBUG_LOG` has been set to custom path (= assume it is outside document root).
+            return new Checklist\CheckResult(true, esc_html__('Error log is saved in custom location, presumably outside of document root.', 'bc-security'));
         }
     }
 }
