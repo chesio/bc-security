@@ -174,7 +174,7 @@ abstract class FormHelper
             function ($value) {
                 return is_int($value)
                     || is_float($value)
-                    || (is_string($value) && !empty($value))
+                    || (is_string($value) && $value !== '')
                     || (is_bool($value) && $value)
                 ;
             }
