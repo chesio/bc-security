@@ -14,7 +14,7 @@ Helps keeping WordPress websites secure.
 
 ## Setup
 
-Several features of BC Security depends on the knowledge of remote IP address, so it is important that you let the plugin know how your server is connected to the Internet. You can either set connection type via _Setup_ page or with via `BC_SECURITY_CONNECTION_TYPE` constant.
+Several features of BC Security depends on the knowledge of remote IP address, so it is important that you let the plugin know how your server is connected to the Internet. You can either set connection type via _Setup_ page or with `BC_SECURITY_CONNECTION_TYPE` constant.
 
 **Note:** If you already have an installation with BC Security set up and would like to set up another installation in the same way, you can export plugin settings (including connection type) from the former installation and import them to the latter.
 
