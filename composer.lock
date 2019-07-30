@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3e864c92846753056aa35483534e55e3",
+    "content-hash": "d4b1f1cbe82a19865b63f18180199811",
     "packages": [
         {
             "name": "composer/installers",
@@ -171,16 +171,16 @@
         },
         {
             "name": "brain/monkey",
-            "version": "2.2.0",
+            "version": "2.3.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Brain-WP/BrainMonkey.git",
-                "reference": "ed9e0698bc1292f33698719da8ca1aa2e18acc51"
+                "reference": "74cdccad5dbb7edc59f59e1ad6ef392f83a34776"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Brain-WP/BrainMonkey/zipball/ed9e0698bc1292f33698719da8ca1aa2e18acc51",
-                "reference": "ed9e0698bc1292f33698719da8ca1aa2e18acc51",
+                "url": "https://api.github.com/repos/Brain-WP/BrainMonkey/zipball/74cdccad5dbb7edc59f59e1ad6ef392f83a34776",
+                "reference": "74cdccad5dbb7edc59f59e1ad6ef392f83a34776",
                 "shasum": ""
             },
             "require": {
@@ -213,9 +213,9 @@
             "authors": [
                 {
                     "name": "Giuseppe Mazzapica",
+                    "role": "Developer",
                     "email": "giuseppe.mazzapica@gmail.com",
-                    "homepage": "https://gmazzap.me",
-                    "role": "Developer"
+                    "homepage": "https://gmazzap.me"
                 }
             ],
             "description": "Mocking utility for PHP functions and WordPress plugin API",
@@ -231,7 +231,7 @@
                 "test",
                 "testing"
             ],
-            "time": "2017-12-01T16:32:09+00:00"
+            "time": "2019-07-26T19:00:28+00:00"
         },
         {
             "name": "composer/xdebug-handler",
