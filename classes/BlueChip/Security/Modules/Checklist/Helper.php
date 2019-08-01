@@ -140,7 +140,7 @@ abstract class Helper
     /**
      * Scan given $directory ($recursive-ly) and report any files not present in $checksums.
      *
-     * @param string $directory Directory to scan, must be ABSPATH or a subdirectory thereof.
+     * @param string $directory Directory to scan.
      * @param string $path Absolute path to checksums root directory, must end with slash!
      * @param \stdClass $checksums Dictionary with { filename: checksum } items. All filenames must be relative to $path.
      * @param bool $recursive Scan subdirectories too [optional].
@@ -148,12 +148,6 @@ abstract class Helper
      */
     public static function scanDirectoryForUnknownFiles(string $directory, string $path, $checksums, bool $recursive = false): array
     {
-        // Only allow to scan ABSPATH and subdirectories.
-        if (strpos($directory, ABSPATH) !== 0) {
-            _doing_it_wrong(__METHOD__, sprintf('Directory to scan (%s) is neither ABSPATH (%s) nor subdirectory thereof!', $directory, ABSPATH), '0.5.0');
-            return [];
-        }
-
         $unknown_files = [];
 
         // Get either recursive or normal directory iterator.
