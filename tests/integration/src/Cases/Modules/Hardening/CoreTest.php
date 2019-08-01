@@ -35,8 +35,6 @@ class CoreTest extends \BlueChip\Security\Tests\Integration\TestCase
         );
 
         $this->assertFalse(apply_filters('xmlrpc_enabled', true));
-
-        $this->assertWPError(apply_filters('rest_authentication_errors', null));
     }
 
 
@@ -53,7 +51,5 @@ class CoreTest extends \BlueChip\Security\Tests\Integration\TestCase
         );
 
         $this->assertTrue(apply_filters('xmlrpc_enabled', true));
-
-        $this->assertNotWPError(apply_filters('rest_authentication_errors', null));
     }
 }
