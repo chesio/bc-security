@@ -5,30 +5,6 @@ namespace BlueChip\Security\Modules\Checklist;
 abstract class Helper
 {
     /**
-     * Fetch JSON data from remote $url.
-     *
-     * @param string $url
-     * @return mixed
-     */
-    public static function getJson(string $url)
-    {
-        // Make request to URL.
-        $response = wp_remote_get($url);
-
-        // Check response code.
-        if (wp_remote_retrieve_response_code($response) !== 200) {
-            return null;
-        }
-
-        // Read JSON.
-        $json = \json_decode(wp_remote_retrieve_body($response));
-
-        // If decoding went fine, return JSON data.
-        return (\json_last_error() === JSON_ERROR_NONE) ? $json : null;
-    }
-
-
-    /**
      * @param \BlueChip\Security\Modules\Checklist\Check $check
      * @return string
      */
