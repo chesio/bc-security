@@ -132,17 +132,17 @@ Some of the modules listed above come with settings panel. Further customization
 * `bc-security/filter:is-ip-address-locked` - filters boolean value that determines whether given IP address is currently locked within given scope. By default, the value is based on plugin bookkeeping data.
 * `bc-security/filter:log-404-event` - filters boolean value that determines whether current HTTP request that resulted in [404 response](https://en.wikipedia.org/wiki/HTTP_404) should be logged or not. To completely disable logging of 404 events, you can attach [`__return_false`](https://developer.wordpress.org/reference/functions/__return_false/) function to the filter.
 * `bc-security/filter:events-with-hostname-resolution` - filters array of IDs of events for which hostname of involved IP address should be resolved via reverse DNS lookup. By default the following events are registered: attempts to authenticate with bad cookie, failed and successful login attempts and lockout events. Note that this functionality only relates to event logs report in backend - in case email notification is sent, hostname of reported IP address (if any) is always resolved separately.
-* `bc-security/filter:login-username-blacklist` - filters array of blacklisted usernames that are being immediately locked on login. There are no default values, but the filter operates on usernames set via module settings, so it can be used to enforce blacklisting of particular usernames.
+* `bc-security/filter:username-blacklist` - filters array of blacklisted usernames. Blacklisted usernames cannot be registered when opening new account and any login attempt using non-existing blacklisted username triggers long lockout. There are no default values, but the filter operates on usernames set via module settings, so it can be used to enforce blacklisting of particular usernames.
 
 ## Credits
 
 1. [Login Security](#login-security) feature is inspired by [Limit Login Attempts](https://wordpress.org/plugins/limit-login-attempts/) plugin by Johan Eenfeldt.
-1. [WordPress core integrity check](#wordpress-core-integrity-check) is heavily inspired by [Checksum Verifier](https://github.com/pluginkollektiv/checksum-verifier) plugin by Sergej Müller.
-1. Some features (like "[Removed plugins check](#removed-plugins-check)" or "[Usernames discovery prevention](#wordpress-hardening)") are inspired by [Wordfence Security](https://wordpress.org/plugins/wordfence/) from [Defiant](https://www.defiant.com/).
-1. [Passwords check](#passwords-check) and [passwords validation](#passwords-validation) features uses API and data made available by [Have I Been Pwned](https://haveibeenpwned.com) project by [Troy Hunt](https://www.troyhunt.com).
-1. Big thanks to [Vincent Driessen](https://nvie.com/about/) for his "[A successful Git branching model](https://nvie.com/posts/a-successful-git-branching-model/)" article that I find particularly useful every time I do some work on BC Security.
-1. Big thanks to [Viktor Szépe](https://github.com/szepeviktor) for introducing me to [PHPStan](https://github.com/phpstan/phpstan).
-1. Part of [psr/log](https://packagist.org/packages/psr/log) package codebase is shipped with the plugin.
+2. [WordPress core integrity check](#wordpress-core-integrity-check) is heavily inspired by [Checksum Verifier](https://github.com/pluginkollektiv/checksum-verifier) plugin by Sergej Müller.
+3. Some features (like "[Removed plugins check](#removed-plugins-check)" or "[Usernames discovery prevention](#wordpress-hardening)") are inspired by [Wordfence Security](https://wordpress.org/plugins/wordfence/) from [Defiant](https://www.defiant.com/).
+4. [Passwords check](#passwords-check) and [passwords validation](#passwords-validation) features uses API and data made available by [Have I Been Pwned](https://haveibeenpwned.com) project by [Troy Hunt](https://www.troyhunt.com).
+5. Big thanks to [Vincent Driessen](https://nvie.com/about/) for his "[A successful Git branching model](https://nvie.com/posts/a-successful-git-branching-model/)" article that I find particularly useful every time I do some work on BC Security.
+6. Big thanks to [Viktor Szépe](https://github.com/szepeviktor) for introducing me to [PHPStan](https://github.com/phpstan/phpstan).
+7. Part of [psr/log](https://packagist.org/packages/psr/log) package codebase is shipped with the plugin.
 
 ## Alternatives (and why I do not use them)
 

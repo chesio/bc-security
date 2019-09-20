@@ -100,11 +100,24 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
             [FormHelper::class, 'printNumberInput'],
             [ 'append' => __('days', 'bc-security'), ]
         );
+
+        // Section: Username blacklist
+        $this->addSettingsSection(
+            'username-blacklist',
+            _x('Username blacklist', 'Settings section title', 'bc-security'),
+            function () {
+                echo '<p>' . esc_html__('Enter any usernames that should never exist on the system. The blacklist serves two purposes:', 'bc-security') .'</p>';
+                echo '<ol>';
+                echo '<li>' . esc_html__('No new account can be registered with username on the blacklist.', 'bc-security') . '</li>';
+                echo '<li>' . esc_html__('Every login attempt using non-existing username on the blacklist immediately triggers long lockout.', 'bc-security') . '</li>';
+                echo '</ol>';
+            }
+        );
         $this->addSettingsField(
             Settings::USERNAME_BLACKLIST,
-            __('Immediately (long) lock out specific usernames', 'bc-security'),
+            __('Username blacklist', 'bc-security'),
             [FormHelper::class, 'printTextArea'],
-            [ 'append' => __('Existing usernames are not locked even if present on the list.', 'bc-security'), ]
+            [ 'append' => __('Enter one username per line.', 'bc-security'), ]
         );
 
         // Section: Authentication cookies
