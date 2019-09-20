@@ -13,7 +13,11 @@ class NoAccessToPhpFilesInUploadsDirectory extends Checklist\BasicCheck
     {
         parent::__construct(
             __('No access to PHP files in uploads directory', 'bc-security'),
-            sprintf(__('Vulnerable plugins may allow upload of arbitrary files into uploads directory. <a href="%s">Disabling access to PHP files</a> within uploads directory may help prevent successful exploitation of such vulnerabilities.', 'bc-security'), 'https://gist.github.com/chesio/8f83224840eccc1e80a17fc29babadf2')
+            sprintf(
+                /* translators: 1: link to gist with .htaccess configuration that disables access to PHP files */
+                esc_html__('Vulnerable plugins may allow upload of arbitrary files into uploads directory. %1$s within uploads directory may help prevent successful exploitation of such vulnerabilities.', 'bc-security'),
+                '<a href="https://gist.github.com/chesio/8f83224840eccc1e80a17fc29babadf2" rel="noreferrer">' . esc_html__('Disabling access to PHP files', 'bc-security') . '</a>'
+            )
         );
     }
 

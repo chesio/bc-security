@@ -16,6 +16,11 @@ namespace BlueChip\Security\Modules\Checklist;
 abstract class AdvancedCheck extends Check
 {
     /**
+     * @var string
+     */
+    const CRON_JOB_HOOK = '';
+
+    /**
      * @return string Hook of cron job this check is bind to.
      */
     public function getCronJobHook(): string

@@ -19,7 +19,6 @@ abstract class Check
      */
     const RESULT_TRANSIENT_ID = 'check-result';
 
-
     /**
      * @var string
      */
@@ -31,12 +30,12 @@ abstract class Check
     private $description;
 
     /**
-     * @var int Timestamp of last run.
+     * @var int|null Timestamp of last run if lazy-loaded already, null otherwise.
      */
     private $last_run;
 
     /**
-     * @var \BlueChip\Security\Modules\Checklist\CheckResult Result of last run.
+     * @var \BlueChip\Security\Modules\Checklist\CheckResult|null Result of last run if lazy-loaded already, null otherwise.
      */
     private $result;
 

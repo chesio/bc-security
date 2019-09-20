@@ -19,7 +19,7 @@ abstract class Transients
     /**
      * Delete transient.
      *
-     * @param string[] $key
+     * @param string ...$key
      * @return bool
      */
     public static function deleteFromSite(string ...$key): bool
@@ -56,7 +56,7 @@ abstract class Transients
     /**
      * Get transient.
      *
-     * @param string[] $key
+     * @param string ...$key
      * @return mixed
      */
     public static function getForSite(string ...$key)
@@ -69,7 +69,7 @@ abstract class Transients
      * Set transient.
      *
      * @param mixed $value
-     * @param mixed[] $args
+     * @param mixed ...$args
      * @return bool
      */
     public static function setForSite($value, ...$args): bool

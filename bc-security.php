@@ -3,12 +3,12 @@
  * Plugin Name: BC Security
  * Plugin URI: https://github.com/chesio/bc-security
  * Description: Helps keeping WordPress websites secure.
- * Version: 0.12.1
+ * Version: 0.13.0
  * Author: Česlav Przywara <ceslav@przywara.cz>
  * Author URI: https://www.chesio.com
  * Requires PHP: 7.1
  * Requires WP: 4.9
- * Tested up to: 5.1
+ * Tested up to: 5.2
  * Text Domain: bc-security
  * GitHub Plugin URI: https://github.com/chesio/bc-security
  */

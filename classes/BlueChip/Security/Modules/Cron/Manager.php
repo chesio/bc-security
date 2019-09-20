@@ -13,7 +13,7 @@ use BlueChip\Security\Modules;
 class Manager implements Modules\Activable
 {
     /**
-     * @var \BlueChip\Security\Core\CronJob[] Cron jobs
+     * @var \BlueChip\Security\Modules\Cron\Job[] Cron jobs
      */
     private $jobs = [];
 

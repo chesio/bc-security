@@ -167,7 +167,7 @@ abstract class Plugin
                 function (array $plugin_data) use ($linkTo): string {
                     $plugin_name = '<em>' . esc_html($plugin_data['Name']) . '</em>';
                     return $linkTo
-                        ? '<a href="' . esc_url($plugin_data[$linkTo]) . '" target="_blank">' . $plugin_name . '</a>'
+                        ? '<a href="' . esc_url($plugin_data[$linkTo]) . '" rel="noreferrer">' . $plugin_name . '</a>'
                         : $plugin_name
                     ;
                 },

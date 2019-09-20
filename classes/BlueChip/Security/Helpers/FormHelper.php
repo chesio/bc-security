@@ -93,12 +93,11 @@ abstract class FormHelper
     {
         // Field properties
         $properties = [
-            'class'     => $args['class'] ?? '',
+            'class'     => $args['class'] ?? 'small-text',
             'type'      => 'number',
             'value'     => $args['value'],
             'id'        => $args['label_for'],
             'name'      => $args['name'],
-            'class'     => 'small-text',
         ];
 
         echo '<input ' . self::renderFieldProperties($properties) . '>';
@@ -171,9 +170,13 @@ abstract class FormHelper
     {
         $filtered = array_filter(
             $properties,
-            // Remove any false-like values (empty strings and false booleans) except for integers.
+            // Remove any false-like values (empty strings and false booleans) except for integers and floats.
             function ($value) {
-                return is_int($value) || (is_string($value) && !empty($value)) || (is_bool($value) && $value);
+                return is_int($value)
+                    || is_float($value)
+                    || (is_string($value) && $value !== '')
+                    || (is_bool($value) && $value)
+                ;
             }
         );
         // Map keys and values together as key=value

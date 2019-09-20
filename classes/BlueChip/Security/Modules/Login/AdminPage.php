@@ -100,11 +100,24 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
             [FormHelper::class, 'printNumberInput'],
             [ 'append' => __('days', 'bc-security'), ]
         );
+
+        // Section: Username blacklist
+        $this->addSettingsSection(
+            'username-blacklist',
+            _x('Username blacklist', 'Settings section title', 'bc-security'),
+            function () {
+                echo '<p>' . esc_html__('Enter any usernames that should never exist on the system. The blacklist serves two purposes:', 'bc-security') .'</p>';
+                echo '<ol>';
+                echo '<li>' . esc_html__('No new account can be registered with username on the blacklist.', 'bc-security') . '</li>';
+                echo '<li>' . esc_html__('Every login attempt using non-existing username on the blacklist immediately triggers long lockout.', 'bc-security') . '</li>';
+                echo '</ol>';
+            }
+        );
         $this->addSettingsField(
             Settings::USERNAME_BLACKLIST,
-            __('Immediately (long) lock out specific usernames', 'bc-security'),
+            __('Username blacklist', 'bc-security'),
             [FormHelper::class, 'printTextArea'],
-            [ 'append' => __('Existing usernames are not locked even if present on the list.', 'bc-security'), ]
+            [ 'append' => __('Enter one username per line.', 'bc-security'), ]
         );
 
         // Section: Authentication cookies
@@ -124,8 +137,9 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
             __('Display generic error message on failed login', 'bc-security'),
             function () {
                 echo '<p>' . sprintf(
-                    __('This is a <a href="%s">security by obscurity</a> approach, but it may make it harder for attackers to guess user credentials.', 'bc-security'),
-                    'https://en.wikipedia.org/wiki/Security_through_obscurity'
+                    /* translators: 1: link to Wikipedia page on Security through obscurity */
+                    esc_html__('This is a %1$s approach, but it may make it harder for attackers to guess user credentials.', 'bc-security'),
+                    '<a href="' . esc_url(__('https://en.wikipedia.org/wiki/Security_through_obscurity', 'bc-security')) . '" rel="noreferrer">' . esc_html__('security through obscurity', 'bc-security') . '</a>'
                 ) . '</p>';
                 echo '<p>' . esc_html__('Generic error message is displayed only for default authentication errors: invalid username, invalid email or invalid password. Display of any other authentication errors is not affected.', 'bc-security') . '</p>';
             }

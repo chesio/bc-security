@@ -1,0 +1,13 @@
+parameters:
+    level: 2
+    paths:
+        - %currentWorkingDirectory%/classes/
+    autoload_files:
+        - %currentWorkingDirectory%/vendor/giacocorsiglia/wordpress-stubs/wordpress-stubs.php
+        - %currentWorkingDirectory%/tests/static-analysis/bootstrap.php
+        - %currentWorkingDirectory%/autoload.php
+    ignoreErrors:
+        - '#^Function apply_filters invoked with [34] parameters, 2 required\.$#'
+        - '#^Function do_action invoked with [35] parameters, 1-2 required\.$#'
+        - '#^Function add_query_arg invoked with [23] parameters, 0 required\.$#'
+        - '#^Method wpdb::prepare\(\) invoked with [34] parameters, 2 required\.$#'

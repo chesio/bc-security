@@ -47,7 +47,7 @@ class ListTable extends \BlueChip\Security\Core\ListTable
 
 
     /**
-     * @var \BlueChip\Security\IpBlacklist\Manager
+     * @var \BlueChip\Security\Modules\IpBlacklist\Manager
      */
     private $bl_manager;
 
@@ -269,7 +269,7 @@ class ListTable extends \BlueChip\Security\Core\ListTable
 
             if ($current_action === self::BULK_ACTION_UNLOCK && ($unlocked = $this->bl_manager->unlockMany($ids))) {
                 // Records unlocked successfully, redirect to overview (and trigger admin notice)
-                wp_redirect(add_query_arg(self::NOTICE_UNLOCKED, $unlocked, $this->url));
+                wp_redirect(add_query_arg(self::NOTICE_RECORD_UNLOCKED, $unlocked, $this->url));
             }
         }
     }

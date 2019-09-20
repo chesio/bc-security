@@ -64,6 +64,8 @@ class Gatekeeper implements \BlueChip\Security\Modules\Initializable, \BlueChip\
      */
     public function init()
     {
+        add_filter('illegal_user_logins', [$this, 'filterIllegalUserLogins'], 10, 1);
+
         add_filter('authenticate', [$this, 'lockIpIfUsernameOnBlacklist'], 25, 2); // should run after default authentication filters
 
         if ($this->settings[Settings::GENERIC_LOGIN_ERROR_MESSAGE]) {
@@ -81,6 +83,20 @@ class Gatekeeper implements \BlueChip\Security\Modules\Initializable, \BlueChip\
 
 
     //// Hookers - public methods that should in fact be private
+
+    /**
+     * Filter the list of blacklisted usernames.
+     *
+     * @filter https://developer.wordpress.org/reference/hooks/illegal_user_logins/
+     *
+     * @param array $usernames
+     * @return array
+     */
+    public function filterIllegalUserLogins(array $usernames): array
+    {
+        return array_merge($usernames, $this->settings->getUsernameBlacklist());
+    }
+
 
     /**
      * Let generic `authentication_failed` error shake the login form.
@@ -145,9 +161,9 @@ class Gatekeeper implements \BlueChip\Security\Modules\Initializable, \BlueChip\
      *
      * Filter is called from wp_authenticate().
      *
-     * @param WP_Error|WP_User $user
+     * @param \WP_Error|\WP_User $user
      * @param string $username
-     * @return WP_Error|WP_User
+     * @return \WP_Error|\WP_User
      */
     public function lockIpIfUsernameOnBlacklist($user, string $username)
     {
@@ -169,8 +185,8 @@ class Gatekeeper implements \BlueChip\Security\Modules\Initializable, \BlueChip\
      * invalid username, email or password forcing WP to display generic error
      * message.
      *
-     * @param WP_Error|WP_User $user
-     * @return WP_Error|WP_User
+     * @param \WP_Error|\WP_User $user
+     * @return \WP_Error|\WP_User|null
      */
     public function muteStandardErrorMessages($user)
     {

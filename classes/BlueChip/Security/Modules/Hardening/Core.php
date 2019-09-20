@@ -16,7 +16,17 @@ class Core implements \BlueChip\Security\Modules\Initializable
     /**
      * @var string
      */
+    const AUTHOR_SCAN_QUERY_VAR = 'author_scan';
+
+    /**
+     * @var string
+     */
     const PWNED_PASSWORD_META_KEY = 'bc-security/pwned-password';
+
+    /**
+     * @var bool
+     */
+    private $rest_api_supressed;
 
     /**
      * @var \BlueChip\Security\Modules\Hardening\Settings
@@ -30,6 +40,7 @@ class Core implements \BlueChip\Security\Modules\Initializable
     public function __construct(Settings $settings)
     {
         $this->settings = $settings;
+        $this->rest_api_supressed = false;
     }
 
 
@@ -39,16 +50,23 @@ class Core implements \BlueChip\Security\Modules\Initializable
     public function init()
     {
         if ($this->settings[Settings::DISABLE_PINGBACKS]) {
-            // Disable pingbacks
+            // Disable pingbacks.
             add_filter('xmlrpc_methods', [$this, 'disablePingbacks'], 10, 1);
         }
         if ($this->settings[Settings::DISABLE_XML_RPC]) {
-            // Disable all XML-RPC methods requiring authentication
+            // Disable all XML-RPC methods requiring authentication.
             add_filter('xmlrpc_enabled', '__return_false', 10, 0);
         }
-        if ($this->settings[Settings::DISABLE_REST_API]) {
-            // Disable REST API methods to anonymous users
-            add_filter('rest_authentication_errors', [$this, 'requireAuthForRestAccess'], 10, 1);
+        if ($this->settings[Settings::DISABLE_USERNAMES_DISCOVERY]) {
+            // Alter REST API responses.
+            add_filter('oembed_response_data', [$this, 'filterAuthorInOembed'], 100, 1);
+            add_filter('rest_request_before_callbacks', [$this, 'filterJsonAPIAuthor'], 100, 3);
+            add_filter('rest_post_dispatch', [$this, 'adjustJsonAPIHeaders'], 100, 1);
+            if (!is_admin()) {
+                // Prevent usernames enumeration.
+                add_filter('request', [$this, 'filterAuthorQuery'], 5, 1);
+                add_action('parse_request', [$this, 'stopAuthorScan'], 10, 1);
+            }
         }
         if ($this->settings[Settings::CHECK_PASSWORDS]) {
             // Check user password on successful login.
@@ -81,24 +99,136 @@ class Core implements \BlueChip\Security\Modules\Initializable
 
 
     /**
-     * Return an authentication error if a user who is not logged in tries to query the REST API.
+     * Remove author's name and URL from oEmbed data.
      *
-     * @filter https://developer.wordpress.org/reference/hooks/rest_authentication_errors/
+     * @filter https://developer.wordpress.org/reference/hooks/oembed_response_data/
      *
-     * @param mixed $access
-     * @return \WP_Error
+     * @param array $data
+     * @return array
      */
-    public function requireAuthForRestAccess($access)
+    public function filterAuthorInOembed(array $data): array
     {
-        if (!is_user_logged_in()) {
-            return new \WP_Error(
-                'rest_cannot_access',
-                __('Only authenticated users can access the REST API.', 'bc-security'),
-                ['status' => rest_authorization_required_code()]
-            );
+        if (isset($data['author_name'])) {
+            unset($data['author_name']);
+        }
+        if (isset($data['author_url'])) {
+            unset($data['author_url']);
+        }
+        return $data;
+    }
+
+
+    /**
+     * @filter https://developer.wordpress.org/reference/hooks/rest_request_before_callbacks/
+     *
+     * @param \WP_HTTP_Response|\WP_Error $response
+     * @param array $handler
+     * @param \WP_REST_Request $request
+     * @return \WP_HTTP_Response|\WP_Error
+     */
+    public function filterJsonAPIAuthor($response, array $handler, \WP_REST_Request $request)
+    {
+        $route = $request->get_route();
+
+        if (!current_user_can('list_users')) {
+            // I <3 PHP 7!
+            $url_base = (new class extends \WP_REST_Users_Controller {
+                public function getUrlBase(): string
+                {
+                    return rtrim($this->namespace . '/' . $this->rest_base, '/');
+                }
+            })->getUrlBase();
+
+            if (preg_match('#' . preg_quote($url_base, '#') . '/*$#i', $route)) {
+                $this->rest_api_supressed = true;
+                return rest_ensure_response(new \WP_Error(
+                    'rest_user_cannot_view',
+                    __('Sorry, you are not allowed to list users.'), // WP core message
+                    ['status' => rest_authorization_required_code()]
+                ));
+            }
+
+            $matches = [];
+            if (preg_match('#' . preg_quote($url_base, '#') . '/+(\d+)/*$#i', $route, $matches)) {
+                if (get_current_user_id() !== intval($matches[1])) {
+                    $this->rest_api_supressed = true;
+                    return rest_ensure_response(new \WP_Error(
+                        'rest_user_invalid_id',
+                        __('Invalid user ID.'), // WP core message.
+                        ['status' => 404]
+                    ));
+                }
+            }
         }
 
-        return $access;
+        return $response;
+    }
+
+
+    /**
+     * @filter https://developer.wordpress.org/reference/hooks/rest_post_dispatch/
+     *
+     * @param \WP_HTTP_Response $response
+     * @return \WP_HTTP_Response
+     */
+    public function adjustJsonAPIHeaders(\WP_HTTP_Response $response): \WP_HTTP_Response
+    {
+        if ($this->rest_api_supressed) {
+            $response->header('Allow', 'GET');
+        }
+
+        return $response;
+    }
+
+
+    /**
+     * @filter https://developer.wordpress.org/reference/hooks/request/
+     *
+     * @param array $query_vars
+     * @return array
+     */
+    public function filterAuthorQuery(array $query_vars): array
+    {
+        if (self::smellsLikeAuthorScan($query_vars) && (self::smellsLikeAuthorScan($_GET) || self::smellsLikeAuthorScan($_POST))) {
+            // I smell author scanning!
+            $query_vars[self::AUTHOR_SCAN_QUERY_VAR] = true;
+        }
+
+        return $query_vars;
+    }
+
+
+    /**
+     * Check whether given query variables contain author scan data.
+     *
+     * @link https://hackertarget.com/wordpress-user-enumeration/
+     *
+     * @param array $query_vars
+     * @return bool True, if `author` key is present and its value is either an array or can be seen as numeric.
+     */
+    protected static function smellsLikeAuthorScan(array $query_vars): bool
+    {
+        return !empty($query_vars['author']) && (is_array($query_vars['author']) || is_numeric(preg_replace('/[^0-9]/', '', $query_vars['author'])));
+    }
+
+
+    /**
+     * Force "404 Not Found" response if query is marked as "author scan". If 404 template file exists, it is output.
+     *
+     * @param \WP $wp
+     */
+    public function stopAuthorScan(\WP $wp)
+    {
+        if ($wp->query_vars[self::AUTHOR_SCAN_QUERY_VAR] ?? false) {
+            status_header(404);
+            nocache_headers();
+
+            if (!empty($template = get_404_template()) && file_exists($template)) {
+                include $template;
+            }
+
+            exit;
+        }
     }
 
 
@@ -151,9 +281,10 @@ class Core implements \BlueChip\Security\Modules\Initializable
         if (apply_filters(Hooks::SHOW_PWNED_PASSWORD_WARNING, true, $screen, $user)) {
             // Show the warning for current user on current screen.
             $notice = sprintf(
-                __('Your password is present in a <a href="%1$s">large database of passwords</a> previously exposed in data breaches. Please, consider <a href="%2$s">changing your password</a>.', 'bc-security'),
-                HaveIBeenPwned::PWNEDPASSWORDS_HOME_URL,
-                get_edit_profile_url($user->ID)
+                /* translators: 1: link to Pwned Passwords homepage, 2: link to profile editation page */
+                esc_html__('Your password is present in a %1$s previously exposed in data breaches. Please, consider %2$s.', 'bc-security'),
+                '<a href="' . HaveIBeenPwned::PWNEDPASSWORDS_HOME_URL . '" rel="noreferrer">' . esc_html__('large database of passwords', 'bc-security') . '</a>',
+                '<a href="' . get_edit_profile_url($user->ID) . '">' . esc_html__('changing your password', 'bc-security') . '</a>'
             );
 
             AdminNotices::add($notice, AdminNotices::WARNING, false, false);
@@ -166,7 +297,7 @@ class Core implements \BlueChip\Security\Modules\Initializable
      *
      * @param \WP_Error $errors WP_Error object (passed by reference).
      * @param bool $update Whether this is a user update.
-     * @param stdClass $user User object (passed by reference).
+     * @param \stdClass $user User object (passed by reference).
      */
     public function validatePasswordUpdate(\WP_Error &$errors, bool $update, &$user)
     {
@@ -218,8 +349,10 @@ class Core implements \BlueChip\Security\Modules\Initializable
     {
         if (HaveIBeenPwned::hasPasswordBeenPwned($password)) {
             $message = sprintf(
-                __('<strong>ERROR</strong>: Provided password is present in a <a href="%1$s">large database of passwords</a>large database of passwords</a> previously exposed in data breaches. Please, pick a different one.', 'bc-security'),
-                HaveIBeenPwned::PWNEDPASSWORDS_HOME_URL
+                /* translators: 1: Error label, 2: link to Pwned Passwords homepage */
+                esc_html__('%1$s: Provided password is present in a %2$s previously exposed in data breaches. Please, pick a different one.', 'bc-security'),
+                '<strong>' . esc_html__('ERROR', 'bc-security') . '</strong>',
+                '<a href="' . HaveIBeenPwned::PWNEDPASSWORDS_HOME_URL . '" rel="noreferrer">' . esc_html__('large database of passwords', 'bc-security') . '</a>'
             );
             $errors->add('password_has_been_pwned', $message);
         }

@@ -94,8 +94,8 @@ class Bouncer implements \BlueChip\Security\Modules\Initializable, \BlueChip\Sec
     /**
      * Block access to the login, if remote IP address is locked.
      *
-     * @param WP_Error|WP_User $user
-     * @return WP_Error|WP_User
+     * @param \WP_Error|\WP_User $user
+     * @return \WP_Error|\WP_User
      */
     public function checkLoginAttempt($user)
     {

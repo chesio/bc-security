@@ -168,7 +168,7 @@ class Watchman implements Modules\Initializable, Modules\Activable
 
         // Get first update item (should be "upgrade" response).
         $update = $update_transient->updates[0];
-        if (!isset($update->response) || ($update->response !== 'upgrade')) {
+        if (!isset($update->response) || ($update->response !== 'upgrade') || !isset($update->current)) {
             // Not the expected response.
             return;
         }
@@ -188,7 +188,7 @@ class Watchman implements Modules\Initializable, Modules\Activable
         );
 
         // Now it is time to make sure the method is not invoked anymore.
-        remove_action('set_site_transient_update_core', [$this, 'watchCoreUpdateAvailable'], 10, 1);
+        remove_action('set_site_transient_update_core', [$this, 'watchCoreUpdateAvailable'], 10);
 
         // Send notification.
         if ($this->notify($subject, $message) !== false) {
@@ -243,7 +243,7 @@ class Watchman implements Modules\Initializable, Modules\Activable
         }
 
         // Now it is time to make sure the method is not invoked anymore.
-        remove_action('set_site_transient_update_plugins', [$this, 'watchPluginUpdatesAvailable'], 10, 1);
+        remove_action('set_site_transient_update_plugins', [$this, 'watchPluginUpdatesAvailable'], 10);
 
         // Send notification.
         if ($this->notify($subject, $message) !== false) {
@@ -290,7 +290,7 @@ class Watchman implements Modules\Initializable, Modules\Activable
         }
 
         // Now it is time to make sure the method is not invoked anymore.
-        remove_action('set_site_transient_update_themes', [$this, 'watchThemeUpdatesAvailable'], 10, 1);
+        remove_action('set_site_transient_update_themes', [$this, 'watchThemeUpdatesAvailable'], 10);
 
         // Send notification.
         if ($this->notify($subject, $message) !== false) {

@@ -14,9 +14,10 @@ class DisplayOfPhpErrorsIsOff extends Checklist\BasicCheck
         parent::__construct(
             __('Display of PHP errors is off', 'bc-security'),
             sprintf(
-                __('<a href="%1$s">Errors should never be printed</a> to the screen as part of the output on production systems. In WordPress environment, <a href="%2$s">display of errors can lead to path disclosures</a> when directly loading certain files.', 'bc-security'),
-                'http://php.net/manual/en/errorfunc.configuration.php#ini.display-errors',
-                'https://make.wordpress.org/core/handbook/testing/reporting-security-vulnerabilities/#why-are-there-path-disclosures-when-directly-loading-certain-files'
+                /* translators: 1: link to PHP manual documentation on display-errors php.ini setting, 2: link to WordPress Handbook article */
+                esc_html__('%1$s to the screen as part of the output on production systems. In WordPress environment, %2$s when directly loading certain files.', 'bc-security'),
+                '<a href="' . esc_url(__('https://secure.php.net/manual/en/errorfunc.configuration.php#ini.display-errors', 'bc-security')) . '" rel="noreferrer">' . esc_html__('Errors should never be printed', 'bc-security') . '</a>',
+                '<a href="' . esc_url(__('https://make.wordpress.org/core/handbook/testing/reporting-security-vulnerabilities/#why-are-there-path-disclosures-when-directly-loading-certain-files', 'bc-security')) . '" rel="noreferrer">' . esc_html__('display of errors can lead to path disclosures', 'bc-security') . '</a>'
             )
         );
     }

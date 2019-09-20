@@ -149,7 +149,7 @@ class Manager implements Modules\Initializable
 
     /**
      * @param bool $only_meaningful
-     * @return \BlueChip\Security\Modules\Checklist\Check[]
+     * @return \BlueChip\Security\Modules\Checklist\AdvancedCheck[]
      */
     public function getAdvancedChecks(bool $only_meaningful = true): array
     {
@@ -163,7 +163,7 @@ class Manager implements Modules\Initializable
 
     /**
      * @param bool $only_meaningful
-     * @return \BlueChip\Security\Modules\Checklist\Check[]
+     * @return \BlueChip\Security\Modules\Checklist\BasicCheck[]
      */
     public function getBasicChecks(bool $only_meaningful = true): array
     {
