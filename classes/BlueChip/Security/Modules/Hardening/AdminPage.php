@@ -143,7 +143,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
                     /* translators: 1: password validation label */
                     esc_html__('When %1$s is enabled, passwords are checked against the Pwned Passwords database when new user is being created or existing user\'s password is being changed via profile update page or through password reset form. If there is a match, the operation is aborted with an error message asking for a different password.', 'bc-security'),
                     '<strong>' . esc_html__('password validation', 'bc-security') . '</strong>'
-                ). '</li>';
+                ) . '</li>';
                 echo '<li>' . \sprintf(
                     /* translators: 1: password check label */
                     esc_html__('When %1$s is enabled, passwords are checked against the Pwned Passwords database when user logs in to the backend. If there is a match, a non-dismissible warning is displayed on all back-end pages encouraging the user to change its password.', 'bc-security'),

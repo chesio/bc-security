@@ -106,7 +106,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
             'username-blacklist',
             _x('Username blacklist', 'Settings section title', 'bc-security'),
             function () {
-                echo '<p>' . esc_html__('Enter any usernames that should never exist on the system. The blacklist serves two purposes:', 'bc-security') .'</p>';
+                echo '<p>' . esc_html__('Enter any usernames that should never exist on the system. The blacklist serves two purposes:', 'bc-security') . '</p>';
                 echo '<ol>';
                 echo '<li>' . esc_html__('No new account can be registered with username on the blacklist.', 'bc-security') . '</li>';
                 echo '<li>' . esc_html__('Every login attempt using non-existing username on the blacklist immediately triggers long lockout.', 'bc-security') . '</li>';

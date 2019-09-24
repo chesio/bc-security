@@ -198,7 +198,7 @@ trait SettingsPage
      */
     protected function printSettingsForm()
     {
-        echo '<form method="post" action="' . admin_url('options.php') .'">';
+        echo '<form method="post" action="' . admin_url('options.php') . '">';
 
         // Output nonce, action and other hidden fields...
         $this->printSettingsFields();

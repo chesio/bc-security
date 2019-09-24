@@ -109,7 +109,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
         echo '<button type="button" class="button button-large bcs-run-checks" data-check-class="bcs-check">' . esc_html__('Run all checks', 'bc-security') . '</button>';
         echo '</p>';
 
-        echo '<form method="post" action="' . admin_url('options.php') .'">';
+        echo '<form method="post" action="' . admin_url('options.php') . '">';
 
         $this->printBasicChecksSection($this->checklist_manager->getBasicChecks());
 
