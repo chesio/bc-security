@@ -105,7 +105,7 @@ trait SettingsPage
             'label_for' => \sprintf('%s-%s', $this->option_name, $key), // "label_for" is WP reserved name
             'key' => $key,
             'name' => \sprintf('%s[%s]', $this->option_name, $key),
-            'value' => \is_null($value) ? $this->settings[$key] : $value,
+            'value' => null === $value ? $this->settings[$key] : $value,
         ];
     }
 

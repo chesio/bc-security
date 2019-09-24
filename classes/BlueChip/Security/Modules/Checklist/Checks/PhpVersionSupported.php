@@ -37,7 +37,7 @@ class PhpVersionSupported extends Checklist\BasicCheck
         // Get oldest supported version (as <major>.<minor>):
         $oldest_supported_version = self::getOldestSupportedPhpVersion();
 
-        if (\is_null($oldest_supported_version)) {
+        if (null === $oldest_supported_version) {
             $message = \sprintf(
                 esc_html__('List of supported PHP versions is out-dated. Consider updating the plugin. Btw. you are running PHP %1$s.', 'bc-security'),
                 self::formatPhpVersion()

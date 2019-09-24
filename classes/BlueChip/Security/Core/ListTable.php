@@ -141,7 +141,7 @@ abstract class ListTable extends \WP_List_Table
      */
     public function column_default($item, $column_name) // phpcs:ignore
     {
-        return isset($item[$column_name]) ? $item[$column_name] : '';
+        return $item[$column_name] ?? '';
     }
 
 

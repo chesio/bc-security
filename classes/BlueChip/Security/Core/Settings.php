@@ -292,7 +292,7 @@ abstract class Settings implements \ArrayAccess
 
         $data = $this->data;
 
-        if (\is_null($value)) {
+        if (null === $value) {
             // Null value unsets (resets) setting to default state
             unset($data[$name]);
         } else {

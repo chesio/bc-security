@@ -417,6 +417,6 @@ class Manager implements Modules\Countable, Modules\Installable, Modules\Initial
         // Execute query.
         $result = $this->wpdb->get_var($query);
         // Return result.
-        return \is_null($result) ? $result : \intval($result);
+        return null === $result ? $result : \intval($result);
     }
 }

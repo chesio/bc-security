@@ -31,7 +31,7 @@ class Is
      */
     public static function cli(): bool
     {
-        return \php_sapi_name() === 'cli';
+        return \PHP_SAPI === 'cli';
     }
 
 

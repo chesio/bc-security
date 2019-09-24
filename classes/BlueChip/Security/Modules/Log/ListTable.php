@@ -73,7 +73,7 @@ class ListTable extends \BlueChip\Security\Core\ListTable
             // Value can be an array, in such case output array values separated by ",".
             return \is_array($value) ? \implode(', ', $value) : $value;
         } else {
-            return isset($item[$column_name]) ? $item[$column_name] : '';
+            return $item[$column_name] ?? '';
         }
     }
 
@@ -170,13 +170,13 @@ class ListTable extends \BlueChip\Security\Core\ListTable
      */
     protected function get_views() // phpcs:ignore
     {
-        $event_id = \is_null($this->event) ? null : $this->event->getId();
+        $event_id = null === $this->event ? null : $this->event->getId();
 
         $views = [
             'all' => \sprintf(
                 '<a href="%s" class="%s">%s</a> (%d)',
                 remove_query_arg([self::VIEW_EVENT], $this->url),
-                \is_null($event_id) ? 'current' : '',
+                null === $event_id ? 'current' : '',
                 esc_html__('All', 'bc-security'),
                 $this->logger->countAll()
             ),
