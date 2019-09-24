@@ -53,7 +53,7 @@ class Job
     /**
      * Schedule this cron job, if not scheduled yet.
      *
-     * @return bool True, if cron job has been activated or was already active, false otherwise.
+     * @return bool True if cron job has been activated or was already active, false otherwise.
      */
     public function schedule(): bool
     {
@@ -65,24 +65,25 @@ class Job
         // Compute Unix timestamp (UTC) for when to run the cron job based on $time value.
         $timestamp = is_int($this->time) ? $this->time : self::getTimestamp($this->time);
 
-        return wp_schedule_event($timestamp, $this->recurrence, $this->hook) !== false;
+        return wp_schedule_event($timestamp, $this->recurrence, $this->hook);
     }
 
 
     /**
      * Unschedule this cron job.
      *
-     * @return bool True (always).
+     * @return bool True in case of success, false on error.
      */
     public function unschedule(): bool
     {
-        wp_clear_scheduled_hook($this->hook);
-        return true;
+        return wp_clear_scheduled_hook($this->hook) !== false;
     }
 
 
     /**
-     * @return bool True, if cron job is currently scheduled.
+     * Check whether cron job is currently scheduled.
+     *
+     * @return bool True if cron job is currently scheduled, false otherwise.
      */
     public function isScheduled(): bool
     {
