@@ -20,7 +20,8 @@ class Is
     {
         return apply_filters(
             Hooks::IS_ADMIN,
-            is_multisite() ? user_can($user, 'manage_network') : user_can($user, 'manage_options')
+            is_multisite() ? user_can($user, 'manage_network') : user_can($user, 'manage_options'),
+            $user
         );
     }
 
