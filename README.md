@@ -5,7 +5,7 @@ Helps keeping WordPress websites secure.
 ## Requirements
 
 * [PHP](https://secure.php.net/) 7.1 or newer
-* [WordPress](https://wordpress.org/) 4.9 or newer
+* [WordPress](https://wordpress.org/) 5.1 or newer
 
 ## Limitations
 
