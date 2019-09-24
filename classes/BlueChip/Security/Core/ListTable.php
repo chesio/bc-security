@@ -51,18 +51,18 @@ abstract class ListTable extends \WP_List_Table
             'ajax' => false,
         ];
 
-        parent::__construct(array_merge($default_args, $args));
+        parent::__construct(\array_merge($default_args, $args));
 
         $this->url = $url;
         $this->items_per_page = $this->get_items_per_page($per_page_option_name);
 
-        $order_by = filter_input(INPUT_GET, 'orderby', FILTER_SANITIZE_STRING);
-        if (in_array($order_by, $this->get_sortable_columns(), true)) {
+        $order_by = \filter_input(INPUT_GET, 'orderby', FILTER_SANITIZE_STRING);
+        if (\in_array($order_by, $this->get_sortable_columns(), true)) {
             $this->order_by = $order_by;
             $this->url = add_query_arg('orderby', $order_by, $this->url);
         }
 
-        $order = filter_input(INPUT_GET, 'order', FILTER_SANITIZE_STRING);
+        $order = \filter_input(INPUT_GET, 'order', FILTER_SANITIZE_STRING);
         if ($order === 'asc' || $order === 'desc') {
             $this->order = $order;
             $this->url = add_query_arg('order', $order, $this->url);
@@ -80,8 +80,8 @@ abstract class ListTable extends \WP_List_Table
     protected function displayNotice(string $action, string $single, string $plural)
     {
         // Have any items been affected by given action?
-        $result = filter_input(INPUT_GET, $action, FILTER_VALIDATE_INT);
-        if (is_int($result) && ($result > 0)) {
+        $result = \filter_input(INPUT_GET, $action, FILTER_VALIDATE_INT);
+        if (\is_int($result) && ($result > 0)) {
             AdminNotices::add(
                 _n($single, $plural, $result, 'bc-security'),
                 AdminNotices::SUCCESS
@@ -105,14 +105,14 @@ abstract class ListTable extends \WP_List_Table
      */
     protected function renderRowAction(string $action, int $id, string $class, string $label): string
     {
-        return sprintf(
+        return \sprintf(
             '<span class="' . $class . '"><a href="%s">%s</a></span>',
             wp_nonce_url(
                 add_query_arg(
                     ['action' => $action, 'id' => $id],
                     $this->url
                 ),
-                sprintf('%s:%s', $action, $id),
+                \sprintf('%s:%s', $action, $id),
                 self::NONCE_NAME
             ),
             esc_html($label)
@@ -128,7 +128,7 @@ abstract class ListTable extends \WP_List_Table
      */
     public function column_cb($item) // phpcs:ignore
     {
-        return sprintf('<input type="checkbox" name="ids[]" value="%d" />', $item['id']);
+        return \sprintf('<input type="checkbox" name="ids[]" value="%d" />', $item['id']);
     }
 
 

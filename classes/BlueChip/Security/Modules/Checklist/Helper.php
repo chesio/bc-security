@@ -24,10 +24,10 @@ abstract class Helper
         }
 
         // Read JSON.
-        $json = json_decode(wp_remote_retrieve_body($response));
+        $json = \json_decode(wp_remote_retrieve_body($response));
 
         // If decoding went fine, return JSON data.
-        return (json_last_error() === JSON_ERROR_NONE) ? $json : null;
+        return (\json_last_error() === JSON_ERROR_NONE) ? $json : null;
     }
 
 
@@ -40,7 +40,7 @@ abstract class Helper
         if (empty($timestamp = $check->getTimeOfLastRun())) {
             return '--';
         } else {
-            $format = sprintf('%s %s', get_option('date_format'), get_option('time_format'));
+            $format = \sprintf('%s %s', get_option('date_format'), get_option('time_format'));
             return date_i18n($format, $timestamp);
         }
     }
@@ -52,7 +52,7 @@ abstract class Helper
      */
     public static function formatListOfFiles(array $list): string
     {
-        return implode(', ', array_map(
+        return \implode(', ', \array_map(
             function (string $file): string {
                 return '<em>' . esc_html($file) . '</em>';
             },
@@ -78,12 +78,12 @@ abstract class Helper
     public static function isAccessToUrlForbidden(string $url, ?string $body = null): ?bool
     {
         // Try to get provided URL. Use HEAD request for simplicity, if response body is of no interest.
-        $response = is_string($body) ? wp_remote_get($url) : wp_remote_head($url);
+        $response = \is_string($body) ? wp_remote_get($url) : wp_remote_head($url);
 
         switch (wp_remote_retrieve_response_code($response)) {
             case 200:
                 // Status suggests that URL can be accessed, but check response body too, if given.
-                return is_string($body) ? ((wp_remote_retrieve_body($response) === $body) ? false : null) : false;
+                return \is_string($body) ? ((wp_remote_retrieve_body($response) === $body) ? false : null) : false;
             case 403:
                 // Status suggests that access to URL is forbidden.
                 return true;
@@ -113,7 +113,7 @@ abstract class Helper
         // Loop through all files in list.
         foreach ($checksums as $filename => $checksum) {
             // Skip any ignored files.
-            if (in_array($filename, $ignored_files, true)) {
+            if (\in_array($filename, $ignored_files, true)) {
                 continue;
             }
 
@@ -121,14 +121,14 @@ abstract class Helper
             $pathname = $path . $filename;
 
             // Check, if file exists (skip non-existing files).
-            if (!file_exists($pathname)) {
+            if (!\file_exists($pathname)) {
                 continue;
             }
 
             // Compare MD5 hashes.
             // Note that there can be multiple checksums provided for a single file (at least in plugin checksums).
-            $md5 = md5_file($pathname);
-            if (is_array($checksum) ? !in_array($md5, $checksum, true) : ($md5 !== $checksum)) {
+            $md5 = \md5_file($pathname);
+            if (\is_array($checksum) ? !\in_array($md5, $checksum, true) : ($md5 !== $checksum)) {
                 $modified_files[] = $filename;
             }
         }
@@ -156,7 +156,7 @@ abstract class Helper
             : new \DirectoryIterator($directory)
         ;
 
-        $directory_path_length = strlen($path);
+        $directory_path_length = \strlen($path);
 
         foreach ($it as $fileinfo) {
             // Skip directories as they don't have checksums.
@@ -165,7 +165,7 @@ abstract class Helper
             }
 
             // Strip directory path from file's pathname.
-            $filename = substr($fileinfo->getPathname(), $directory_path_length);
+            $filename = \substr($fileinfo->getPathname(), $directory_path_length);
 
             // Check, whether it is a known file.
             if (!isset($checksums->$filename)) {

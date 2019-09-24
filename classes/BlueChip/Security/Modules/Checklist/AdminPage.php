@@ -85,7 +85,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
      */
     public function getCount(): int
     {
-        return count($this->checklist_manager->getChecks(['meaningful' => true, 'monitored' => true, 'status' => false]));
+        return \count($this->checklist_manager->getChecks(['meaningful' => true, 'monitored' => true, 'status' => false]));
     }
 
 
@@ -98,7 +98,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
 
         echo '<h1>' . esc_html($this->page_title) . '</h1>';
         echo '<p>';
-        echo sprintf(
+        echo \sprintf(
             /* translators: %s: tick icon */
             esc_html__('The more %s you have, the better!'),
             '<span class="dashicons dashicons-yes"></span>'
@@ -125,10 +125,10 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
         echo '</form>';
 
         echo '<p>';
-        echo sprintf(
+        echo \sprintf(
             /* translators: %s: link to hardening options */
             esc_html__('You might also want to enable some other %s.', 'bc-security'),
-            sprintf(
+            \sprintf(
                 '<a href="%s">%s</a>',
                 Hardening\AdminPage::getPageUrl(),
                 esc_html__('hardening options', 'bc-security')
@@ -185,7 +185,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
         echo '<p>';
         echo esc_html__('You can let BC Security monitor the checklist automatically. Just select the checks you want to monitor:', 'bc-security');
         echo ' ';
-        echo implode(' ', [
+        echo \implode(' ', [
             '<button type="button" id="bcs-mark-all-checks" disabled="disabled">' . esc_html__('select all', 'bc-security') . '</button>',
             '<button type="button" id="bcs-mark-no-checks" disabled="disabled">' . esc_html__('select none', 'bc-security') . '</button>',
             '<button type="button" id="bcs-mark-passing-checks" disabled="disabled">' . esc_html__('select only passing', 'bc-security') . '</button>',
@@ -244,14 +244,14 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
         $check_id = $check::getId();
         $result = $check->getResult();
         $status = $result->getStatus();
-        $status_class = is_bool($status) ? ($status ? 'bcs-check--ok' : 'bcs-check--ko') : '';
+        $status_class = \is_bool($status) ? ($status ? 'bcs-check--ok' : 'bcs-check--ko') : '';
 
         echo '<tr class="bcs-check ' . esc_attr($check_class) . ' ' . $status_class . '" data-check-id="' . esc_attr($check_id) . '">';
 
         // Background monitoring toggle.
         echo '<th>';
         if (isset($this->settings[$check_id])) {
-            FormHelper::printCheckbox($this->getFieldBaseProperties($check_id, intval($this->settings[$check_id])));
+            FormHelper::printCheckbox($this->getFieldBaseProperties($check_id, \intval($this->settings[$check_id])));
         }
         echo '</th>';
         // Name should be short and descriptive and without HTML tags.

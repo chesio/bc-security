@@ -46,7 +46,7 @@ trait SettingsPage
         // Remember the settings.
         $this->settings = $settings;
         $this->option_name = $settings->getOptionName();
-        $this->option_group = md5($this->option_name);
+        $this->option_group = \md5($this->option_name);
     }
 
 
@@ -102,10 +102,10 @@ trait SettingsPage
     protected function getFieldBaseProperties(string $key, $value = null): array
     {
         return [
-            'label_for' => sprintf('%s-%s', $this->option_name, $key), // "label_for" is WP reserved name
+            'label_for' => \sprintf('%s-%s', $this->option_name, $key), // "label_for" is WP reserved name
             'key' => $key,
-            'name' => sprintf('%s[%s]', $this->option_name, $key),
-            'value' => is_null($value) ? $this->settings[$key] : $value,
+            'name' => \sprintf('%s[%s]', $this->option_name, $key),
+            'value' => \is_null($value) ? $this->settings[$key] : $value,
         ];
     }
 
@@ -123,7 +123,7 @@ trait SettingsPage
      */
     public function addSettingsSection(string $section, string $title, ?callable $callback = null)
     {
-        if (!is_string($this->recent_page)) {
+        if (!\is_string($this->recent_page)) {
             _doing_it_wrong(__METHOD__, 'No recent page set yet!', '0.1.0');
             return;
         }
@@ -147,12 +147,12 @@ trait SettingsPage
      */
     public function addSettingsField(string $key, string $title, callable $callback, array $args = [])
     {
-        if (!is_string($this->recent_page)) {
+        if (!\is_string($this->recent_page)) {
             _doing_it_wrong(__METHOD__, 'No recent page set yet!', '0.1.0');
             return;
         }
 
-        if (!is_string($this->recent_section)) {
+        if (!\is_string($this->recent_section)) {
             _doing_it_wrong(__METHOD__, 'No recent section added yet!', '0.1.0');
             return;
         }
@@ -163,7 +163,7 @@ trait SettingsPage
             $callback,
             $this->recent_page, // $page
             $this->recent_section, // $section
-            array_merge($args, $this->getFieldBaseProperties($key)) // $args
+            \array_merge($args, $this->getFieldBaseProperties($key)) // $args
         );
     }
 
@@ -184,7 +184,7 @@ trait SettingsPage
      */
     public function printSettingsSections()
     {
-        if (!is_string($this->recent_page)) {
+        if (!\is_string($this->recent_page)) {
             _doing_it_wrong(__METHOD__, 'No recent page set!', '0.1.0');
             return;
         }

@@ -13,7 +13,7 @@ class DisplayOfPhpErrorsIsOff extends Checklist\BasicCheck
     {
         parent::__construct(
             __('Display of PHP errors is off', 'bc-security'),
-            sprintf(
+            \sprintf(
                 /* translators: 1: link to PHP manual documentation on display-errors php.ini setting, 2: link to WordPress Handbook article */
                 esc_html__('%1$s to the screen as part of the output on production systems. In WordPress environment, %2$s when directly loading certain files.', 'bc-security'),
                 '<a href="' . esc_url(__('https://secure.php.net/manual/en/errorfunc.configuration.php#ini.display-errors', 'bc-security')) . '" rel="noreferrer">' . esc_html__('Errors should never be printed', 'bc-security') . '</a>',
@@ -30,14 +30,14 @@ class DisplayOfPhpErrorsIsOff extends Checklist\BasicCheck
      */
     public function isMeaningful(): bool
     {
-        return defined('WP_ENV') && (WP_ENV === 'production');
+        return \defined('WP_ENV') && (WP_ENV === 'production');
     }
 
 
     protected function runInternal(): Checklist\CheckResult
     {
         // Craft temporary file name.
-        $name = sprintf('bc-security-checklist-test-error-display-%s.php', md5(rand()));
+        $name = \sprintf('bc-security-checklist-test-error-display-%s.php', \md5(\rand()));
 
         // The file is going to be created in wp-content directory.
         $path = WP_CONTENT_DIR . '/' . $name;
@@ -49,7 +49,7 @@ class DisplayOfPhpErrorsIsOff extends Checklist\BasicCheck
         $status = new Checklist\CheckResult(null, esc_html__('BC Security has failed to determine whether display of errors is turned off by default.', 'bc-security'));
 
         // Write temporary file...
-        if (file_put_contents($path, $php_snippet) === false) {
+        if (\file_put_contents($path, $php_snippet) === false) {
             // ...bail on failure.
             return $status;
         }
@@ -65,7 +65,7 @@ class DisplayOfPhpErrorsIsOff extends Checklist\BasicCheck
         }
 
         // Remove temporary PHP file.
-        unlink($path);
+        \unlink($path);
 
         // Report on status.
         return $status;

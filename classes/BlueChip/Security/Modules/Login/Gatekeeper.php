@@ -94,7 +94,7 @@ class Gatekeeper implements \BlueChip\Security\Modules\Initializable, \BlueChip\
      */
     public function filterIllegalUserLogins(array $usernames): array
     {
-        return array_merge($usernames, $this->settings->getUsernameBlacklist());
+        return \array_merge($usernames, $this->settings->getUsernameBlacklist());
     }
 
 
@@ -170,7 +170,7 @@ class Gatekeeper implements \BlueChip\Security\Modules\Initializable, \BlueChip\
         // When a non-existing username (or email)...
         if (is_wp_error($user) && ($user->get_error_code() === 'invalid_username' || $user->get_error_code() === 'invalid_email')) {
             // ...is found on black list...
-            if (in_array($username, $this->settings->getUsernameBlacklist(), true)) {
+            if (\in_array($username, $this->settings->getUsernameBlacklist(), true)) {
                 // ...lock IP out!
                 $this->lockOut($username, $this->settings->getLongLockoutDuration(), IpBlacklist\BanReason::USERNAME_BLACKLIST);
             }

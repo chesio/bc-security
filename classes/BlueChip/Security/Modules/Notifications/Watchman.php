@@ -51,7 +51,7 @@ class Watchman implements Modules\Initializable, Modules\Activable
         $this->recipients = $settings[Settings::NOTIFICATION_RECIPIENTS];
         // If site admin should be notified to, include him as well.
         if ($settings[Settings::NOTIFY_SITE_ADMIN]) {
-            array_unshift($this->recipients, get_option('admin_email'));
+            \array_unshift($this->recipients, get_option('admin_email'));
         }
     }
 
@@ -61,7 +61,7 @@ class Watchman implements Modules\Initializable, Modules\Activable
      */
     public static function isMuted(): bool
     {
-        return defined('BC_SECURITY_MUTE_NOTIFICATIONS') && BC_SECURITY_MUTE_NOTIFICATIONS;
+        return \defined('BC_SECURITY_MUTE_NOTIFICATIONS') && BC_SECURITY_MUTE_NOTIFICATIONS;
     }
 
 
@@ -73,7 +73,7 @@ class Watchman implements Modules\Initializable, Modules\Activable
      */
     private static function formatRemoteAddress(string $remote_address): string
     {
-        $remote_hostname = gethostbyaddr($remote_address);
+        $remote_hostname = \gethostbyaddr($remote_address);
         if (empty($remote_hostname) || ($remote_hostname === $remote_address)) {
             return $remote_address;
         } else {
@@ -136,7 +136,7 @@ class Watchman implements Modules\Initializable, Modules\Activable
             $user = wp_get_current_user();
             if ($user->ID) {
                 // Name the bastard that turned us off!
-                $message = sprintf(
+                $message = \sprintf(
                     __('User "%s" had just deactivated BC Security plugin on your website!', 'bc-security'),
                     $user->user_login
                 );
@@ -162,7 +162,7 @@ class Watchman implements Modules\Initializable, Modules\Activable
     public function watchCoreUpdateAvailable($update_transient)
     {
         // Check, if update transient has the data we are interested in.
-        if (!isset($update_transient->updates) || !is_array($update_transient->updates) || empty($update_transient->updates)) {
+        if (!isset($update_transient->updates) || !\is_array($update_transient->updates) || empty($update_transient->updates)) {
             return;
         }
 
@@ -182,7 +182,7 @@ class Watchman implements Modules\Initializable, Modules\Activable
         }
 
         $subject = __('WordPress update available', 'bc-security');
-        $message = sprintf(
+        $message = \sprintf(
             __('WordPress has an update to version %s available.', 'bc-security'),
             $latest_version
         );
@@ -206,14 +206,14 @@ class Watchman implements Modules\Initializable, Modules\Activable
     public function watchPluginUpdatesAvailable($update_transient)
     {
         // Check, if update transient has the data we are interested in.
-        if (!isset($update_transient->response) || !is_array($update_transient->response)) {
+        if (!isset($update_transient->response) || !\is_array($update_transient->response)) {
             return;
         }
 
         // Filter out any updates for which notification has been sent already.
-        $plugin_updates = array_filter($update_transient->response, function ($plugin_update_data, $plugin_file) {
+        $plugin_updates = \array_filter($update_transient->response, function ($plugin_update_data, $plugin_file) {
             $notified_version = Transients::getForSite('update-notifications', 'plugin', $plugin_file);
-            return empty($notified_version) || version_compare($notified_version, $plugin_update_data->new_version, '<');
+            return empty($notified_version) || \version_compare($notified_version, $plugin_update_data->new_version, '<');
         }, ARRAY_FILTER_USE_BOTH);
 
         if (empty($plugin_updates)) {
@@ -225,7 +225,7 @@ class Watchman implements Modules\Initializable, Modules\Activable
 
         foreach ($plugin_updates as $plugin_file => $plugin_update_data) {
             $plugin_data = Plugin::getPluginData($plugin_file);
-            $plugin_message = sprintf(
+            $plugin_message = \sprintf(
                 __('Plugin "%1$s" has an update to version %2$s available.', 'bc-security'),
                 $plugin_data['Name'],
                 $plugin_update_data->new_version
@@ -233,7 +233,7 @@ class Watchman implements Modules\Initializable, Modules\Activable
 
             if (!empty($plugin_changelog_url = Plugin::getChangelogUrl($plugin_file))) {
                 // Append link to changelog, if available.
-                $plugin_message .= ' ' . sprintf(
+                $plugin_message .= ' ' . \sprintf(
                     __('Changelog: %1$s', 'bc-security'),
                     $plugin_changelog_url
                 );
@@ -263,14 +263,14 @@ class Watchman implements Modules\Initializable, Modules\Activable
     public function watchThemeUpdatesAvailable($update_transient)
     {
         // Check, if update transient has the data we are interested in.
-        if (!isset($update_transient->response) || !is_array($update_transient->response)) {
+        if (!isset($update_transient->response) || !\is_array($update_transient->response)) {
             return;
         }
 
         // Filter out any updates for which notification has been sent already.
-        $theme_updates = array_filter($update_transient->response, function ($theme_update_data, $theme_slug) {
+        $theme_updates = \array_filter($update_transient->response, function ($theme_update_data, $theme_slug) {
             $last_version = Transients::getForSite('update-notifications', 'theme', $theme_slug);
-            return empty($last_version) || version_compare($last_version, $theme_update_data['new_version'], '<');
+            return empty($last_version) || \version_compare($last_version, $theme_update_data['new_version'], '<');
         }, ARRAY_FILTER_USE_BOTH);
 
         if (empty($theme_updates)) {
@@ -282,7 +282,7 @@ class Watchman implements Modules\Initializable, Modules\Activable
 
         foreach ($theme_updates as $theme_slug => $theme_update_data) {
             $theme = wp_get_theme($theme_slug);
-            $message[] = sprintf(
+            $message[] = \sprintf(
                 __('Theme "%1$s" has an update to version %2$s available.', 'bc-security'),
                 $theme,
                 $theme_update_data['new_version']
@@ -311,9 +311,9 @@ class Watchman implements Modules\Initializable, Modules\Activable
      */
     public function watchLockoutEvents(string $remote_address, string $username, int $duration)
     {
-        if (in_array($remote_address, $this->logger->getKnownIps(), true)) {
+        if (\in_array($remote_address, $this->logger->getKnownIps(), true)) {
             $subject = __('Known IP locked out', 'bc-security');
-            $message = sprintf(
+            $message = \sprintf(
                 __('A known IP address %1$s has been locked out for %2$d seconds after someone tried to log in with username "%3$s".', 'bc-security'),
                 self::formatRemoteAddress($remote_address),
                 $duration,
@@ -335,7 +335,7 @@ class Watchman implements Modules\Initializable, Modules\Activable
     {
         if (Is::admin($user)) {
             $subject = __('Admin user login', 'bc-security');
-            $message = sprintf(
+            $message = \sprintf(
                 __('User "%1$s" with administrator privileges just logged in to your WordPress site from IP address %2$s.', 'bc-security'),
                 $username,
                 self::formatRemoteAddress($this->remote_address)
@@ -356,7 +356,7 @@ class Watchman implements Modules\Initializable, Modules\Activable
     {
         $subject = __('Checklist monitoring alert', 'bc-security');
         $message = [
-            sprintf(__('An issue has been found during checklist monitoring of "%s" check:', 'bc-security'), $check->getName()),
+            \sprintf(__('An issue has been found during checklist monitoring of "%s" check:', 'bc-security'), $check->getName()),
             '',
             $result->getMessageAsPlainText(),
         ];
@@ -379,7 +379,7 @@ class Watchman implements Modules\Initializable, Modules\Activable
 
         foreach ($issues as $issue) {
             $message[] = '';
-            $message[] = sprintf("%s: %s", $issue['check']->getName(), $issue['result']->getMessageAsPlainText());
+            $message[] = \sprintf("%s: %s", $issue['check']->getName(), $issue['result']->getMessageAsPlainText());
         }
 
         $this->notify($subject, $message);

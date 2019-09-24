@@ -58,6 +58,6 @@ trait CountablePage
      */
     private function getCounterUserMetaKey(): string
     {
-        return implode('/', [$this->getSlug(), 'last-visit']);
+        return \implode('/', [$this->getSlug(), 'last-visit']);
     }
 }

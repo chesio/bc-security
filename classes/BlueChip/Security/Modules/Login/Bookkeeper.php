@@ -58,7 +58,7 @@ class Bookkeeper implements \BlueChip\Security\Modules\Installable
 
         $charset_collate = $this->wpdb->get_charset_collate();
 
-        dbDelta(implode(PHP_EOL, [
+        dbDelta(\implode(PHP_EOL, [
             "CREATE TABLE {$this->failed_logins_table} (",
             "id int unsigned NOT NULL AUTO_INCREMENT,",
             "ip_address char(128) NOT NULL,",
@@ -74,7 +74,7 @@ class Bookkeeper implements \BlueChip\Security\Modules\Installable
 
     public function uninstall()
     {
-        $this->wpdb->query(sprintf('DROP TABLE IF EXISTS %s', $this->failed_logins_table));
+        $this->wpdb->query(\sprintf('DROP TABLE IF EXISTS %s', $this->failed_logins_table));
     }
 
 
@@ -93,7 +93,7 @@ class Bookkeeper implements \BlueChip\Security\Modules\Installable
         // Insert new failed login attempt for given IP address.
         $data = [
             'ip_address'    => $ip_address,
-            'date_and_time' => date(self::MYSQL_DATETIME_FORMAT, $now),
+            'date_and_time' => \date(self::MYSQL_DATETIME_FORMAT, $now),
             'username'      => $username,
             'user_id'       => ($user === false) ? null : $user->ID,
         ];
@@ -104,10 +104,10 @@ class Bookkeeper implements \BlueChip\Security\Modules\Installable
         $query = $this->wpdb->prepare(
             "SELECT COUNT(*) AS retries_count FROM {$this->failed_logins_table} WHERE ip_address = %s AND date_and_time > %s",
             $ip_address,
-            date(self::MYSQL_DATETIME_FORMAT, $now - $this->settings->getResetTimeoutDuration())
+            \date(self::MYSQL_DATETIME_FORMAT, $now - $this->settings->getResetTimeoutDuration())
         );
 
-        return intval($this->wpdb->get_var($query));
+        return \intval($this->wpdb->get_var($query));
     }
 
 
@@ -124,7 +124,7 @@ class Bookkeeper implements \BlueChip\Security\Modules\Installable
         // Note: $wpdb->delete cannot be used as it does not support "<" comparison)
         $query = $this->wpdb->prepare(
             "DELETE FROM {$this->failed_logins_table} WHERE date_and_time <= %s",
-            date(self::MYSQL_DATETIME_FORMAT, $threshold)
+            \date(self::MYSQL_DATETIME_FORMAT, $threshold)
         );
         // Execute query.
         return $this->wpdb->query($query);

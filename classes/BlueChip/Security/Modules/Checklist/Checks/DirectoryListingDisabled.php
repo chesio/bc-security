@@ -13,7 +13,7 @@ class DirectoryListingDisabled extends Checklist\BasicCheck
     {
         parent::__construct(
             __('Directory listing disabled', 'bc-security'),
-            sprintf(
+            \sprintf(
                 /* translators: 1: link to documentation about DirectoryListings at apache.org */
                 esc_html__('A sensible security practice is to disable %1$s.', 'bc-security'),
                 '<a href="' . esc_url(__('https://wiki.apache.org/httpd/DirectoryListings', 'bc-security')) . '" rel="noreferrer">' . esc_html__('directory listings', 'bc-security') . '</a>'
@@ -32,7 +32,7 @@ class DirectoryListingDisabled extends Checklist\BasicCheck
         $response = wp_remote_get($upload_paths['baseurl']);
         $response_body = wp_remote_retrieve_body($response);
 
-        return (stripos($response_body, '<title>Index of') === false)
+        return (\stripos($response_body, '<title>Index of') === false)
             ? new Checklist\CheckResult(true, esc_html__('It seems that directory listing is disabled.', 'bc-security'))
             : new Checklist\CheckResult(false, esc_html__('It seems that directory listing is not disabled!', 'bc-security'))
         ;

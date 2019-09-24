@@ -41,7 +41,7 @@ abstract class Transients
 
         // First, delete all transients from database...
         $wpdb->query(
-            sprintf(
+            \sprintf(
                 "DELETE FROM {$table_name} WHERE (option_name LIKE '%s' OR option_name LIKE '%s')",
                 '_site_transient_' . self::NAME_PREFIX . '%',
                 '_site_transient_timeout_' . self::NAME_PREFIX . '%'
@@ -75,7 +75,7 @@ abstract class Transients
     public static function setForSite($value, ...$args): bool
     {
         // If the first from variable arguments is plain integer, take it as expiration value.
-        $expiration = is_int($args[0]) ? array_shift($args) : 0;
+        $expiration = \is_int($args[0]) ? \array_shift($args) : 0;
 
         return set_site_transient(self::name($args), $value, $expiration);
     }
@@ -89,6 +89,6 @@ abstract class Transients
      */
     private static function name(array $key): string
     {
-        return self::NAME_PREFIX . md5(implode(':', $key));
+        return self::NAME_PREFIX . \md5(\implode(':', $key));
     }
 }

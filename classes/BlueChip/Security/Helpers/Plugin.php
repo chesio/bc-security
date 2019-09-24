@@ -75,7 +75,7 @@ abstract class Plugin
     {
         // This is fine most of the time and WPCentral/WP-CLI-Security gets the slug the same way,
         // but it does not seem to be guaranteed that slug is always equal to directory name...
-        $slug = dirname($plugin_basename);
+        $slug = \dirname($plugin_basename);
         // For single-file plugins, return empty string.
         return $slug === '.' ? '' : $slug;
     }
@@ -87,7 +87,7 @@ abstract class Plugin
      */
     public static function hasReadmeTxt(string $plugin_basename): bool
     {
-        return is_file(self::getPluginDirPath($plugin_basename) . '/readme.txt');
+        return \is_file(self::getPluginDirPath($plugin_basename) . '/readme.txt');
     }
 
 
@@ -98,7 +98,7 @@ abstract class Plugin
     public static function isVersionControlled(string $plugin_basename): bool
     {
         $plugin_dir = self::getPluginDirPath($plugin_basename);
-        return is_dir($plugin_dir . '/.git') || is_dir($plugin_dir . '/.svn');
+        return \is_dir($plugin_dir . '/.git') || \is_dir($plugin_dir . '/.svn');
     }
 
 
@@ -111,14 +111,14 @@ abstract class Plugin
     public static function getPluginsInstalledFromWordPressOrg(): array
     {
         // We're using some wp-admin stuff here, so make sure it's available.
-        if (!function_exists('get_plugins')) {
+        if (!\function_exists('get_plugins')) {
             require_once ABSPATH . 'wp-admin/includes/plugin.php';
         }
 
         // There seem to be no easy way to find out if plugin is hosted at WordPress.org repository or not, see:
         // https://core.trac.wordpress.org/ticket/32101
 
-        return array_filter(
+        return \array_filter(
             get_plugins(),
             [self::class, 'hasReadmeTxt'],
             ARRAY_FILTER_USE_KEY
@@ -148,7 +148,7 @@ abstract class Plugin
      */
     public static function getPluginDirPath(string $plugin_basename): string
     {
-        return wp_normalize_path(WP_PLUGIN_DIR . '/' . dirname($plugin_basename));
+        return wp_normalize_path(WP_PLUGIN_DIR . '/' . \dirname($plugin_basename));
     }
 
 
@@ -161,9 +161,9 @@ abstract class Plugin
      */
     public static function implodeList(array $plugins, string $linkTo = ''): string
     {
-        return implode(
+        return \implode(
             ', ',
-            array_map(
+            \array_map(
                 function (array $plugin_data) use ($linkTo): string {
                     $plugin_name = '<em>' . esc_html($plugin_data['Name']) . '</em>';
                     return $linkTo

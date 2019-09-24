@@ -68,6 +68,6 @@ class Settings extends \BlueChip\Security\Core\Settings
      */
     public static function sanitizeNotificationRecipient($value): array
     {
-        return array_filter(self::parseList($value), '\is_email');
+        return \array_filter(self::parseList($value), '\is_email');
     }
 }

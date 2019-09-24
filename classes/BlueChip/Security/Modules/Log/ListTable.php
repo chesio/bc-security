@@ -38,7 +38,7 @@ class ListTable extends \BlueChip\Security\Core\ListTable
         $this->logger = $logger;
 
         // Display only events of particular type?
-        $event_id = filter_input(INPUT_GET, self::VIEW_EVENT, FILTER_SANITIZE_URL);
+        $event_id = \filter_input(INPUT_GET, self::VIEW_EVENT, FILTER_SANITIZE_URL);
         if ($event_id && !empty($event = EventsManager::create($event_id))) {
             $this->event = $event;
             $this->url = add_query_arg(self::VIEW_EVENT, $event_id, $this->url);
@@ -67,11 +67,11 @@ class ListTable extends \BlueChip\Security\Core\ListTable
      */
     public function column_default($item, $column_name) // phpcs:ignore
     {
-        if ($this->event && array_key_exists($column_name, $this->event->getContext())) {
-            $context = empty($item['context']) ? [] : unserialize($item['context']);
+        if ($this->event && \array_key_exists($column_name, $this->event->getContext())) {
+            $context = empty($item['context']) ? [] : \unserialize($item['context']);
             $value = $context[$column_name] ?? '';
             // Value can be an array, in such case output array values separated by ",".
-            return is_array($value) ? implode(', ', $value) : $value;
+            return \is_array($value) ? \implode(', ', $value) : $value;
         } else {
             return isset($item[$column_name]) ? $item[$column_name] : '';
         }
@@ -118,7 +118,7 @@ class ListTable extends \BlueChip\Security\Core\ListTable
     public function column_message(array $item): string // phpcs:ignore
     {
         $message = empty($item['message']) ? '' : $item['message'];
-        $context = empty($item['context']) ? [] : unserialize($item['context']);
+        $context = empty($item['context']) ? [] : \unserialize($item['context']);
         return self::formatMessage($message, $context);
     }
 
@@ -170,13 +170,13 @@ class ListTable extends \BlueChip\Security\Core\ListTable
      */
     protected function get_views() // phpcs:ignore
     {
-        $event_id = is_null($this->event) ? null : $this->event->getId();
+        $event_id = \is_null($this->event) ? null : $this->event->getId();
 
         $views = [
-            'all' => sprintf(
+            'all' => \sprintf(
                 '<a href="%s" class="%s">%s</a> (%d)',
                 remove_query_arg([self::VIEW_EVENT], $this->url),
-                is_null($event_id) ? 'current' : '',
+                \is_null($event_id) ? 'current' : '',
                 esc_html__('All', 'bc-security'),
                 $this->logger->countAll()
             ),
@@ -185,7 +185,7 @@ class ListTable extends \BlueChip\Security\Core\ListTable
         foreach (EventsManager::getInstances() as $eid => $event) {
             // Get human readable name for event type.
 
-            $views[$eid] = sprintf(
+            $views[$eid] = \sprintf(
                 '<a href="%s" class="%s">%s</a> (%d)',
                 add_query_arg([self::VIEW_EVENT => $eid], $this->url),
                 $event_id === $eid ? 'current' : '',
@@ -231,7 +231,7 @@ class ListTable extends \BlueChip\Security\Core\ListTable
         }
 
         return [
-            self::ACTION_BLACKLIST => sprintf(
+            self::ACTION_BLACKLIST => \sprintf(
                 '<span class="delete"><a href="%s">%s</a></span>',
                 add_query_arg(
                     [
@@ -281,9 +281,9 @@ class ListTable extends \BlueChip\Security\Core\ListTable
         foreach ($context as $key => $value) {
             // Format array as comma separated list (indicate empty array with "-")
             // Convert all other values to string (and make the value stand out in bold in such case).
-            $formatted = is_array($value) ? (empty($value) ? '-' : implode(', ', $value)) : sprintf('<strong>%s</strong>', $value);
+            $formatted = \is_array($value) ? (empty($value) ? '-' : \implode(', ', $value)) : \sprintf('<strong>%s</strong>', $value);
             // Inject formatted values into message.
-            $message = str_replace("{{$key}}", $formatted, $message);
+            $message = \str_replace("{{$key}}", $formatted, $message);
         }
 
         return $message;

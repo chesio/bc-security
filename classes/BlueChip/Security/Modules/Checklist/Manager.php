@@ -116,14 +116,14 @@ class Manager implements Modules\Initializable
 
         if (isset($filters['class'])) {
             $class = $filters['class'];
-            $checks = array_filter($checks, function (Check $check) use ($class): bool {
+            $checks = \array_filter($checks, function (Check $check) use ($class): bool {
                 return $check instanceof $class;
             });
         }
 
         if (isset($filters['meaningful'])) {
             $is_meaningful = $filters['meaningful'];
-            $checks = array_filter($checks, function (Check $check) use ($is_meaningful): bool {
+            $checks = \array_filter($checks, function (Check $check) use ($is_meaningful): bool {
                 return $is_meaningful ? $check->isMeaningful() : !$check->isMeaningful();
             });
         }
@@ -131,14 +131,14 @@ class Manager implements Modules\Initializable
         if (isset($filters['monitored'])) {
             $monitored = $filters['monitored'];
             $settings = $this->settings;
-            $checks = array_filter($checks, function (string $check_id) use ($monitored, $settings): bool {
+            $checks = \array_filter($checks, function (string $check_id) use ($monitored, $settings): bool {
                 return $monitored ? $settings[$check_id] : !$settings[$check_id];
             }, ARRAY_FILTER_USE_KEY);
         }
 
         if (isset($filters['status'])) {
             $status = $filters['status'];
-            $checks = array_filter($checks, function (Check $check) use ($status): bool {
+            $checks = \array_filter($checks, function (Check $check) use ($status): bool {
                 return $check->getResult()->getStatus() === $status;
             });
         }
@@ -216,7 +216,7 @@ class Manager implements Modules\Initializable
      */
     public function runCheck()
     {
-        if (empty($check_id = filter_input(INPUT_POST, 'check_id', FILTER_SANITIZE_STRING))) {
+        if (empty($check_id = \filter_input(INPUT_POST, 'check_id', FILTER_SANITIZE_STRING))) {
             wp_send_json_error([
                 'message' => __('No check ID provided!', 'bc-security'),
             ]);
@@ -225,7 +225,7 @@ class Manager implements Modules\Initializable
         $checks = $this->getChecks();
         if (empty($check = $checks[$check_id])) {
             wp_send_json_error([
-                'message' => sprintf(__('Unknown check ID: %s', 'bc-security'), $check_id),
+                'message' => \sprintf(__('Unknown check ID: %s', 'bc-security'), $check_id),
             ]);
         }
 

@@ -77,7 +77,7 @@ class Resolver implements Modules\Activable, Modules\Initializable
      */
     public function resolveHostnameInBackground(string $ip_address, string $action, array $context = [])
     {
-        wp_schedule_single_event(time(), self::RESOLVE_REMOTE_ADDRESS, [$ip_address, $action, $context]);
+        wp_schedule_single_event(\time(), self::RESOLVE_REMOTE_ADDRESS, [$ip_address, $action, $context]);
     }
 
 
@@ -92,7 +92,7 @@ class Resolver implements Modules\Activable, Modules\Initializable
         // Check the cache first.
         if (empty($hostname = Transients::getForSite(self::TRANSIENT_KEY, $ip_address))) {
             // Cache empty, resolve the hostname.
-            if (empty($hostname = gethostbyaddr($ip_address) ?: '')) {
+            if (empty($hostname = \gethostbyaddr($ip_address) ?: '')) {
                 // This should only happen on malformed IP address, but bail nevertheless.
                 return '';
             }

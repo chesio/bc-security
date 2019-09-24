@@ -70,7 +70,7 @@ class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\
 
         $charset_collate = $this->wpdb->get_charset_collate();
 
-        dbDelta(implode(PHP_EOL, [
+        dbDelta(\implode(PHP_EOL, [
             "CREATE TABLE {$this->log_table} (",
             "id int unsigned NOT NULL AUTO_INCREMENT,",
             "date_and_time datetime NOT NULL,",
@@ -89,7 +89,7 @@ class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\
 
     public function uninstall()
     {
-        $this->wpdb->query(sprintf('DROP TABLE IF EXISTS %s', $this->log_table));
+        $this->wpdb->query(\sprintf('DROP TABLE IF EXISTS %s', $this->log_table));
     }
 
 
@@ -137,12 +137,12 @@ class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\
         $insertion_status = $this->wpdb->insert(
             $this->log_table,
             [
-                'date_and_time' => date(self::MYSQL_DATETIME_FORMAT, current_time('timestamp')),
+                'date_and_time' => \date(self::MYSQL_DATETIME_FORMAT, current_time('timestamp')),
                 'ip_address' => $ip_address,
                 'event' => $event,
                 'level' => $this->translateLogLevel($level),
                 'message' => $message,
-                'context' => serialize($context),
+                'context' => \serialize($context),
             ],
             [
                 '%s',
@@ -161,7 +161,7 @@ class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\
                 [Events\AuthBadCookie::ID, Events\LoginFailure::ID, Events\LoginLockout::ID, Events\LoginSuccessful::ID,]
             );
 
-            if (in_array($event, $events_with_hostname_resolving, true)) {
+            if (\in_array($event, $events_with_hostname_resolving, true)) {
                 // Schedule hostname resolution for inserted log record.
                 $this->hostname_resolver->resolveHostnameInBackground(
                     $ip_address,
@@ -181,7 +181,7 @@ class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\
     public function logEvent(Event $event)
     {
         // Include event ID in context.
-        $this->log($event->getLogLevel(), $event->getMessage(), array_merge(['event' => $event->getId()], $event->getContext()));
+        $this->log($event->getLogLevel(), $event->getMessage(), \array_merge(['event' => $event->getId()], $event->getContext()));
     }
 
 
@@ -211,7 +211,7 @@ class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\
             case Log\LogLevel::DEBUG:
                 return 7;
             default:
-                _doing_it_wrong(__METHOD__, sprintf('Unknown log level: %s', $level), '0.2.0');
+                _doing_it_wrong(__METHOD__, \sprintf('Unknown log level: %s', $level), '0.2.0');
                 return null;
         }
     }
@@ -258,11 +258,11 @@ class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\
         $query = "SELECT COUNT(id) AS total FROM {$this->log_table}";
 
         // Event may be empty string as well, therefore do not use empty().
-        if (is_string($event)) {
+        if (\is_string($event)) {
             $query .= $this->wpdb->prepare(' WHERE event = %s', $event);
         }
 
-        return intval($this->wpdb->get_var($query));
+        return \intval($this->wpdb->get_var($query));
     }
 
 
@@ -278,10 +278,10 @@ class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\
     {
         $query = $this->wpdb->prepare(
             "SELECT COUNT(id) AS total FROM {$this->log_table} WHERE date_and_time > %s",
-            date(self::MYSQL_DATETIME_FORMAT, $timestamp)
+            \date(self::MYSQL_DATETIME_FORMAT, $timestamp)
         );
 
-        return intval($this->wpdb->get_var($query));
+        return \intval($this->wpdb->get_var($query));
     }
 
 
@@ -301,12 +301,12 @@ class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\
         $query = "SELECT * FROM {$this->log_table}";
 
         // Event may be empty string as well, therefore do not use empty().
-        if (is_string($event)) {
+        if (\is_string($event)) {
             $query .= $this->wpdb->prepare(" WHERE event = %s", $event);
         }
 
         // Apply order by column, if column name is valid.
-        if ($order_by && in_array($order_by, $this->columns, true)) {
+        if ($order_by && \in_array($order_by, $this->columns, true)) {
             $query .= " ORDER BY {$order_by}";
             if ($order === 'asc') {
                 $query .= ' ASC';
@@ -316,13 +316,13 @@ class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\
         }
 
         // Apply limits
-        $query .= sprintf(" LIMIT %d, %d", $from, $limit);
+        $query .= \sprintf(" LIMIT %d, %d", $from, $limit);
 
         // Execute query
         $results = $this->wpdb->get_results($query, ARRAY_A);
 
         // Return results
-        return is_array($results) ? $results : [];
+        return \is_array($results) ? $results : [];
     }
 
 
@@ -337,7 +337,7 @@ class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\
             $this->wpdb->prepare("SELECT DISTINCT(ip_address) FROM {$this->log_table} WHERE event = %s", Events\LoginSuccessful::ID)
         );
 
-        return is_array($result) ? wp_list_pluck($result, 'ip_address') : [];
+        return \is_array($result) ? wp_list_pluck($result, 'ip_address') : [];
     }
 
 
@@ -364,7 +364,7 @@ class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\
         // Note: $wpdb->delete cannot be used as it does not support "<=" comparison)
         $query = $this->wpdb->prepare(
             "DELETE FROM {$this->log_table} WHERE date_and_time <= %s",
-            date(self::MYSQL_DATETIME_FORMAT, current_time('timestamp') - $max_age)
+            \date(self::MYSQL_DATETIME_FORMAT, current_time('timestamp') - $max_age)
         );
         // Execute query and return true/false status.
         return $this->wpdb->query($query) !== false;
@@ -387,7 +387,7 @@ class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\
 
         // Find the biggest ID from all records that should be pruned.
         $query_id = $this->wpdb->prepare("SELECT id FROM {$this->log_table} ORDER BY id DESC LIMIT %d, 1", $max_size);
-        if (empty($id = intval($this->wpdb->get_var($query_id)))) {
+        if (empty($id = \intval($this->wpdb->get_var($query_id)))) {
             return false;
         }
 

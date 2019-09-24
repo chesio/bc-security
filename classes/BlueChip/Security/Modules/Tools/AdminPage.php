@@ -103,10 +103,10 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
     {
         echo '<h2>' . esc_html__('Reset settings', 'bc-security') . '</h2>';
         echo '<p>';
-        echo sprintf(
+        echo \sprintf(
             /* translators: %s: link to plugin setup page */
             esc_html__('Set all plugin settings (including %s) back to their default values.', 'bc-security'),
-            sprintf(
+            \sprintf(
                 '<a href="%s">%s</a>',
                 Setup\AdminPage::getPageUrl(),
                 esc_html__('connection type', 'bc-security')
@@ -127,7 +127,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
      */
     private function processActions()
     {
-        $nonce = filter_input(INPUT_POST, self::NONCE_NAME, FILTER_SANITIZE_STRING);
+        $nonce = \filter_input(INPUT_POST, self::NONCE_NAME, FILTER_SANITIZE_STRING);
         if (empty($nonce)) {
             // No nonce, no action.
             return;
@@ -159,12 +159,12 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
         }
 
         // Send headers.
-        $file_name = 'bc-security-export-' . date('Y-m-d') . '.json';
-        header("Content-Disposition: attachment; filename={$file_name}");
-        header("Content-Type: application/json; charset=utf-8");
+        $file_name = 'bc-security-export-' . \date('Y-m-d') . '.json';
+        \header("Content-Disposition: attachment; filename={$file_name}");
+        \header("Content-Type: application/json; charset=utf-8");
 
         // Send content.
-        echo json_encode($export, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+        echo \json_encode($export, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
         exit;
     }
 
@@ -182,19 +182,19 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
             AdminNotices::add(__('File failed to upload. Please try again.', 'bc-security'), AdminNotices::ERROR);
             return;
         }
-        if (pathinfo($import_file['name'], PATHINFO_EXTENSION) !== 'json') {
+        if (\pathinfo($import_file['name'], PATHINFO_EXTENSION) !== 'json') {
             AdminNotices::add(__('Incorrect file type!', 'bc-security'), AdminNotices::ERROR);
             return;
         }
 
         // Read the file.
-        if (empty($json = file_get_contents($import_file['tmp_name']))) {
+        if (empty($json = \file_get_contents($import_file['tmp_name']))) {
             AdminNotices::add(__('File could not be read!', 'bc-security'), AdminNotices::ERROR);
             return;
         }
 
         // Parse JSON.
-        if (empty($import = json_decode($json, true))) { // true -> convert objects into associative arrays
+        if (empty($import = \json_decode($json, true))) { // true -> convert objects into associative arrays
             AdminNotices::add(__('File is either empty or corrupted!', 'bc-security'), AdminNotices::ERROR);
             return;
         }
@@ -209,7 +209,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
             }
 
             $data = $import[$option_name];
-            if (!is_array($data)) {
+            if (!\is_array($data)) {
                 $status = false;
                 continue;
             }

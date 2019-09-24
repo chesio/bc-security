@@ -79,7 +79,7 @@ class Admin
         }
 
         // First registered page acts as main page:
-        $main_page = reset($this->pages);
+        $main_page = \reset($this->pages);
 
         // Add (main) menu page
         add_menu_page(
@@ -119,7 +119,7 @@ class Admin
     public function filterActionLinks(array $links): array
     {
         if (current_user_can(self::CAPABILITY) && isset($this->pages['bc-security-setup'])) {
-            $links[] = sprintf(
+            $links[] = \sprintf(
                 '<a href="%s">%s</a>',
                 $this->pages['bc-security-setup']->getUrl(),
                 esc_html($this->pages['bc-security-setup']->getMenuTitle())
@@ -138,8 +138,8 @@ class Admin
     private function renderCounter(Core\Admin\AbstractPage $page): string
     {
         // Counter is optional.
-        return method_exists($page, 'getCount') && !empty($count = $page->getCount())
-            ? sprintf(' <span class="awaiting-mod"><span>%d</span></span>', number_format_i18n($count))
+        return \method_exists($page, 'getCount') && !empty($count = $page->getCount())
+            ? \sprintf(' <span class="awaiting-mod"><span>%d</span></span>', number_format_i18n($count))
             : ''
         ;
     }

@@ -63,7 +63,7 @@ class Job
         }
 
         // Compute Unix timestamp (UTC) for when to run the cron job based on $time value.
-        $timestamp = is_int($this->time) ? $this->time : self::getTimestamp($this->time);
+        $timestamp = \is_int($this->time) ? $this->time : self::getTimestamp($this->time);
 
         return wp_schedule_event($timestamp, $this->recurrence, $this->hook);
     }
@@ -87,7 +87,7 @@ class Job
      */
     public function isScheduled(): bool
     {
-        return is_int(wp_next_scheduled($this->hook));
+        return \is_int(wp_next_scheduled($this->hook));
     }
 
 
@@ -105,10 +105,10 @@ class Job
     public static function getTimestamp(string $time_string): int
     {
         if ($time_string === self::RUN_AT_NIGHT || $time_string === self::RUN_RANDOMLY) {
-            $hour = mt_rand(0, ($time_string === self::RUN_AT_NIGHT) ? 5 : 23);
-            $minute = mt_rand(0, 59);
-            $second = mt_rand(0, 59);
-            $time = sprintf("%02d:%02d:%02d", $hour, $minute, $second);
+            $hour = \mt_rand(0, ($time_string === self::RUN_AT_NIGHT) ? 5 : 23);
+            $minute = \mt_rand(0, 59);
+            $second = \mt_rand(0, 59);
+            $time = \sprintf("%02d:%02d:%02d", $hour, $minute, $second);
         } else {
             // Assume $time_string denotes actual time like '01:02:03'.
             $time = $time_string;

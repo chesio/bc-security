@@ -38,7 +38,7 @@ class AssetsManager
      */
     public function getScriptFilePath(string $filename): string
     {
-        return implode('', [plugin_dir_path($this->plugin_filename), self::JS_ASSETS_DIRECTORY_PATH, $filename]);
+        return \implode('', [plugin_dir_path($this->plugin_filename), self::JS_ASSETS_DIRECTORY_PATH, $filename]);
     }
 
 
@@ -48,7 +48,7 @@ class AssetsManager
      */
     public function getScriptFileUrl(string $filename): string
     {
-        return implode('', [plugin_dir_url($this->plugin_filename), self::JS_ASSETS_DIRECTORY_PATH, $filename]);
+        return \implode('', [plugin_dir_url($this->plugin_filename), self::JS_ASSETS_DIRECTORY_PATH, $filename]);
     }
 
 
@@ -58,7 +58,7 @@ class AssetsManager
      */
     public function getStyleFilePath(string $filename): string
     {
-        return implode('', [plugin_dir_path($this->plugin_filename), self::CSS_ASSETS_DIRECTORY_PATH, $filename]);
+        return \implode('', [plugin_dir_path($this->plugin_filename), self::CSS_ASSETS_DIRECTORY_PATH, $filename]);
     }
 
 
@@ -68,6 +68,6 @@ class AssetsManager
      */
     public function getStyleFileUrl(string $filename): string
     {
-        return implode('', [plugin_dir_url($this->plugin_filename), self::CSS_ASSETS_DIRECTORY_PATH, $filename]);
+        return \implode('', [plugin_dir_url($this->plugin_filename), self::CSS_ASSETS_DIRECTORY_PATH, $filename]);
     }
 }

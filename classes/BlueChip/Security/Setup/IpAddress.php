@@ -40,7 +40,7 @@ abstract class IpAddress
             self::HTTP_X_REAL_IP => __('Behind a reverse proxy or load balancer', 'bc-security'),
         ];
 
-        return $explain ? $list : array_keys($list);
+        return $explain ? $list : \array_keys($list);
     }
 
 
@@ -52,7 +52,7 @@ abstract class IpAddress
      */
     public static function get(string $type): string
     {
-        if (!in_array($type, self::enlist(), true)) {
+        if (!\in_array($type, self::enlist(), true)) {
             // Invalid type, fall back to direct address.
             $type = self::REMOTE_ADDR;
         }
@@ -84,7 +84,7 @@ abstract class IpAddress
      */
     public static function getRaw(string $type): string
     {
-        return (in_array($type, self::enlist(), true) && isset($_SERVER[$type])) ? $_SERVER[$type] : '';
+        return (\in_array($type, self::enlist(), true) && isset($_SERVER[$type])) ? $_SERVER[$type] : '';
     }
 
 
@@ -108,7 +108,7 @@ abstract class IpAddress
     private static function getFirst(string $ip_addresses): string
     {
         // Note: explode always return an array with at least one item.
-        $ips = array_map('trim', explode(',', $ip_addresses));
+        $ips = \array_map('trim', \explode(',', $ip_addresses));
         return $ips[0];
     }
 }

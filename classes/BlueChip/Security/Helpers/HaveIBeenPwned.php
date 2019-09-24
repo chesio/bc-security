@@ -28,10 +28,10 @@ abstract class HaveIBeenPwned
      */
     public static function hasPasswordBeenPwned(string $password): ?bool
     {
-        $sha1 = sha1($password);
+        $sha1 = \sha1($password);
 
         // Only first 5 characters of the hash are required.
-        $sha1_prefix = substr($sha1, 0, 5);
+        $sha1_prefix = \substr($sha1, 0, 5);
 
         $response = wp_remote_get(esc_url(self::PWNEDPASSWORDS_API_RANGE_SEARCH_URL . $sha1_prefix));
 
@@ -49,11 +49,11 @@ abstract class HaveIBeenPwned
         }
 
         // Every record has "hash_suffix:count" format.
-        $records = explode(PHP_EOL, $body);
+        $records = \explode(PHP_EOL, $body);
         foreach ($records as $record) {
-            [$sha1_suffix, $count] = explode(':', $record);
+            [$sha1_suffix, $count] = \explode(':', $record);
 
-            if ($sha1 === ($sha1_prefix . strtolower($sha1_suffix))) {
+            if ($sha1 === ($sha1_prefix . \strtolower($sha1_suffix))) {
                 return true; // Your password been pwned, my friend!
             }
         }

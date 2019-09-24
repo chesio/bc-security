@@ -47,7 +47,7 @@ abstract class FormHelper
             'value'     => 'true',
             'id'        => $args['label_for'],
             'name'      => $args['name'],
-            'checked'   => boolval($args['value']),
+            'checked'   => \boolval($args['value']),
         ];
 
         if (!isset($args['plain'])) {
@@ -146,11 +146,11 @@ abstract class FormHelper
             'id'        => $args['label_for'],
             'name'      => $args['name'],
             'cols'      => $args['cols'] ?? self::TEXTAREA_COLS_DEFAULT_VALUE,
-            'rows'      => $args['rows'] ?? max(min(count($args['value']), self::TEXTAREA_ROWS_MAXIMUM_VALUE), self::TEXTAREA_ROWS_MINIMUM_VALUE),
+            'rows'      => $args['rows'] ?? \max(\min(\count($args['value']), self::TEXTAREA_ROWS_MAXIMUM_VALUE), self::TEXTAREA_ROWS_MINIMUM_VALUE),
         ];
 
         echo '<textarea ' . self::renderFieldProperties($properties) . '>';
-        echo esc_html(implode(PHP_EOL, $args['value']));
+        echo esc_html(\implode(PHP_EOL, $args['value']));
         echo '</textarea>';
 
         self::printAppendix($args, false);
@@ -168,28 +168,28 @@ abstract class FormHelper
      */
     protected static function renderFieldProperties(array $properties): string
     {
-        $filtered = array_filter(
+        $filtered = \array_filter(
             $properties,
             // Remove any false-like values (empty strings and false booleans) except for integers and floats.
             function ($value) {
-                return is_int($value)
-                    || is_float($value)
-                    || (is_string($value) && $value !== '')
-                    || (is_bool($value) && $value)
+                return \is_int($value)
+                    || \is_float($value)
+                    || (\is_string($value) && $value !== '')
+                    || (\is_bool($value) && $value)
                 ;
             }
         );
         // Map keys and values together as key=value
-        $mapped = array_map(
+        $mapped = \array_map(
             function ($key, $value) {
                 // Boolean values are replaced with key name: checked => true ---> checked="checked"
-                return sprintf('%s="%s"', $key, esc_attr(is_bool($value) ? $key : $value));
+                return \sprintf('%s="%s"', $key, esc_attr(\is_bool($value) ? $key : $value));
             },
-            array_keys($filtered),
-            array_values($filtered)
+            \array_keys($filtered),
+            \array_values($filtered)
         );
         // Join all properties into single string
-        return implode(' ', $mapped);
+        return \implode(' ', $mapped);
     }
 
 
@@ -203,7 +203,7 @@ abstract class FormHelper
     protected static function printAppendix(array $args, bool $inline)
     {
         if (isset($args['description'])) {
-            echo sprintf(
+            echo \sprintf(
                 '<%1$s class="description">%2$s</%1$s>',
                 $inline ? 'span' : 'p',
                 esc_html($args['description'])

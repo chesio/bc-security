@@ -26,7 +26,7 @@ class NoPluginsRemovedFromDirectory extends Checklist\AdvancedCheck
     {
         parent::__construct(
             __('No removed plugins installed', 'bc-security'),
-            sprintf(
+            \sprintf(
                 /* translators: 1: link to Plugins Directory, 2: link to article on Wordfence blog */
                 esc_html__('Plugins can be removed from %1$s for several reasons (including but no limited to %2$s). Use of removed plugins is discouraged.', 'bc-security'),
                 '<a href="' . esc_url(__('https://wordpress.org/plugins/', 'bc-security')) . '" rel="noreferrer">' . esc_html__('Plugins Directory', 'bc-security') . '</a>',
@@ -52,7 +52,7 @@ class NoPluginsRemovedFromDirectory extends Checklist\AdvancedCheck
         $list_of_unknown_plugins = Helpers\Plugin::implodeList($problematic_plugins['unknown_plugins'], 'DirectoryURL');
 
         if (!empty($list_of_removed_plugins)) {
-            $message = sprintf(
+            $message = \sprintf(
                 esc_html__('Following plugins seem to have been removed from Plugins Directory: %s', 'bc-security'),
                 $list_of_removed_plugins
             );
@@ -60,7 +60,7 @@ class NoPluginsRemovedFromDirectory extends Checklist\AdvancedCheck
             if (!empty($list_of_unknown_plugins)) {
                 // Also report any plugins that could not be checked, just in case.
                 $message .= '<br>';
-                $message .= sprintf(
+                $message .= \sprintf(
                     esc_html__('Furthermore, following plugins could not be checked: %s', 'bc-security'),
                     $list_of_unknown_plugins
                 );
@@ -69,7 +69,7 @@ class NoPluginsRemovedFromDirectory extends Checklist\AdvancedCheck
         }
 
         if (!empty($list_of_unknown_plugins)) {
-            $message = sprintf(
+            $message = \sprintf(
                 esc_html__('No removed plugins found, but following plugins could not be checked: %s', 'bc-security'),
                 $list_of_unknown_plugins
             );
@@ -114,7 +114,7 @@ class NoPluginsRemovedFromDirectory extends Checklist\AdvancedCheck
             // Check response body for presence of "Download" button and download URL prefix.
             // Note: full URL contains the most recent version number, thus check only the prefix.
             $plugin_download_url_prefix = self::PLUGINS_DOWNLOAD_URL . Helpers\Plugin::getSlug($plugin_basename);
-            if ((strpos($body, 'download-button') === false) || (strpos($body, $plugin_download_url_prefix) === false)) {
+            if ((\strpos($body, 'download-button') === false) || (\strpos($body, $plugin_download_url_prefix) === false)) {
                 $removed_plugins[$plugin_basename] = $plugin_data;
             }
         }

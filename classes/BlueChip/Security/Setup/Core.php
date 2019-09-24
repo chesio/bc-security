@@ -27,7 +27,7 @@ class Core
      */
     public static function getConnectionType(): string
     {
-        return defined('BC_SECURITY_CONNECTION_TYPE') ? BC_SECURITY_CONNECTION_TYPE : '';
+        return \defined('BC_SECURITY_CONNECTION_TYPE') ? BC_SECURITY_CONNECTION_TYPE : '';
     }
 
 
