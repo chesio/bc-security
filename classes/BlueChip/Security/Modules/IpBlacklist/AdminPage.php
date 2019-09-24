@@ -141,7 +141,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
 
         // Transform number of seconds into the biggest fitting time unit.
         // For example 172800 seconds are 2 days: $duration = 172800; => $duration_units = 2; $duration_unit_in_seconds => 86400;
-        list($duration_units, $duration_unit_in_seconds) = $this->transformSecondsIntoFittingUnit($duration, \array_keys($units_in_seconds));
+        [$duration_units, $duration_unit_in_seconds] = $this->transformSecondsIntoFittingUnit($duration, \array_keys($units_in_seconds));
 
         // Simple styling
         echo '<style>form.bc-security { overflow: hidden; } span.bc-security { float: left; margin-right: 1.5em; margin-bottom: 0.5em; } span.bc-security label { display: block; margin-left: 0.25em; margin-bottom: 0.25em; } span.bc-security input, span.bc-security select { vertical-align: middle; } </style>';
