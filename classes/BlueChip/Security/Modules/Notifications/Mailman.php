@@ -45,7 +45,8 @@ abstract class Mailman
         $boilerplate_intro = [
             sprintf(
                 __('This email was sent from your website "%1$s" by BC Security plugin on %2$s at %3$s.'),
-                get_option('blogname'),
+                // Blog name must be decoded, see: https://github.com/chesio/bc-security/issues/86
+                wp_specialchars_decode(get_option('blogname'), ENT_QUOTES),
                 date_i18n('d.m.Y'),
                 date_i18n('H:i:s')
             ),
@@ -72,6 +73,7 @@ abstract class Mailman
      */
     private static function formatSubject(string $subject): string
     {
-        return sprintf('[%s | %s] %s', get_option('blogname'), __('BC Security Alert', 'bc-security'), $subject);
+        // Blog name must be decoded, see: https://github.com/chesio/bc-security/issues/86
+        return sprintf('[%s | %s] %s', wp_specialchars_decode(get_option('blogname'), ENT_QUOTES), __('BC Security Alert', 'bc-security'), $subject);
     }
 }
