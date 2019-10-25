@@ -11,7 +11,7 @@ namespace BlueChip\Security\Helpers;
 class Is
 {
     /**
-     * Return true, if current user is an admin.
+     * Return true if current user is an admin.
      *
      * @param \WP_User $user
      * @return bool
@@ -27,7 +27,7 @@ class Is
 
 
     /**
-     * @return bool True, if current webserver interface is CLI, false otherwise.
+     * @return bool True if current webserver interface is CLI, false otherwise.
      */
     public static function cli(): bool
     {
@@ -36,7 +36,20 @@ class Is
 
 
     /**
-     * Return true, if current request is of given $type.
+     * @return bool True if the website is running in live environment, false otherwise.
+     */
+    public static function live(): bool
+    {
+        // Consider both production and staging environment as live.
+        return apply_filters(
+            Hooks::IS_LIVE,
+            \defined('WP_ENV') && ((WP_ENV === 'production') || (WP_ENV === 'staging'))
+        );
+    }
+
+
+    /**
+     * Return true if current request is of given $type.
      *
      * @param string $type One of: admin, ajax, cron, frontend or wp-cli.
      * @return bool True, if current request is of given $type, false otherwise.

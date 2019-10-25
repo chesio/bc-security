@@ -76,7 +76,7 @@ class Manager implements Modules\Initializable
             // PHP files in uploads directory should not be accessible on frontend.
             Checks\NoAccessToPhpFilesInUploadsDirectory::getId() => new Checks\NoAccessToPhpFilesInUploadsDirectory(),
 
-            // Display of erros should be off in production environment.
+            // Display of errors should be off in live environment.
             Checks\DisplayOfPhpErrorsIsOff::getId() => new Checks\DisplayOfPhpErrorsIsOff(),
 
             // Error log should not be publicly visible, if debugging is on.
