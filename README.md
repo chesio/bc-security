@@ -39,7 +39,9 @@ Basic checks cover common security practices. They do not require any informatio
 
 #### Advanced checks
 
-Advanced checks require data from external servers (in the moment from WordPress.org only). Because of this, they leak some information about your website. In the moment, **list of installed plugins** (but only those with _readme.txt_ file) is shared with WordPress.org. Also, because of the external HTTP request, the checks take more time to execute.
+Advanced checks require data from external sources, therefore they leak some information about your website and take more time to execute.
+
+In the moment, list of installed plugins (but only those with _readme.txt_ file) is shared with WordPress.org.
 
 ##### WordPress core integrity check
 
