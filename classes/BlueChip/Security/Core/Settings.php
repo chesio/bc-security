@@ -223,7 +223,7 @@ abstract class Settings implements \ArrayAccess
     public function sanitize(array $settings, array $defaults = []): array
     {
         // If no default values are provided, use data from internal cache as default values.
-        $values = empty($defaults) ? $this->data : $defaults;
+        $values = ($defaults === []) ? $this->data : $defaults;
 
         foreach ($values as $key => $default_value) {
             if (isset($settings[$key])) {
