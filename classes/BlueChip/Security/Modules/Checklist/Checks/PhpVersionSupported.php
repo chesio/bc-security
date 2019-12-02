@@ -13,9 +13,9 @@ class PhpVersionSupported extends Checklist\BasicCheck
      * @var array List of supported PHP versions and their end-of-life dates
      */
     const SUPPORTED_VERSIONS = [
-        '7.1' => '2019-12-01',
-        '7.2' => '2020-10-30',
+        '7.2' => '2020-11-30',
         '7.3' => '2021-12-06',
+        '7.4' => '2022-11-28',
     ];
 
 
@@ -26,7 +26,7 @@ class PhpVersionSupported extends Checklist\BasicCheck
             \sprintf(
                 /* translators: 1: link to official page on supported PHP versions */
                 esc_html__('Running an %1$s may pose a security risk.', 'bc-security'),
-                '<a href="' . esc_url(__('https://secure.php.net/supported-versions.php', 'bc-security')) . '" rel="noreferrer">' . esc_html__('unsupported PHP version', 'bc-security') . '</a>'
+                '<a href="' . esc_url(__('https://www.php.net/supported-versions.php', 'bc-security')) . '" rel="noreferrer">' . esc_html__('unsupported PHP version', 'bc-security') . '</a>'
             )
         );
     }
@@ -84,7 +84,7 @@ class PhpVersionSupported extends Checklist\BasicCheck
 
 
     /**
-     * @return string Oldest supported version of PHP as of today or null, if it can not be determined from data available.
+     * @return string Oldest supported version of PHP as of today or null if it can not be determined from data available.
      */
     private static function getOldestSupportedPhpVersion(): ?string
     {
