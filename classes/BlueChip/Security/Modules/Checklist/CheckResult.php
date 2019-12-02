@@ -22,7 +22,7 @@ class CheckResult
     public function __construct(?bool $status, $message)
     {
         $this->status = $status;
-        $this->message = is_array($message) ? $message : [$message];
+        $this->message = \is_array($message) ? $message : [$message];
     }
 
 
@@ -40,7 +40,7 @@ class CheckResult
      */
     public function getMessageAsHtml(): string
     {
-        return implode('<br>', $this->message);
+        return \implode('<br>', $this->message);
     }
 
 
@@ -49,7 +49,7 @@ class CheckResult
      */
     public function getMessageAsPlainText(): string
     {
-        return strip_tags(implode(PHP_EOL, $this->message));
+        return \strip_tags(\implode(PHP_EOL, $this->message));
     }
 
 

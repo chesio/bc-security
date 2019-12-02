@@ -135,11 +135,11 @@ class Core implements \BlueChip\Security\Modules\Initializable
             $url_base = (new class extends \WP_REST_Users_Controller {
                 public function getUrlBase(): string
                 {
-                    return rtrim($this->namespace . '/' . $this->rest_base, '/');
+                    return \rtrim($this->namespace . '/' . $this->rest_base, '/');
                 }
             })->getUrlBase();
 
-            if (preg_match('#' . preg_quote($url_base, '#') . '/*$#i', $route)) {
+            if (\preg_match('#' . \preg_quote($url_base, '#') . '/*$#i', $route)) {
                 $this->rest_api_supressed = true;
                 return rest_ensure_response(new \WP_Error(
                     'rest_user_cannot_view',
@@ -149,8 +149,8 @@ class Core implements \BlueChip\Security\Modules\Initializable
             }
 
             $matches = [];
-            if (preg_match('#' . preg_quote($url_base, '#') . '/+(\d+)/*$#i', $route, $matches)) {
-                if (get_current_user_id() !== intval($matches[1])) {
+            if (\preg_match('#' . \preg_quote($url_base, '#') . '/+(\d+)/*$#i', $route, $matches)) {
+                if (get_current_user_id() !== \intval($matches[1])) {
                     $this->rest_api_supressed = true;
                     return rest_ensure_response(new \WP_Error(
                         'rest_user_invalid_id',
@@ -208,7 +208,7 @@ class Core implements \BlueChip\Security\Modules\Initializable
      */
     protected static function smellsLikeAuthorScan(array $query_vars): bool
     {
-        return !empty($query_vars['author']) && (is_array($query_vars['author']) || is_numeric(preg_replace('/[^0-9]/', '', $query_vars['author'])));
+        return !empty($query_vars['author']) && (\is_array($query_vars['author']) || \is_numeric(\preg_replace('/[^0-9]/', '', $query_vars['author'])));
     }
 
 
@@ -223,7 +223,7 @@ class Core implements \BlueChip\Security\Modules\Initializable
             status_header(404);
             nocache_headers();
 
-            if (!empty($template = get_404_template()) && file_exists($template)) {
+            if (!empty($template = get_404_template()) && \file_exists($template)) {
                 include $template;
             }
 
@@ -242,7 +242,7 @@ class Core implements \BlueChip\Security\Modules\Initializable
      */
     public function checkUserPassword(string $username, \WP_User $user)
     {
-        if (empty($password = filter_input(INPUT_POST, 'pwd'))) {
+        if (empty($password = \filter_input(INPUT_POST, 'pwd'))) {
             // Non-interactive sign on (probably).
             return;
         }
@@ -280,7 +280,7 @@ class Core implements \BlueChip\Security\Modules\Initializable
 
         if (apply_filters(Hooks::SHOW_PWNED_PASSWORD_WARNING, true, $screen, $user)) {
             // Show the warning for current user on current screen.
-            $notice = sprintf(
+            $notice = \sprintf(
                 /* translators: 1: link to Pwned Passwords homepage, 2: link to profile editation page */
                 esc_html__('Your password is present in a %1$s previously exposed in data breaches. Please, consider %2$s.', 'bc-security'),
                 '<a href="' . HaveIBeenPwned::PWNEDPASSWORDS_HOME_URL . '" rel="noreferrer">' . esc_html__('large database of passwords', 'bc-security') . '</a>',
@@ -330,7 +330,7 @@ class Core implements \BlueChip\Security\Modules\Initializable
             return;
         }
 
-        if (empty($password = filter_input(INPUT_POST, 'pass1'))) {
+        if (empty($password = \filter_input(INPUT_POST, 'pass1'))) {
             // Do not check empty password.
             return;
         }
@@ -348,7 +348,7 @@ class Core implements \BlueChip\Security\Modules\Initializable
     protected static function checkIfPasswordHasBeenPwned(string $password, \WP_Error &$errors)
     {
         if (HaveIBeenPwned::hasPasswordBeenPwned($password)) {
-            $message = sprintf(
+            $message = \sprintf(
                 /* translators: 1: Error label, 2: link to Pwned Passwords homepage */
                 esc_html__('%1$s: Provided password is present in a %2$s previously exposed in data breaches. Please, pick a different one.', 'bc-security'),
                 '<strong>' . esc_html__('ERROR', 'bc-security') . '</strong>',

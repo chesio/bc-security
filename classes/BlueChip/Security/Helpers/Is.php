@@ -11,7 +11,7 @@ namespace BlueChip\Security\Helpers;
 class Is
 {
     /**
-     * Return true, if current user is an admin.
+     * Return true if current user is an admin.
      *
      * @param \WP_User $user
      * @return bool
@@ -20,22 +20,36 @@ class Is
     {
         return apply_filters(
             Hooks::IS_ADMIN,
-            is_multisite() ? user_can($user, 'manage_network') : user_can($user, 'manage_options')
+            is_multisite() ? user_can($user, 'manage_network') : user_can($user, 'manage_options'),
+            $user
         );
     }
 
 
     /**
-     * @return bool True, if current webserver interface is CLI, false otherwise.
+     * @return bool True if current webserver interface is CLI, false otherwise.
      */
     public static function cli(): bool
     {
-        return php_sapi_name() === 'cli';
+        return \PHP_SAPI === 'cli';
     }
 
 
     /**
-     * Return true, if current request is of given $type.
+     * @return bool True if the website is running in live environment, false otherwise.
+     */
+    public static function live(): bool
+    {
+        // Consider both production and staging environment as live.
+        return apply_filters(
+            Hooks::IS_LIVE,
+            \defined('WP_ENV') && ((WP_ENV === 'production') || (WP_ENV === 'staging'))
+        );
+    }
+
+
+    /**
+     * Return true if current request is of given $type.
      *
      * @param string $type One of: admin, ajax, cron, frontend or wp-cli.
      * @return bool True, if current request is of given $type, false otherwise.
@@ -52,9 +66,9 @@ class Is
             case 'frontend':
                 return (!is_admin() || wp_doing_ajax()) && !wp_doing_cron();
             case 'wp-cli':
-                return defined('WP_CLI') && WP_CLI;
+                return \defined('WP_CLI') && WP_CLI;
             default:
-                _doing_it_wrong(__METHOD__, sprintf('Unknown request type: %s', $type), '0.1.0');
+                _doing_it_wrong(__METHOD__, \sprintf('Unknown request type: %s', $type), '0.1.0');
                 return false;
         }
     }

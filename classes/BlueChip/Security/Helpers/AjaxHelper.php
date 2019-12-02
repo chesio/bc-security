@@ -28,7 +28,7 @@ abstract class AjaxHelper
             // Check AJAX referer for given action - will die, if invalid.
             check_ajax_referer($action);
 
-            call_user_func($handler);
+            \call_user_func($handler);
         }, 10, 0);
     }
 
@@ -54,7 +54,7 @@ abstract class AjaxHelper
             wp_localize_script(
                 $handle,
                 $object_name,
-                array_merge($data, $l10n)
+                \array_merge($data, $l10n)
             );
         }, 10, 0);
     }

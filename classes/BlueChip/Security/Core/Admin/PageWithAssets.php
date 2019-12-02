@@ -35,7 +35,7 @@ trait PageWithAssets
                     $handle,
                     $this->assets_manager->getScriptFileUrl($filename),
                     ['jquery'],
-                    filemtime($this->assets_manager->getScriptFilePath($filename)),
+                    \filemtime($this->assets_manager->getScriptFilePath($filename)),
                     true
                 );
             }
@@ -54,7 +54,7 @@ trait PageWithAssets
                     $handle,
                     $this->assets_manager->getStyleFileUrl($filename),
                     [],
-                    filemtime($this->assets_manager->getStyleFilePath($filename))
+                    \filemtime($this->assets_manager->getStyleFilePath($filename))
                 );
             }
         }, 10, 0);

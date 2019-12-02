@@ -122,8 +122,8 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
         // Accept the following values as "pre-fill"
         // Note: the "add-" prefix is especially important for scope, because
         // there is "scope" GET argument used for list table views already.
-        $ip_address = filter_input(INPUT_GET, self::DEFAULT_IP_ADDRESS, FILTER_VALIDATE_IP);
-        $scope = filter_input(INPUT_GET, self::DEFAULT_SCOPE, FILTER_VALIDATE_INT);
+        $ip_address = \filter_input(INPUT_GET, self::DEFAULT_IP_ADDRESS, FILTER_VALIDATE_IP);
+        $scope = \filter_input(INPUT_GET, self::DEFAULT_SCOPE, FILTER_VALIDATE_INT);
 
         // Default lock duration is 1 month, unless different value is provided by filter.
         $duration = apply_filters(Hooks::DEFAULT_MANUAL_LOCK_DURATION, MONTH_IN_SECONDS);
@@ -141,7 +141,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
 
         // Transform number of seconds into the biggest fitting time unit.
         // For example 172800 seconds are 2 days: $duration = 172800; => $duration_units = 2; $duration_unit_in_seconds => 86400;
-        list($duration_units, $duration_unit_in_seconds) = $this->transformSecondsIntoFittingUnit($duration, array_keys($units_in_seconds));
+        [$duration_units, $duration_unit_in_seconds] = $this->transformSecondsIntoFittingUnit($duration, \array_keys($units_in_seconds));
 
         // Simple styling
         echo '<style>form.bc-security { overflow: hidden; } span.bc-security { float: left; margin-right: 1.5em; margin-bottom: 0.5em; } span.bc-security label { display: block; margin-left: 0.25em; margin-bottom: 0.25em; } span.bc-security input, span.bc-security select { vertical-align: middle; } </style>';
@@ -239,7 +239,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
      */
     private function processActions()
     {
-        $nonce = filter_input(INPUT_POST, self::NONCE_NAME, FILTER_SANITIZE_STRING);
+        $nonce = \filter_input(INPUT_POST, self::NONCE_NAME, FILTER_SANITIZE_STRING);
         if (empty($nonce)) {
             // No nonce, no action.
             return;
@@ -272,11 +272,11 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
      */
     private function processBlacklistAction()
     {
-        $ip_address = filter_input(INPUT_POST, 'ip-address', FILTER_VALIDATE_IP);
-        $duration_length = filter_input(INPUT_POST, 'duration-length', FILTER_VALIDATE_INT);
-        $duration_unit = filter_input(INPUT_POST, 'duration-unit', FILTER_VALIDATE_INT);
-        $scope = filter_input(INPUT_POST, 'scope', FILTER_VALIDATE_INT);
-        $comment = filter_input(INPUT_POST, 'comment', FILTER_SANITIZE_STRING);
+        $ip_address = \filter_input(INPUT_POST, 'ip-address', FILTER_VALIDATE_IP);
+        $duration_length = \filter_input(INPUT_POST, 'duration-length', FILTER_VALIDATE_INT);
+        $duration_unit = \filter_input(INPUT_POST, 'duration-unit', FILTER_VALIDATE_INT);
+        $scope = \filter_input(INPUT_POST, 'scope', FILTER_VALIDATE_INT);
+        $comment = \filter_input(INPUT_POST, 'comment', FILTER_SANITIZE_STRING);
 
         // Check, if input is formally valid.
         if (empty($ip_address) || empty($duration_length) || empty($duration_unit) || empty($scope)) {
@@ -286,13 +286,13 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
         $duration = $duration_length * $duration_unit;
 
         // Check, if input is semantically valid.
-        if (($duration <= 0) || !in_array($scope, [LockScope::ADMIN, LockScope::COMMENTS, LockScope::WEBSITE], true)) {
+        if (($duration <= 0) || !\in_array($scope, [LockScope::ADMIN, LockScope::COMMENTS, LockScope::WEBSITE], true)) {
             return;
         }
 
         if ($this->bl_manager->lock($ip_address, $duration, $scope, BanReason::MANUALLY_BLACKLISTED, $comment)) {
             AdminNotices::add(
-                sprintf(__('IP address %s has been added to blacklist.', 'bc-security'), $ip_address),
+                \sprintf(__('IP address %s has been added to blacklist.', 'bc-security'), $ip_address),
                 AdminNotices::SUCCESS
             );
         } else {
@@ -368,7 +368,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
     {
         foreach ($units_in_seconds as $unit_in_seconds) {
             $units = $seconds / $unit_in_seconds;
-            if (is_int($units)) {
+            if (\is_int($units)) {
                 return [$units, $unit_in_seconds];
             }
         }

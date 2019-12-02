@@ -123,7 +123,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
             Settings::NOTIFY_SITE_ADMIN,
             __('Notify site admin', 'bc-security'),
             [FormHelper::class, 'printCheckbox'],
-            [ 'description' => sprintf(__('Currently: %s', 'bc-security'), get_option('admin_email')), ]
+            [ 'description' => \sprintf(__('Currently: %s', 'bc-security'), get_option('admin_email')), ]
         );
         $this->addSettingsField(
             Settings::NOTIFICATION_RECIPIENTS,

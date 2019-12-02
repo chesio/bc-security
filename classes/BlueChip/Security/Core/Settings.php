@@ -58,7 +58,7 @@ abstract class Settings implements \ArrayAccess
         if (isset($this->data[$name])) {
             return $this->data[$name];
         } else {
-            _doing_it_wrong(__METHOD__, sprintf('Unknown settings key "%s"', $name), '0.1.0');
+            _doing_it_wrong(__METHOD__, \sprintf('Unknown settings key "%s"', $name), '0.1.0');
             return null;
         }
     }
@@ -75,7 +75,7 @@ abstract class Settings implements \ArrayAccess
         if (isset($this->data[$name])) {
             $this->update($name, $value);
         } else {
-            _doing_it_wrong(__METHOD__, sprintf('Unknown settings key "%s"', $name), '0.1.0');
+            _doing_it_wrong(__METHOD__, \sprintf('Unknown settings key "%s"', $name), '0.1.0');
         }
     }
 
@@ -223,14 +223,14 @@ abstract class Settings implements \ArrayAccess
     public function sanitize(array $settings, array $defaults = []): array
     {
         // If no default values are provided, use data from internal cache as default values.
-        $values = empty($defaults) ? $this->data : $defaults;
+        $values = ($defaults === []) ? $this->data : $defaults;
 
         foreach ($values as $key => $default_value) {
             if (isset($settings[$key])) {
                 // New value is provided, sanitize it either...
                 $values[$key] = isset(static::SANITIZERS[$key])
                     // ...using provided callback...
-                    ? call_user_func(static::SANITIZERS[$key], $settings[$key])
+                    ? \call_user_func(static::SANITIZERS[$key], $settings[$key])
                     // ...or by type.
                     : self::sanitizeByType($settings[$key], $default_value)
                 ;
@@ -250,13 +250,13 @@ abstract class Settings implements \ArrayAccess
      */
     protected static function sanitizeByType($value, $default)
     {
-        if (is_bool($default)) {
-            return boolval($value);
-        } elseif (is_float($default)) {
-            return floatval($value);
-        } elseif (is_int($default)) {
-            return intval($value);
-        } elseif (is_array($default) && is_string($value)) {
+        if (\is_bool($default)) {
+            return \boolval($value);
+        } elseif (\is_float($default)) {
+            return \floatval($value);
+        } elseif (\is_int($default)) {
+            return \intval($value);
+        } elseif (\is_array($default) && \is_string($value)) {
             return self::parseList($value);
         } else {
             return $value;
@@ -272,7 +272,7 @@ abstract class Settings implements \ArrayAccess
      */
     protected static function parseList($list): array
     {
-        return is_array($list) ? $list : array_filter(array_map('trim', explode(PHP_EOL, $list)));
+        return \is_array($list) ? $list : \array_filter(\array_map('trim', \explode(PHP_EOL, $list)));
     }
 
 
@@ -292,7 +292,7 @@ abstract class Settings implements \ArrayAccess
 
         $data = $this->data;
 
-        if (is_null($value)) {
+        if (null === $value) {
             // Null value unsets (resets) setting to default state
             unset($data[$name]);
         } else {

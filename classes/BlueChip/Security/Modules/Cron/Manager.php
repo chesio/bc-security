@@ -72,9 +72,9 @@ class Manager implements Modules\Activable
      * Activate cron job: schedule the job and mark it as permanently active, if scheduling succeeds.
      *
      * @param string $hook
-     * @return bool True, if cron job has been activated or was already active, false otherwise.
+     * @return bool True if cron job has been activated or was active already, false otherwise.
      */
-    public function activateJob(string $hook)
+    public function activateJob(string $hook): bool
     {
         if ($this->getJob($hook)->schedule()) {
             $this->settings[$hook] = true;
@@ -88,9 +88,9 @@ class Manager implements Modules\Activable
      * Deactivate cron job: unschedule the job and mark it as permanently inactive, if unscheduling succeeds.
      *
      * @param string $hook
-     * @return bool True, if cron job has been deactivated or was not active already, false otherwise.
+     * @return bool True if cron job has been deactivated or was inactive already, false otherwise.
      */
-    public function deactivateJob(string $hook)
+    public function deactivateJob(string $hook): bool
     {
         if ($this->getJob($hook)->unschedule()) {
             $this->settings[$hook] = false;

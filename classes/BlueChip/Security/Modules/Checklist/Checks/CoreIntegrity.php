@@ -25,7 +25,7 @@ class CoreIntegrity extends Checklist\AdvancedCheck
     {
         parent::__construct(
             __('WordPress core files are untouched', 'bc-security'),
-            sprintf(
+            \sprintf(
                 /* translators: 1: link to Wikipedia article about md5sum, 2: link to checksums file at WordPress.org */
                 esc_html__('By comparing %1$s of local core files with %2$s it is possible to determine, if any of core files have been modified or if there are any unknown files in core directories.', 'bc-security'),
                 '<a href="' . esc_url(__('https://en.wikipedia.org/wiki/Md5sum', 'bc-security')) . '" rel="noreferrer">' . esc_html__('MD5 checksums', 'bc-security') . '</a>',
@@ -41,7 +41,7 @@ class CoreIntegrity extends Checklist\AdvancedCheck
 
         // Get checksums via WordPress.org API.
         if (empty($checksums = self::getChecksums($url))) {
-            $message = sprintf(
+            $message = \sprintf(
                 /* translators: 1: link to checksums file at WordPress.org */
                 esc_html__('Failed to get core file checksums from %1$s.', 'bc-security'),
                 '<a href="' . esc_url($url) . '" rel="noreferrer">' . esc_html($url) . '</a>'
@@ -59,13 +59,13 @@ class CoreIntegrity extends Checklist\AdvancedCheck
         } else {
             $message_parts = [];
             if (!empty($modified_files)) {
-                $message_parts[] = sprintf(
+                $message_parts[] = \sprintf(
                     esc_html__('The following WordPress core files have been modified: %s', 'bc-security'),
                     Checklist\Helper::formatListOfFiles($modified_files)
                 );
             }
             if (!empty($unknown_files)) {
-                $message_parts[] = sprintf(
+                $message_parts[] = \sprintf(
                     esc_html__('There are following unknown files present in WordPress core directory: %s', 'bc-security'),
                     Checklist\Helper::formatListOfFiles($unknown_files)
                 );
@@ -132,10 +132,10 @@ class CoreIntegrity extends Checklist\AdvancedCheck
         $modified_files = Checklist\Helper::checkDirectoryForModifiedFiles(ABSPATH, $checksums, $ignored_files);
 
         // Ignore any modified files in wp-content directory.
-        return array_filter(
+        return \array_filter(
             $modified_files,
             function ($filename) {
-                return strpos($filename, 'wp-content/') !== 0;
+                return \strpos($filename, 'wp-content/') !== 0;
             }
         );
     }
@@ -164,8 +164,8 @@ class CoreIntegrity extends Checklist\AdvancedCheck
             ]
         );
 
-        return array_filter(
-            array_merge(
+        return \array_filter(
+            \array_merge(
                 // Scan root WordPress directory.
                 Checklist\Helper::scanDirectoryForUnknownFiles(ABSPATH, ABSPATH, $checksums, false),
                 // Scan wp-admin directory recursively.
@@ -174,7 +174,7 @@ class CoreIntegrity extends Checklist\AdvancedCheck
                 Checklist\Helper::scanDirectoryForUnknownFiles(ABSPATH . WPINC, ABSPATH, $checksums, true)
             ),
             function (string $filename) use ($ignored_files): bool {
-                return !in_array($filename, $ignored_files, true);
+                return !\in_array($filename, $ignored_files, true);
             }
         );
     }

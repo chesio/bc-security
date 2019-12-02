@@ -74,7 +74,7 @@ class Manager implements Modules\Countable, Modules\Installable, Modules\Initial
 
         $charset_collate = $this->wpdb->get_charset_collate();
 
-        dbDelta(implode(PHP_EOL, [
+        dbDelta(\implode(PHP_EOL, [
             "CREATE TABLE {$this->blacklist_table} (",
             "id int unsigned NOT NULL AUTO_INCREMENT,",
             "scope tinyint unsigned NOT NULL,",
@@ -92,7 +92,7 @@ class Manager implements Modules\Countable, Modules\Installable, Modules\Initial
 
     public function uninstall()
     {
-        $this->wpdb->query(sprintf('DROP TABLE IF EXISTS %s', $this->blacklist_table));
+        $this->wpdb->query(\sprintf('DROP TABLE IF EXISTS %s', $this->blacklist_table));
     }
 
 
@@ -130,7 +130,7 @@ class Manager implements Modules\Countable, Modules\Installable, Modules\Initial
             $query .= $this->wpdb->prepare(" WHERE scope = %d", $scope);
         }
 
-        return intval($this->wpdb->get_var($query));
+        return \intval($this->wpdb->get_var($query));
     }
 
 
@@ -146,10 +146,10 @@ class Manager implements Modules\Countable, Modules\Installable, Modules\Initial
     {
         $query = $this->wpdb->prepare(
             "SELECT COUNT(id) AS total FROM {$this->blacklist_table} WHERE ban_time > %s",
-            date(self::MYSQL_DATETIME_FORMAT, $timestamp)
+            \date(self::MYSQL_DATETIME_FORMAT, $timestamp)
         );
 
-        return intval($this->wpdb->get_var($query));
+        return \intval($this->wpdb->get_var($query));
     }
 
 
@@ -170,11 +170,11 @@ class Manager implements Modules\Countable, Modules\Installable, Modules\Initial
 
         // Apply scope if given
         if ($scope !== LockScope::ANY) {
-            $query .= sprintf(" WHERE scope = %d", $scope);
+            $query .= \sprintf(" WHERE scope = %d", $scope);
         }
 
         // Apply order by column, if column name is valid
-        if ($order_by && in_array($order_by, $this->columns, true)) {
+        if ($order_by && \in_array($order_by, $this->columns, true)) {
             $query .= " ORDER BY {$order_by}";
             if ($order === 'asc') {
                 $query .= ' ASC';
@@ -184,13 +184,13 @@ class Manager implements Modules\Countable, Modules\Installable, Modules\Initial
         }
 
         // Apply limits
-        $query .= sprintf(" LIMIT %d, %d", $from, $limit);
+        $query .= \sprintf(" LIMIT %d, %d", $from, $limit);
 
         // Execute query
         $results = $this->wpdb->get_results($query, ARRAY_A);
 
         // Return results
-        return is_array($results) ? $results : [];
+        return \is_array($results) ? $results : [];
     }
 
 
@@ -211,7 +211,7 @@ class Manager implements Modules\Countable, Modules\Installable, Modules\Initial
         // Execute query
         $results = $this->wpdb->get_results($query);
         // Return results
-        return is_array($results) ? $results : [];
+        return \is_array($results) ? $results : [];
     }
 
 
@@ -236,7 +236,7 @@ class Manager implements Modules\Countable, Modules\Installable, Modules\Initial
         // Execute query
         $release_time = $this->wpdb->get_var($query);
         // Evaluate release time
-        $result = is_string($release_time) && (current_time('timestamp') < strtotime($release_time));
+        $result = \is_string($release_time) && (current_time('timestamp') < \strtotime($release_time));
         // Allow the result to be filtered
         return apply_filters(Hooks::IS_IP_ADDRESS_LOCKED, $result, $ip_address, $scope);
     }
@@ -257,8 +257,8 @@ class Manager implements Modules\Countable, Modules\Installable, Modules\Initial
         $now = current_time('timestamp');
 
         $data = [
-            'ban_time'      => date(self::MYSQL_DATETIME_FORMAT, $now),
-            'release_time'  => date(self::MYSQL_DATETIME_FORMAT, $now + $duration),
+            'ban_time'      => \date(self::MYSQL_DATETIME_FORMAT, $now),
+            'release_time'  => \date(self::MYSQL_DATETIME_FORMAT, $now + $duration),
             'comment'       => $comment,
         ];
 
@@ -278,7 +278,7 @@ class Manager implements Modules\Countable, Modules\Installable, Modules\Initial
             $result = $this->wpdb->update($this->blacklist_table, $data, $where, $format, $where_format);
         } else {
             // Insert: merge $data with $where, $format with $where_format.
-            $result = $this->wpdb->insert($this->blacklist_table, array_merge($data, $where), array_merge($format, $where_format));
+            $result = $this->wpdb->insert($this->blacklist_table, \array_merge($data, $where), \array_merge($format, $where_format));
         }
 
         return $result !== false;
@@ -296,7 +296,7 @@ class Manager implements Modules\Countable, Modules\Installable, Modules\Initial
         // Note: $wpdb->delete cannot be used as it does not support "<=" comparison)
         $query = $this->wpdb->prepare(
             "DELETE FROM {$this->blacklist_table} WHERE release_time <= %s",
-            date(self::MYSQL_DATETIME_FORMAT, current_time('timestamp'))
+            \date(self::MYSQL_DATETIME_FORMAT, current_time('timestamp'))
         );
         // Execute query
         $result = $this->wpdb->query($query);
@@ -332,10 +332,10 @@ class Manager implements Modules\Countable, Modules\Installable, Modules\Initial
             return 0;
         }
         // Prepare query.
-        $query = sprintf(
+        $query = \sprintf(
             "DELETE FROM {$this->blacklist_table} WHERE %s",
-            implode(' OR ', array_map(function ($id) {
-                return sprintf('id = %d', $id);
+            \implode(' OR ', \array_map(function ($id) {
+                return \sprintf('id = %d', $id);
             }, $ids))
         );
         // Execute query.
@@ -358,7 +358,7 @@ class Manager implements Modules\Countable, Modules\Installable, Modules\Initial
         // Execute query.
         $result = $this->wpdb->update(
             $this->blacklist_table,
-            ['release_time' => date(self::MYSQL_DATETIME_FORMAT, current_time('timestamp'))],
+            ['release_time' => \date(self::MYSQL_DATETIME_FORMAT, current_time('timestamp'))],
             ['id' => $id],
             ['%s'],
             ['%d']
@@ -382,11 +382,11 @@ class Manager implements Modules\Countable, Modules\Installable, Modules\Initial
             return 0;
         }
         // Prepare query.
-        $query = sprintf(
+        $query = \sprintf(
             "UDPATE {$this->blacklist_table} SET release_time = '%s' WHERE %s",
-            date(self::MYSQL_DATETIME_FORMAT, current_time('timestamp')),
-            implode(' OR ', array_map(function ($id) {
-                return sprintf('id = %d', $id);
+            \date(self::MYSQL_DATETIME_FORMAT, current_time('timestamp')),
+            \implode(' OR ', \array_map(function ($id) {
+                return \sprintf('id = %d', $id);
             }, $ids))
         );
         // Execute query.
@@ -417,6 +417,6 @@ class Manager implements Modules\Countable, Modules\Installable, Modules\Initial
         // Execute query.
         $result = $this->wpdb->get_var($query);
         // Return result.
-        return is_null($result) ? $result : intval($result);
+        return null === $result ? $result : \intval($result);
     }
 }

@@ -65,7 +65,7 @@ class Settings extends \BlueChip\Security\Core\Settings
      */
     public static function sanitizeUsernameBlacklist($value): array
     {
-        return array_filter(self::parseList($value), '\validate_username');
+        return \array_filter(self::parseList($value), '\validate_username');
     }
 
 

@@ -68,7 +68,7 @@ class ListTable extends \BlueChip\Security\Core\ListTable
 
         $this->bl_manager = $bl_manager;
 
-        $this->scope = filter_input(INPUT_GET, self::VIEW_SCOPE, FILTER_VALIDATE_INT, ['options' => ['default' => LockScope::ANY]]);
+        $this->scope = \filter_input(INPUT_GET, self::VIEW_SCOPE, FILTER_VALIDATE_INT, ['options' => ['default' => LockScope::ANY]]);
         if ($this->scope !== LockScope::ANY) {
             $this->url = add_query_arg(self::VIEW_SCOPE, $this->scope, $this->url);
         }
@@ -174,28 +174,28 @@ class ListTable extends \BlueChip\Security\Core\ListTable
     protected function get_views() // phpcs:ignore
     {
         return [
-            'any' => sprintf(
+            'any' => \sprintf(
                 '<a href="%s" class="%s">%s</a> (%d)',
                 remove_query_arg([self::VIEW_SCOPE], $this->url),
                 $this->scope === LockScope::ANY ? 'current' : '',
                 esc_html__('Any', 'bc-security'),
                 $this->bl_manager->countAll()
             ),
-            'admin' => sprintf(
+            'admin' => \sprintf(
                 '<a href="%s" class="%s">%s</a> (%d)',
                 add_query_arg([self::VIEW_SCOPE => LockScope::ADMIN], $this->url),
                 $this->scope === LockScope::ADMIN ? 'current' : '',
                 esc_html__('Admin', 'bc-security'),
                 $this->bl_manager->countAll(LockScope::ADMIN)
             ),
-            'comments' => sprintf(
+            'comments' => \sprintf(
                 '<a href="%s" class="%s">%s</a> (%d)',
                 add_query_arg([self::VIEW_SCOPE => LockScope::COMMENTS], $this->url),
                 $this->scope === LockScope::COMMENTS ? 'current' : '',
                 esc_html__('Comments', 'bc-security'),
                 $this->bl_manager->countAll(LockScope::COMMENTS)
             ),
-            'website' => sprintf(
+            'website' => \sprintf(
                 '<a href="%s" class="%s">%s</a> (%d)',
                 add_query_arg([self::VIEW_SCOPE => LockScope::WEBSITE], $this->url),
                 $this->scope === LockScope::WEBSITE ? 'current' : '',
@@ -233,15 +233,15 @@ class ListTable extends \BlueChip\Security\Core\ListTable
     public function processActions()
     {
         // Remove or unlock single record?
-        if (($action = filter_input(INPUT_GET, 'action'))) {
+        if (($action = \filter_input(INPUT_GET, 'action'))) {
             // Get ID of record to act upon.
-            $id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
-            if (!is_int($id)) {
+            $id = \filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
+            if (!\is_int($id)) {
                 return;
             }
 
-            $nonce = filter_input(INPUT_GET, self::NONCE_NAME);
-            if (!wp_verify_nonce($nonce, sprintf('%s:%s', $action, $id))) {
+            $nonce = \filter_input(INPUT_GET, self::NONCE_NAME);
+            if (!wp_verify_nonce($nonce, \sprintf('%s:%s', $action, $id))) {
                 // Nonce check failed
                 return;
             }
@@ -258,9 +258,9 @@ class ListTable extends \BlueChip\Security\Core\ListTable
         }
 
         // Bulk unlock?
-        if (($current_action = $this->current_action()) && isset($_POST['ids']) && is_array($_POST['ids'])) {
+        if (($current_action = $this->current_action()) && isset($_POST['ids']) && \is_array($_POST['ids'])) {
             // Sanitize: convert IDs to unsigned int and remove any zero values.
-            $ids = array_filter(array_map('absint', $_POST['ids']));
+            $ids = \array_filter(\array_map('absint', $_POST['ids']));
 
             if ($current_action === self::BULK_ACTION_REMOVE && ($removed = $this->bl_manager->removeMany($ids))) {
                 // Records removed successfully, redirect to overview (and trigger admin notice)
@@ -313,7 +313,7 @@ class ListTable extends \BlueChip\Security\Core\ListTable
             ),
         ];
 
-        if (strtotime($item['release_time']) > current_time('timestamp')) {
+        if (\strtotime($item['release_time']) > current_time('timestamp')) {
             // Only active locks can be unlocked
             $actions[self::ACTION_UNLOCK] = $this->renderRowAction(
                 self::ACTION_UNLOCK,

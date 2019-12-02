@@ -29,7 +29,7 @@ abstract class Mailman
         return \wp_mail(
             $to,
             self::formatSubject($subject),
-            self::formatMessage(is_array($message) ? $message : [$message])
+            self::formatMessage(\is_array($message) ? $message : [$message])
         );
     }
 
@@ -43,7 +43,7 @@ abstract class Mailman
     private static function formatMessage(array $message): string
     {
         $boilerplate_intro = [
-            sprintf(
+            \sprintf(
                 __('This email was sent from your website "%1$s" by BC Security plugin on %2$s at %3$s.'),
                 // Blog name must be decoded, see: https://github.com/chesio/bc-security/issues/86
                 wp_specialchars_decode(get_option('blogname'), ENT_QUOTES),
@@ -55,13 +55,13 @@ abstract class Mailman
 
         $boilerplate_outro = [
             '',
-            sprintf(
+            \sprintf(
                 __('To change your notification settings, visit: %s', 'bc-security'),
                 AdminPage::getPageUrl()
             ),
         ];
 
-        return implode(self::EOL, array_merge($boilerplate_intro, $message, $boilerplate_outro));
+        return \implode(self::EOL, \array_merge($boilerplate_intro, $message, $boilerplate_outro));
     }
 
 
@@ -74,6 +74,6 @@ abstract class Mailman
     private static function formatSubject(string $subject): string
     {
         // Blog name must be decoded, see: https://github.com/chesio/bc-security/issues/86
-        return sprintf('[%s | %s] %s', wp_specialchars_decode(get_option('blogname'), ENT_QUOTES), __('BC Security Alert', 'bc-security'), $subject);
+        return \sprintf('[%s | %s] %s', wp_specialchars_decode(get_option('blogname'), ENT_QUOTES), __('BC Security Alert', 'bc-security'), $subject);
     }
 }

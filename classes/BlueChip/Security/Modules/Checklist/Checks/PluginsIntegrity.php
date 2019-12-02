@@ -21,7 +21,7 @@ class PluginsIntegrity extends Checklist\AdvancedCheck
     {
         parent::__construct(
             __('Plugin files are untouched', 'bc-security'),
-            sprintf(
+            \sprintf(
                 /* translators: 1: link to Wikipedia article about md5sum, 2: link to Plugins Directory at WordPress.org */
                 esc_html__('By comparing %1$s of local plugin files with checksums provided by WordPress.org it is possible to determine, if any of plugin files have been modified or if there are any unknown files in plugin directories. Note that this check works only with plugins installed from %2$s.', 'bc-security'),
                 '<a href="' . esc_url(__('https://en.wikipedia.org/wiki/Md5sum', 'bc-security')) . '" rel="noreferrer">' . esc_html__('MD5 checksums', 'bc-security') . '</a>',
@@ -40,7 +40,7 @@ class PluginsIntegrity extends Checklist\AdvancedCheck
         );
 
         // Do not check plugins that are under version control.
-        $plugins = array_filter($plugins, function (string $plugin_basename): bool {
+        $plugins = \array_filter($plugins, function (string $plugin_basename): bool {
             return !Helpers\Plugin::isVersionControlled($plugin_basename);
         }, ARRAY_FILTER_USE_KEY);
 
@@ -72,7 +72,7 @@ class PluginsIntegrity extends Checklist\AdvancedCheck
 
             // Trigger alert, if any suspicious files have been found.
             if (!empty($modified_files) || !empty($unknown_files)) {
-                $checksums_verification_failed[$plugin_basename] = array_merge(
+                $checksums_verification_failed[$plugin_basename] = \array_merge(
                     $plugin_data,
                     [
                         'ModifiedFiles' => Checklist\Helper::formatListOfFiles($modified_files),
@@ -90,19 +90,19 @@ class PluginsIntegrity extends Checklist\AdvancedCheck
 
             foreach ($checksums_verification_failed as $plugin_basename => $plugin_data) {
                 $message_parts[] = '';
-                $message_parts[] = sprintf('<strong>%s</strong> <code>%s</code>', esc_html($plugin_data['Name']), $plugin_basename);
+                $message_parts[] = \sprintf('<strong>%s</strong> <code>%s</code>', esc_html($plugin_data['Name']), $plugin_basename);
                 if (!empty($plugin_data['ModifiedFiles'])) {
-                    $message_parts[] = sprintf(esc_html__('Modified files: %s', 'bc-security'), $plugin_data['ModifiedFiles']);
+                    $message_parts[] = \sprintf(esc_html__('Modified files: %s', 'bc-security'), $plugin_data['ModifiedFiles']);
                 }
                 if (!empty($plugin_data['UnknownFiles'])) {
-                    $message_parts[] = sprintf(esc_html__('Unknown files: %s', 'bc-security'), $plugin_data['UnknownFiles']);
+                    $message_parts[] = \sprintf(esc_html__('Unknown files: %s', 'bc-security'), $plugin_data['UnknownFiles']);
                 }
             }
 
             if (!empty($checksums_retrieval_failed)) {
                 // Also report any plugins that could not be checked, just in case.
                 $message_parts[] = '';
-                $message_parts[] = sprintf(
+                $message_parts[] = \sprintf(
                     esc_html__('Furthermore, checksums for the following plugins could not be fetched: %s', 'bc-security'),
                     Helpers\Plugin::implodeList($checksums_retrieval_failed, 'ChecksumsURL')
                 );
@@ -111,7 +111,7 @@ class PluginsIntegrity extends Checklist\AdvancedCheck
         }
 
         if (!empty($checksums_retrieval_failed)) {
-            $message = sprintf(
+            $message = \sprintf(
                 esc_html__('No modified plugins found, but checksums for the following plugins could not be fetched: %s', 'bc-security'),
                 Helpers\Plugin::implodeList($checksums_retrieval_failed, 'ChecksumsURL')
             );

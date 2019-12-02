@@ -10,13 +10,9 @@
   <file>bc-security.php</file>
   <file>uninstall.php</file>
 
-  <!-- Use PSR-1 as a base -->
-  <rule ref="PSR1">
-  </rule>
-
-  <!-- Use PSR-2 as a base -->
-  <rule ref="PSR2">
-    <!-- Disable PSR-2 line length warnings -->
+  <!-- Use PSR-12 -->
+  <rule ref="PSR12">
+    <!-- Disable PSR-12 line length warnings -->
     <exclude name="Generic.Files.LineLength"/>
   </rule>
 

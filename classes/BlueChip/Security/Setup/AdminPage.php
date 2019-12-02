@@ -39,7 +39,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
         if (!empty($connection_type = Core::getConnectionType())) {
             // Connection type is set via constant.
             AdminNotices::add(
-                sprintf(
+                \sprintf(
                     __('You have set <code>BC_SECURITY_CONNECTION_TYPE</code> to <code>%s</code>, therefore the setting below is ignored.', 'bc-security'),
                     $connection_type
                 ),
@@ -100,7 +100,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
         echo '<ol>';
         foreach ($list as $type => $explanation) {
             if (($ip_address = IpAddress::getRaw($type))) {
-                echo '<li>' . sprintf('%s: <code>$_SERVER[<strong>%s</strong>] = <em>%s</em></code>', esc_html($explanation), $type, $ip_address) . '</li>';
+                echo '<li>' . \sprintf('%s: <code>$_SERVER[<strong>%s</strong>] = <em>%s</em></code>', esc_html($explanation), $type, $ip_address) . '</li>';
             }
         }
         echo '</ol>';
@@ -117,7 +117,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
         $list = IpAddress::enlist(true);
         $options = [];
         foreach ($list as $type => $explanation) {
-            $options[$type] = sprintf('%s: %s', $type, $explanation);
+            $options[$type] = \sprintf('%s: %s', $type, $explanation);
         }
         return $options;
     }

@@ -106,7 +106,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
             'username-blacklist',
             _x('Username blacklist', 'Settings section title', 'bc-security'),
             function () {
-                echo '<p>' . esc_html__('Enter any usernames that should never exist on the system. The blacklist serves two purposes:', 'bc-security') .'</p>';
+                echo '<p>' . esc_html__('Enter any usernames that should never exist on the system. The blacklist serves two purposes:', 'bc-security') . '</p>';
                 echo '<ol>';
                 echo '<li>' . esc_html__('No new account can be registered with username on the blacklist.', 'bc-security') . '</li>';
                 echo '<li>' . esc_html__('Every login attempt using non-existing username on the blacklist immediately triggers long lockout.', 'bc-security') . '</li>';
@@ -136,7 +136,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
             'generic-error-message',
             __('Display generic error message on failed login', 'bc-security'),
             function () {
-                echo '<p>' . sprintf(
+                echo '<p>' . \sprintf(
                     /* translators: 1: link to Wikipedia page on Security through obscurity */
                     esc_html__('This is a %1$s approach, but it may make it harder for attackers to guess user credentials.', 'bc-security'),
                     '<a href="' . esc_url(__('https://en.wikipedia.org/wiki/Security_through_obscurity', 'bc-security')) . '" rel="noreferrer">' . esc_html__('security through obscurity', 'bc-security') . '</a>'
