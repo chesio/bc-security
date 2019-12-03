@@ -1,6 +1,14 @@
 name: CI test suite
 
-on: [push]
+on:
+  pull_request:
+    paths:
+      - 'composer.*'
+      - '**.php'
+  push:
+    paths:
+      - 'composer.*'
+      - '**.php'
 
 jobs:
   build:
