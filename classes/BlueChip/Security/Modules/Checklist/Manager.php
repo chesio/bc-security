@@ -148,7 +148,7 @@ class Manager implements Modules\Initializable
 
 
     /**
-     * @param bool $only_meaningful
+     * @param bool $only_meaningful If true (default), return only meaningful checks, otherwise return all checks.
      * @return \BlueChip\Security\Modules\Checklist\AdvancedCheck[]
      */
     public function getAdvancedChecks(bool $only_meaningful = true): array
@@ -162,7 +162,7 @@ class Manager implements Modules\Initializable
 
 
     /**
-     * @param bool $only_meaningful
+     * @param bool $only_meaningful If true (default), return only meaningful checks, otherwise return all checks.
      * @return \BlueChip\Security\Modules\Checklist\BasicCheck[]
      */
     public function getBasicChecks(bool $only_meaningful = true): array
