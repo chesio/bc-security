@@ -1,14 +1,22 @@
-name: PHP Composer
+name: CI test suite
 
 on: [push]
 
 jobs:
   build:
+    strategy:
+      matrix:
+        php-versions: ['7.2', '7.3', '7.4']
 
     runs-on: ubuntu-latest
-
+    
     steps:
     - uses: actions/checkout@v1
+      
+    - name: Set up PHP versions
+      uses: shivammathur/setup-php@v1
+      with:
+        php-version: ${{ matrix.php-versions }}
 
     - name: Validate composer.json and composer.lock
       run: composer validate
