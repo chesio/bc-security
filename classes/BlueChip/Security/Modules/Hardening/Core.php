@@ -129,12 +129,14 @@ class Core implements \BlueChip\Security\Modules\Initializable
 
         if (!current_user_can('list_users')) {
             // I <3 PHP 7!
-            $url_base = (new class extends \WP_REST_Users_Controller {
-                public function getUrlBase(): string
-                {
-                    return \rtrim($this->namespace . '/' . $this->rest_base, '/');
+            $url_base = (
+                new class extends \WP_REST_Users_Controller {
+                    public function getUrlBase(): string
+                    {
+                        return \rtrim($this->namespace . '/' . $this->rest_base, '/');
+                    }
                 }
-            })->getUrlBase();
+            )->getUrlBase();
 
             if (\preg_match('#' . \preg_quote($url_base, '#') . '/*$#i', $route)) {
                 $this->rest_api_supressed = true;
