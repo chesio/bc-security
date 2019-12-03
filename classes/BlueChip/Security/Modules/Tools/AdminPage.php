@@ -1,7 +1,4 @@
 <?php
-/**
- * @package BC_Security
- */
 
 namespace BlueChip\Security\Modules\Tools;
 

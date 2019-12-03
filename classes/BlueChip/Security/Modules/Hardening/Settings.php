@@ -1,9 +1,4 @@
 <?php
-/**
- * Hardening settings
- *
- * @package BC_Security
- */
 
 namespace BlueChip\Security\Modules\Hardening;
 

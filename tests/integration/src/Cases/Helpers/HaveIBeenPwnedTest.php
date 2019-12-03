@@ -1,7 +1,4 @@
 <?php
-/**
- * @package BC Security
- */
 
 namespace BlueChip\Security\Tests\Unit\Cases\Helpers;
 

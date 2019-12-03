@@ -1,8 +1,7 @@
 <?php
+
 /**
  * PHPUnit bootstrap file for integration tests
- *
- * @package BC Security
  */
 
 // Require Composer autoloader.
