@@ -41,6 +41,11 @@
     "phpstan": "phpstan analyze",
     "integration-tests": "phpunit --configuration tests/integration/phpunit.xml",
     "unit-tests": "phpunit --configuration tests/unit/phpunit.xml",
+    "ci": [
+      "@phpcs",
+      "@phpstan",
+      "@unit-tests"
+    ],
     "test": [
       "@phpcs",
       "@phpstan",
