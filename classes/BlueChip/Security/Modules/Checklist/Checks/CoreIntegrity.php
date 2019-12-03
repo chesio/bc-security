@@ -89,9 +89,9 @@ class CoreIntegrity extends Checklist\AdvancedCheck
      * Get md5 checksums of core WordPress files from WordPress.org API.
      *
      * @param string $url
-     * @return \stdClass|null
+     * @return object|null
      */
-    private static function getChecksums(string $url)
+    private static function getChecksums(string $url): ?object
     {
         $json = Checklist\Helper::getJson($url);
 
@@ -113,10 +113,10 @@ class CoreIntegrity extends Checklist\AdvancedCheck
      *
      * @hook \BlueChip\Security\Modules\Checklist\Hooks::IGNORED_CORE_MODIFIED_FILES
      *
-     * @param \stdClass $checksums
+     * @param object $checksums
      * @return array
      */
-    private static function findModifiedFiles($checksums): array
+    private static function findModifiedFiles(object $checksums): array
     {
         // Get files that should be ignored.
         $ignored_files = apply_filters(
@@ -146,10 +146,10 @@ class CoreIntegrity extends Checklist\AdvancedCheck
      *
      * @hook \BlueChip\Security\Modules\Checklist\Hooks::IGNORED_CORE_UNKNOWN_FILES
      *
-     * @param \stdClass $checksums
+     * @param object $checksums
      * @return array
      */
-    private static function findUnknownFiles($checksums): array
+    private static function findUnknownFiles(object $checksums): array
     {
         // Get files that should be ignored.
         $ignored_files = apply_filters(

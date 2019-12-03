@@ -126,9 +126,9 @@ class PluginsIntegrity extends Checklist\AdvancedCheck
      * Get md5 checksums of plugin files from downloads.wordpress.org.
      *
      * @param string $url
-     * @return \stdClass|null
+     * @return object|null
      */
-    private static function getChecksums(string $url)
+    private static function getChecksums(string $url): ?object
     {
         $json = Checklist\Helper::getJson($url);
 
@@ -137,7 +137,7 @@ class PluginsIntegrity extends Checklist\AdvancedCheck
             return null;
         }
 
-        // Return checksums as hashmap (stdClass): filename -> checksum.
+        // Return checksums as hashmap (object): filename -> checksum.
         $checksums = [];
         foreach ($json->files as $filename => $file_checksums) {
             $checksums[$filename] = $file_checksums->md5;

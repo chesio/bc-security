@@ -101,11 +101,11 @@ abstract class Helper
      * Check md5 hashes of files under $path on local filesystem against $checksums and report any modified files.
      *
      * @param string $path Absolute path to checksums root directory, must end with slash!
-     * @param \stdClass $checksums Dictionary with { filename: checksum } items. All filenames must be relative to $path.
+     * @param object $checksums Dictionary with { filename: checksum } items. All filenames must be relative to $path.
      * @param array $ignored_files List of filenames to ignore [optional].
      * @return array
      */
-    public static function checkDirectoryForModifiedFiles(string $path, $checksums, array $ignored_files = []): array
+    public static function checkDirectoryForModifiedFiles(string $path, object $checksums, array $ignored_files = []): array
     {
         // Initialize array for files that do not match.
         $modified_files = [];
@@ -142,11 +142,11 @@ abstract class Helper
      *
      * @param string $directory Directory to scan.
      * @param string $path Absolute path to checksums root directory, must end with slash!
-     * @param \stdClass $checksums Dictionary with { filename: checksum } items. All filenames must be relative to $path.
+     * @param object $checksums Dictionary with { filename: checksum } items. All filenames must be relative to $path.
      * @param bool $recursive Scan subdirectories too [optional].
      * @return array
      */
-    public static function scanDirectoryForUnknownFiles(string $directory, string $path, $checksums, bool $recursive = false): array
+    public static function scanDirectoryForUnknownFiles(string $directory, string $path, object $checksums, bool $recursive = false): array
     {
         $unknown_files = [];
 

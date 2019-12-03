@@ -297,9 +297,9 @@ class Core implements \BlueChip\Security\Modules\Initializable
      *
      * @param \WP_Error $errors WP_Error object (passed by reference).
      * @param bool $update Whether this is a user update.
-     * @param \stdClass $user User object (passed by reference).
+     * @param object $user User object (passed by reference).
      */
-    public function validatePasswordUpdate(\WP_Error &$errors, bool $update, &$user)
+    public function validatePasswordUpdate(\WP_Error &$errors, bool $update, object &$user)
     {
         if ($errors->get_error_code()) {
             // There is an error reported already, skip the check.
@@ -323,7 +323,7 @@ class Core implements \BlueChip\Security\Modules\Initializable
      * @param \WP_Error $errors
      * @param \WP_User|\WP_Error $user WP_User object if the login and reset key match. WP_Error object otherwise.
      */
-    public function validatePasswordReset(\WP_Error $errors, $user)
+    public function validatePasswordReset(\WP_Error $errors, object $user)
     {
         if ($errors->get_error_code()) {
             // There is an error reported already, skip the check.
