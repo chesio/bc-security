@@ -9,7 +9,7 @@ class AuthBadCookie extends Event
     /**
      * @var string Static event identificator.
      */
-    protected const ID = 'auth_bad_cookie';
+    public const ID = 'auth_bad_cookie';
 
     /**
      * @var string Event log level.

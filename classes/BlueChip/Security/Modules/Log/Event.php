@@ -10,7 +10,7 @@ abstract class Event
     /**
      * @var string Static event identificator.
      */
-    protected const ID = '';
+    public const ID = '';
 
     /**
      * @var string Log level.

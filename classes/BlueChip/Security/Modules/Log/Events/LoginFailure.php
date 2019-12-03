@@ -9,7 +9,7 @@ class LoginFailure extends Event
     /**
      * @var string Static event identificator.
      */
-    protected const ID = 'login_failure';
+    public const ID = 'login_failure';
 
     /**
      * @var string Event log level.

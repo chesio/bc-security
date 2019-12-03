@@ -9,7 +9,7 @@ class Query404 extends Event
     /**
      * @var string Static event identificator.
      */
-    protected const ID = 'query_404';
+    public const ID = 'query_404';
 
     /**
      * @var string Event log level.

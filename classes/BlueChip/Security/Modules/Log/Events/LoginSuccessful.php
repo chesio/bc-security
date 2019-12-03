@@ -9,7 +9,7 @@ class LoginSuccessful extends Event
     /**
      * @var string Static event identificator.
      */
-    protected const ID = 'login_success';
+    public const ID = 'login_success';
 
     /**
      * @var string Event log level.

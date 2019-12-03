@@ -9,7 +9,7 @@ class LoginLockout extends Event
     /**
      * @var string Static event identificator.
      */
-    protected const ID = 'login_lockdown';
+    public const ID = 'login_lockdown';
 
     /**
      * @var string Event log level.
