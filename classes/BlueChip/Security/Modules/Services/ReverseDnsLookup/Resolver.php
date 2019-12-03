@@ -13,17 +13,17 @@ class Resolver implements Modules\Activable, Modules\Initializable
     /**
      * @var string Name of cron job action used for non-blocking remote hostname resolution.
      */
-    const RESOLVE_REMOTE_ADDRESS = 'bc-security/resolve-remote-address';
+    private const RESOLVE_REMOTE_ADDRESS = 'bc-security/resolve-remote-address';
 
     /**
      * @var string Cache key under which to remote hostnames are cached.
      */
-    const TRANSIENT_KEY = 'remote-hostname';
+    private const TRANSIENT_KEY = 'remote-hostname';
 
     /**
      * @var int Number of seconds to cache remote hostname resolution results.
      */
-    const CACHE_TTL = DAY_IN_SECONDS;
+    private const CACHE_TTL = DAY_IN_SECONDS;
 
 
     public function activate()

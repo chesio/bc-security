@@ -12,7 +12,7 @@ abstract class ListTable extends \WP_List_Table
     /**
      * @var string Nonce name used for actions in all tables
      */
-    const NONCE_NAME = '_wpnonce';
+    protected const NONCE_NAME = '_wpnonce';
 
     /**
      * @var string URL of admin page where the list table is displayed

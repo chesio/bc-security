@@ -8,36 +8,36 @@ namespace BlueChip\Security\Modules\Notifications;
 class Settings extends \BlueChip\Security\Core\Settings
 {
     /** bool: Notify when user with admin privileges logs in [Yes] */
-    const ADMIN_USER_LOGIN = 'admin_user_login';
+    public const ADMIN_USER_LOGIN = 'admin_user_login';
 
     /** bool: Notify when known IP (IP for which there is a successful login in logs) is locked out [Yes] */
-    const KNOWN_IP_LOCKOUT = 'known_ip_lockout';
+    public const KNOWN_IP_LOCKOUT = 'known_ip_lockout';
 
     /** bool: Notify when there is an update for WordPress available [Yes] */
-    const CORE_UPDATE_AVAILABLE = 'core_update_available';
+    public const CORE_UPDATE_AVAILABLE = 'core_update_available';
 
     /** bool: Notify when there is a plugin update available [Yes] */
-    const PLUGIN_UPDATE_AVAILABLE = 'plugin_update_available';
+    public const PLUGIN_UPDATE_AVAILABLE = 'plugin_update_available';
 
     /** bool: Notify when there is a theme update available [Yes] */
-    const THEME_UPDATE_AVAILABLE = 'theme_update_available';
+    public const THEME_UPDATE_AVAILABLE = 'theme_update_available';
 
     /** bool: Notify when automatic checklist check triggers an alert [Yes] */
-    const CHECKLIST_ALERT = 'checklist_alert';
+    public const CHECKLIST_ALERT = 'checklist_alert';
 
     /** bool: Notify when BC Security is deactivated [Yes] */
-    const PLUGIN_DEACTIVATED = 'plugin_deactivated';
+    public const PLUGIN_DEACTIVATED = 'plugin_deactivated';
 
     /** bool: Send notification to email address of site administrator [No] */
-    const NOTIFY_SITE_ADMIN = 'notify_site_admin';
+    public const NOTIFY_SITE_ADMIN = 'notify_site_admin';
 
     /** array: List of email addresses of any additional notifications [empty] */
-    const NOTIFICATION_RECIPIENTS = 'notification_recipients';
+    public const NOTIFICATION_RECIPIENTS = 'notification_recipients';
 
     /**
      * @var array Default values for all settings.
      */
-    const DEFAULTS = [
+    protected const DEFAULTS = [
         self::ADMIN_USER_LOGIN => true,
         self::KNOWN_IP_LOCKOUT => true,
         self::CORE_UPDATE_AVAILABLE => true,
@@ -52,7 +52,7 @@ class Settings extends \BlueChip\Security\Core\Settings
     /**
      * @var array Custom sanitizers.
      */
-    const SANITIZERS = [
+    protected const SANITIZERS = [
         self::NOTIFICATION_RECIPIENTS => [self::class, 'sanitizeNotificationRecipient'],
     ];
 

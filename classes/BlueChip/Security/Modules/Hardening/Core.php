@@ -13,12 +13,12 @@ class Core implements \BlueChip\Security\Modules\Initializable
     /**
      * @var string
      */
-    const AUTHOR_SCAN_QUERY_VAR = 'author_scan';
+    private const AUTHOR_SCAN_QUERY_VAR = 'author_scan';
 
     /**
      * @var string
      */
-    const PWNED_PASSWORD_META_KEY = 'bc-security/pwned-password';
+    private const PWNED_PASSWORD_META_KEY = 'bc-security/pwned-password';
 
     /**
      * @var bool

@@ -11,7 +11,7 @@ class PluginsIntegrity extends Checklist\AdvancedCheck
     /**
      * @var string
      */
-    const CRON_JOB_HOOK = Jobs::PLUGINS_INTEGRITY_CHECK;
+    protected const CRON_JOB_HOOK = Jobs::PLUGINS_INTEGRITY_CHECK;
 
 
     public function __construct()

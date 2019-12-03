@@ -10,37 +10,37 @@ class ListTable extends \BlueChip\Security\Core\ListTable
     /**
      * @var string Name of remove action query argument
      */
-    const ACTION_REMOVE = 'remove';
+    private const ACTION_REMOVE = 'remove';
 
     /**
      * @var string Name of unlock action query argument
      */
-    const ACTION_UNLOCK = 'unlock';
+    private const ACTION_UNLOCK = 'unlock';
 
     /**
      * @var string Name of bulk remove action
      */
-    const BULK_ACTION_REMOVE = 'bulk-remove';
+    private const BULK_ACTION_REMOVE = 'bulk-remove';
 
     /**
      * @var string Name of bulk unlock action
      */
-    const BULK_ACTION_UNLOCK = 'bulk-unlock';
+    private const BULK_ACTION_UNLOCK = 'bulk-unlock';
 
     /**
      * @var string Name of removed notice query argument
      */
-    const NOTICE_RECORD_REMOVED = 'removed';
+    private const NOTICE_RECORD_REMOVED = 'removed';
 
     /**
      * @var string Name of unlocked notice query argument
      */
-    const NOTICE_RECORD_UNLOCKED = 'unlocked';
+    private const NOTICE_RECORD_UNLOCKED = 'unlocked';
 
     /**
      * @var string Name of view query argument
      */
-    const VIEW_SCOPE = 'scope';
+    private const VIEW_SCOPE = 'scope';
 
 
     /**

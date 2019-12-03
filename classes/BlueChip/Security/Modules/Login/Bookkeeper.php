@@ -10,12 +10,12 @@ class Bookkeeper implements \BlueChip\Security\Modules\Installable
     /**
      * @var string Name of DB table where failed logins are stored
      */
-    const FAILED_LOGINS_TABLE = 'bc_security_failed_logins';
+    private const FAILED_LOGINS_TABLE = 'bc_security_failed_logins';
 
     /**
      * @var string Date format accepted by MySQL
      */
-    const MYSQL_DATETIME_FORMAT = 'Y-m-d H:i:s';
+    private const MYSQL_DATETIME_FORMAT = 'Y-m-d H:i:s';
 
     /**
      * @var string Name of DB table where failed logins are stored (including table prefix)

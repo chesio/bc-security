@@ -10,10 +10,10 @@ use BlueChip\Security\Modules\IpBlacklist;
 class ListTable extends \BlueChip\Security\Core\ListTable
 {
     /** @var string Name of blacklist action query argument */
-    const ACTION_BLACKLIST = 'blacklist';
+    private const ACTION_BLACKLIST = 'blacklist';
 
     /** @var string Name of view query argument */
-    const VIEW_EVENT = 'event';
+    private const VIEW_EVENT = 'event';
 
 
     /** @var \BlueChip\Security\Modules\Log\Logger */

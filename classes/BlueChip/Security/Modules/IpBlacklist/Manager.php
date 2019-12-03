@@ -24,12 +24,12 @@ class Manager implements Modules\Countable, Modules\Installable, Modules\Initial
     /**
      * @var string Name of DB table where IP blacklist is stored
      */
-    const BLACKLIST_TABLE = 'bc_security_ip_blacklist';
+    private const BLACKLIST_TABLE = 'bc_security_ip_blacklist';
 
     /**
      * @var string Date format accepted by MySQL
      */
-    const MYSQL_DATETIME_FORMAT = 'Y-m-d H:i:s';
+    private const MYSQL_DATETIME_FORMAT = 'Y-m-d H:i:s';
 
 
     /**

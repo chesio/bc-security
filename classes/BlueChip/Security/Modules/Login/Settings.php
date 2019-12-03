@@ -8,34 +8,34 @@ namespace BlueChip\Security\Modules\Login;
 class Settings extends \BlueChip\Security\Core\Settings
 {
     /** int: Lock out for a short time after every N tries [5] */
-    const SHORT_LOCKOUT_AFTER = 'short_lockout_after';
+    public const SHORT_LOCKOUT_AFTER = 'short_lockout_after';
 
     /** int: Lock out for a short time for this many minutes [10] */
-    const SHORT_LOCKOUT_DURATION = 'short_lockout_duration';
+    public const SHORT_LOCKOUT_DURATION = 'short_lockout_duration';
 
     /** int: Lock out for a long time after every N tries [20] */
-    const LONG_LOCKOUT_AFTER = 'long_lockout_after';
+    public const LONG_LOCKOUT_AFTER = 'long_lockout_after';
 
     /** int: Lock out for a long time for this many hours [24] */
-    const LONG_LOCKOUT_DURATION = 'long_lockout_duration';
+    public const LONG_LOCKOUT_DURATION = 'long_lockout_duration';
 
     /** int: Reset failed attempts after this many days [3] */
-    const RESET_TIMEOUT = 'reset_timeout';
+    public const RESET_TIMEOUT = 'reset_timeout';
 
     /** bool: Also limit malformed/forged cookies? [Yes] */
-    const CHECK_COOKIES = 'check_cookies';
+    public const CHECK_COOKIES = 'check_cookies';
 
     /** array: List of usernames that trigger long lockout immediately when used to log in [empty] */
-    const USERNAME_BLACKLIST = 'username_blacklist';
+    public const USERNAME_BLACKLIST = 'username_blacklist';
 
     /** bool: Display generic login error message? [No] */
-    const GENERIC_LOGIN_ERROR_MESSAGE = 'display_generic_error_message';
+    public const GENERIC_LOGIN_ERROR_MESSAGE = 'display_generic_error_message';
 
 
     /**
      * @var array Default values for all settings.
      */
-    const DEFAULTS = [
+    protected const DEFAULTS = [
         self::SHORT_LOCKOUT_AFTER => 5,
         self::SHORT_LOCKOUT_DURATION => 10,
         self::LONG_LOCKOUT_AFTER => 20,
@@ -49,7 +49,7 @@ class Settings extends \BlueChip\Security\Core\Settings
     /**
      * @var array Custom sanitizers.
      */
-    const SANITIZERS = [
+    protected const SANITIZERS = [
         self::USERNAME_BLACKLIST => [self::class, 'sanitizeUsernameBlacklist'],
     ];
 

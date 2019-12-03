@@ -10,13 +10,13 @@ abstract class HaveIBeenPwned
     /**
      * @var string URL of Pwned Passwords home page
      */
-    const PWNEDPASSWORDS_HOME_URL = 'https://haveibeenpwned.com/Passwords';
+    public const PWNEDPASSWORDS_HOME_URL = 'https://haveibeenpwned.com/Passwords';
 
     /**
      * @link https://haveibeenpwned.com/API/v2#SearchingPwnedPasswordsByRange
      * @var string URL of Pwned Passwords API range search end-point
      */
-    const PWNEDPASSWORDS_API_RANGE_SEARCH_URL = 'https://api.pwnedpasswords.com/range/';
+    public const PWNEDPASSWORDS_API_RANGE_SEARCH_URL = 'https://api.pwnedpasswords.com/range/';
 
 
     /**

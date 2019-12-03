@@ -10,12 +10,12 @@ class CoreIntegrity extends Checklist\AdvancedCheck
     /**
      * @var string
      */
-    const CRON_JOB_HOOK = Jobs::CORE_INTEGRITY_CHECK;
+    protected const CRON_JOB_HOOK = Jobs::CORE_INTEGRITY_CHECK;
 
     /**
      * @var string URL of checksum API
      */
-    const CHECKSUMS_API_URL = 'https://api.wordpress.org/core/checksums/1.0/';
+    private const CHECKSUMS_API_URL = 'https://api.wordpress.org/core/checksums/1.0/';
 
 
     public function __construct()

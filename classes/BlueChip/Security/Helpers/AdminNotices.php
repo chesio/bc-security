@@ -7,10 +7,10 @@ namespace BlueChip\Security\Helpers;
  */
 abstract class AdminNotices
 {
-    const ERROR = 'notice-error';
-    const WARNING = 'notice-warning';
-    const SUCCESS = 'notice-success';
-    const INFO = 'notice-info';
+    public const ERROR = 'notice-error';
+    public const WARNING = 'notice-warning';
+    public const SUCCESS = 'notice-success';
+    public const INFO = 'notice-info';
 
     /**
      * Add dismissible admin notice with given $message of given $type.

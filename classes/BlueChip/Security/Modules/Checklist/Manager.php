@@ -11,7 +11,7 @@ class Manager implements Modules\Initializable
     /**
      * @var string
      */
-    const ASYNC_CHECK_ACTION = 'bc_security_run_check';
+    public const ASYNC_CHECK_ACTION = 'bc_security_run_check';
 
     /**
      * @var \BlueChip\Security\Modules\Checklist\Check[]

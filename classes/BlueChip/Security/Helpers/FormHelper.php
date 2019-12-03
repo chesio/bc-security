@@ -8,17 +8,17 @@ abstract class FormHelper
      * @link https://developer.mozilla.org/en-US/docs/Web/HTML/Element/textarea
      * @var int Default value of "cols" attribute of <textarea> element.
      */
-    const TEXTAREA_COLS_DEFAULT_VALUE = 20;
+    private const TEXTAREA_COLS_DEFAULT_VALUE = 20;
 
     /**
      * @var int Maximum for content-based value of "rows" attribute of <textarea> element.
      */
-    const TEXTAREA_ROWS_MAXIMUM_VALUE = 20;
+    private const TEXTAREA_ROWS_MAXIMUM_VALUE = 20;
 
     /**
      * @var int Minimum for content-based value of "rows" attribute of <textarea> element.
      */
-    const TEXTAREA_ROWS_MINIMUM_VALUE = 4;
+    private const TEXTAREA_ROWS_MINIMUM_VALUE = 4;
 
 
     /**

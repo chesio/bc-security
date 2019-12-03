@@ -8,19 +8,19 @@ namespace BlueChip\Security\Setup;
 class Settings extends \BlueChip\Security\Core\Settings
 {
     /** string: What is server connection type? [REMOTE_ADDR] */
-    const CONNECTION_TYPE = 'connection-type';
+    public const CONNECTION_TYPE = 'connection-type';
 
     /**
      * @var array Default values for all settings.
      */
-    const DEFAULTS = [
+    protected const DEFAULTS = [
         self::CONNECTION_TYPE => IpAddress::REMOTE_ADDR,
     ];
 
     /**
      * @var array Custom sanitizers.
      */
-    const SANITIZERS = [
+    protected const SANITIZERS = [
         self::CONNECTION_TYPE => [self::class, 'sanitizeConnectionType'],
     ];
 

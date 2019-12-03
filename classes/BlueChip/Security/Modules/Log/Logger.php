@@ -14,10 +14,10 @@ use Psr\Log;
 class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\Countable, Modules\Installable, Modules\Loadable, Modules\Initializable, \Countable
 {
     /** @var string Name of DB table where logs are stored */
-    const LOG_TABLE = 'bc_security_log';
+    private const LOG_TABLE = 'bc_security_log';
 
     /** @var string Date format accepted by MySQL */
-    const MYSQL_DATETIME_FORMAT = 'Y-m-d H:i:s';
+    private const MYSQL_DATETIME_FORMAT = 'Y-m-d H:i:s';
 
     /** @var string Name of DB table where logs are stored (including table prefix) */
     private $log_table;

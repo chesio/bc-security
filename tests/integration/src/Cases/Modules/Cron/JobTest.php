@@ -6,7 +6,7 @@ use BlueChip\Security\Modules\Cron;
 
 class JobTest extends \BlueChip\Security\Tests\Integration\TestCase
 {
-    const HOOK = 'test-job';
+    private const HOOK = 'test-job';
 
     public function testScheduling()
     {

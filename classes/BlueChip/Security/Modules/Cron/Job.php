@@ -10,12 +10,12 @@ class Job
     /**
      * @var string Indicate that cron job should be scheduled at random time between 00:00:00 and 05:59:59 local time.
      */
-    const RUN_AT_NIGHT = 'run_at_night';
+    public const RUN_AT_NIGHT = 'run_at_night';
 
     /**
      * @var string Indicate that cron job should be scheduled at random time during entire day.
      */
-    const RUN_RANDOMLY = 'run_randomly';
+    public const RUN_RANDOMLY = 'run_randomly';
 
 
     /**

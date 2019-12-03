@@ -12,5 +12,5 @@ interface Hooks
      *     return $screen->base === 'dashboard';
      * }, 10, 3);
      */
-    const SHOW_PWNED_PASSWORD_WARNING = 'bc-security/filter:show-pwned-password-warning';
+    public const SHOW_PWNED_PASSWORD_WARNING = 'bc-security/filter:show-pwned-password-warning';
 }

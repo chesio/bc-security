@@ -9,12 +9,12 @@ abstract class Check
     /**
      * @var string
      */
-    const LAST_RUN_TRANSIENT_ID = 'check-last-run';
+    private const LAST_RUN_TRANSIENT_ID = 'check-last-run';
 
     /**
      * @var string
      */
-    const RESULT_TRANSIENT_ID = 'check-result';
+    private const RESULT_TRANSIENT_ID = 'check-result';
 
     /**
      * @var string

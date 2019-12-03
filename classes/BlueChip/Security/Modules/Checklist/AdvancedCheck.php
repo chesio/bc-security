@@ -15,7 +15,7 @@ abstract class AdvancedCheck extends Check
     /**
      * @var string
      */
-    const CRON_JOB_HOOK = '';
+    protected const CRON_JOB_HOOK = '';
 
     /**
      * @return string Hook of cron job this check is bind to.

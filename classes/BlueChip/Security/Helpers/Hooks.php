@@ -12,7 +12,7 @@ interface Hooks
      *
      * @see \BlueChip\Security\Helpers\Is::admin()
      */
-    const IS_ADMIN = 'bc-security/filter:is-admin';
+    public const IS_ADMIN = 'bc-security/filter:is-admin';
 
 
     /**
@@ -20,7 +20,7 @@ interface Hooks
      *
      * @see \BlueChip\Security\Helpers\Is::live()
      */
-    const IS_LIVE = 'bc-security/filter:is-live';
+    public const IS_LIVE = 'bc-security/filter:is-live';
 
 
     /**
@@ -28,5 +28,5 @@ interface Hooks
      *
      * @see \BlueChip\Security\Helpers\Plugin::getChangelogUrl()
      */
-    const PLUGIN_CHANGELOG_URL = 'bc-security/filter:plugin-changelog-url';
+    public const PLUGIN_CHANGELOG_URL = 'bc-security/filter:plugin-changelog-url';
 }

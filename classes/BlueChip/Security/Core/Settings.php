@@ -14,12 +14,12 @@ abstract class Settings implements \ArrayAccess
     /**
      * @var array Default values for all settings. Descendant classes should override it.
      */
-    const DEFAULTS = [];
+    protected const DEFAULTS = [];
 
     /**
      * @var array Sanitization routines for settings that cannot be just sanitized based on type of their default value.
      */
-    const SANITIZERS = [];
+    protected const SANITIZERS = [];
 
 
     /**

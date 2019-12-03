@@ -10,22 +10,22 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
     /**
      * @var string Page slug
      */
-    const SLUG = 'bc-security-tools';
+    protected const SLUG = 'bc-security-tools';
 
     /**
      * @var string
      */
-    const EXPORT_ACTION = 'export-settings';
+    private const EXPORT_ACTION = 'export-settings';
 
     /**
      * @var string
      */
-    const IMPORT_ACTION = 'import-settings';
+    private const IMPORT_ACTION = 'import-settings';
 
     /**
      * @var string
      */
-    const RESET_ACTION = 'reset-settings';
+    private const RESET_ACTION = 'reset-settings';
 
 
     /**

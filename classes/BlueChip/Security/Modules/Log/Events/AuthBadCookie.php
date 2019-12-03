@@ -9,12 +9,12 @@ class AuthBadCookie extends Event
     /**
      * @var string Static event identificator.
      */
-    const ID = 'auth_bad_cookie';
+    protected const ID = 'auth_bad_cookie';
 
     /**
      * @var string Event log level.
      */
-    const LOG_LEVEL = \Psr\Log\LogLevel::NOTICE;
+    protected const LOG_LEVEL = \Psr\Log\LogLevel::NOTICE;
 
     /**
      * __('Username')

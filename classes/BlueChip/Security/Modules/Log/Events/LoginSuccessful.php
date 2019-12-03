@@ -9,12 +9,12 @@ class LoginSuccessful extends Event
     /**
      * @var string Static event identificator.
      */
-    const ID = 'login_success';
+    protected const ID = 'login_success';
 
     /**
      * @var string Event log level.
      */
-    const LOG_LEVEL = \Psr\Log\LogLevel::INFO;
+    protected const LOG_LEVEL = \Psr\Log\LogLevel::INFO;
 
     /**
      * __('Username')

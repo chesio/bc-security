@@ -9,7 +9,7 @@ abstract class Mailman
     /**
      * @var string End-of-line character for email body.
      */
-    const EOL = "\r\n";
+    private const EOL = "\r\n";
 
     /**
      * Add some boilerplate to $subject and $message and send notification via wp_mail().
