@@ -42,10 +42,10 @@
     "integration-tests": "phpunit --configuration tests/integration/phpunit.xml",
     "unit-tests": "phpunit --configuration tests/unit/phpunit.xml",
     "test": [
-      "phpcs",
-      "phpstan analyze",
-      "phpunit --configuration tests/integration/phpunit.xml",
-      "phpunit --configuration tests/unit/phpunit.xml"
+      "@phpcs",
+      "@phpstan",
+      "@integration-tests",
+      "@unit-tests"
     ]
   }
 }
