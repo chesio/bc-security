@@ -116,9 +116,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
      */
     private function printBlacklistingForm()
     {
-        // Accept the following values as "pre-fill"
-        // Note: the "add-" prefix is especially important for scope, because
-        // there is "scope" GET argument used for list table views already.
+        // IP address and lock scope can be "pre-filled".
         $ip_address = \filter_input(INPUT_GET, self::DEFAULT_IP_ADDRESS, FILTER_VALIDATE_IP);
         $scope = \filter_input(INPUT_GET, self::DEFAULT_SCOPE, FILTER_VALIDATE_INT);
 
