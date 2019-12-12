@@ -289,7 +289,7 @@ class Manager implements Modules\Countable, Modules\Installable, Modules\Initial
         // Note: $wpdb->delete cannot be used as it does not support "<=" comparison)
         $query = $this->wpdb->prepare(
             "DELETE FROM {$this->blacklist_table} WHERE release_time <= %s",
-            MySQLDateTime::formatDateTime()
+            MySQLDateTime::formatDateTime(\time())
         );
         // Execute query
         $result = $this->wpdb->query($query);
@@ -351,7 +351,7 @@ class Manager implements Modules\Countable, Modules\Installable, Modules\Initial
         // Execute query.
         $result = $this->wpdb->update(
             $this->blacklist_table,
-            ['release_time' => MySQLDateTime::formatDateTime()],
+            ['release_time' => MySQLDateTime::formatDateTime(\time())],
             ['id' => $id],
             ['%s'],
             ['%d']
@@ -377,7 +377,7 @@ class Manager implements Modules\Countable, Modules\Installable, Modules\Initial
         // Prepare query.
         $query = \sprintf(
             "UDPATE {$this->blacklist_table} SET release_time = '%s' WHERE %s",
-            MySQLDateTime::formatDateTime(),
+            MySQLDateTime::formatDateTime(\time()),
             \implode(' OR ', \array_map(function ($id) {
                 return \sprintf('id = %d', $id);
             }, $ids))

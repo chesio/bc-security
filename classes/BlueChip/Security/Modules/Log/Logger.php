@@ -133,7 +133,7 @@ class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\
         $insertion_status = $this->wpdb->insert(
             $this->log_table,
             [
-                'date_and_time' => MySQLDateTime::formatDateTime(),
+                'date_and_time' => MySQLDateTime::formatDateTime(\time()),
                 'ip_address' => $ip_address,
                 'event' => $event,
                 'level' => $this->translateLogLevel($level),

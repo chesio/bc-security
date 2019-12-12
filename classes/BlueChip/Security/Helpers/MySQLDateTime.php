@@ -17,12 +17,12 @@ abstract class MySQLDateTime
     /**
      * @link https://www.php.net/manual/en/date.php
      *
-     * @param int|null $timestamp
+     * @param int $timestamp
      * @return string
      */
-    public static function formatDateTime(?int $timestamp = null): string
+    public static function formatDateTime(int $timestamp): string
     {
-        return \date(self::FORMAT, $timestamp === null ? \time() : $timestamp);
+        return \date(self::FORMAT, $timestamp);
     }
 
     /**
