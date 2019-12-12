@@ -14,7 +14,7 @@ abstract class Helper
             return '--';
         } else {
             $format = \sprintf('%s %s', get_option('date_format'), get_option('time_format'));
-            return date_i18n($format, $timestamp);
+            return wp_date($format, $timestamp);
         }
     }
 

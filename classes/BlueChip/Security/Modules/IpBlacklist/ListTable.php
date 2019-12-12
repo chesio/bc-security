@@ -2,6 +2,8 @@
 
 namespace BlueChip\Security\Modules\IpBlacklist;
 
+use BlueChip\Security\Helpers\MySQLDateTime;
+
 /**
  * IP blacklist table
  */
@@ -81,6 +83,30 @@ class ListTable extends \BlueChip\Security\Core\ListTable
     public function column_ip_address(array $item): string // phpcs:ignore
     {
         return $item['ip_address'] . $this->row_actions($this->getRowActions($item));
+    }
+
+
+    /**
+     * Return content for "ban time" column.
+     *
+     * @param array $item
+     * @return string
+     */
+    public function column_ban_time(array $item): string // phpcs:ignore
+    {
+        return $this->formatDateAndTime($item['ban_time']);
+    }
+
+
+    /**
+     * Return content for "release time" column.
+     *
+     * @param array $item
+     * @return string
+     */
+    public function column_release_time(array $item): string // phpcs:ignore
+    {
+        return $this->formatDateAndTime($item['release_time']);
     }
 
 
@@ -310,7 +336,7 @@ class ListTable extends \BlueChip\Security\Core\ListTable
             ),
         ];
 
-        if (\strtotime($item['release_time']) > current_time('timestamp')) {
+        if (MySQLDateTime::parseTimestamp($item['release_time']) > \time()) {
             // Only active locks can be unlocked
             $actions[self::ACTION_UNLOCK] = $this->renderRowAction(
                 self::ACTION_UNLOCK,

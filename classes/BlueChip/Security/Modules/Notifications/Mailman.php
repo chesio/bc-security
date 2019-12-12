@@ -44,8 +44,8 @@ abstract class Mailman
                 __('This email was sent from your website "%1$s" by BC Security plugin on %2$s at %3$s.'),
                 // Blog name must be decoded, see: https://github.com/chesio/bc-security/issues/86
                 wp_specialchars_decode(get_option('blogname'), ENT_QUOTES),
-                date_i18n('d.m.Y'),
-                date_i18n('H:i:s')
+                wp_date(get_option('date_format')),
+                wp_date(get_option('time_format'))
             ),
             '',
         ];

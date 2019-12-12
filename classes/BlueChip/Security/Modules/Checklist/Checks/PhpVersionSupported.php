@@ -53,7 +53,7 @@ class PhpVersionSupported extends Checklist\BasicCheck
                 ? \sprintf(
                     esc_html__('You are running PHP %1$s, which is supported until %2$s.', 'bc-security'),
                     self::formatPhpVersion(),
-                    date_i18n(get_option('date_format'), \strtotime($eol_date))
+                    wp_date(get_option('date_format'), \strtotime($eol_date))
                 )
                 : \sprintf(
                     esc_html__('You are running PHP %1$s, which is still supported.', 'bc-security'),
@@ -85,7 +85,7 @@ class PhpVersionSupported extends Checklist\BasicCheck
      */
     private static function getOldestSupportedPhpVersion(): ?string
     {
-        $now = current_time('timestamp');
+        $now = \time();
 
         foreach (self::SUPPORTED_VERSIONS as $version => $eol_date) {
             if (\strtotime($eol_date) >= $now) {

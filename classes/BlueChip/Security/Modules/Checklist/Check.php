@@ -126,7 +126,7 @@ abstract class Check
     public function run(): CheckResult
     {
         // Run the check...
-        $this->last_run = current_time('timestamp');
+        $this->last_run = \time();
         $this->result = $this->runInternal();
         // ... cache the time and result...
         Transients::setForSite($this->last_run, self::LAST_RUN_TRANSIENT_ID, self::getId());

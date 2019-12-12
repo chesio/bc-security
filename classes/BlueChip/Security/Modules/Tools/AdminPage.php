@@ -156,7 +156,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
         }
 
         // Send headers.
-        $file_name = 'bc-security-export-' . \date('Y-m-d') . '.json';
+        $file_name = 'bc-security-export-' . \wp_date('Y-m-d') . '.json';
         \header("Content-Disposition: attachment; filename={$file_name}");
         \header("Content-Type: application/json; charset=utf-8");
 

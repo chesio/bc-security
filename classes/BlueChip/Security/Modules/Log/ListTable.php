@@ -51,7 +51,7 @@ class ListTable extends \BlueChip\Security\Core\ListTable
      */
     public function column_date_and_time(array $item): string // phpcs:ignore
     {
-        return $item['date_and_time'] . $this->row_actions($this->getRowActions($item));
+        return $this->formatDateAndTime($item['date_and_time']) . $this->row_actions($this->getRowActions($item));
     }
 
 
