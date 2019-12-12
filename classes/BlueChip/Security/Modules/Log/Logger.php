@@ -2,6 +2,7 @@
 
 namespace BlueChip\Security\Modules\Log;
 
+use BlueChip\Security\Helpers\MySQLDateTime;
 use BlueChip\Security\Modules;
 use BlueChip\Security\Modules\Services\ReverseDnsLookup;
 use Psr\Log;
@@ -16,8 +17,6 @@ class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\
     /** @var string Name of DB table where logs are stored */
     private const LOG_TABLE = 'bc_security_log';
 
-    /** @var string Date format accepted by MySQL */
-    private const MYSQL_DATETIME_FORMAT = 'Y-m-d H:i:s';
 
     /** @var string Name of DB table where logs are stored (including table prefix) */
     private $log_table;
@@ -134,7 +133,7 @@ class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\
         $insertion_status = $this->wpdb->insert(
             $this->log_table,
             [
-                'date_and_time' => \date(self::MYSQL_DATETIME_FORMAT, current_time('timestamp')),
+                'date_and_time' => MySQLDateTime::formatDateTime(),
                 'ip_address' => $ip_address,
                 'event' => $event,
                 'level' => $this->translateLogLevel($level),
@@ -275,7 +274,7 @@ class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\
     {
         $query = $this->wpdb->prepare(
             "SELECT COUNT(id) AS total FROM {$this->log_table} WHERE date_and_time > %s",
-            \date(self::MYSQL_DATETIME_FORMAT, $timestamp)
+            MySQLDateTime::formatDateTime($timestamp)
         );
 
         return \intval($this->wpdb->get_var($query));
@@ -361,7 +360,7 @@ class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\
         // Note: $wpdb->delete cannot be used as it does not support "<=" comparison)
         $query = $this->wpdb->prepare(
             "DELETE FROM {$this->log_table} WHERE date_and_time <= %s",
-            \date(self::MYSQL_DATETIME_FORMAT, current_time('timestamp') - $max_age)
+            MySQLDateTime::formatDateTime(\time() - $max_age)
         );
         // Execute query and return true/false status.
         return $this->wpdb->query($query) !== false;

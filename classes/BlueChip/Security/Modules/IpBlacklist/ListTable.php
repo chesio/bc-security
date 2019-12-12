@@ -2,6 +2,8 @@
 
 namespace BlueChip\Security\Modules\IpBlacklist;
 
+use BlueChip\Security\Helpers\MySQLDateTime;
+
 /**
  * IP blacklist table
  */
@@ -310,7 +312,7 @@ class ListTable extends \BlueChip\Security\Core\ListTable
             ),
         ];
 
-        if (\strtotime($item['release_time']) > current_time('timestamp')) {
+        if (MySQLDateTime::parseTimestamp($item['release_time']) > \time()) {
             // Only active locks can be unlocked
             $actions[self::ACTION_UNLOCK] = $this->renderRowAction(
                 self::ACTION_UNLOCK,

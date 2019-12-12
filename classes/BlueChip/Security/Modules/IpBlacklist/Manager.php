@@ -2,6 +2,7 @@
 
 namespace BlueChip\Security\Modules\IpBlacklist;
 
+use BlueChip\Security\Helpers\MySQLDateTime;
 use BlueChip\Security\Modules;
 
 /**
@@ -25,11 +26,6 @@ class Manager implements Modules\Countable, Modules\Installable, Modules\Initial
      * @var string Name of DB table where IP blacklist is stored
      */
     private const BLACKLIST_TABLE = 'bc_security_ip_blacklist';
-
-    /**
-     * @var string Date format accepted by MySQL
-     */
-    private const MYSQL_DATETIME_FORMAT = 'Y-m-d H:i:s';
 
 
     /**
@@ -143,7 +139,7 @@ class Manager implements Modules\Countable, Modules\Installable, Modules\Initial
     {
         $query = $this->wpdb->prepare(
             "SELECT COUNT(id) AS total FROM {$this->blacklist_table} WHERE ban_time > %s",
-            \date(self::MYSQL_DATETIME_FORMAT, $timestamp)
+            MySQLDateTime::formatDateTime($timestamp)
         );
 
         return \intval($this->wpdb->get_var($query));
@@ -233,7 +229,7 @@ class Manager implements Modules\Countable, Modules\Installable, Modules\Initial
         // Execute query
         $release_time = $this->wpdb->get_var($query);
         // Evaluate release time
-        $result = \is_string($release_time) && (current_time('timestamp') < \strtotime($release_time));
+        $result = \is_string($release_time) && (\time() < MySQLDateTime::parseTimestamp($release_time));
         // Allow the result to be filtered
         return apply_filters(Hooks::IS_IP_ADDRESS_LOCKED, $result, $ip_address, $scope);
     }
@@ -251,11 +247,11 @@ class Manager implements Modules\Countable, Modules\Installable, Modules\Initial
      */
     public function lock(string $ip_address, int $duration, int $scope, int $reason, string $comment = ''): bool
     {
-        $now = current_time('timestamp');
+        $now = \time();
 
         $data = [
-            'ban_time'      => \date(self::MYSQL_DATETIME_FORMAT, $now),
-            'release_time'  => \date(self::MYSQL_DATETIME_FORMAT, $now + $duration),
+            'ban_time'      => MySQLDateTime::formatDateTime($now),
+            'release_time'  => MySQLDateTime::formatDateTime($now + $duration),
             'comment'       => $comment,
         ];
 
@@ -293,7 +289,7 @@ class Manager implements Modules\Countable, Modules\Installable, Modules\Initial
         // Note: $wpdb->delete cannot be used as it does not support "<=" comparison)
         $query = $this->wpdb->prepare(
             "DELETE FROM {$this->blacklist_table} WHERE release_time <= %s",
-            \date(self::MYSQL_DATETIME_FORMAT, current_time('timestamp'))
+            MySQLDateTime::formatDateTime()
         );
         // Execute query
         $result = $this->wpdb->query($query);
@@ -355,7 +351,7 @@ class Manager implements Modules\Countable, Modules\Installable, Modules\Initial
         // Execute query.
         $result = $this->wpdb->update(
             $this->blacklist_table,
-            ['release_time' => \date(self::MYSQL_DATETIME_FORMAT, current_time('timestamp'))],
+            ['release_time' => MySQLDateTime::formatDateTime()],
             ['id' => $id],
             ['%s'],
             ['%d']
@@ -381,7 +377,7 @@ class Manager implements Modules\Countable, Modules\Installable, Modules\Initial
         // Prepare query.
         $query = \sprintf(
             "UDPATE {$this->blacklist_table} SET release_time = '%s' WHERE %s",
-            \date(self::MYSQL_DATETIME_FORMAT, current_time('timestamp')),
+            MySQLDateTime::formatDateTime(),
             \implode(' OR ', \array_map(function ($id) {
                 return \sprintf('id = %d', $id);
             }, $ids))
