@@ -106,7 +106,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
         $this->addSettingsField(
             Settings::GOOGLE_API_KEY,
             __('Google API key', 'bc-security'),
-            [FormHelper::class, 'printTextInput'],
+            [FormHelper::class, 'printTextInput']
         );
     }
 
