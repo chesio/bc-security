@@ -16,6 +16,8 @@ Helps keeping WordPress websites secure.
 
 Several features of BC Security depends on the knowledge of remote IP address, so it is important that you let the plugin know how your server is connected to the Internet. You can either set connection type via _Setup_ page or with `BC_SECURITY_CONNECTION_TYPE` constant.
 
+You may also optionally provide Google API key if you want to check your website against the Google [Safe Browsing](https://transparencyreport.google.com/safe-browsing/overview) lists of unsafe web resources. The key must have [Google Safe Browsing](https://developers.google.com/safe-browsing/) API enabled. As with the connection type, you can configure the key either via _Setup_ page or with `BC_SECURITY_GOOGLE_API_KEY` constant.
+
 **Note:** If you already have an installation with BC Security set up and would like to set up another installation in the same way, you can export plugin settings (including connection type) from the former installation and import them to the latter.
 
 ## Features
@@ -41,7 +43,7 @@ Basic checks cover common security practices. They do not require any informatio
 
 Advanced checks require data from external sources, therefore they leak some information about your website and take more time to execute.
 
-In the moment, list of installed plugins (but only those with _readme.txt_ file) is shared with WordPress.org.
+In the moment, list of installed plugins (but only those with _readme.txt_ file) is shared with WordPress.org and site URL is shared with Google.
 
 ##### WordPress core integrity check
 
@@ -60,6 +62,10 @@ Important: any plugins under version control (Git or Subversion) are automatical
 ##### Removed plugins check
 
 Although plugins can be removed from [Plugins Directory](https://wordpress.org/plugins/) for several reasons (not only because they have [security vulnerability](https://www.wordfence.com/blog/2017/09/display-widgets-malware/)), use of removed plugins is discouraged. Obviously, this check also works only for plugins installed from Plugins Directory.
+
+#### Safe Browsing check
+
+Checks whether your website is included on any of Google's [lists of unsafe web resources](https://developers.google.com/safe-browsing/) - this is usually a solid indicator of compromise. Note that for this check to run you have to provide [properly configured API key](https://developers.google.com/safe-browsing/v4/urls-hashing) via [plugin setup](#setup).
 
 #### Checklist monitoring
 
