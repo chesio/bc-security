@@ -87,6 +87,30 @@ class ListTable extends \BlueChip\Security\Core\ListTable
 
 
     /**
+     * Return content for "ban time" column.
+     *
+     * @param array $item
+     * @return string
+     */
+    public function column_ban_time(array $item): string // phpcs:ignore
+    {
+        return $this->formatDateAndTime($item['ban_time']);
+    }
+
+
+    /**
+     * Return content for "release time" column.
+     *
+     * @param array $item
+     * @return string
+     */
+    public function column_release_time(array $item): string // phpcs:ignore
+    {
+        return $this->formatDateAndTime($item['release_time']);
+    }
+
+
+    /**
      * Return human readable value for ban reason table column.
      *
      * @param array $item
