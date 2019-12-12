@@ -45,6 +45,19 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
                 false // ~ do not escape HTML
             );
         }
+
+        if (!empty($google_api_key = GoogleAPI::getStaticKey())) {
+            // Google API key is set via constant.
+            AdminNotices::add(
+                \sprintf(
+                    __('You have configured <code>BC_SECURITY_GOOGLE_API_KEY</code> to <code>%s</code>, therefore the Google API key setting below is ignored.', 'bc-security'),
+                    $google_api_key
+                ),
+                AdminNotices::WARNING,
+                false, // ~ not dismissible
+                false // ~ do not escape HTML
+            );
+        }
     }
 
 
@@ -83,6 +96,31 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
             [FormHelper::class, 'printSelect'],
             ['options' => $this->getConnectionOptions()]
         );
+
+        // Section: Google API key
+        $this->addSettingsSection(
+            'google-api',
+            _x('Google API key', 'Settings section title', 'bc-security'),
+            [$this, 'printGoogleAPIHint']
+        );
+        $this->addSettingsField(
+            Settings::GOOGLE_API_KEY,
+            __('Google API key', 'bc-security'),
+            [FormHelper::class, 'printTextInput'],
+        );
+    }
+
+
+    public function printGoogleAPIHint()
+    {
+        echo '<p>';
+        echo sprintf(
+            /* translators: 1: link to Google Safe Browsing "Get Started" page, 2: link to Google Safe Browsing page */
+            esc_html__('%1$s is required only if you would like to check your website against the %2$s.', 'bc-security'),
+            '<a href="' . esc_url('https://developers.google.com/safe-browsing/v4/get-started') . '" rel="noreferrer">' . esc_html__('Google API key', 'bc-security') . '</a>',
+            '<a href="' . esc_url('https://developers.google.com/safe-browsing/') . '" rel="noreferrer">' . esc_html__('Google Safe Browsing lists of unsafe web resources', 'bc-security') . '</a>'
+        );
+        echo '</p>';
     }
 
 

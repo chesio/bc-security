@@ -10,11 +10,16 @@ class Settings extends \BlueChip\Security\Core\Settings
     /** string: What is server connection type? [REMOTE_ADDR] */
     public const CONNECTION_TYPE = 'connection-type';
 
+    /** string: Google API key (for Safe Browsing check) */
+    public const GOOGLE_API_KEY = 'google-api-key';
+
+
     /**
      * @var array Default values for all settings.
      */
     protected const DEFAULTS = [
         self::CONNECTION_TYPE => IpAddress::REMOTE_ADDR,
+        self::GOOGLE_API_KEY => '',
     ];
 
     /**
