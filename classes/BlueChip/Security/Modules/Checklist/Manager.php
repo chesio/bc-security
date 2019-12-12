@@ -33,10 +33,11 @@ class Manager implements Modules\Initializable
      * @param \BlueChip\Security\Modules\Checklist\AutorunSettings $settings
      * @param \BlueChip\Security\Modules\Cron\Manager $cron_manager
      * @param \wpdb $wpdb WordPress database access abstraction object
+     * @param string $google_api_key
      */
-    public function __construct(AutorunSettings $settings, Cron\Manager $cron_manager, \wpdb $wpdb)
+    public function __construct(AutorunSettings $settings, Cron\Manager $cron_manager, \wpdb $wpdb, string $google_api_key)
     {
-        $this->checks = $this->constructChecks($wpdb);
+        $this->checks = $this->constructChecks($wpdb, $google_api_key);
         $this->settings = $settings;
         $this->cron_manager = $cron_manager;
     }
@@ -60,8 +61,9 @@ class Manager implements Modules\Initializable
      * Construct all checks.
      *
      * @param \wpdb $wpdb WordPress database access abstraction object
+     * @param string $google_api_key Google API key for project with Safe Browsing API enabled.
      */
-    public function constructChecks(\wpdb $wpdb): array
+    public function constructChecks(\wpdb $wpdb, string $google_api_key): array
     {
         return [
             // PHP files editation should be off.
@@ -96,6 +98,9 @@ class Manager implements Modules\Initializable
 
             // There are no plugins installed that have been removed from plugins directory.
             Checks\NoPluginsRemovedFromDirectory::getId() => new Checks\NoPluginsRemovedFromDirectory(),
+
+            // Site is not blacklisted by Google.
+            Checks\SafeBrowsing::getId() => new Checks\SafeBrowsing($google_api_key),
         ];
     }
 

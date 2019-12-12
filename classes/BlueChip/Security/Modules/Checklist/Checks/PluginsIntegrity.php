@@ -127,7 +127,7 @@ class PluginsIntegrity extends Checklist\AdvancedCheck
      */
     private static function getChecksums(string $url): ?object
     {
-        $json = Checklist\Helper::getJson($url);
+        $json = Helpers\WpRemote::getJson($url);
 
         // Bail on error or if the response body is invalid.
         if (empty($json) || empty($json->files)) {

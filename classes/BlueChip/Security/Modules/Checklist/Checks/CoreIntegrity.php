@@ -2,6 +2,7 @@
 
 namespace BlueChip\Security\Modules\Checklist\Checks;
 
+use BlueChip\Security\Helpers\WpRemote;
 use BlueChip\Security\Modules\Checklist;
 use BlueChip\Security\Modules\Cron\Jobs;
 
@@ -90,7 +91,7 @@ class CoreIntegrity extends Checklist\AdvancedCheck
      */
     private static function getChecksums(string $url): ?object
     {
-        $json = Checklist\Helper::getJson($url);
+        $json = WpRemote::getJson($url);
 
         // When no locale is specified in API request, checksums are stored under additional version number key.
         $version = get_bloginfo('version');

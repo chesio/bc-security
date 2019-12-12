@@ -25,6 +25,9 @@ abstract class Jobs
     /** string: Hook name for "No plugins removed from WordPress.org installed" check monitor */
     public const NO_REMOVED_PLUGINS_CHECK = 'bc-security/no-removed-plugins-check';
 
+    /** string: Hook name for "Site is not blacklisted by Google" check monitor */
+    public const SAFE_BROWSING_CHECK = 'bc-security/safe-browsing-check';
+
 
     /**
      * @return array List of all implemented cron jobs.
