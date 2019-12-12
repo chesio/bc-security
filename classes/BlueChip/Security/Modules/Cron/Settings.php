@@ -18,5 +18,6 @@ class Settings extends \BlueChip\Security\Core\Settings
         Jobs::CORE_INTEGRITY_CHECK => false,
         Jobs::PLUGINS_INTEGRITY_CHECK => false,
         Jobs::NO_REMOVED_PLUGINS_CHECK => false,
+        Jobs::SAFE_BROWSING_CHECK => false,
     ];
 }

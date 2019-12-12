@@ -22,5 +22,6 @@ class AutorunSettings extends \BlueChip\Security\Core\Settings
         Checks\NoPluginsRemovedFromDirectory::class => false,
         Checks\CoreIntegrity::class => false,
         Checks\PluginsIntegrity::class => false,
+        Checks\SafeBrowsing::class => false,
     ];
 }
