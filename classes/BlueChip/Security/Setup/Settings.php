@@ -34,10 +34,11 @@ class Settings extends \BlueChip\Security\Core\Settings
      * Sanitize connection type. Allow only expected values.
      *
      * @param string $value
+     * @param string $default
      * @return string
      */
-    public static function sanitizeConnectionType(string $value): string
+    public static function sanitizeConnectionType(string $value, string $default): string
     {
-        return \in_array($value, IpAddress::enlist(), true) ? $value : self::DEFAULTS[self::CONNECTION_TYPE];
+        return \in_array($value, IpAddress::enlist(), true) ? $value : $default;
     }
 }
