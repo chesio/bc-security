@@ -63,7 +63,7 @@ Important: any plugins under version control (Git or Subversion) are automatical
 
 Although plugins can be removed from [Plugins Directory](https://wordpress.org/plugins/) for several reasons (not only because they have [security vulnerability](https://www.wordfence.com/blog/2017/09/display-widgets-malware/)), use of removed plugins is discouraged. Obviously, this check also works only for plugins installed from Plugins Directory.
 
-#### Safe Browsing check
+##### Safe Browsing check
 
 Checks whether your website is included on any of Google's [lists of unsafe web resources](https://developers.google.com/safe-browsing/) - this is usually a solid indicator of compromise. Note that for this check to run you have to provide [properly configured API key](https://developers.google.com/safe-browsing/v4/urls-hashing) via [plugin setup](#setup).
 
