@@ -1,10 +1,8 @@
 <?php
-/**
- * @package BC_Security
- */
 
 namespace BlueChip\Security\Modules\Checklist\Checks;
 
+use BlueChip\Security\Helpers\WpRemote;
 use BlueChip\Security\Modules\Checklist;
 use BlueChip\Security\Modules\Cron\Jobs;
 
@@ -13,12 +11,12 @@ class CoreIntegrity extends Checklist\AdvancedCheck
     /**
      * @var string
      */
-    const CRON_JOB_HOOK = Jobs::CORE_INTEGRITY_CHECK;
+    protected const CRON_JOB_HOOK = Jobs::CORE_INTEGRITY_CHECK;
 
     /**
      * @var string URL of checksum API
      */
-    const CHECKSUMS_API_URL = 'https://api.wordpress.org/core/checksums/1.0/';
+    private const CHECKSUMS_API_URL = 'https://api.wordpress.org/core/checksums/1.0/';
 
 
     public function __construct()
@@ -89,11 +87,11 @@ class CoreIntegrity extends Checklist\AdvancedCheck
      * Get md5 checksums of core WordPress files from WordPress.org API.
      *
      * @param string $url
-     * @return \stdClass|null
+     * @return object|null
      */
-    private static function getChecksums(string $url)
+    private static function getChecksums(string $url): ?object
     {
-        $json = Checklist\Helper::getJson($url);
+        $json = WpRemote::getJson($url);
 
         // When no locale is specified in API request, checksums are stored under additional version number key.
         $version = get_bloginfo('version');
@@ -113,10 +111,10 @@ class CoreIntegrity extends Checklist\AdvancedCheck
      *
      * @hook \BlueChip\Security\Modules\Checklist\Hooks::IGNORED_CORE_MODIFIED_FILES
      *
-     * @param \stdClass $checksums
+     * @param object $checksums
      * @return array
      */
-    private static function findModifiedFiles($checksums): array
+    private static function findModifiedFiles(object $checksums): array
     {
         // Get files that should be ignored.
         $ignored_files = apply_filters(
@@ -146,10 +144,10 @@ class CoreIntegrity extends Checklist\AdvancedCheck
      *
      * @hook \BlueChip\Security\Modules\Checklist\Hooks::IGNORED_CORE_UNKNOWN_FILES
      *
-     * @param \stdClass $checksums
+     * @param object $checksums
      * @return array
      */
-    private static function findUnknownFiles($checksums): array
+    private static function findUnknownFiles(object $checksums): array
     {
         // Get files that should be ignored.
         $ignored_files = apply_filters(

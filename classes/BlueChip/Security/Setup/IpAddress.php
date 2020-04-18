@@ -1,7 +1,4 @@
 <?php
-/**
- * @package BC_Security
- */
 
 namespace BlueChip\Security\Setup;
 
@@ -13,16 +10,16 @@ namespace BlueChip\Security\Setup;
 abstract class IpAddress
 {
     // Direct connection
-    const REMOTE_ADDR = 'REMOTE_ADDR';
+    public const REMOTE_ADDR = 'REMOTE_ADDR';
 
     // Reverse proxy (or load balancer) - may contain multiple IP addresses.
-    const HTTP_X_FORWARDED_FOR = 'HTTP_X_FORWARDED_FOR';
+    public const HTTP_X_FORWARDED_FOR = 'HTTP_X_FORWARDED_FOR';
 
     // Presumably real IP of the client - set by some proxies.
-    const HTTP_X_REAL_IP = 'HTTP_X_REAL_IP';
+    public const HTTP_X_REAL_IP = 'HTTP_X_REAL_IP';
 
     // CloudFlare CDN (~ reverse proxy)
-    const HTTP_CF_CONNECTING_IP = 'HTTP_CF_CONNECTING_IP';
+    public const HTTP_CF_CONNECTING_IP = 'HTTP_CF_CONNECTING_IP';
 
 
     /**

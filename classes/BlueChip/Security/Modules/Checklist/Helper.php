@@ -1,36 +1,9 @@
 <?php
-/**
- * @package BC_Security
- */
 
 namespace BlueChip\Security\Modules\Checklist;
 
 abstract class Helper
 {
-    /**
-     * Fetch JSON data from remote $url.
-     *
-     * @param string $url
-     * @return mixed
-     */
-    public static function getJson(string $url)
-    {
-        // Make request to URL.
-        $response = wp_remote_get($url);
-
-        // Check response code.
-        if (wp_remote_retrieve_response_code($response) !== 200) {
-            return null;
-        }
-
-        // Read JSON.
-        $json = \json_decode(wp_remote_retrieve_body($response));
-
-        // If decoding went fine, return JSON data.
-        return (\json_last_error() === JSON_ERROR_NONE) ? $json : null;
-    }
-
-
     /**
      * @param \BlueChip\Security\Modules\Checklist\Check $check
      * @return string
@@ -41,7 +14,7 @@ abstract class Helper
             return '--';
         } else {
             $format = \sprintf('%s %s', get_option('date_format'), get_option('time_format'));
-            return date_i18n($format, $timestamp);
+            return wp_date($format, $timestamp);
         }
     }
 
@@ -101,11 +74,11 @@ abstract class Helper
      * Check md5 hashes of files under $path on local filesystem against $checksums and report any modified files.
      *
      * @param string $path Absolute path to checksums root directory, must end with slash!
-     * @param \stdClass $checksums Dictionary with { filename: checksum } items. All filenames must be relative to $path.
+     * @param object $checksums Dictionary with { filename: checksum } items. All filenames must be relative to $path.
      * @param array $ignored_files List of filenames to ignore [optional].
      * @return array
      */
-    public static function checkDirectoryForModifiedFiles(string $path, $checksums, array $ignored_files = []): array
+    public static function checkDirectoryForModifiedFiles(string $path, object $checksums, array $ignored_files = []): array
     {
         // Initialize array for files that do not match.
         $modified_files = [];
@@ -142,11 +115,11 @@ abstract class Helper
      *
      * @param string $directory Directory to scan.
      * @param string $path Absolute path to checksums root directory, must end with slash!
-     * @param \stdClass $checksums Dictionary with { filename: checksum } items. All filenames must be relative to $path.
+     * @param object $checksums Dictionary with { filename: checksum } items. All filenames must be relative to $path.
      * @param bool $recursive Scan subdirectories too [optional].
      * @return array
      */
-    public static function scanDirectoryForUnknownFiles(string $directory, string $path, $checksums, bool $recursive = false): array
+    public static function scanDirectoryForUnknownFiles(string $directory, string $path, object $checksums, bool $recursive = false): array
     {
         $unknown_files = [];
 

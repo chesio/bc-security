@@ -1,7 +1,4 @@
 <?php
-/**
- * @package BC_Security
- */
 
 namespace BlueChip\Security\Modules\Cron;
 
@@ -13,7 +10,7 @@ class Settings extends \BlueChip\Security\Core\Settings
     /**
      * @var array Default values for all settings.
      */
-    const DEFAULTS = [
+    protected const DEFAULTS = [
         Jobs::CHECKLIST_CHECK => true,
         Jobs::IP_BLACKLIST_CLEAN_UP => true,
         Jobs::LOGS_CLEAN_UP_BY_AGE => true,
@@ -21,5 +18,6 @@ class Settings extends \BlueChip\Security\Core\Settings
         Jobs::CORE_INTEGRITY_CHECK => false,
         Jobs::PLUGINS_INTEGRITY_CHECK => false,
         Jobs::NO_REMOVED_PLUGINS_CHECK => false,
+        Jobs::SAFE_BROWSING_CHECK => false,
     ];
 }

@@ -1,7 +1,4 @@
 <?php
-/**
- * @package BC_Security
- */
 
 namespace BlueChip\Security\Modules\Log;
 
@@ -15,15 +12,15 @@ interface Hooks
      *     return !in_array($request_uri, ['autodiscover/autodiscover.xml']);
      * }, 10, 2);
      */
-    const LOG_404_EVENT = 'bc-security/filter:log-404-event';
+    public const LOG_404_EVENT = 'bc-security/filter:log-404-event';
 
     /**
      * Filter: adjust list of events for which hostname of related IP address should be automatically resolved in background.
      */
-    const EVENTS_WITH_HOSTNAME_RESOLUTION = 'bc-security/filter:events-with-hostname-resolution';
+    public const EVENTS_WITH_HOSTNAME_RESOLUTION = 'bc-security/filter:events-with-hostname-resolution';
 
     /**
      * Action: used to catch result of non-blocking reverse DNS lookup (and to set/update hostname of event log record).
      */
-    const HOSTNAME_RESOLVED = 'bc-security/action:hostname-resolved';
+    public const HOSTNAME_RESOLVED = 'bc-security/action:hostname-resolved';
 }

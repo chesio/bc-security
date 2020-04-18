@@ -1,7 +1,4 @@
 <?php
-/**
- * @package BC_Security
- */
 
 namespace BlueChip\Security\Modules\Log;
 
@@ -11,16 +8,16 @@ namespace BlueChip\Security\Modules\Log;
 class Settings extends \BlueChip\Security\Core\Settings
 {
     /** int: Maximum size of log table in thousands of records [20] */
-    const LOG_MAX_SIZE = 'log_max_size';
+    public const LOG_MAX_SIZE = 'log_max_size';
 
     /** int: Maximum age of log record in days [365] */
-    const LOG_MAX_AGE = 'log_max_age';
+    public const LOG_MAX_AGE = 'log_max_age';
 
 
     /**
      * @var array Default values for all settings.
      */
-    const DEFAULTS = [
+    protected const DEFAULTS = [
         self::LOG_MAX_SIZE => 20,
         self::LOG_MAX_AGE => 365,
     ];

@@ -1,7 +1,4 @@
 <?php
-/**
- * @package BC_Security
- */
 
 namespace BlueChip\Security\Modules\Checklist\Checks;
 
@@ -14,12 +11,12 @@ class NoPluginsRemovedFromDirectory extends Checklist\AdvancedCheck
     /**
      * @var string
      */
-    const CRON_JOB_HOOK = Jobs::NO_REMOVED_PLUGINS_CHECK;
+    protected const CRON_JOB_HOOK = Jobs::NO_REMOVED_PLUGINS_CHECK;
 
     /**
      * @var string
      */
-    const PLUGINS_DOWNLOAD_URL = 'https://downloads.wordpress.org/plugin/';
+    private const PLUGINS_DOWNLOAD_URL = 'https://downloads.wordpress.org/plugin/';
 
 
     public function __construct()

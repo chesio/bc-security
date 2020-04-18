@@ -1,7 +1,5 @@
 <?php
-/**
- * @package BC_Security
- */
+
 namespace BlueChip\Security\Modules\IpBlacklist;
 
 /**
@@ -9,8 +7,8 @@ namespace BlueChip\Security\Modules\IpBlacklist;
  */
 interface BanReason
 {
-    const LOGIN_LOCKOUT_SHORT = 1;
-    const LOGIN_LOCKOUT_LONG = 2;
-    const USERNAME_BLACKLIST = 3;
-    const MANUALLY_BLACKLISTED = 4;
+    public const LOGIN_LOCKOUT_SHORT = 1;
+    public const LOGIN_LOCKOUT_LONG = 2;
+    public const USERNAME_BLACKLIST = 3;
+    public const MANUALLY_BLACKLISTED = 4;
 }

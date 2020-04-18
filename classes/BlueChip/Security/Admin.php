@@ -1,7 +1,4 @@
 <?php
-/**
- * @package BC_Security
- */
 
 namespace BlueChip\Security;
 
@@ -13,12 +10,12 @@ class Admin
     /**
      * @var string To use Settings API, user has to have manage_options capability.
      */
-    const CAPABILITY = 'manage_options';
+    private const CAPABILITY = 'manage_options';
 
     /**
      * @var string Plugin dashboard menu icon
      */
-    const ICON = 'dashicons-shield-alt';
+    private const ICON = 'dashicons-shield-alt';
 
 
     /**

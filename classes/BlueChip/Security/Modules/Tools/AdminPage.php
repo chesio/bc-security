@@ -1,7 +1,4 @@
 <?php
-/**
- * @package BC_Security
- */
 
 namespace BlueChip\Security\Modules\Tools;
 
@@ -13,22 +10,22 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
     /**
      * @var string Page slug
      */
-    const SLUG = 'bc-security-tools';
+    protected const SLUG = 'bc-security-tools';
 
     /**
      * @var string
      */
-    const EXPORT_ACTION = 'export-settings';
+    private const EXPORT_ACTION = 'export-settings';
 
     /**
      * @var string
      */
-    const IMPORT_ACTION = 'import-settings';
+    private const IMPORT_ACTION = 'import-settings';
 
     /**
      * @var string
      */
-    const RESET_ACTION = 'reset-settings';
+    private const RESET_ACTION = 'reset-settings';
 
 
     /**
@@ -159,7 +156,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
         }
 
         // Send headers.
-        $file_name = 'bc-security-export-' . \date('Y-m-d') . '.json';
+        $file_name = 'bc-security-export-' . \wp_date('Y-m-d') . '.json';
         \header("Content-Disposition: attachment; filename={$file_name}");
         \header("Content-Type: application/json; charset=utf-8");
 

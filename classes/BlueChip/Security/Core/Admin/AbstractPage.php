@@ -1,7 +1,4 @@
 <?php
-/**
- * @package BC_Security
- */
 
 namespace BlueChip\Security\Core\Admin;
 
@@ -13,12 +10,12 @@ abstract class AbstractPage
     /**
      * @var string Page slug (each inheriting class must define its own)
      */
-    const SLUG = 'bc-security';
+    protected const SLUG = 'bc-security';
 
     /**
      * @var string Name of nonce used for any custom actions on admin pages
      */
-    const NONCE_NAME = '_wpnonce';
+    protected const NONCE_NAME = '_wpnonce';
 
     /**
      * @var string Page title for menu

@@ -1,7 +1,4 @@
 <?php
-/**
- * @package BC_Security
- */
 
 namespace BlueChip\Security\Helpers;
 
@@ -13,7 +10,7 @@ abstract class AjaxHelper
     /**
      * @var string
      */
-    const WP_AJAX_PREFIX = 'wp_ajax_';
+    private const WP_AJAX_PREFIX = 'wp_ajax_';
 
 
     /**

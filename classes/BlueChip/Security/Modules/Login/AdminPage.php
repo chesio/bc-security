@@ -1,7 +1,4 @@
 <?php
-/**
- * @package BC_Security
- */
 
 namespace BlueChip\Security\Modules\Login;
 
@@ -16,7 +13,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
     /**
      * @var string Page slug
      */
-    const SLUG = 'bc-security-login';
+    protected const SLUG = 'bc-security-login';
 
 
     /**

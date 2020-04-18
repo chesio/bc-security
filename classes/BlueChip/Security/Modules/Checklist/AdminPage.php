@@ -1,7 +1,4 @@
 <?php
-/**
- * @package BC_Security
- */
 
 namespace BlueChip\Security\Modules\Checklist;
 
@@ -21,7 +18,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
     /**
      * @var string Page slug
      */
-    const SLUG = 'bc-security-checklist';
+    protected const SLUG = 'bc-security-checklist';
 
 
     /**
@@ -148,7 +145,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
         echo '<h2>' . esc_html__('Basic checks', 'bc-security') . '</h2>';
 
         echo '<p>';
-        echo esc_html__('Basic checks do not require any information from WordPress.org to proceed.', 'bc-security');
+        echo esc_html__('Basic checks do not require any data to be shared with external services.', 'bc-security');
         echo '</p>';
 
         echo '<p>';
@@ -167,7 +164,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
         echo '<h2>' . esc_html__('Advanced checks', 'bc-security') . '</h2>';
 
         echo '<p>';
-        echo esc_html__('In order to run advanced checks, a list of all installed plugins and their versions is shared with WordPress.org.', 'bc-security');
+        echo esc_html__('In order to run advanced checks, requests to external services (WordPress.org and Google) are made. These requests may expose some information about your site like URL or list of installed plugins.', 'bc-security');
         echo '</p>';
 
         echo '<p>';

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Register autoloader for classes shipped with the plugin.
  *

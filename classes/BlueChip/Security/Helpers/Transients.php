@@ -1,7 +1,4 @@
 <?php
-/**
- * @package BC_Security
- */
 
 namespace BlueChip\Security\Helpers;
 
@@ -13,7 +10,7 @@ abstract class Transients
     /**
      * @var string Prefix common to all transients set by plugin.
      */
-    const NAME_PREFIX = 'bc-security_';
+    private const NAME_PREFIX = 'bc-security_';
 
 
     /**

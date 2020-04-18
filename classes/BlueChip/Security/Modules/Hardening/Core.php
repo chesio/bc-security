@@ -1,7 +1,4 @@
 <?php
-/**
- * @package BC_Security
- */
 
 namespace BlueChip\Security\Modules\Hardening;
 
@@ -16,12 +13,12 @@ class Core implements \BlueChip\Security\Modules\Initializable
     /**
      * @var string
      */
-    const AUTHOR_SCAN_QUERY_VAR = 'author_scan';
+    private const AUTHOR_SCAN_QUERY_VAR = 'author_scan';
 
     /**
      * @var string
      */
-    const PWNED_PASSWORD_META_KEY = 'bc-security/pwned-password';
+    private const PWNED_PASSWORD_META_KEY = 'bc-security/pwned-password';
 
     /**
      * @var bool
@@ -132,12 +129,14 @@ class Core implements \BlueChip\Security\Modules\Initializable
 
         if (!current_user_can('list_users')) {
             // I <3 PHP 7!
-            $url_base = (new class extends \WP_REST_Users_Controller {
-                public function getUrlBase(): string
-                {
-                    return \rtrim($this->namespace . '/' . $this->rest_base, '/');
+            $url_base = (
+                new class extends \WP_REST_Users_Controller {
+                    public function getUrlBase(): string
+                    {
+                        return \rtrim($this->namespace . '/' . $this->rest_base, '/');
+                    }
                 }
-            })->getUrlBase();
+            )->getUrlBase();
 
             if (\preg_match('#' . \preg_quote($url_base, '#') . '/*$#i', $route)) {
                 $this->rest_api_supressed = true;
@@ -297,9 +296,9 @@ class Core implements \BlueChip\Security\Modules\Initializable
      *
      * @param \WP_Error $errors WP_Error object (passed by reference).
      * @param bool $update Whether this is a user update.
-     * @param \stdClass $user User object (passed by reference).
+     * @param object $user User object (passed by reference).
      */
-    public function validatePasswordUpdate(\WP_Error &$errors, bool $update, &$user)
+    public function validatePasswordUpdate(\WP_Error &$errors, bool $update, object &$user)
     {
         if ($errors->get_error_code()) {
             // There is an error reported already, skip the check.
@@ -323,7 +322,7 @@ class Core implements \BlueChip\Security\Modules\Initializable
      * @param \WP_Error $errors
      * @param \WP_User|\WP_Error $user WP_User object if the login and reset key match. WP_Error object otherwise.
      */
-    public function validatePasswordReset(\WP_Error $errors, $user)
+    public function validatePasswordReset(\WP_Error $errors, object $user)
     {
         if ($errors->get_error_code()) {
             // There is an error reported already, skip the check.

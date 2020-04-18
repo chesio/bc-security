@@ -1,7 +1,4 @@
 <?php
-/**
- * @package BC_Security
- */
 
 namespace BlueChip\Security\Modules\Log\Events;
 
@@ -12,12 +9,12 @@ class LoginFailure extends Event
     /**
      * @var string Static event identificator.
      */
-    const ID = 'login_failure';
+    public const ID = 'login_failure';
 
     /**
      * @var string Event log level.
      */
-    const LOG_LEVEL = \Psr\Log\LogLevel::NOTICE;
+    protected const LOG_LEVEL = \Psr\Log\LogLevel::NOTICE;
 
     /**
      * __('Username')

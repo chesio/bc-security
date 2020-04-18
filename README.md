@@ -5,16 +5,68 @@ Helps keeping WordPress websites secure.
 ## Requirements
 
 * [PHP](https://secure.php.net/) 7.2 or newer
-* [WordPress](https://wordpress.org/) 5.1 or newer
+* [WordPress](https://wordpress.org/) 5.3 or newer
 
 ## Limitations
 
 * BC Security has not been tested on WordPress multisite installation.
 * BC Security has not been tested on Windows server.
 
+## Installation
+
+BC Security is not available at WordPress Plugins Directory, but there are several other ways you can get it.
+
+### Using WP-CLI
+
+If you have [WP-CLI](https://wp-cli.org/) installed, you can install (and optionally activate) BC Security with a single command:
+```
+wp plugin install [--activate] https://github.com/chesio/bc-security/archive/master.zip
+```
+
+### Using Composer
+
+BC Security is not available (yet) at [Packagist](https://packagist.org/), but you can install and update it via Composer if you add plugin repository to your project's `composer.json` file:
+
+```json
+{
+  "repositories": [
+    {
+      "type": "git",
+      "url": "https://github.com/chesio/bc-security"
+    }
+  ]
+}
+```
+
+Then just run `composer require chesio/bc-security` as usual.
+
+### Using Git
+
+Master branch always contains latest stable version, so you can install BC Security by cloning it from within your plugins directory:
+```
+cd [your-project]/wp-content/plugins
+git clone --single-branch --branch master https://github.com/chesio/bc-security.git
+```
+
+Updating is as easy as:
+```
+cd [your-project]/wp-content/plugins/bc-security
+git pull
+```
+
+### Using GitHub Updater plugin
+
+BC Security can be installed and updated via [GitHub Updater](https://github.com/afragen/github-updater) plugin.
+
+### Direct download
+
+This method is the least recommended, but it works without any other tool. You can download BC Security directly from [GitHub](https://github.com/chesio/bc-security/releases/latest). Make sure to unpack the plugin into correct directory and drop the version number from folder name.
+
 ## Setup
 
 Several features of BC Security depends on the knowledge of remote IP address, so it is important that you let the plugin know how your server is connected to the Internet. You can either set connection type via _Setup_ page or with `BC_SECURITY_CONNECTION_TYPE` constant.
+
+You may also optionally provide Google API key if you want to check your website against the Google [Safe Browsing](https://transparencyreport.google.com/safe-browsing/overview) lists of unsafe web resources. The key must have [Google Safe Browsing](https://developers.google.com/safe-browsing/) API enabled. As with the connection type, you can configure the key either via _Setup_ page or with `BC_SECURITY_GOOGLE_API_KEY` constant.
 
 **Note:** If you already have an installation with BC Security set up and would like to set up another installation in the same way, you can export plugin settings (including connection type) from the former installation and import them to the latter.
 
@@ -41,7 +93,7 @@ Basic checks cover common security practices. They do not require any informatio
 
 Advanced checks require data from external sources, therefore they leak some information about your website and take more time to execute.
 
-In the moment, list of installed plugins (but only those with _readme.txt_ file) is shared with WordPress.org.
+In the moment, list of installed plugins (but only those with _readme.txt_ file) is shared with WordPress.org and site URL is shared with Google.
 
 ##### WordPress core integrity check
 
@@ -60,6 +112,10 @@ Important: any plugins under version control (Git or Subversion) are automatical
 ##### Removed plugins check
 
 Although plugins can be removed from [Plugins Directory](https://wordpress.org/plugins/) for several reasons (not only because they have [security vulnerability](https://www.wordfence.com/blog/2017/09/display-widgets-malware/)), use of removed plugins is discouraged. Obviously, this check also works only for plugins installed from Plugins Directory.
+
+##### Safe Browsing check
+
+Checks whether your website is included on any of Google's [lists of unsafe web resources](https://developers.google.com/safe-browsing/) - this is usually a solid indicator of compromise. Note that for this check to run you have to provide [properly configured API key](https://developers.google.com/safe-browsing/v4/urls-hashing) via [plugin setup](#setup).
 
 #### Checklist monitoring
 

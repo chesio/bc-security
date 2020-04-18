@@ -1,7 +1,4 @@
 <?php
-/**
- * @package BC_Security
- */
 
 namespace BlueChip\Security\Modules\Log\Events;
 
@@ -12,12 +9,12 @@ class Query404 extends Event
     /**
      * @var string Static event identificator.
      */
-    const ID = 'query_404';
+    public const ID = 'query_404';
 
     /**
      * @var string Event log level.
      */
-    const LOG_LEVEL = \Psr\Log\LogLevel::INFO;
+    protected const LOG_LEVEL = \Psr\Log\LogLevel::INFO;
 
     /**
      * __('Request URI')

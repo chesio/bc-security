@@ -1,7 +1,4 @@
 <?php
-/**
- * @package BC_Security
- */
 
 namespace BlueChip\Security;
 
@@ -83,10 +80,12 @@ class Plugin
      */
     private static function constructModules(\wpdb $wpdb, string $remote_address, string $server_address, array $settings): array
     {
+        $google_api = new Setup\GoogleAPI($settings['setup']);
+
         $hostname_resolver  = new Modules\Services\ReverseDnsLookup\Resolver();
         $cron_job_manager   = new Modules\Cron\Manager($settings['cron-jobs']);
         $logger             = new Modules\Log\Logger($wpdb, $remote_address, $settings['log'], $hostname_resolver);
-        $checklist_manager  = new Modules\Checklist\Manager($settings['checklist-autorun'], $cron_job_manager, $wpdb);
+        $checklist_manager  = new Modules\Checklist\Manager($settings['checklist-autorun'], $cron_job_manager, $wpdb, $google_api->getKey());
         $monitor            = new Modules\Log\EventsMonitor($remote_address, $server_address);
         $notifier           = new Modules\Notifications\Watchman($settings['notifications'], $remote_address, $logger);
         $hardening          = new Modules\Hardening\Core($settings['hardening']);

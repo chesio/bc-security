@@ -1,7 +1,5 @@
 <?php
-/**
- * @package BC_Security
- */
+
 namespace BlueChip\Security\Modules\IpBlacklist;
 
 /**
@@ -12,20 +10,20 @@ interface LockScope
     /**
      * Not a real scope, just a safe value to use whenever scope is undefined.
      */
-    const ANY = 0;
+    public const ANY = 0;
 
     /**
      * No access to admin (or login attempt) from IP address is allowed.
      */
-    const ADMIN = 1;
+    public const ADMIN = 1;
 
     /**
      * No comments from IP address are allowed.
      */
-    const COMMENTS = 2;
+    public const COMMENTS = 2;
 
     /**
      * No access to website from IP address is allowed.
      */
-    const WEBSITE = 3;
+    public const WEBSITE = 3;
 }

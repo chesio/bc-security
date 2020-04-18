@@ -1,7 +1,4 @@
 <?php
-/**
- * @package BC_Security
- */
 
 namespace BlueChip\Security\Core\Admin;
 
@@ -34,7 +31,7 @@ trait CountablePage
     {
         $user = wp_get_current_user();
         // Update $user's last view time for this page.
-        update_user_meta($user->ID, $this->getCounterUserMetaKey(), current_time('timestamp'));
+        update_user_meta($user->ID, $this->getCounterUserMetaKey(), \time());
     }
 
 

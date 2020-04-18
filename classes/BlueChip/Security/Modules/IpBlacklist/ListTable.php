@@ -1,9 +1,8 @@
 <?php
-/**
- * @package BC_Security
- */
 
 namespace BlueChip\Security\Modules\IpBlacklist;
+
+use BlueChip\Security\Helpers\MySQLDateTime;
 
 /**
  * IP blacklist table
@@ -13,37 +12,37 @@ class ListTable extends \BlueChip\Security\Core\ListTable
     /**
      * @var string Name of remove action query argument
      */
-    const ACTION_REMOVE = 'remove';
+    private const ACTION_REMOVE = 'remove';
 
     /**
      * @var string Name of unlock action query argument
      */
-    const ACTION_UNLOCK = 'unlock';
+    private const ACTION_UNLOCK = 'unlock';
 
     /**
      * @var string Name of bulk remove action
      */
-    const BULK_ACTION_REMOVE = 'bulk-remove';
+    private const BULK_ACTION_REMOVE = 'bulk-remove';
 
     /**
      * @var string Name of bulk unlock action
      */
-    const BULK_ACTION_UNLOCK = 'bulk-unlock';
+    private const BULK_ACTION_UNLOCK = 'bulk-unlock';
 
     /**
      * @var string Name of removed notice query argument
      */
-    const NOTICE_RECORD_REMOVED = 'removed';
+    private const NOTICE_RECORD_REMOVED = 'removed';
 
     /**
      * @var string Name of unlocked notice query argument
      */
-    const NOTICE_RECORD_UNLOCKED = 'unlocked';
+    private const NOTICE_RECORD_UNLOCKED = 'unlocked';
 
     /**
      * @var string Name of view query argument
      */
-    const VIEW_SCOPE = 'scope';
+    private const VIEW_SCOPE = 'scope';
 
 
     /**
@@ -84,6 +83,30 @@ class ListTable extends \BlueChip\Security\Core\ListTable
     public function column_ip_address(array $item): string // phpcs:ignore
     {
         return $item['ip_address'] . $this->row_actions($this->getRowActions($item));
+    }
+
+
+    /**
+     * Return content for "ban time" column.
+     *
+     * @param array $item
+     * @return string
+     */
+    public function column_ban_time(array $item): string // phpcs:ignore
+    {
+        return $this->formatDateAndTime($item['ban_time']);
+    }
+
+
+    /**
+     * Return content for "release time" column.
+     *
+     * @param array $item
+     * @return string
+     */
+    public function column_release_time(array $item): string // phpcs:ignore
+    {
+        return $this->formatDateAndTime($item['release_time']);
     }
 
 
@@ -313,7 +336,7 @@ class ListTable extends \BlueChip\Security\Core\ListTable
             ),
         ];
 
-        if (\strtotime($item['release_time']) > current_time('timestamp')) {
+        if (MySQLDateTime::parseTimestamp($item['release_time']) > \time()) {
             // Only active locks can be unlocked
             $actions[self::ACTION_UNLOCK] = $this->renderRowAction(
                 self::ACTION_UNLOCK,

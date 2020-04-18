@@ -1,7 +1,4 @@
 <?php
-/**
- * @package BC_Security
- */
 
 namespace BlueChip\Security\Core;
 
@@ -10,12 +7,12 @@ class AssetsManager
     /**
      * @var string Relative path to directory with CSS assets.
      */
-    const CSS_ASSETS_DIRECTORY_PATH = 'assets/css/';
+    private const CSS_ASSETS_DIRECTORY_PATH = 'assets/css/';
 
     /**
      * @var string Relative path to directory with JavaScript assets.
      */
-    const JS_ASSETS_DIRECTORY_PATH = 'assets/js/';
+    private const JS_ASSETS_DIRECTORY_PATH = 'assets/js/';
 
     /**
      * @var string Absolute path to main plugin file.

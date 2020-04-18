@@ -1,7 +1,4 @@
 <?php
-/**
- * @package BC_Security
- */
 
 namespace BlueChip\Security\Modules\IpBlacklist;
 
@@ -18,7 +15,7 @@ interface Hooks
      *     return YEAR_IN_SECONDS;
      * }, 10, 0);
      */
-    const DEFAULT_MANUAL_LOCK_DURATION = 'bc-security/filter:ip-blacklist-default-manual-lock-duration';
+    public const DEFAULT_MANUAL_LOCK_DURATION = 'bc-security/filter:ip-blacklist-default-manual-lock-duration';
 
     /**
      * Filter: allows to filter result of "is IP address locked" check.
@@ -33,5 +30,5 @@ interface Hooks
      *     3
      * );
      */
-    const IS_IP_ADDRESS_LOCKED = 'bc-security/filter:is-ip-address-locked';
+    public const IS_IP_ADDRESS_LOCKED = 'bc-security/filter:is-ip-address-locked';
 }

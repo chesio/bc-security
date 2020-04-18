@@ -1,7 +1,4 @@
 <?php
-/**
- * @package BC_Security
- */
 
 namespace BlueChip\Security\Core;
 
@@ -17,12 +14,12 @@ abstract class Settings implements \ArrayAccess
     /**
      * @var array Default values for all settings. Descendant classes should override it.
      */
-    const DEFAULTS = [];
+    protected const DEFAULTS = [];
 
     /**
      * @var array Sanitization routines for settings that cannot be just sanitized based on type of their default value.
      */
-    const SANITIZERS = [];
+    protected const SANITIZERS = [];
 
 
     /**
@@ -210,13 +207,13 @@ abstract class Settings implements \ArrayAccess
      * Sanitize $settings array: only keep known keys, provide default values for missing keys.
      *
      * @internal This method serves two purposes: it sanitizes data read from database and it sanitizes POST-ed data.
-     * When using the method for database data sanitization, make sure that you provide default values. However,
-     * when using the method for POST-ed data sanitization (ie. as `sanitize_callback` in `register_setting` function),
-     * you should not provide explicit defaults, as the method will implicitly use data from database (that are already
-     * sanitized) as default values. This way, it is not necessary for POST-ed data to be complete, because any missing
-     * key-value pairs will be correctly preserved.
+     * When using this method for database data sanitization, make sure that you provide default values for all settings.
+     * When using this method for POST-ed data sanitization (ie. as `sanitize_callback` in `register_setting` function),
+     * do not provide explicit $defaults as this method will implicitly use current values (data from DB that are already
+     * sanitized) as defaults. This way POST-ed data do not need to be complete, because any missing settings will be
+     * kept as they were.
      *
-     * @param array $settings Items to sanitize.
+     * @param array $settings Input data to sanitize.
      * @param array $defaults [optional] If provided, used as default values for sanitization instead of local data.
      * @return array
      */
@@ -225,12 +222,13 @@ abstract class Settings implements \ArrayAccess
         // If no default values are provided, use data from internal cache as default values.
         $values = ($defaults === []) ? $this->data : $defaults;
 
+        // Loop over default values instead of provided $settings - this way only known keys are preserved.
         foreach ($values as $key => $default_value) {
             if (isset($settings[$key])) {
                 // New value is provided, sanitize it either...
                 $values[$key] = isset(static::SANITIZERS[$key])
                     // ...using provided callback...
-                    ? \call_user_func(static::SANITIZERS[$key], $settings[$key])
+                    ? \call_user_func(static::SANITIZERS[$key], $settings[$key], $default_value)
                     // ...or by type.
                     : self::sanitizeByType($settings[$key], $default_value)
                 ;

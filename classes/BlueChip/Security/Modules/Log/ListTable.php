@@ -1,7 +1,4 @@
 <?php
-/**
- * @package BC_Security
- */
 
 namespace BlueChip\Security\Modules\Log;
 
@@ -13,10 +10,10 @@ use BlueChip\Security\Modules\IpBlacklist;
 class ListTable extends \BlueChip\Security\Core\ListTable
 {
     /** @var string Name of blacklist action query argument */
-    const ACTION_BLACKLIST = 'blacklist';
+    private const ACTION_BLACKLIST = 'blacklist';
 
     /** @var string Name of view query argument */
-    const VIEW_EVENT = 'event';
+    private const VIEW_EVENT = 'event';
 
 
     /** @var \BlueChip\Security\Modules\Log\Logger */
@@ -54,7 +51,7 @@ class ListTable extends \BlueChip\Security\Core\ListTable
      */
     public function column_date_and_time(array $item): string // phpcs:ignore
     {
-        return $item['date_and_time'] . $this->row_actions($this->getRowActions($item));
+        return $this->formatDateAndTime($item['date_and_time']) . $this->row_actions($this->getRowActions($item));
     }
 
 

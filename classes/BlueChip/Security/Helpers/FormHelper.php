@@ -1,7 +1,4 @@
 <?php
-/**
- * @package BC_Security
- */
 
 namespace BlueChip\Security\Helpers;
 
@@ -11,21 +8,21 @@ abstract class FormHelper
      * @link https://developer.mozilla.org/en-US/docs/Web/HTML/Element/textarea
      * @var int Default value of "cols" attribute of <textarea> element.
      */
-    const TEXTAREA_COLS_DEFAULT_VALUE = 20;
+    private const TEXTAREA_COLS_DEFAULT_VALUE = 20;
 
     /**
      * @var int Maximum for content-based value of "rows" attribute of <textarea> element.
      */
-    const TEXTAREA_ROWS_MAXIMUM_VALUE = 20;
+    private const TEXTAREA_ROWS_MAXIMUM_VALUE = 20;
 
     /**
      * @var int Minimum for content-based value of "rows" attribute of <textarea> element.
      */
-    const TEXTAREA_ROWS_MINIMUM_VALUE = 4;
+    private const TEXTAREA_ROWS_MINIMUM_VALUE = 4;
 
 
     /**
-     * Print <input type="checkbox" /> element.
+     * Print <input type="checkbox"> element.
      *
      * Unless "plain" is set as $args key, an extra hidden field with the same
      * name and empty (false-like) value is printed before checkbox - this way,
@@ -85,7 +82,7 @@ abstract class FormHelper
 
 
     /**
-     * Print <input type="number> element.
+     * Print <input type="number"> element.
      *
      * @param array $args Required: label_for, name, value. Optional: class.
      */
@@ -95,6 +92,28 @@ abstract class FormHelper
         $properties = [
             'class'     => $args['class'] ?? 'small-text',
             'type'      => 'number',
+            'value'     => $args['value'],
+            'id'        => $args['label_for'],
+            'name'      => $args['name'],
+        ];
+
+        echo '<input ' . self::renderFieldProperties($properties) . '>';
+
+        self::printAppendix($args, true);
+    }
+
+
+    /**
+     * Print <input type="text"> element.
+     *
+     * @param array $args Required: label_for, name, value. Optional: class.
+     */
+    public static function printTextInput(array $args)
+    {
+        // Field properties
+        $properties = [
+            'class'     => $args['class'] ?? 'regular-text',
+            'type'      => 'text',
             'value'     => $args['value'],
             'id'        => $args['label_for'],
             'name'      => $args['name'],

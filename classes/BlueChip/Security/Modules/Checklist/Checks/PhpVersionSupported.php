@@ -1,7 +1,4 @@
 <?php
-/**
- * @package BC_Security
- */
 
 namespace BlueChip\Security\Modules\Checklist\Checks;
 
@@ -12,7 +9,7 @@ class PhpVersionSupported extends Checklist\BasicCheck
     /**
      * @var array List of supported PHP versions and their end-of-life dates
      */
-    const SUPPORTED_VERSIONS = [
+    private const SUPPORTED_VERSIONS = [
         '7.2' => '2020-11-30',
         '7.3' => '2021-12-06',
         '7.4' => '2022-11-28',
@@ -56,7 +53,7 @@ class PhpVersionSupported extends Checklist\BasicCheck
                 ? \sprintf(
                     esc_html__('You are running PHP %1$s, which is supported until %2$s.', 'bc-security'),
                     self::formatPhpVersion(),
-                    date_i18n(get_option('date_format'), \strtotime($eol_date))
+                    wp_date(get_option('date_format'), \strtotime($eol_date))
                 )
                 : \sprintf(
                     esc_html__('You are running PHP %1$s, which is still supported.', 'bc-security'),
@@ -88,7 +85,7 @@ class PhpVersionSupported extends Checklist\BasicCheck
      */
     private static function getOldestSupportedPhpVersion(): ?string
     {
-        $now = current_time('timestamp');
+        $now = \time();
 
         foreach (self::SUPPORTED_VERSIONS as $version => $eol_date) {
             if (\strtotime($eol_date) >= $now) {

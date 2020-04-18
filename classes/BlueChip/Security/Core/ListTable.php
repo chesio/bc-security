@@ -1,11 +1,9 @@
 <?php
-/**
- * @package BC_Security
- */
 
 namespace BlueChip\Security\Core;
 
 use BlueChip\Security\Helpers\AdminNotices;
+use BlueChip\Security\Helpers\MySQLDateTime;
 
 /**
  * Base class for all list tables in plugin.
@@ -13,9 +11,14 @@ use BlueChip\Security\Helpers\AdminNotices;
 abstract class ListTable extends \WP_List_Table
 {
     /**
+     * @var string Format of date and time columns in list tables
+     */
+    protected const DATETIME_FORMAT = 'Y-m-d H:i:s';
+
+    /**
      * @var string Nonce name used for actions in all tables
      */
-    const NONCE_NAME = '_wpnonce';
+    protected const NONCE_NAME = '_wpnonce';
 
     /**
      * @var string URL of admin page where the list table is displayed
@@ -142,6 +145,18 @@ abstract class ListTable extends \WP_List_Table
     public function column_default($item, $column_name) // phpcs:ignore
     {
         return $item[$column_name] ?? '';
+    }
+
+
+    /**
+     * Display datetime database fields in local time.
+     *
+     * @param string $datetime Datetime string retrieved from database.
+     * @return string Date and time of $datetime formatted in local time.
+     */
+    public function formatDateAndTime(string $datetime): string
+    {
+        return wp_date(self::DATETIME_FORMAT, MySQLDateTime::parseTimestamp($datetime));
     }
 
 

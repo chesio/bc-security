@@ -1,7 +1,4 @@
 <?php
-/**
- * @package BC_Security
- */
 
 namespace BlueChip\Security\Modules\Checklist\Checks;
 
@@ -12,7 +9,7 @@ class NoMd5HashedPasswords extends Checklist\BasicCheck
     /**
      * @var string Prefix of default, MD5-based hashes
      */
-    const WP_OLD_HASH_PREFIX = '$P$';
+    private const WP_OLD_HASH_PREFIX = '$P$';
 
 
     /**

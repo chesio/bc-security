@@ -1,7 +1,4 @@
 <?php
-/**
- * @package BC_Security
- */
 
 namespace BlueChip\Security\Modules\Checklist;
 
@@ -13,7 +10,7 @@ class AutorunSettings extends \BlueChip\Security\Core\Settings
     /**
      * @var array Default values for all settings. By default, no checks are monitored.
      */
-    const DEFAULTS = [
+    protected const DEFAULTS = [
         Checks\PhpFilesEditationDisabled::class => false,
         Checks\DirectoryListingDisabled::class => false,
         Checks\NoAccessToPhpFilesInUploadsDirectory::class => false,
@@ -25,5 +22,6 @@ class AutorunSettings extends \BlueChip\Security\Core\Settings
         Checks\NoPluginsRemovedFromDirectory::class => false,
         Checks\CoreIntegrity::class => false,
         Checks\PluginsIntegrity::class => false,
+        Checks\SafeBrowsing::class => false,
     ];
 }

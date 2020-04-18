@@ -1,7 +1,5 @@
 <?php
-/**
- * @package BC_Security
- */
+
 namespace BlueChip\Security\Helpers;
 
 /**
@@ -12,17 +10,17 @@ abstract class Plugin
     /**
      * @var string URL of checksum API
      */
-    const CHECKSUMS_API_URL_BASE = 'https://downloads.wordpress.org/plugin-checksums/';
+    private const CHECKSUMS_API_URL_BASE = 'https://downloads.wordpress.org/plugin-checksums/';
 
     /**
      * @var string URL of Plugins Directory.
      */
-    const PLUGINS_DIRECTORY_URL = 'https://wordpress.org/plugins/';
+    private const PLUGINS_DIRECTORY_URL = 'https://wordpress.org/plugins/';
 
     /**
      * @var string Path (although not technically) to changelog page relative to URL of plugin homepage at Plugins Directory.
      */
-    const PLUGINS_DIRECTORY_CHANGELOG_PATH = '#developers';
+    private const PLUGINS_DIRECTORY_CHANGELOG_PATH = '#developers';
 
 
     /**

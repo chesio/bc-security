@@ -1,7 +1,4 @@
 <?php
-/**
- * @package BC_Security
- */
 
 namespace BlueChip\Security\Modules\Checklist;
 
@@ -12,12 +9,12 @@ abstract class Check
     /**
      * @var string
      */
-    const LAST_RUN_TRANSIENT_ID = 'check-last-run';
+    private const LAST_RUN_TRANSIENT_ID = 'check-last-run';
 
     /**
      * @var string
      */
-    const RESULT_TRANSIENT_ID = 'check-result';
+    private const RESULT_TRANSIENT_ID = 'check-result';
 
     /**
      * @var string
@@ -129,7 +126,7 @@ abstract class Check
     public function run(): CheckResult
     {
         // Run the check...
-        $this->last_run = current_time('timestamp');
+        $this->last_run = \time();
         $this->result = $this->runInternal();
         // ... cache the time and result...
         Transients::setForSite($this->last_run, self::LAST_RUN_TRANSIENT_ID, self::getId());

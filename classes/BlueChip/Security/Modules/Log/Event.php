@@ -1,7 +1,4 @@
 <?php
-/**
- * @package BC_Security
- */
 
 namespace BlueChip\Security\Modules\Log;
 
@@ -13,12 +10,12 @@ abstract class Event
     /**
      * @var string Static event identificator.
      */
-    const ID = '';
+    public const ID = '';
 
     /**
      * @var string Log level.
      */
-    const LOG_LEVEL = '';
+    protected const LOG_LEVEL = '';
 
     /**
      * @internal Static identifier is used for event type identification wherever use of classname is a bit cumbersome
