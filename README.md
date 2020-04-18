@@ -12,6 +12,56 @@ Helps keeping WordPress websites secure.
 * BC Security has not been tested on WordPress multisite installation.
 * BC Security has not been tested on Windows server.
 
+## Installation
+
+BC Security is not available at WordPress Plugins Directory, but there are several other ways you can get it.
+
+### Using WP-CLI
+
+If you have [WP-CLI](https://wp-cli.org/) installed, you can install (and optionally activate) BC Security with a single command:
+```
+wp plugin install [--activate] https://github.com/chesio/bc-security/archive/master.zip
+```
+
+### Using Composer
+
+BC Security is not available (yet) at [Packagist](https://packagist.org/), but you can install and update it via Composer if you add plugin repository to your project's `composer.json` file:
+
+```json
+{
+  "repositories": [
+    {
+      "type": "git",
+      "url": "https://github.com/chesio/bc-security"
+    }
+  ]
+}
+```
+
+Then just run `composer require chesio/bc-security` as usual.
+
+### Using Git
+
+Master branch always contains latest stable version, so you can install BC Security by cloning it from within your plugins directory:
+```
+cd [your-project]/wp-content/plugins
+git clone --single-branch --branch master https://github.com/chesio/bc-security.git
+```
+
+Updating is as easy as:
+```
+cd [your-project]/wp-content/plugins/bc-security
+git pull
+```
+
+### Using GitHub Updater plugin
+
+BC Security can be installed and updated via [GitHub Updater](https://github.com/afragen/github-updater) plugin.
+
+### Direct download
+
+This method is the least recommended, but it works without any other tool. You can download BC Security directly from [GitHub](https://github.com/chesio/bc-security/releases/latest). Make sure to unpack the plugin into correct directory and drop the version number from folder name.
+
 ## Setup
 
 Several features of BC Security depends on the knowledge of remote IP address, so it is important that you let the plugin know how your server is connected to the Internet. You can either set connection type via _Setup_ page or with `BC_SECURITY_CONNECTION_TYPE` constant.
