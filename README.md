@@ -1,6 +1,6 @@
 # BC Security
 
-Helps keeping WordPress websites secure.
+A WordPress plugin that helps keeping WordPress websites secure.
 
 ## Requirements
 

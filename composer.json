@@ -2,7 +2,7 @@
   "name": "chesio/bc-security",
   "type": "wordpress-plugin",
   "license": "Unlicense",
-  "description": "Helps keeping WordPress websites secure.",
+  "description": "A WordPress plugin that helps keeping WordPress websites secure.",
   "homepage": "https://github.com/chesio/bc-security",
   "authors": [
     {
