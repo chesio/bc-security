@@ -1,5 +1,9 @@
 # BC Security
 
+[![GitHub Actions](https://github.com/chesio/bc-security/workflows/CI%20test%20suite/badge.svg)](https://github.com/chesio/bc-security/actions)
+[![Packagist](https://img.shields.io/packagist/v/chesio/bc-security.svg?color=239922&style=popout)](https://packagist.org/packages/chesio/bc-security)
+
+
 A WordPress plugin that helps keeping WordPress websites secure.
 
 ## Requirements
