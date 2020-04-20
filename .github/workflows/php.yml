@@ -4,10 +4,14 @@ on:
   pull_request:
     paths:
       - 'composer.*'
+      - phpcs.xml
+      - phpstan.neon
       - '**.php'
   push:
     paths:
       - 'composer.*'
+      - phpcs.xml
+      - phpstan.neon
       - '**.php'
 
 jobs:
