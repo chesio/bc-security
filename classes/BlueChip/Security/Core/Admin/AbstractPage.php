@@ -10,7 +10,7 @@ abstract class AbstractPage
     /**
      * @var string Page slug (each inheriting class must define its own)
      */
-    protected const SLUG = 'bc-security';
+    public const SLUG = 'bc-security';
 
     /**
      * @var string Name of nonce used for any custom actions on admin pages

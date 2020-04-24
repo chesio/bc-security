@@ -14,7 +14,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
     /**
      * @var string Page slug
      */
-    protected const SLUG = 'bc-security-notifications';
+    public const SLUG = 'bc-security-notifications';
 
 
     /**
