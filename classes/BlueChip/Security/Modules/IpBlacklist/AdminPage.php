@@ -17,7 +17,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
     /**
      * @var string Page slug
      */
-    protected const SLUG = 'bc-security-ip-blacklist';
+    public const SLUG = 'bc-security-ip-blacklist';
 
     /**
      * @var Name for blacklist action (used for both nonce action and submit name)
