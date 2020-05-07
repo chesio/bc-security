@@ -2,6 +2,7 @@
 
 namespace BlueChip\Security\Modules\Checklist\Checks;
 
+use BlueChip\Security\Helpers\Is;
 use BlueChip\Security\Helpers\SafeBrowsingClient;
 use BlueChip\Security\Modules\Cron\Jobs;
 use BlueChip\Security\Modules\Checklist;
@@ -52,6 +53,17 @@ class SafeBrowsing extends Checklist\AdvancedCheck
         );
 
         $this->google_api_key = $google_api_key;
+    }
+
+
+    /**
+     * Check makes sense only in live environment.
+     *
+     * @return bool
+     */
+    public function isMeaningful(): bool
+    {
+        return Is::live();
     }
 
 
