@@ -69,6 +69,8 @@ You may also optionally provide Google API key if you want to check your website
 
 BC Security can help you find potential security issues or even signs of breach.
 
+Since security measures for development instalations do not have to be as strict as for live installations, some checks are run only in *live environment* (by default *live environment* is detected as one where `WP_ENV === 'production'` or `WP_ENV === 'staging'`, but this can be [customized via a filter](#customization)).
+
 #### Basic checks
 
 Basic checks cover common security practices. They do not require any information from third party sources to proceed and thus do not leak any information about your website:
@@ -76,7 +78,7 @@ Basic checks cover common security practices. They do not require any informatio
 1. Is backend editing of plugin and theme PHP files disabled?
 1. Are directory listings disabled?
 1. Is execution of PHP files from uploads directory forbidden?
-1. Is display of PHP errors off by default? This check is only run in live environment (by default when `WP_ENV === 'production'` or `WP_ENV === 'staging'`, but this can be [customized via a filter](#customization)).
+1. Is display of PHP errors off by default? This check is only run in *live environment*.
 1. Is error log file not publicly available? This check is only run if both `WP_DEBUG` and `WP_DEBUG_LOG` constants are set to true.
 1. Are there no common usernames like admin or administrator on the system?
 1. Are user passwords hashed with [more secure hashing algorithm](https://roots.io/improving-wordpress-password-security/) than MD5 used by [WordPress by default](https://core.trac.wordpress.org/ticket/21022)?
@@ -108,7 +110,7 @@ Although plugins can be removed from [Plugins Directory](https://wordpress.org/p
 
 ##### Safe Browsing check
 
-Checks whether your website is included on any of Google's [lists of unsafe web resources](https://developers.google.com/safe-browsing/) - this is usually a solid indicator of compromise. Note that for this check to run you have to provide [properly configured API key](https://developers.google.com/safe-browsing/v4/urls-hashing) via [plugin setup](#setup).
+Checks whether your website is included on any of Google's [lists of unsafe web resources](https://developers.google.com/safe-browsing/) - this is usually a solid indicator of compromise. Note that for this check to run you have to provide [properly configured API key](https://developers.google.com/safe-browsing/v4/urls-hashing) via [plugin setup](#setup). This check is only run in *live environment*.
 
 #### Checklist monitoring
 
