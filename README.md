@@ -69,7 +69,7 @@ You may also optionally provide Google API key if you want to check your website
 
 BC Security can help you find potential security issues or even signs of breach.
 
-Since security measures for development instalations do not have to be as strict as for live installations, some checks are run only in *live environment* (by default *live environment* is detected as one where `WP_ENV === 'production'` or `WP_ENV === 'staging'`, but this can be [customized via a filter](#customization)).
+Since security measures for development instalations do not have to be as strict as for live installations, some checks are run only in `production` or `staging` environments (see [`wp_get_environment_type()`](https://developer.wordpress.org/reference/functions/wp_get_environment_type/)), but this can be [customized via a filter](#customization)).
 
 #### Basic checks
 
