@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Plugin Name: BC Security
  * Plugin URI: https://github.com/chesio/bc-security

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Perform plugin uninstall.
  *

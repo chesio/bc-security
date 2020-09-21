@@ -5,7 +5,7 @@ parameters:
     level: 2
     paths:
         - %currentWorkingDirectory%/classes/
-    autoload_files:
+    bootstrapFiles:
         - %currentWorkingDirectory%/tests/static-analysis/bootstrap.php
         - %currentWorkingDirectory%/autoload.php
     ignoreErrors:
