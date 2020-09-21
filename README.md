@@ -9,7 +9,7 @@ A WordPress plugin that helps keeping WordPress websites secure.
 ## Requirements
 
 * [PHP](https://secure.php.net/) 7.2 or newer
-* [WordPress](https://wordpress.org/) 5.3 or newer
+* [WordPress](https://wordpress.org/) 5.5 or newer
 
 ## Limitations
 
