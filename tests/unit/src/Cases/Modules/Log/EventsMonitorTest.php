@@ -32,8 +32,13 @@ class EventsMonitorTest extends \BlueChip\Security\Tests\Unit\TestCase
     public function testFailedLogin()
     {
         Actions\expectDone(Log\Action::EVENT)->once()->with(\Mockery::type(Log\Events\LoginFailure::class));
+        $wp_error = \Mockery::mock(\WP_Error::class);
+        $wp_error->allows([
+            'get_error_code' => 'test-error-code',
+            'get_error_message' => 'Test error message.',
+        ]);
 
-        $this->monitor->logFailedLogin('test-user');
+        $this->monitor->logFailedLogin('test-user', $wp_error);
     }
 
 

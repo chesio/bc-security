@@ -35,7 +35,7 @@ class EventsMonitor implements \BlueChip\Security\Modules\Initializable
         add_action('auth_cookie_bad_username', [$this, 'logBadCookie'], 5, 1);
         add_action('auth_cookie_bad_hash', [$this, 'logBadCookie'], 5, 1);
         // - failed login
-        add_action('wp_login_failed', [$this, 'logFailedLogin'], 5, 1);
+        add_action('wp_login_failed', [$this, 'logFailedLogin'], 5, 2);
         // - successful login
         add_action('wp_login', [$this, 'logSuccessfulLogin'], 5, 1);
         // - 404 query (only if request did not originate from the webserver itself)
@@ -84,10 +84,11 @@ class EventsMonitor implements \BlueChip\Security\Modules\Initializable
      * Log failed login.
      *
      * @param string $username
+     * @param \WP_Error $error
      */
-    public function logFailedLogin(string $username)
+    public function logFailedLogin(string $username, \WP_Error $error)
     {
-        do_action(Action::EVENT, (new Events\LoginFailure())->setUsername($username));
+        do_action(Action::EVENT, (new Events\LoginFailure())->setUsername($username)->setError($error));
     }
 
 
