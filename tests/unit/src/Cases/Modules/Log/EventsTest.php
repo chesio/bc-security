@@ -16,8 +16,8 @@ class EventsTest extends \BlueChip\Security\Tests\Unit\TestCase
         foreach ($event_classes as $event_class) {
             $reflection = new \ReflectionClass($event_class);
 
-            $this->assertInternalType('string', $reflection->getConstant('ID'));
-            $this->assertInternalType('string', $reflection->getConstant('LOG_LEVEL'));
+            $this->assertIsString($reflection->getConstant('ID'));
+            $this->assertIsString($reflection->getConstant('LOG_LEVEL'));
         }
     }
 
@@ -38,7 +38,7 @@ class EventsTest extends \BlueChip\Security\Tests\Unit\TestCase
 
 
     /**
-     * Ensure that event log message references all event context data.
+     * Ensure that event log message references only available context data.
      */
     public function testLogMessages()
     {
@@ -47,8 +47,16 @@ class EventsTest extends \BlueChip\Security\Tests\Unit\TestCase
             $context_data = $event->getContext();
             $message = $event->getMessage();
 
-            foreach (array_keys($context_data) as $key) {
-                $this->assertContains("{{$key}}", $message);
+            $matches = [];
+            if (preg_match_all('/{([a-z_]+)}/', $message, $matches)) {
+                $placeholders = $matches[1];
+                foreach ($placeholders as $placeholder) {
+                    $this->assertArrayHasKey(
+                        $placeholder,
+                        $context_data,
+                        \sprintf('Invalid log message for event "%s" - no event data with key "%s" available.', $event->getName(), $placeholder)
+                    );
+                }
             }
         }
     }

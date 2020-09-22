@@ -40,7 +40,7 @@ class Is
         // Consider both production and staging environment as live.
         return apply_filters(
             Hooks::IS_LIVE,
-            \defined('WP_ENV') && ((WP_ENV === 'production') || (WP_ENV === 'staging'))
+            \in_array(wp_get_environment_type(), ['production', 'staging'], true)
         );
     }
 
