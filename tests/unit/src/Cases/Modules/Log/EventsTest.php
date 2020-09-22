@@ -16,8 +16,8 @@ class EventsTest extends \BlueChip\Security\Tests\Unit\TestCase
         foreach ($event_classes as $event_class) {
             $reflection = new \ReflectionClass($event_class);
 
-            $this->assertInternalType('string', $reflection->getConstant('ID'));
-            $this->assertInternalType('string', $reflection->getConstant('LOG_LEVEL'));
+            $this->assertIsString($reflection->getConstant('ID'));
+            $this->assertIsString($reflection->getConstant('LOG_LEVEL'));
         }
     }
 
