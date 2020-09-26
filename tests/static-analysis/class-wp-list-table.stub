@@ -12,7 +12,7 @@ class WP_List_Table
      * The current list of items.
      *
      * @since 3.1.0
-     * @var array<mixed, array>
+     * @var list<array>
      */
     public $items;
     /**
@@ -67,13 +67,13 @@ class WP_List_Table
     /**
      * {@internal Missing Summary}
      *
-     * @var array<mixed, mixed>
+     * @var list<string>
      */
     protected $compat_fields = array('_args', '_pagination_args', 'screen', '_actions', '_pagination');
     /**
      * {@internal Missing Summary}
      *
-     * @var array<mixed, mixed>
+     * @var list<string>
      */
     protected $compat_methods = array('set_pagination_args', 'get_views', 'get_bulk_actions', 'bulk_actions', 'row_actions', 'months_dropdown', 'view_switcher', 'comments_bubble', 'get_items_per_page', 'pagination', 'get_sortable_columns', 'get_column_info', 'get_table_classes', 'display_tablenav', 'extra_tablenav', 'single_row_columns');
     /**
