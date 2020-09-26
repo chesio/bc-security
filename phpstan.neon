@@ -8,6 +8,8 @@ parameters:
     bootstrapFiles:
         - %currentWorkingDirectory%/tests/static-analysis/bootstrap.php
         - %currentWorkingDirectory%/autoload.php
+    stubFiles:
+        - %currentWorkingDirectory%/tests/static-analysis/class-wp-list-table.stub
     ignoreErrors:
         # Uses func_get_args()
         - '#^Function apply_filters(_ref_array)? invoked with [34567] parameters, 2 required\.$#'
