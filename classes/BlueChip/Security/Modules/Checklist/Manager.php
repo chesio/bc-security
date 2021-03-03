@@ -6,6 +6,9 @@ use BlueChip\Security\Helpers\AjaxHelper;
 use BlueChip\Security\Modules;
 use BlueChip\Security\Modules\Cron;
 
+/**
+ * @template TCheck of \BlueChip\Security\Modules\Checklist\Check
+ */
 class Manager implements Modules\Initializable
 {
     /**
@@ -14,7 +17,7 @@ class Manager implements Modules\Initializable
     public const ASYNC_CHECK_ACTION = 'bc_security_run_check';
 
     /**
-     * @var \BlueChip\Security\Modules\Checklist\Check[]
+     * @var list<TCheck>
      */
     private $checks;
 
@@ -110,7 +113,7 @@ class Manager implements Modules\Initializable
      *
      * @param array $filters [optional] Extra conditions to filter the list by: class (string), meaningful (boolean),
      *   monitored (boolean), status (null|boolean).
-     * @return \BlueChip\Security\Modules\Checklist\Check[]
+     * @return list<TCheck>
      */
     public function getChecks(array $filters = []): array
     {
