@@ -123,7 +123,7 @@ class Manager implements Modules\Countable, Modules\Installable, Modules\Initial
             $query .= $this->wpdb->prepare(" WHERE scope = %d", $scope);
         }
 
-        return \intval($this->wpdb->get_var($query));
+        return (int) $this->wpdb->get_var($query);
     }
 
 
@@ -142,7 +142,7 @@ class Manager implements Modules\Countable, Modules\Installable, Modules\Initial
             MySQLDateTime::formatDateTime($timestamp)
         );
 
-        return \intval($this->wpdb->get_var($query));
+        return (int) $this->wpdb->get_var($query);
     }
 
 
@@ -410,6 +410,6 @@ class Manager implements Modules\Countable, Modules\Installable, Modules\Initial
         // Execute query.
         $result = $this->wpdb->get_var($query);
         // Return result.
-        return null === $result ? $result : \intval($result);
+        return null === $result ? $result : (int) $result;
     }
 }

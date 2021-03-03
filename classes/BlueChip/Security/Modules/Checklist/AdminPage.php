@@ -248,7 +248,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
         // Background monitoring toggle.
         echo '<th>';
         if (isset($this->settings[$check_id])) {
-            FormHelper::printCheckbox($this->getFieldBaseProperties($check_id, \intval($this->settings[$check_id])));
+            FormHelper::printCheckbox($this->getFieldBaseProperties($check_id, (int) $this->settings[$check_id]));
         }
         echo '</th>';
         // Name should be short and descriptive and without HTML tags.

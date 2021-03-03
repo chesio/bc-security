@@ -258,7 +258,7 @@ class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\
             $query .= $this->wpdb->prepare(' WHERE event = %s', $event);
         }
 
-        return \intval($this->wpdb->get_var($query));
+        return (int) $this->wpdb->get_var($query);
     }
 
 
@@ -277,7 +277,7 @@ class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\
             MySQLDateTime::formatDateTime($timestamp)
         );
 
-        return \intval($this->wpdb->get_var($query));
+        return (int) $this->wpdb->get_var($query);
     }
 
 
@@ -383,7 +383,7 @@ class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\
 
         // Find the biggest ID from all records that should be pruned.
         $query_id = $this->wpdb->prepare("SELECT id FROM {$this->log_table} ORDER BY id DESC LIMIT %d, 1", $max_size);
-        if (empty($id = \intval($this->wpdb->get_var($query_id)))) {
+        if (empty($id = (int) $this->wpdb->get_var($query_id))) {
             return false;
         }
 

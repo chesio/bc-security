@@ -28,7 +28,7 @@ trait ListingPage
         $this->per_page_option_name = $option_name;
 
         add_filter('set-screen-option', function ($status, $option, $value) use ($option_name) {
-            return ($option === $option_name) ? \intval($value) : $status;
+            return ($option === $option_name) ? (int) $value : $status;
         }, 10, 3);
     }
 

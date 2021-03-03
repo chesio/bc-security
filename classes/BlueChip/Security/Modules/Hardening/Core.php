@@ -149,7 +149,7 @@ class Core implements \BlueChip\Security\Modules\Initializable
 
             $matches = [];
             if (\preg_match('#' . \preg_quote($url_base, '#') . '/+(\d+)/*$#i', $route, $matches)) {
-                if (get_current_user_id() !== \intval($matches[1])) {
+                if (get_current_user_id() !== (int) $matches[1]) {
                     $this->rest_api_supressed = true;
                     return rest_ensure_response(new \WP_Error(
                         'rest_user_invalid_id',

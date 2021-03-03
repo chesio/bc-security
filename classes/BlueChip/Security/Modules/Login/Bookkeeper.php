@@ -102,7 +102,7 @@ class Bookkeeper implements \BlueChip\Security\Modules\Installable
             MySQLDateTime::formatDateTime($now - $this->settings->getResetTimeoutDuration())
         );
 
-        return \intval($this->wpdb->get_var($query));
+        return (int) $this->wpdb->get_var($query);
     }
 
 
