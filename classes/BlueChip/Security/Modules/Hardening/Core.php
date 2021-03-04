@@ -54,6 +54,10 @@ class Core implements \BlueChip\Security\Modules\Initializable
             // Disable all XML-RPC methods requiring authentication.
             add_filter('xmlrpc_enabled', '__return_false', 10, 0);
         }
+        if ($this->settings[Settings::DISABLE_APPLICATION_PASSWORDS]) {
+            // Disable application passwords.
+            add_filter('wp_is_application_passwords_available', '__return_false', 10, 0);
+        }
         if ($this->settings[Settings::DISABLE_USERNAMES_DISCOVERY]) {
             // Alter REST API responses.
             add_filter('oembed_response_data', [$this, 'filterAuthorInOembed'], 100, 1);
