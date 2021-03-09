@@ -28,8 +28,8 @@
             var requests = [];
             // Checks to be run are defined either by class or by ID.
             var $selector
-                = ($button.data('check-class') ? '.' . $button.data('check-class') : '')
-                + ($button.data('check-id') ? '#' + $button.data('check-id') : '')
+                = ($button.data('check-class') ? ('.' + $button.data('check-class')) : '')
+                + ($button.data('check-id') ? ('#' + $button.data('check-id')) : '')
             ;
 
             $checks.filter($selector).each(function() {
