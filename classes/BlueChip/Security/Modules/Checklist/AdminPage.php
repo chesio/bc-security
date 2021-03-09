@@ -227,6 +227,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
         echo '<th>' . esc_html__('Last run', 'bc-security') . '</th>';
         echo '<th>' . esc_html__('Status', 'bc-security') . '</th>';
         echo '<th>' . esc_html__('Result', 'bc-security') . '</th>';
+        echo '<th>' . '</th>';
         echo '<tr>';
     }
 
@@ -239,11 +240,12 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
     private function printCheckRow(Check $check, string $check_class)
     {
         $check_id = $check::getId();
+        $check_html_id = array_pop(explode("\\", $check_id));
         $result = $check->getResult();
         $status = $result->getStatus();
         $status_class = \is_bool($status) ? ($status ? 'bcs-check--ok' : 'bcs-check--ko') : '';
 
-        echo '<tr class="bcs-check ' . esc_attr($check_class) . ' ' . $status_class . '" data-check-id="' . esc_attr($check_id) . '">';
+        echo '<tr class="bcs-check ' . esc_attr($check_class) . ' ' . $status_class . '" id="' . esc_attr($check_html_id) . '" data-check-id="' . esc_attr($check_id) . '">';
 
         // Background monitoring toggle.
         echo '<th>';
@@ -261,6 +263,8 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
         echo '<td class="bcs-check__status"><span class="dashicons"></span></td>';
         // Check result message.
         echo '<td class="bcs-check__message">' . $result->getMessageAsHtml() . '</td>';
+        // Rerun check button.
+        echo '<td><button type="button" class="button  bcs-run-check" data-check-id="' . esc_attr($check_html_id) . '">' . esc_html__('Rerun', 'bc-security') . '</button></td>';
 
         echo '</tr>';
     }

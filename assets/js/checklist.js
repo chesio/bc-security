@@ -1,7 +1,8 @@
 (function($, bc_security_checklist) {
     $(function() {
         var $checks = $('.bcs-check');
-        var $run_checks_buttons = $('button.bcs-run-checks');
+        // Grab all "Rerun" check buttons + "Run basic/advanced checks" buttons
+        var $run_checks_buttons = $('button.bcs-run-check, button.bcs-run-checks');
 
         // Activate "select all" button.
         $('#bcs-mark-all-checks').prop('disabled', false).on('click', function() {
@@ -25,8 +26,13 @@
 
             var $button = $(this);
             var requests = [];
+            // Checks to be run are defined either by class or by ID.
+            var $selector
+                = ($button.data('check-class') ? '.' . $button.data('check-class') : '')
+                + ($button.data('check-id') ? '#' + $button.data('check-id') : '')
+            ;
 
-            $checks.filter('.' + $button.data('check-class')).each(function() {
+            $checks.filter($selector).each(function() {
                 var $check = $(this).removeClass('bcs-check--ok').removeClass('bcs-check--ko').addClass('bcs-check--running');
                 var $last_run = $('.bcs-check__last-run', $check);
                 var $message = $('.bcs-check__message', $check).html(bc_security_checklist.messages.check_is_running);
