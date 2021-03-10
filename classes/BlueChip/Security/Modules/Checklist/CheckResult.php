@@ -7,22 +7,38 @@ class CheckResult
     /**
      * @var bool|null
      */
-    private $status;
+    private $status = null;
 
     /**
-     * @var array Human readable message explaining the result as list of (hyper)text lines.
+     * @var array Human readable message explaining the result as list of (hyper)text lines
      */
-    private $message;
+    private $message = [];
+
+    /**
+     * @var array Additional data provided by check
+     */
+    private $data = [];
 
 
     /**
      * @param bool|null $status Check result status: false, if check failed; true, if check passed; null for undetermined status.
      * @param array|string $message Human readable message explaining the result - inline HTML tags are allowed/expected.
+     * @param array $data [optional] Additional data provided by check.
      */
-    public function __construct(?bool $status, $message)
+    public function __construct(?bool $status, $message, $data = [])
     {
         $this->status = $status;
         $this->message = \is_array($message) ? $message : [$message];
+        $this->data = $data;
+    }
+
+
+    /**
+     * @return array Additional data provided by check.
+     */
+    public function getData(): array
+    {
+        return $this->data;
     }
 
 
@@ -54,7 +70,7 @@ class CheckResult
 
 
     /**
-     * @return bool|null Check result status: false, if check failed; true, if check passed; null means status is undetermined.
+     * @return bool|null Check result status: false if check failed; true if check passed; null means status is undetermined.
      */
     public function getStatus(): ?bool
     {
