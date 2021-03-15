@@ -240,7 +240,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
     private function printCheckRow(Check $check, string $check_class)
     {
         $check_id = $check::getId();
-        $check_html_id = array_pop(explode("\\", $check_id));
+        $check_html_id = array_reverse(explode("\\", $check_id))[0];
         $result = $check->getResult();
         $status = $result->getStatus();
         $status_class = \is_bool($status) ? ($status ? 'bcs-check--ok' : 'bcs-check--ko') : '';
