@@ -8,6 +8,7 @@ use BlueChip\Security\Helpers\Transients;
 use BlueChip\Security\Modules;
 use BlueChip\Security\Modules\Log\Logger;
 use BlueChip\Security\Modules\Checklist;
+use BlueChip\Security\Modules\Checklist\Checks\NoPluginsRemovedFromDirectory;
 use BlueChip\Security\Modules\Login;
 
 class Watchman implements Modules\Initializable, Modules\Activable
@@ -355,7 +356,7 @@ class Watchman implements Modules\Initializable, Modules\Activable
         $message = [
             \sprintf(__('An issue has been found during checklist monitoring of "%s" check:', 'bc-security'), $check->getName()),
             '',
-            $result->getMessageAsPlainText(),
+            $this->formatCheckResultMessage($check, $result),
         ];
 
         $this->notify($subject, $message);
@@ -376,7 +377,11 @@ class Watchman implements Modules\Initializable, Modules\Activable
 
         foreach ($issues as $issue) {
             $message[] = '';
-            $message[] = \sprintf("%s: %s", $issue['check']->getName(), $issue['result']->getMessageAsPlainText());
+            $message[] = \sprintf(
+                "%s: %s",
+                $issue['check']->getName(),
+                $this->formatCheckResultMessage($issue['check'], $issue['result'])
+            );
         }
 
         $this->notify($subject, $message);
@@ -393,5 +398,21 @@ class Watchman implements Modules\Initializable, Modules\Activable
     private function notify(string $subject, $message): ?bool
     {
         return empty($this->recipients) ? null : Mailman::send($this->recipients, $subject, $message);
+    }
+
+
+    /**
+     * @param Checklist\Check $check
+     * @param Checklist\CheckResult $result
+     *
+     * @return string
+     */
+    private function formatCheckResultMessage(Checklist\Check $check, Checklist\CheckResult $result): string
+    {
+        if ($check instanceof NoPluginsRemovedFromDirectory) {
+            return '';
+        }
+
+        return $result->getMessageAsPlainText();
     }
 }

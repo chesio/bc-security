@@ -11,6 +11,7 @@ abstract class Mailman
      */
     private const EOL = "\r\n";
 
+
     /**
      * Add some boilerplate to $subject and $message and send notification via wp_mail().
      *
@@ -19,6 +20,7 @@ abstract class Mailman
      * @param array|string $to Email address(es) of notification recipient(s).
      * @param string $subject Subject of notification.
      * @param array|string $message Body of notification.
+     *
      * @return bool True, if notification has been sent successfully, false otherwise.
      */
     public static function send($to, string $subject, $message): bool
@@ -35,6 +37,7 @@ abstract class Mailman
      * Add plugin boilerplate to $message.
      *
      * @param array $message Message body as list of lines.
+     *
      * @return string
      */
     private static function formatMessage(array $message): string
@@ -66,6 +69,7 @@ abstract class Mailman
      * Prepare subject for email (prepend site name and "BC Security Alert").
      *
      * @param string $subject
+     *
      * @return string
      */
     private static function formatSubject(string $subject): string
