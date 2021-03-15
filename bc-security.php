@@ -30,7 +30,7 @@ if (version_compare(PHP_VERSION, '7.3', '<')) {
         echo sprintf(
             __('PHP version %1$s is <a href="%2$s">no longer supported</a>. You should consider upgrading PHP on your webhost.', 'bc-security'),
             PHP_VERSION,
-            'https://secure.php.net/supported-versions.php'
+            'https://www.php.net/supported-versions.php'
         );
         echo '</p></div>';
         // https://make.wordpress.org/plugins/2015/06/05/policy-on-php-versions/
