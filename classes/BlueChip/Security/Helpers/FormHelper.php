@@ -44,7 +44,7 @@ abstract class FormHelper
             'value'     => 'true',
             'id'        => $args['label_for'],
             'name'      => $args['name'],
-            'checked'   => \boolval($args['value']),
+            'checked'   => (bool) $args['value'],
         ];
 
         if (!isset($args['plain'])) {

@@ -8,7 +8,7 @@ A WordPress plugin that helps keeping WordPress websites secure.
 
 ## Requirements
 
-* [PHP](https://secure.php.net/) 7.2 or newer
+* [PHP](https://www.php.net/) 7.3 or newer; PHP 8 is not officially supported yet.
 * [WordPress](https://wordpress.org/) 5.5 or newer
 
 ## Limitations
@@ -121,6 +121,7 @@ Both basic and advanced checks can be run manually from a dedicated page in back
 BC Security allows you to:
 1. Disable pingbacks
 1. Disable XML RPC methods that require authentication
+1. Disable application passwords
 1. Prevent usernames discovery via [REST API requests](https://developer.wordpress.org/rest-api/reference/users/) and [username enumeration](https://hackertarget.com/wordpress-user-enumeration/)
 1. Check and/or validate user passwords using [Pwned Passwords](https://haveibeenpwned.com/Passwords) database and [API](https://haveibeenpwned.com/API/v2#PwnedPasswords)
 

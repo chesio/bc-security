@@ -15,6 +15,11 @@ class Settings extends \BlueChip\Security\Core\Settings
     public const DISABLE_XML_RPC = 'disable_xml_rpc';
 
     /**
+     * bool: Disable application passwords feature? [No]
+     */
+    public const DISABLE_APPLICATION_PASSWORDS = 'disable_application_passwords';
+
+    /**
      * bool: Disable users listings via REST API `/wp/v2/users` endpoint and author scan via author=N query? [No]
      */
     public const DISABLE_USERNAMES_DISCOVERY = 'disable_usernames_discovery';
@@ -35,6 +40,7 @@ class Settings extends \BlueChip\Security\Core\Settings
     protected const DEFAULTS = [
         self::DISABLE_PINGBACKS => false,
         self::DISABLE_XML_RPC => false,
+        self::DISABLE_APPLICATION_PASSWORDS => false,
         self::DISABLE_USERNAMES_DISCOVERY => false,
         self::CHECK_PASSWORDS => false,
         self::VALIDATE_PASSWORDS => false,

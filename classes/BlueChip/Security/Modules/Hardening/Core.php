@@ -54,6 +54,10 @@ class Core implements \BlueChip\Security\Modules\Initializable
             // Disable all XML-RPC methods requiring authentication.
             add_filter('xmlrpc_enabled', '__return_false', 10, 0);
         }
+        if ($this->settings[Settings::DISABLE_APPLICATION_PASSWORDS]) {
+            // Disable application passwords.
+            add_filter('wp_is_application_passwords_available', '__return_false', 10, 0);
+        }
         if ($this->settings[Settings::DISABLE_USERNAMES_DISCOVERY]) {
             // Alter REST API responses.
             add_filter('oembed_response_data', [$this, 'filterAuthorInOembed'], 100, 1);
@@ -149,7 +153,7 @@ class Core implements \BlueChip\Security\Modules\Initializable
 
             $matches = [];
             if (\preg_match('#' . \preg_quote($url_base, '#') . '/+(\d+)/*$#i', $route, $matches)) {
-                if (get_current_user_id() !== \intval($matches[1])) {
+                if (get_current_user_id() !== (int) $matches[1]) {
                     $this->rest_api_supressed = true;
                     return rest_ensure_response(new \WP_Error(
                         'rest_user_invalid_id',

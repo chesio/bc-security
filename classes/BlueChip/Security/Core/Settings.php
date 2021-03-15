@@ -249,11 +249,11 @@ abstract class Settings implements \ArrayAccess
     protected static function sanitizeByType($value, $default)
     {
         if (\is_bool($default)) {
-            return \boolval($value);
+            return (bool) $value;
         } elseif (\is_float($default)) {
-            return \floatval($value);
+            return (float) $value;
         } elseif (\is_int($default)) {
-            return \intval($value);
+            return (int) $value;
         } elseif (\is_array($default) && \is_string($value)) {
             return self::parseList($value);
         } else {

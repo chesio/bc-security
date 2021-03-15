@@ -97,6 +97,27 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
             [FormHelper::class, 'printCheckbox']
         );
 
+        // Section: Disable application passwords
+        if (function_exists('wp_is_application_passwords_available')) { // WP 5.6 and newer
+            $this->addSettingsSection(
+                'disable-application-passwords',
+                __('Disable application passwords', 'bc-security'),
+                function () {
+                    echo '<p>' . \sprintf(
+                        /* translators: 1: Application passwords label, 2: link to Wordfence blog article on risks of application passwords */
+                        esc_html__('%1$s feature allows external applications to request permission to connect to a site and generate a password specific to that application. Once the application has been granted access, it can perform actions on behalf of a user via the WordPress REST API. Unfortunately, the way this feature is implemented also provides %2$s, so it is advised to disable it when it is not used.', 'bc-security'),
+                        '<strong>' . esc_html__('Application passwords', 'bc-security') . '</strong>',
+                        '<a href="https://www.wordfence.com/blog/2020/12/wordpress-5-6-introduces-a-new-risk-to-your-site-what-to-do/" rel="noreferrer">' . esc_html__('yet another attack vector', 'bc-security') . '</a>'
+                    ) . '</p>';
+                }
+            );
+            $this->addSettingsField(
+                Settings::DISABLE_APPLICATION_PASSWORDS,
+                __('Disable application passwords', 'bc-security'),
+                [FormHelper::class, 'printCheckbox']
+            );
+        }
+
         // Section: Disable usernames discovery
         $this->addSettingsSection(
             'disable-usernames-discovery',

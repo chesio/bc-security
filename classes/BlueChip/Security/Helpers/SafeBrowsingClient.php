@@ -149,7 +149,7 @@ class SafeBrowsingClient
         $matches = [];
 
         if (\preg_match('/^(\d+(\.\d+)?)s$/i', $match->cacheDuration, $matches)) {
-            return \intval($matches[1]);
+            return (int) $matches[1];
         }
 
         return null;
