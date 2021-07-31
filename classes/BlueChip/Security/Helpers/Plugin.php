@@ -25,14 +25,16 @@ abstract class Plugin
 
     /**
      * @param string $plugin_basename
+     * @param array $plugin_data
+     *
      * @return string URL of the plugin changelog page or empty string, if it cannot be determined.
      */
-    public static function getChangelogUrl(string $plugin_basename): string
+    public static function getChangelogUrl(string $plugin_basename, array $plugin_data): string
     {
         // By default, changelog URL is unknown.
         $url = '';
 
-        if (self::hasReadmeTxt($plugin_basename)) {
+        if (self::hasReadmeTxt($plugin_basename) && self::hasWordPressOrgUpdateUri($plugin_data)) {
             // Assume that any plugin with readme.txt comes from Plugins Directory.
             $url = self::getDirectoryUrl($plugin_basename) . self::PLUGINS_DIRECTORY_CHANGELOG_PATH;
         }
@@ -90,6 +92,26 @@ abstract class Plugin
 
 
     /**
+     * Return true if plugin has no Update URI set or if the Update URI has either wordpress.org or w.org as hostname.
+     *
+     * @param array $plugin_data
+     * @return bool
+     */
+    public static function hasWordPressOrgUpdateUri(array $plugin_data): bool
+    {
+        // Compatibility check with older WordPress versions:
+        if (!isset($plugin_data['UpdateURI'])) {
+            // The field is not available in WordPress 5.7 or older.
+            return true;
+        }
+
+        $hostname = \parse_url($plugin_data['UpdateURI'], PHP_URL_HOST);
+
+        return ($hostname === 'wordpress.org') || ($hostname === 'w.org');
+    }
+
+
+    /**
      * @param string $plugin_basename
      * @return bool True, if directory of given plugin seems to be under version control (Subversion or Git).
      */
@@ -101,7 +123,10 @@ abstract class Plugin
 
 
     /**
-     * Get all installed plugins that seems to be hosted at WordPress.org repository (= have readme.txt file).
+     * Get all installed plugins that seems to be hosted at WordPress.org repository = all plugins that:
+     * 1. have readme.txt file and
+     * 2. either have no Update URI header set or the URI has wordpress.org or w.org in hostname
+     *
      * Method effectively discards any plugins that are not in their own directory (like Hello Dolly) from output.
      *
      * @return array
@@ -113,11 +138,13 @@ abstract class Plugin
             require_once ABSPATH . 'wp-admin/includes/plugin.php';
         }
 
-        // There seem to be no easy way to find out if plugin is hosted at WordPress.org repository or not, see:
-        // https://core.trac.wordpress.org/ticket/32101
+        $wordpress_org_plugins = \array_filter(
+            get_plugins(),
+            [self::class, 'hasWordPressOrgUpdateUri']
+        );
 
         return \array_filter(
-            get_plugins(),
+            $wordpress_org_plugins,
             [self::class, 'hasReadmeTxt'],
             ARRAY_FILTER_USE_KEY
         );

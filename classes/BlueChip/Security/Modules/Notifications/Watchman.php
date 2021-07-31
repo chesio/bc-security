@@ -228,7 +228,7 @@ class Watchman implements Modules\Initializable, Modules\Activable
                 $plugin_update_data->new_version
             );
 
-            if (!empty($plugin_changelog_url = Plugin::getChangelogUrl($plugin_file))) {
+            if (!empty($plugin_changelog_url = Plugin::getChangelogUrl($plugin_file, $plugin_data))) {
                 // Append link to changelog, if available.
                 $plugin_message .= ' ' . \sprintf(
                     __('Changelog: %1$s', 'bc-security'),
