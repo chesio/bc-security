@@ -12,6 +12,7 @@
  * Tested up to: 5.7
  * Text Domain: bc-security
  * GitHub Plugin URI: https://github.com/chesio/bc-security
+ * Update URI: https://github.com/chesio/bc-security
  */
 
 if (version_compare(PHP_VERSION, '7.3', '<')) {
