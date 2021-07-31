@@ -34,7 +34,7 @@ abstract class Plugin
         // By default, changelog URL is unknown.
         $url = '';
 
-        if (self::hasReadmeTxt($plugin_basename) && self::hasWordPressOrgUpdateUri($plugin_data)) {
+        if (self::hasReadmeTxt($plugin_basename) && self::hasWordPressOrgUpdateUri($plugin_basename, $plugin_data)) {
             // Assume that any plugin with readme.txt comes from Plugins Directory.
             $url = self::getDirectoryUrl($plugin_basename) . self::PLUGINS_DIRECTORY_CHANGELOG_PATH;
         }
@@ -94,10 +94,11 @@ abstract class Plugin
     /**
      * Return true if plugin has no Update URI set or if the Update URI has either wordpress.org or w.org as hostname.
      *
+     * @param string $plugin_basename
      * @param array $plugin_data
      * @return bool
      */
-    public static function hasWordPressOrgUpdateUri(array $plugin_data): bool
+    public static function hasWordPressOrgUpdateUri(string $plugin_basename, array $plugin_data): bool
     {
         // Compatibility check with older WordPress versions:
         if (!isset($plugin_data['UpdateURI'])) {
@@ -105,9 +106,24 @@ abstract class Plugin
             return true;
         }
 
-        $hostname = \parse_url($plugin_data['UpdateURI'], PHP_URL_HOST);
+        $plugin_update_uri = $plugin_data['UpdateURI'];
 
-        return ($hostname === 'wordpress.org') || ($hostname === 'w.org');
+        if ($plugin_update_uri === '') {
+            // If no Update URI is present, WordPress 5.8 return empty string.
+            return true;
+        }
+
+        $plugin_slug = self::getSlug($plugin_basename);
+
+        if ($plugin_update_uri === "https://wordpress.org/plugins/{$plugin_slug}/") {
+            return true;
+        }
+
+        if ($plugin_update_uri === "w.org/plugin/{$plugin_slug}") {
+            return true;
+        }
+
+        return false;
     }
 
 
@@ -140,7 +156,8 @@ abstract class Plugin
 
         $wordpress_org_plugins = \array_filter(
             get_plugins(),
-            [self::class, 'hasWordPressOrgUpdateUri']
+            [self::class, 'hasWordPressOrgUpdateUri'],
+            ARRAY_FILTER_USE_BOTH
         );
 
         return \array_filter(
