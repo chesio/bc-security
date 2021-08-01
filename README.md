@@ -47,9 +47,9 @@ cd [your-project]/wp-content/plugins/bc-security
 git pull
 ```
 
-### Using GitHub Updater plugin
+### Using Git Updater plugin
 
-BC Security can be installed and updated via [GitHub Updater](https://github.com/afragen/github-updater) plugin.
+BC Security can be installed and updated via [Git Updater](https://github.com/afragen/git-updater) plugin.
 
 ### Direct download
 
