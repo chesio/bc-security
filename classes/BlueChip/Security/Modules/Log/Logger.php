@@ -185,7 +185,7 @@ class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\
      * Return integer code for given log level.
      *
      * @param string $level Log level constant: emergency, alert, critical, error, warning, notice, info or debug.
-     * @return int|null Integer code for given log level or null, if unknown level given.
+     * @return int|null Integer code for given log level or null if unknown level given.
      */
     public function translateLogLevel(string $level): ?int
     {
@@ -301,7 +301,7 @@ class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\
             $query .= $this->wpdb->prepare(" WHERE event = %s", $event);
         }
 
-        // Apply order by column, if column name is valid.
+        // Apply order by column if column name is valid.
         if ($order_by && \in_array($order_by, $this->columns, true)) {
             $query .= " ORDER BY {$order_by}";
             if ($order === 'asc') {
@@ -376,7 +376,7 @@ class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\
     {
         $max_size = $this->settings->getMaxSize();
 
-        // First check, if pruning makes sense at all.
+        // First check if pruning makes sense at all.
         if ($this->countAll() <= $max_size) {
             return true;
         }

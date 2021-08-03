@@ -19,7 +19,7 @@ abstract class Mailman
      * @param array|string $to Email address(es) of notification recipient(s).
      * @param string $subject Subject of notification.
      * @param array|string $message Body of notification.
-     * @return bool True, if notification has been sent successfully, false otherwise.
+     * @return bool True if notification has been sent successfully, false otherwise.
      */
     public static function send($to, string $subject, $message): bool
     {

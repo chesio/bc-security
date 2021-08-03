@@ -45,7 +45,7 @@ abstract class IpAddress
      * Get remote address according to provided $type (with fallback to REMOTE_ADDR).
      *
      * @param string $type
-     * @return string Remote IP or empty string, if remote IP could not been determined.
+     * @return string Remote IP or empty string if remote IP could not been determined.
      */
     public static function get(string $type): string
     {
@@ -58,7 +58,7 @@ abstract class IpAddress
             return self::getFirst($_SERVER[$type]);
         }
 
-        // Not found, try to fall back to direct address, if proxy has been requested.
+        // Not found: try to fall back to direct address if proxy has been requested.
         if (($type !== self::REMOTE_ADDR) && isset($_SERVER[self::REMOTE_ADDR])) {
             // NOTE: Even though we fall back to direct address -- meaning you
             // can get a mostly working plugin when connection type is not set

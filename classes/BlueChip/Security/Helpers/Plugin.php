@@ -25,7 +25,7 @@ abstract class Plugin
 
     /**
      * @param string $plugin_basename
-     * @return string URL of the plugin changelog page or empty string, if it cannot be determined.
+     * @return string URL of the plugin changelog page or empty string if it cannot be determined.
      */
     public static function getChangelogUrl(string $plugin_basename): string
     {
@@ -67,7 +67,7 @@ abstract class Plugin
      * Get slug (ie. bc-security) for plugin with given basename (ie. bc-security/bc-security.php).
      *
      * @param string $plugin_basename
-     * @return string Plugin slug or empty string, if plugin does not seem to be installed in its own directory.
+     * @return string Plugin slug or empty string if plugin does not seem to be installed in its own directory.
      */
     public static function getSlug(string $plugin_basename): string
     {
@@ -81,7 +81,7 @@ abstract class Plugin
 
     /**
      * @param string $plugin_basename
-     * @return bool True, if there is readme.txt file present in plugin directory, false otherwise.
+     * @return bool True if there is readme.txt file present in plugin directory, false otherwise.
      */
     public static function hasReadmeTxt(string $plugin_basename): bool
     {
@@ -91,7 +91,7 @@ abstract class Plugin
 
     /**
      * @param string $plugin_basename
-     * @return bool True, if directory of given plugin seems to be under version control (Subversion or Git).
+     * @return bool True if directory of given plugin seems to be under version control (Subversion or Git).
      */
     public static function isVersionControlled(string $plugin_basename): bool
     {

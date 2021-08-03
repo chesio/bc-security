@@ -22,7 +22,7 @@ abstract class HaveIBeenPwned
     /**
      * @link https://haveibeenpwned.com/API/v2#PwnedPasswords
      * @param string $password Password to check.
-     * @return bool True, if $password has been previously exposed in a data breach, false if not, null if check failed.
+     * @return bool True if $password has been previously exposed in a data breach, false if not, null if check failed.
      */
     public static function hasPasswordBeenPwned(string $password): ?bool
     {

@@ -49,7 +49,7 @@ class Is
      * Return true if current request is of given $type.
      *
      * @param string $type One of: admin, ajax, cron, frontend or wp-cli.
-     * @return bool True, if current request is of given $type, false otherwise.
+     * @return bool True if current request is of given $type, false otherwise.
      */
     public static function request(string $type): bool
     {
