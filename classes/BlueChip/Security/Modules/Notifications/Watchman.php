@@ -352,13 +352,12 @@ class Watchman implements Modules\Initializable, Modules\Activable
     public function watchChecklistSingleCheckAlert(Checklist\Check $check, Checklist\CheckResult $result)
     {
         $subject = __('Checklist monitoring alert', 'bc-security');
-        $message = [
+        $preamble = [
             \sprintf(__('An issue has been found during checklist monitoring of "%s" check:', 'bc-security'), $check->getName()),
             '',
-            $result->getMessageAsPlainText(),
         ];
 
-        $this->notify($subject, $message);
+        $this->notify($subject, \array_merge($preamble, $result->getMessage()));
     }
 
 
