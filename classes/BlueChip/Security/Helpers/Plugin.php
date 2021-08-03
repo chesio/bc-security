@@ -197,26 +197,36 @@ abstract class Plugin
 
 
     /**
-     * Create comma separated list of plugin names optionally with a link to plugin related URL.
+     * Convert list of items with plugin data to list of plugin names that is optionally:
+     * - wrapped in a link to plugin related URL
+     * - suffixed with additional information
      *
-     * @param array $plugins
-     * @param string $linkTo [optional] If provided, plugin name will be turned into link to URL under given data key.
-     * @return string
+     * Also, plugin name is wrapped in <strong> and additional information in <em> tag.
+     *
+     * @param array $plugins List of plugin data items
+     * @param string $link_to [optional] Wrap plugin name in a link to URL stored under given key.
+     * @param string $extend_by [optional] Append text stored under given key to plugin name.
+     * @return array
      */
-    public static function implodeList(array $plugins, string $linkTo = ''): string
+    public static function populateList(array $plugins, string $link_to = '', string $extend_by = ''): array
     {
-        return \implode(
-            ', ',
-            \array_map(
-                function (array $plugin_data) use ($linkTo): string {
-                    $plugin_name = '<em>' . esc_html($plugin_data['Name']) . '</em>';
-                    return $linkTo
-                        ? '<a href="' . esc_url($plugin_data[$linkTo]) . '" rel="noreferrer">' . $plugin_name . '</a>'
-                        : $plugin_name
-                    ;
-                },
-                $plugins
-            )
+        return \array_map(
+            function (array $plugin_data) use ($link_to, $extend_by): string {
+                $plugin_name = '<strong>' . esc_html($plugin_data['Name']) . '</strong>';
+
+                $plugin_link = ($link_to && ('' !== ($url = $plugin_data[$link_to] ?? '')))
+                    ? ('<a href="' . esc_url($url) . '" rel="noreferrer">' . $plugin_name . '</a>')
+                    : $plugin_name
+                ;
+
+                $plugin_info = ($extend_by && ('' !== ($info = $plugin_data[$extend_by] ?? '')))
+                    ? (': <em>' . $info . '</em>')
+                    : ''
+                ;
+
+                return $plugin_link . $plugin_info;
+            },
+            $plugins
         );
     }
 }
