@@ -80,7 +80,7 @@ abstract class Settings implements \ArrayAccess
     //// ArrayAccess API ///////////////////////////////////////////////////////
 
     /**
-     * Return true, if there is any setting available under key $offset.
+     * Return true if there is any setting available under key $offset.
      *
      * @internal Implements ArrayAccess interface.
      *
@@ -184,7 +184,7 @@ abstract class Settings implements \ArrayAccess
     /**
      * Remove the data from database (= hard reset).
      *
-     * @return bool True, if settings have been deleted, false otherwise.
+     * @return bool True if settings have been deleted, false otherwise.
      */
     public function destroy(): bool
     {
@@ -195,7 +195,7 @@ abstract class Settings implements \ArrayAccess
     /**
      * Persist the value of data into database.
      *
-     * @return bool True, if settings have been updated (= changed), false otherwise.
+     * @return bool True if settings have been updated (= changed), false otherwise.
      */
     public function persist(): bool
     {

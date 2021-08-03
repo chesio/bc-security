@@ -16,7 +16,7 @@ class CheckResult
 
 
     /**
-     * @param bool|null $status Check result status: false, if check failed; true, if check passed; null for undetermined status.
+     * @param bool|null $status Check result status: false if check failed; true if check passed; null for undetermined status.
      * @param array|string $message Human readable message explaining the result - inline HTML tags are allowed/expected.
      */
     public function __construct(?bool $status, $message)
@@ -54,7 +54,7 @@ class CheckResult
 
 
     /**
-     * @return bool|null Check result status: false, if check failed; true, if check passed; null means status is undetermined.
+     * @return bool|null Check result status: false if check failed; true if check passed; null means status is undetermined.
      */
     public function getStatus(): ?bool
     {

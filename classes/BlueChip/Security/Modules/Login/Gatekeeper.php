@@ -141,7 +141,7 @@ class Gatekeeper implements \BlueChip\Security\Modules\Initializable, \BlueChip\
         // Record failed login attempt, get total number of retries for IP
         $retries = $this->bookkeeper->recordFailedLoginAttempt($this->remote_address, $username);
 
-        // Determine, if it is the lockout time:
+        // Determine whether it is the lockout time:
         if ($retries % $this->settings[Settings::LONG_LOCKOUT_AFTER] === 0) {
             // Long lockout
             $this->lockOut($username, $this->settings->getLongLockoutDuration(), IpBlacklist\BanReason::LOGIN_LOCKOUT_LONG);
@@ -153,7 +153,7 @@ class Gatekeeper implements \BlueChip\Security\Modules\Initializable, \BlueChip\
 
 
     /**
-     * Lock IP out and die with 503 error, if non-existing $username has been
+     * Lock IP out and die with 503 error if non-existing $username has been
      * used to log in and is present on username blacklist.
      *
      * Filter is called from wp_authenticate().
@@ -200,7 +200,7 @@ class Gatekeeper implements \BlueChip\Security\Modules\Initializable, \BlueChip\
 
 
     /**
-     * Remove all WordPress authentication cookies, if IP is on black list.
+     * Remove all WordPress authentication cookies if IP is on black list.
      * Method should be called as early as possible.
      */
     public function removeAuthCookieIfIpIsLocked()

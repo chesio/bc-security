@@ -12,7 +12,7 @@ class PhpVersionSupported extends Checklist\BasicCheck
     private const SUPPORTED_VERSIONS = [
         '7.3' => '2021-12-06',
         '7.4' => '2022-11-28',
-        '8.0' => '2023-11026',
+        '8.0' => '2023-11-26',
     ];
 
 

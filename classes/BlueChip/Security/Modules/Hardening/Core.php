@@ -72,7 +72,7 @@ class Core implements \BlueChip\Security\Modules\Initializable
         if ($this->settings[Settings::CHECK_PASSWORDS]) {
             // Check user password on successful login.
             add_action('wp_login', [$this, 'checkUserPassword'], 10, 2);
-            // Display warning notice, if pwned password has been detected for current user.
+            // Display warning notice if pwned password has been detected for current user.
             add_action('current_screen', [$this, 'displayPasswordPwnedNotice'], 10, 1);
         }
         if ($this->settings[Settings::VALIDATE_PASSWORDS]) {
@@ -207,7 +207,7 @@ class Core implements \BlueChip\Security\Modules\Initializable
      * @link https://hackertarget.com/wordpress-user-enumeration/
      *
      * @param array $query_vars
-     * @return bool True, if `author` key is present and its value is either an array or can be seen as numeric.
+     * @return bool True if `author` key is present and its value is either an array or can be seen as numeric.
      */
     protected static function smellsLikeAuthorScan(array $query_vars): bool
     {
@@ -261,7 +261,7 @@ class Core implements \BlueChip\Security\Modules\Initializable
 
 
     /**
-     * Display password pwned notice, if user's password is marked as pwned.
+     * Display password pwned notice if user's password is marked as pwned.
      *
      * @action https://developer.wordpress.org/reference/hooks/current_screen/
      *
