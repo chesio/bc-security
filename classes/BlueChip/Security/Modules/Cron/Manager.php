@@ -66,7 +66,7 @@ class Manager implements Modules\Activable
 
 
     /**
-     * Activate cron job: schedule the job and mark it as permanently active, if scheduling succeeds.
+     * Activate cron job: schedule the job and mark it as permanently active if scheduling succeeds.
      *
      * @param string $hook
      * @return bool True if cron job has been activated or was active already, false otherwise.
@@ -82,7 +82,7 @@ class Manager implements Modules\Activable
 
 
     /**
-     * Deactivate cron job: unschedule the job and mark it as permanently inactive, if unscheduling succeeds.
+     * Deactivate cron job: unschedule the job and mark it as permanently inactive if unscheduling succeeds.
      *
      * @param string $hook
      * @return bool True if cron job has been deactivated or was inactive already, false otherwise.

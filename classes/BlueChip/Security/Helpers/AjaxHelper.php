@@ -14,7 +14,7 @@ abstract class AjaxHelper
 
 
     /**
-     * Register callback as handler for AJAX action. Handler will be only executed, if nonce check passes.
+     * Register callback as handler for AJAX action. Handler will be only executed when nonce check passes.
      *
      * @param string $action
      * @param callable $handler
@@ -22,7 +22,7 @@ abstract class AjaxHelper
     public static function addHandler(string $action, callable $handler)
     {
         add_action(self::WP_AJAX_PREFIX . $action, function () use ($action, $handler) {
-            // Check AJAX referer for given action - will die, if invalid.
+            // Check AJAX referer for given action - will die if invalid.
             check_ajax_referer($action);
 
             \call_user_func($handler);

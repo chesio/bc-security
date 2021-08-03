@@ -6,8 +6,8 @@ use BlueChip\Security\Helpers;
 
 /**
  * Bouncer takes care of bouncing uninvited guests by:
- * 1) Blocking access to website, if remote IP address cannot be determined.
- * 2) Blocking access to website, if remote IP address is on website blacklist.
+ * 1) Blocking access to website when remote IP address cannot be determined.
+ * 2) Blocking access to website when remote IP address is on website blacklist.
  */
 class Bouncer implements \BlueChip\Security\Modules\Initializable, \BlueChip\Security\Modules\Loadable
 {
@@ -38,12 +38,12 @@ class Bouncer implements \BlueChip\Security\Modules\Initializable, \BlueChip\Sec
      */
     public function load()
     {
-        // In case of non-cli context, if remote IP address is invalid, die immediately.
+        // In case of non-cli context or if remote IP address is invalid, die immediately.
         if (!Helpers\Is::cli() && empty($this->remote_address)) {
             self::blockAccessTemporarily();
         }
 
-        // Check, if access to website is allowed.
+        // Check if access to website is allowed.
         add_filter('plugins_loaded', [$this, 'checkAccess'], 1, 0); // Leave priority 0 for site maintainers.
     }
 
@@ -78,7 +78,7 @@ class Bouncer implements \BlueChip\Security\Modules\Initializable, \BlueChip\Sec
     //// Hookers - public methods that should in fact be private
 
     /**
-     * Block access to the website, if remote IP address is locked.
+     * Block access to the website when remote IP address is locked.
      */
     public function checkAccess()
     {
@@ -89,7 +89,7 @@ class Bouncer implements \BlueChip\Security\Modules\Initializable, \BlueChip\Sec
 
 
     /**
-     * Block access to the login, if remote IP address is locked.
+     * Block access to the login when remote IP address is locked.
      *
      * @param \WP_Error|\WP_User $user
      * @return \WP_Error|\WP_User

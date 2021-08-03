@@ -54,7 +54,7 @@ class Watchman implements Modules\Initializable, Modules\Activable
 
 
     /**
-     * @return bool True, if notifications are muted via `BC_SECURITY_MUTE_NOTIFICATIONS` constant, false otherwise.
+     * @return bool True if notifications are muted via `BC_SECURITY_MUTE_NOTIFICATIONS` constant, false otherwise.
      */
     public static function isMuted(): bool
     {
@@ -63,7 +63,7 @@ class Watchman implements Modules\Initializable, Modules\Activable
 
 
     /**
-     * Format remote IP address - append result of reverse DNS lookup, if successful.
+     * Format remote IP address - append result of reverse DNS lookup if successful.
      *
      * @param string $remote_address
      * @return string
@@ -84,7 +84,7 @@ class Watchman implements Modules\Initializable, Modules\Activable
      */
     public function init()
     {
-        // Bail early, if no recipients are set or we are explicitly ordered to not disturb.
+        // Bail early if no recipients are set or we are explicitly ordered to not disturb.
         if (empty($this->recipients) || self::isMuted()) {
             return;
         }
@@ -122,7 +122,7 @@ class Watchman implements Modules\Initializable, Modules\Activable
      */
     public function deactivate()
     {
-        // Bail early, if no recipients are set.
+        // Bail early if no recipients are set.
         if (empty($this->recipients)) {
             return;
         }
@@ -158,7 +158,7 @@ class Watchman implements Modules\Initializable, Modules\Activable
      */
     public function watchCoreUpdateAvailable($update_transient)
     {
-        // Check, if update transient has the data we are interested in.
+        // Check if update transient has the data we are interested in.
         if (!isset($update_transient->updates) || !\is_array($update_transient->updates) || empty($update_transient->updates)) {
             return;
         }
@@ -202,7 +202,7 @@ class Watchman implements Modules\Initializable, Modules\Activable
      */
     public function watchPluginUpdatesAvailable($update_transient)
     {
-        // Check, if update transient has the data we are interested in.
+        // Check if update transient has the data we are interested in.
         if (!isset($update_transient->response) || !\is_array($update_transient->response)) {
             return;
         }
@@ -259,7 +259,7 @@ class Watchman implements Modules\Initializable, Modules\Activable
      */
     public function watchThemeUpdatesAvailable($update_transient)
     {
-        // Check, if update transient has the data we are interested in.
+        // Check if update transient has the data we are interested in.
         if (!isset($update_transient->response) || !\is_array($update_transient->response)) {
             return;
         }
@@ -388,7 +388,7 @@ class Watchman implements Modules\Initializable, Modules\Activable
      *
      * @param string $subject
      * @param array|string $message
-     * @return bool|null Null, if there are no recipients configured. True, if email has been sent, false otherwise.
+     * @return bool|null Null if there are no recipients configured. True if email has been sent, false otherwise.
      */
     private function notify(string $subject, $message): ?bool
     {

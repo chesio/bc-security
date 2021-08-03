@@ -78,7 +78,7 @@ class Manager implements Modules\Initializable
             // Display of errors should be off in live environment.
             Checks\DisplayOfPhpErrorsIsOff::getId() => new Checks\DisplayOfPhpErrorsIsOff(),
 
-            // Error log should not be publicly visible, if debugging is on.
+            // Error log should not be publicly visible if debugging is on.
             Checks\ErrorLogNotPubliclyAccessible::getId() => new Checks\ErrorLogNotPubliclyAccessible(),
 
             // There should be no obvious usernames.

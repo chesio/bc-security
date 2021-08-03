@@ -9,7 +9,7 @@ use BlueChip\Security\Modules;
  * Who's on the blacklist, baby?
  *
  * Note on blacklist release time with respect to <, =, > comparisons against
- * current time: item is locked (lock is active), if release time is in the
+ * current time: item is locked (lock is active) if release time is in the
  * future, in other words: release_time > current_time. Otherwise, the item is
  * not locked (lock is expired).
  *
@@ -17,7 +17,7 @@ use BlueChip\Security\Modules;
  * several times because of different scope, but also because of different
  * reason. Unlike the scope, the reason is not important for actual application
  * of lock, so practical approach is to use the most restrictive lock (ie. the
- * release date that is the most future one), if single IP is locked multiple
+ * release date that is the most future one) if single IP is locked multiple
  * times in the same scope.
  */
 class Manager implements Modules\Countable, Modules\Installable, Modules\Initializable, \Countable
@@ -166,7 +166,7 @@ class Manager implements Modules\Countable, Modules\Installable, Modules\Initial
             $query .= \sprintf(" WHERE scope = %d", $scope);
         }
 
-        // Apply order by column, if column name is valid
+        // Apply order by column if column name is valid
         if ($order_by && \in_array($order_by, $this->columns, true)) {
             $query .= " ORDER BY {$order_by}";
             if ($order === 'asc') {
@@ -215,7 +215,7 @@ class Manager implements Modules\Countable, Modules\Installable, Modules\Initial
      *
      * @param string $ip_address IP address to check.
      * @param int $scope Blacklist scope.
-     * @return bool True, if IP address is on blacklist with given scope.
+     * @return bool True if IP address is on blacklist with given scope.
      */
     public function isLocked(string $ip_address, int $scope): bool
     {
@@ -243,7 +243,7 @@ class Manager implements Modules\Countable, Modules\Installable, Modules\Initial
      * @param int $scope
      * @param int $reason
      * @param string $comment [optional]
-     * @return bool True, if IP address has been locked, false otherwise.
+     * @return bool True if IP address has been locked, false otherwise.
      */
     public function lock(string $ip_address, int $duration, int $scope, int $reason, string $comment = ''): bool
     {
@@ -302,7 +302,7 @@ class Manager implements Modules\Countable, Modules\Installable, Modules\Initial
      * Remove record with primary key $id.
      *
      * @param int $id
-     * @return bool True, if record with $id has been removed, false otherwise.
+     * @return bool True if record with $id has been removed, false otherwise.
      */
     public function remove(int $id): bool
     {
@@ -344,7 +344,7 @@ class Manager implements Modules\Countable, Modules\Installable, Modules\Initial
      * @todo Only unlock really active locks.
      *
      * @param int $id
-     * @return bool True, if record with $id has been unlocked, false otherwise.
+     * @return bool True if record with $id has been unlocked, false otherwise.
      */
     public function unlock(int $id): bool
     {
@@ -396,7 +396,7 @@ class Manager implements Modules\Countable, Modules\Installable, Modules\Initial
      * @param string $ip_address IP address to check.
      * @param int $scope
      * @param int $reason
-     * @return int|null Record ID or null, if no record with given $ip_address, $scope and ban $reason exists.
+     * @return int|null Record ID or null if no record with given $ip_address, $scope and ban $reason exists.
      */
     protected function getId(string $ip_address, int $scope, int $reason): ?int
     {

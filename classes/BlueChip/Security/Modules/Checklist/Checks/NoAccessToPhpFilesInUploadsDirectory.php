@@ -43,7 +43,7 @@ class NoAccessToPhpFilesInUploadsDirectory extends Checklist\BasicCheck
 
         $url = \substr($result['url'], 0, -3) . 'php';
 
-        // Check, if access to PHP file is forbidden.
+        // Check if access to PHP file is forbidden.
         $status = Checklist\Helper::isAccessToUrlForbidden($url, $php_file_message);
 
         // Remove temporary PHP file from uploads directory

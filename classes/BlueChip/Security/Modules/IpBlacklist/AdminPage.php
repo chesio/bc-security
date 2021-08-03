@@ -273,14 +273,14 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
         $scope = \filter_input(INPUT_POST, 'scope', FILTER_VALIDATE_INT);
         $comment = \filter_input(INPUT_POST, 'comment', FILTER_SANITIZE_STRING);
 
-        // Check, if input is formally valid.
+        // Check whether input is formally valid.
         if (empty($ip_address) || empty($duration_length) || empty($duration_unit) || empty($scope)) {
             return;
         }
 
         $duration = $duration_length * $duration_unit;
 
-        // Check, if input is semantically valid.
+        // Check whether input is semantically valid.
         if (($duration <= 0) || !\in_array($scope, [LockScope::ADMIN, LockScope::COMMENTS, LockScope::WEBSITE], true)) {
             return;
         }
