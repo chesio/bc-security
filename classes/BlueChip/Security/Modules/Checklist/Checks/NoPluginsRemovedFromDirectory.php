@@ -49,15 +49,17 @@ class NoPluginsRemovedFromDirectory extends Checklist\AdvancedCheck
         $list_of_unknown_plugins = Helpers\Plugin::implodeList($problematic_plugins['unknown_plugins'], 'DirectoryURL');
 
         if (!empty($list_of_removed_plugins)) {
-            $message = \sprintf(
-                esc_html__('Following plugins seem to have been removed from Plugins Directory: %s', 'bc-security'),
-                $list_of_removed_plugins
-            );
+            $message = [
+                \sprintf(
+                    esc_html__('Following plugins seem to have been removed from Plugins Directory: %s', 'bc-security'),
+                    $list_of_removed_plugins
+                ),
+            ];
 
             if (!empty($list_of_unknown_plugins)) {
                 // Also report any plugins that could not be checked, just in case.
-                $message .= '<br>';
-                $message .= \sprintf(
+                $message[] = '';
+                $message[] = \sprintf(
                     esc_html__('Furthermore, following plugins could not be checked: %s', 'bc-security'),
                     $list_of_unknown_plugins
                 );
