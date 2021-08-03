@@ -133,7 +133,9 @@ abstract class Mailman
 
         // Build links index...
         $links_index = \array_map(
-            function (int $index, string $url): string { return \sprintf('[%d] %s', $index + 1, $url); },
+            function (int $index, string $url): string {
+                return \sprintf('[%d] %s', $index + 1, $url);
+            },
             \array_keys($urls),
             \array_values($urls)
         );
