@@ -101,7 +101,7 @@ class PluginsIntegrity extends Checklist\AdvancedCheck
                 $message_parts[] = '';
                 $message_parts[] = \sprintf(
                     esc_html__('Furthermore, checksums for the following plugins could not be fetched: %s', 'bc-security'),
-                    Helpers\Plugin::implodeList($checksums_retrieval_failed, 'ChecksumsURL')
+                    \implode(', ', Helpers\Plugin::populateList($checksums_retrieval_failed, 'ChecksumsURL'))
                 );
             }
             return new Checklist\CheckResult(false, $message_parts);
@@ -110,7 +110,7 @@ class PluginsIntegrity extends Checklist\AdvancedCheck
         if (!empty($checksums_retrieval_failed)) {
             $message = \sprintf(
                 esc_html__('No modified plugins found, but checksums for the following plugins could not be fetched: %s', 'bc-security'),
-                Helpers\Plugin::implodeList($checksums_retrieval_failed, 'ChecksumsURL')
+                \implode(', ', Helpers\Plugin::populateList($checksums_retrieval_failed, 'ChecksumsURL'))
             );
             return new Checklist\CheckResult(null, $message);
         }

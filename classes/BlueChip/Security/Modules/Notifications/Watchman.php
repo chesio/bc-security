@@ -228,7 +228,7 @@ class Watchman implements Modules\Initializable, Modules\Activable
                 $plugin_update_data->new_version
             );
 
-            if (!empty($plugin_changelog_url = Plugin::getChangelogUrl($plugin_file))) {
+            if (!empty($plugin_changelog_url = Plugin::getChangelogUrl($plugin_file, $plugin_data))) {
                 // Append link to changelog, if available.
                 $plugin_message .= ' ' . \sprintf(
                     __('Changelog: %1$s', 'bc-security'),
@@ -352,13 +352,12 @@ class Watchman implements Modules\Initializable, Modules\Activable
     public function watchChecklistSingleCheckAlert(Checklist\Check $check, Checklist\CheckResult $result)
     {
         $subject = __('Checklist monitoring alert', 'bc-security');
-        $message = [
+        $preamble = [
             \sprintf(__('An issue has been found during checklist monitoring of "%s" check:', 'bc-security'), $check->getName()),
             '',
-            $result->getMessageAsPlainText(),
         ];
 
-        $this->notify($subject, $message);
+        $this->notify($subject, \array_merge($preamble, $result->getMessage()));
     }
 
 

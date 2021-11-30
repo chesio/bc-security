@@ -8,7 +8,7 @@ A WordPress plugin that helps keeping WordPress websites secure.
 
 ## Requirements
 
-* [PHP](https://www.php.net/) 7.3 or newer; PHP 8 is not officially supported yet.
+* [PHP](https://www.php.net/) 7.3 or newer
 * [WordPress](https://wordpress.org/) 5.5 or newer
 
 ## Limitations
@@ -47,9 +47,9 @@ cd [your-project]/wp-content/plugins/bc-security
 git pull
 ```
 
-### Using GitHub Updater plugin
+### Using Git Updater plugin
 
-BC Security can be installed and updated via [GitHub Updater](https://github.com/afragen/github-updater) plugin.
+BC Security can be installed and updated via [Git Updater](https://github.com/afragen/git-updater) plugin.
 
 ### Direct download
 
