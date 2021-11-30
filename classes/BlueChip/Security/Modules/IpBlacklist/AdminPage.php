@@ -20,32 +20,32 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
     public const SLUG = 'bc-security-ip-blacklist';
 
     /**
-     * @var Name for blacklist action (used for both nonce action and submit name)
+     * @var string Name for blacklist action (used for both nonce action and submit name)
      */
     private const BLACKLIST_ACTION = 'add-to-ip-blacklist';
 
     /**
-     * @var Name for prune action (used for both nonce action and submit name)
+     * @var string Name for prune action (used for both nonce action and submit name)
      */
     private const PRUNE_ACTION = 'prune-ip-blacklist';
 
     /**
-     * @var Name for cron activation action (used for both nonce action and submit name)
+     * @var string Name for cron activation action (used for both nonce action and submit name)
      */
     private const CRON_ACTION_ON = 'auto-ip-blacklist-pruning-on';
 
     /**
-     * @var Name for cron deactivation action (used for both nonce action and submit name)
+     * @var string Name for cron deactivation action (used for both nonce action and submit name)
      */
     private const CRON_ACTION_OFF = 'auto-ip-blacklist-pruning-off';
 
     /**
-     * @var Name for query argument that prefills IP address in the form
+     * @var string Name for query argument that prefills IP address in the form
      */
     public const DEFAULT_IP_ADDRESS = 'default-ip-address';
 
     /**
-     * @var Name for query argument that prefills lock scope in the form
+     * @var string Name for query argument that prefills lock scope in the form
      */
     public const DEFAULT_SCOPE = 'default-scope';
 
