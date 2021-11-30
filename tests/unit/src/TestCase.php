@@ -9,7 +9,7 @@ class TestCase extends \PHPUnit\Framework\TestCase
     // See: https://github.com/Brain-WP/BrainMonkey/issues/39
     use \Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
         Monkey\setUp();
@@ -33,7 +33,7 @@ class TestCase extends \PHPUnit\Framework\TestCase
         );
     }
 
-    protected function tearDown()
+    protected function tearDown(): void
     {
         Monkey\tearDown();
         parent::tearDown();

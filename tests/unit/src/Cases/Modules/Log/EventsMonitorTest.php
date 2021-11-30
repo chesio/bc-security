@@ -13,7 +13,7 @@ class EventsMonitorTest extends \BlueChip\Security\Tests\Unit\TestCase
     private $monitor;
 
 
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 

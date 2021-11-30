@@ -6,7 +6,7 @@ use BlueChip\Security\Setup\IpAddress;
 
 class IpAddressTest extends \BlueChip\Security\Tests\Unit\TestCase
 {
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -17,7 +17,7 @@ class IpAddressTest extends \BlueChip\Security\Tests\Unit\TestCase
     }
 
 
-    protected function tearDown()
+    protected function tearDown(): void
     {
         unset($_SERVER[IpAddress::REMOTE_ADDR]);
         unset($_SERVER[IpAddress::HTTP_X_FORWARDED_FOR]);
