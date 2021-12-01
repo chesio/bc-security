@@ -3,16 +3,24 @@ name: CI test suite
 on:
   pull_request:
     paths:
+      - '.github/workflows/**'
       - 'composer.*'
       - phpcs.xml
       - phpstan.neon
       - '**.php'
   push:
     paths:
+      - '.github/workflows/**'
       - 'composer.*'
       - phpcs.xml
       - phpstan.neon
       - '**.php'
+
+# Cancels all previous workflow runs for the same branch that have not yet completed.
+concurrency:
+  # The concurrency group contains the workflow name and the branch name.
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build:
@@ -35,7 +43,7 @@ jobs:
       run: composer validate
 
     - name: Install dependencies
-      run: composer install --prefer-dist --no-progress --no-suggest --classmap-authoritative
+      uses: ramsey/composer-install@v1
 
     - name: Run CI test suite
       run: composer run-script ci
