@@ -115,7 +115,7 @@ abstract class Settings implements \ArrayAccess
      * @param string $offset
      * @param mixed $value
      */
-    public function offsetSet($offset, $value)
+    public function offsetSet($offset, $value): void
     {
         $this->update($offset, $value);
     }
@@ -128,7 +128,7 @@ abstract class Settings implements \ArrayAccess
      *
      * @param string $offset
      */
-    public function offsetUnset($offset)
+    public function offsetUnset($offset): void
     {
         $this->update($offset, null);
     }
