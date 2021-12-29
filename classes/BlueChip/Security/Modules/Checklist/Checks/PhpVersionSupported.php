@@ -10,7 +10,6 @@ class PhpVersionSupported extends Checklist\BasicCheck
      * @var array List of supported PHP versions and their end-of-life dates
      */
     private const SUPPORTED_VERSIONS = [
-        '7.3' => '2021-12-06',
         '7.4' => '2022-11-28',
         '8.0' => '2023-11-26',
         '8.1' => '2024-11-25',
