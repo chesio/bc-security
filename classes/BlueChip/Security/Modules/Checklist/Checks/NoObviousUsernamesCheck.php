@@ -11,9 +11,9 @@ class NoObviousUsernamesCheck extends Checklist\BasicCheck
         parent::__construct(
             __('No obvious usernames exist', 'bc-security'),
             \sprintf(
-                /* translators: 1: link to Codex page on WordPress hardening */
+                /* translators: 1: link to article on WordPress hardening */
                 esc_html__('Usernames like "admin" and "administrator" are often used in brute force attacks and %1$s.', 'bc-security'),
-                '<a href="' . esc_url(__('https://codex.wordpress.org/Hardening_WordPress#Security_through_obscurity', 'bc-security')) . '" rel="noreferrer">' . esc_html__('should be avoided', 'bc-security') . '</a>'
+                '<a href="' . esc_url(__('https://wordpress.org/support/article/hardening-wordpress/#security-through-obscurity', 'bc-security')) . '" rel="noreferrer">' . esc_html__('should be avoided', 'bc-security') . '</a>'
             )
         );
     }
