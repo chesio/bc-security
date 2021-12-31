@@ -4,8 +4,9 @@ namespace BlueChip\Security\Tests\Integration\Cases\Helpers;
 
 use BlueChip\Security\Helpers\Hooks;
 use BlueChip\Security\Helpers\Is;
+use BlueChip\Security\Tests\Integration\TestCase;
 
-class IsTest extends \BlueChip\Security\Tests\Integration\TestCase
+class IsTest extends TestCase
 {
     /**
      * Test Is::admin() method and `bc-security/filter:is-admin` filter.

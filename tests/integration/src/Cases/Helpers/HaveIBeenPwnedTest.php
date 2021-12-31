@@ -4,8 +4,9 @@ namespace BlueChip\Security\Tests\Unit\Cases\Helpers;
 
 use BlueChip\Security\Helpers\HaveIBeenPwned;
 use BlueChip\Security\Tests\Integration\Constants;
+use BlueChip\Security\Tests\Integration\TestCase;
 
-class HaveIBeenPwnedTest extends \BlueChip\Security\Tests\Integration\TestCase
+class HaveIBeenPwnedTest extends TestCase
 {
     /**
      * Test integration with Pwned Passwords API.

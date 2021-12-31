@@ -2,6 +2,9 @@
 
 namespace BlueChip\Security\Tests\Integration;
 
-class TestCase extends \WP_UnitTestCase
+/**
+ * Base class for all integration tests
+ */
+abstract class TestCase extends \WP_UnitTestCase
 {
 }

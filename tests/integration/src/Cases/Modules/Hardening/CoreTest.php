@@ -4,11 +4,13 @@ namespace BlueChip\Security\Tests\Integration\Cases\Modules\Hardening;
 
 use BlueChip\Security\Modules\Hardening;
 use BlueChip\Security\Tests\Integration\Constants;
+use BlueChip\Security\Tests\Integration\TestCase;
 
-class CoreTest extends \BlueChip\Security\Tests\Integration\TestCase
+class CoreTest extends TestCase
 {
     /**
      * Initialize the hardening with either active or non active state..
+     *
      * @param bool $active
      */
     protected function initHardening(bool $active)
@@ -22,6 +24,7 @@ class CoreTest extends \BlueChip\Security\Tests\Integration\TestCase
 
     /**
      * Set up $_POST data necessary to test via \edit_user() function.
+     *
      * @param bool $pwned Whether to set weak password (true) or strong password (false).
      */
     protected function setUpUserPostData(bool $pwned = false)
