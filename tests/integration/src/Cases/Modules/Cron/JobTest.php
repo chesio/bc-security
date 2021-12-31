@@ -22,7 +22,7 @@ class JobTest extends \BlueChip\Security\Tests\Integration\TestCase
 
         // ...test...
         $this->assertTrue($job->isScheduled());
-        $this->assertInternalType('int', wp_next_scheduled(self::HOOK));
+        $this->assertIsInt(wp_next_scheduled(self::HOOK));
 
         // ...and forward the job.
         return $job;

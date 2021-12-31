@@ -43,7 +43,7 @@ class Bootstrap
             $_SERVER['SERVER_NAME'] = 'bc-security.test';
         }
 
-        // Load test function so tests_add_filter() is available.
+        // Give access to tests_add_filter() function.
         require_once $this->wp_tests_dir . '/includes/functions.php';
 
         tests_add_filter('muplugins_loaded', function () {
