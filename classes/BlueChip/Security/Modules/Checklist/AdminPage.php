@@ -2,6 +2,7 @@
 
 namespace BlueChip\Security\Modules\Checklist;
 
+use BlueChip\Security\Core\AssetsManager;
 use BlueChip\Security\Helpers\AjaxHelper;
 use BlueChip\Security\Helpers\FormHelper;
 use BlueChip\Security\Modules\Hardening;
@@ -32,7 +33,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
      * @param \BlueChip\Security\Modules\Checklist\AutorunSettings $settings
      * @param \BlueChip\Security\Core\AssetsManager $assets_manager
      */
-    public function __construct(Manager $checklist_manager, AutorunSettings $settings, \BlueChip\Security\Core\AssetsManager $assets_manager)
+    public function __construct(Manager $checklist_manager, AutorunSettings $settings, AssetsManager $assets_manager)
     {
         $this->page_title = _x('Security Checklist', 'Dashboard page title', 'bc-security');
         $this->menu_title = _x('Checklist', 'Dashboard menu item name', 'bc-security');

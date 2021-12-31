@@ -13,7 +13,7 @@ class Plugin
     private $modules;
 
     /**
-     * @var \BlueChip\Security\Core\Settings[] Plugin setting objects
+     * @var array Plugin setting objects
      */
     private $settings;
 

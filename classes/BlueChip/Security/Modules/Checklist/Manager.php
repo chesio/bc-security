@@ -106,22 +106,25 @@ class Manager implements Modules\Initializable
 
 
     /**
+     * @param string $id
+     * @return \BlueChip\Security\Modules\Checklist\Check|null
+     */
+    public function getCheck(string $id): ?Check
+    {
+        return $this->checks[$id] ?? null;
+    }
+
+
+    /**
      * Return list of all implemented checks, optionally filtered.
      *
-     * @param array $filters [optional] Extra conditions to filter the list by: class (string), meaningful (boolean),
+     * @param array $filters [optional] Extra conditions to filter the list by: meaningful (boolean),
      *   monitored (boolean), status (null|boolean).
      * @return \BlueChip\Security\Modules\Checklist\Check[]
      */
     public function getChecks(array $filters = []): array
     {
         $checks = $this->checks;
-
-        if (isset($filters['class'])) {
-            $class = $filters['class'];
-            $checks = \array_filter($checks, function (Check $check) use ($class): bool {
-                return $check instanceof $class;
-            });
-        }
 
         if (isset($filters['meaningful'])) {
             $is_meaningful = $filters['meaningful'];
@@ -155,11 +158,14 @@ class Manager implements Modules\Initializable
      */
     public function getAdvancedChecks(bool $only_meaningful = true): array
     {
-        $filters = ['class' => AdvancedCheck::class];
+        $filters = [];
         if ($only_meaningful) {
             $filters['meaningful'] = true;
         }
-        return $this->getChecks($filters);
+
+        return \array_filter($this->getChecks($filters), function (Check $check): bool {
+            return $check instanceof AdvancedCheck;
+        });
     }
 
 
@@ -169,11 +175,14 @@ class Manager implements Modules\Initializable
      */
     public function getBasicChecks(bool $only_meaningful = true): array
     {
-        $filters = ['class' => BasicCheck::class];
+        $filters = [];
         if ($only_meaningful) {
             $filters['meaningful'] = true;
         }
-        return $this->getChecks($filters);
+
+        return \array_filter($this->getChecks($filters), function (Check $check): bool {
+            return $check instanceof BasicCheck;
+        });
     }
 
 
@@ -204,7 +213,7 @@ class Manager implements Modules\Initializable
             }
         }
 
-        if (!empty($issues)) {
+        if ($issues !== []) {
             // Trigger an action to report found issues.
             do_action(Hooks::BASIC_CHECKS_ALERT, $issues);
         }
@@ -224,8 +233,7 @@ class Manager implements Modules\Initializable
             ]);
         }
 
-        $checks = $this->getChecks();
-        if (empty($check = $checks[$check_id])) {
+        if (($check = $this->getCheck($check_id)) === null) {
             wp_send_json_error([
                 'message' => \sprintf(__('Unknown check ID: %s', 'bc-security'), $check_id),
             ]);

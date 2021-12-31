@@ -80,11 +80,11 @@ class Admin
 
         // Add (main) menu page
         add_menu_page(
-            '', // obsolete as soon as page has subpages
+            '', // Page title is obsolete as soon as page has subpages.
             _x('BC Security', 'Dashboard menu item name', 'bc-security'),
             self::CAPABILITY,
             $main_page->getSlug(),
-            '', // obsolete as soon as page has subpages
+            '__return_empty_string', // Page content is obsolete as soon as page has subpages. Passing an empty string would prevent the callback being registered at all, but it breaks static analysis - see: https://core.trac.wordpress.org/ticket/52539
             self::ICON
         );
 
