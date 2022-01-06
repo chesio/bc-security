@@ -12,7 +12,7 @@ class IsTest extends \BlueChip\Security\Tests\Unit\TestCase
     /**
      * Ensure that `bc-security/filter:is-admin` fires when Is::admin() method is invoked.
      */
-    public function testIsAdminHookFires()
+    public function testIsAdminHookFires(): void
     {
         Functions\when('user_can')->justReturn(true);
 
@@ -26,7 +26,7 @@ class IsTest extends \BlueChip\Security\Tests\Unit\TestCase
      * Ensure that `bc-security/filter:is-admin` filters return value of Is::admin() and
      * passes \WP_User instance as its second argument.
      */
-    public function testIsAdminFilter()
+    public function testIsAdminFilter(): void
     {
         $user = \Mockery::mock(\WP_User::class);
 

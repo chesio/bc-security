@@ -32,7 +32,7 @@ class PluginTest extends \BlueChip\Security\Tests\Unit\TestCase
      *
      * @dataProvider provideWordPressOrgUriData
      */
-    public function testHasWordPressOrgUpdateUri(bool $value, string $plugin_basename, array $plugin_data)
+    public function testHasWordPressOrgUpdateUri(bool $value, string $plugin_basename, array $plugin_data): void
     {
         $this->assertSame($value, Plugin::hasWordPressOrgUpdateUri($plugin_basename, $plugin_data));
     }

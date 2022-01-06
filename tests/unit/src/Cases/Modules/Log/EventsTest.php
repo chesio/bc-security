@@ -9,7 +9,7 @@ class EventsTest extends \BlueChip\Security\Tests\Unit\TestCase
     /**
      * Ensure that every event type (class) has the necessary constants: ID and LEVEL.
      */
-    public function testConstants()
+    public function testConstants(): void
     {
         $event_classes = Log\EventsManager::getMapping();
 
@@ -25,7 +25,7 @@ class EventsTest extends \BlueChip\Security\Tests\Unit\TestCase
     /**
      * Ensure that only PSR-4 compliant log levels are reported by events.
      */
-    public function testLogLevels()
+    public function testLogLevels(): void
     {
         $reflection = new \ReflectionClass(\Psr\Log\LogLevel::class);
         $log_levels = $reflection->getConstants();
@@ -40,7 +40,7 @@ class EventsTest extends \BlueChip\Security\Tests\Unit\TestCase
     /**
      * Ensure that event log message references only available context data.
      */
-    public function testLogMessages()
+    public function testLogMessages(): void
     {
         $event_instances = Log\EventsManager::getInstances();
         foreach ($event_instances as $event) {
@@ -65,7 +65,7 @@ class EventsTest extends \BlueChip\Security\Tests\Unit\TestCase
     /**
      * Ensure that there are no context items without label.
      */
-    public function testContextLabels()
+    public function testContextLabels(): void
     {
         $event_instances = Log\EventsManager::getInstances();
         foreach ($event_instances as $event) {
