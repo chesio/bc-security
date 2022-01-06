@@ -49,9 +49,10 @@ abstract class Mailman
     {
         $boilerplate_intro = [
             \sprintf(
-                __('This email was sent from your website "%1$s" by BC Security plugin on %2$s at %3$s.'),
+                __('This email was sent from your website "%1$s" (%2$s) by BC Security plugin on %3$s at %4$s.'),
                 // Blog name must be decoded, see: https://github.com/chesio/bc-security/issues/86
                 wp_specialchars_decode(get_option('blogname'), ENT_QUOTES),
+                get_home_url(),
                 wp_date(get_option('date_format')),
                 wp_date(get_option('time_format'))
             ),
