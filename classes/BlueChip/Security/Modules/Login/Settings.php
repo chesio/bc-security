@@ -22,9 +22,6 @@ class Settings extends \BlueChip\Security\Core\Settings
     /** int: Reset failed attempts after this many days [3] */
     public const RESET_TIMEOUT = 'reset_timeout';
 
-    /** bool: Also limit malformed/forged cookies? [Yes] */
-    public const CHECK_COOKIES = 'check_cookies';
-
     /** array: List of usernames that trigger long lockout immediately when used to log in [empty] */
     public const USERNAME_BLACKLIST = 'username_blacklist';
 
@@ -41,7 +38,6 @@ class Settings extends \BlueChip\Security\Core\Settings
         self::LONG_LOCKOUT_AFTER => 20,
         self::LONG_LOCKOUT_DURATION => 24,
         self::RESET_TIMEOUT => 3,
-        self::CHECK_COOKIES => true,
         self::USERNAME_BLACKLIST => [],
         self::GENERIC_LOGIN_ERROR_MESSAGE => false,
     ];

@@ -50,9 +50,7 @@ class Gatekeeper implements \BlueChip\Security\Modules\Initializable, \BlueChip\
      */
     public function load()
     {
-        if ($this->settings[Settings::CHECK_COOKIES]) {
-            add_action('plugins_loaded', [$this, 'removeAuthCookieIfIpIsLocked'], 5, 0);
-        }
+        add_action('plugins_loaded', [$this, 'removeAuthCookieIfIpIsLocked'], 5, 0);
     }
 
 
@@ -72,10 +70,9 @@ class Gatekeeper implements \BlueChip\Security\Modules\Initializable, \BlueChip\
 
         add_action('wp_login_failed', [$this, 'handleFailedLogin'], 100, 1);
 
-        if ($this->settings[Settings::CHECK_COOKIES]) {
-            add_action('auth_cookie_bad_username', [$this, 'handleBadCookie'], 10, 1);
-            add_action('auth_cookie_bad_hash', [$this, 'handleBadCookie'], 10, 1);
-        }
+        // Check authentication cookies:
+        add_action('auth_cookie_bad_username', [$this, 'handleBadCookie'], 10, 1);
+        add_action('auth_cookie_bad_hash', [$this, 'handleBadCookie'], 10, 1);
     }
 
 
@@ -214,21 +211,15 @@ class Gatekeeper implements \BlueChip\Security\Modules\Initializable, \BlueChip\
     //// Private and protected methods
 
     /**
-     * Clear all WordPress authentication cookies (also for current session).
+     * Clear all WordPress authentication cookies (also for current request).
      */
     protected function clearAuthCookie()
     {
         wp_clear_auth_cookie();
 
-        if (!empty($_COOKIE[AUTH_COOKIE])) {
-            $_COOKIE[AUTH_COOKIE] = '';
-        }
-        if (!empty($_COOKIE[SECURE_AUTH_COOKIE])) {
-            $_COOKIE[SECURE_AUTH_COOKIE] = '';
-        }
-        if (!empty($_COOKIE[LOGGED_IN_COOKIE])) {
-            $_COOKIE[LOGGED_IN_COOKIE] = '';
-        }
+        unset($_COOKIE[AUTH_COOKIE]);
+        unset($_COOKIE[SECURE_AUTH_COOKIE]);
+        unset($_COOKIE[LOGGED_IN_COOKIE]);
     }
 
 

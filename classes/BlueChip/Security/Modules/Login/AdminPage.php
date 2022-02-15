@@ -117,17 +117,6 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
             [ 'append' => __('Enter one username per line.', 'bc-security'), ]
         );
 
-        // Section: Authentication cookies
-        $this->addSettingsSection(
-            'auth-cookies',
-            _x('Auth cookies', 'Settings section title', 'bc-security')
-        );
-        $this->addSettingsField(
-            Settings::CHECK_COOKIES,
-            __('Check auth cookies', 'bc-security'),
-            [FormHelper::class, 'printCheckbox']
-        );
-
         // Section: Display generic error message on failed login
         $this->addSettingsSection(
             'generic-error-message',
