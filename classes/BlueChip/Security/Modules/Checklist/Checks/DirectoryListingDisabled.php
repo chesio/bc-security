@@ -22,7 +22,7 @@ class DirectoryListingDisabled extends Checklist\BasicCheck
     protected function runInternal(): Checklist\CheckResult
     {
         $upload_paths = wp_upload_dir();
-        if (!isset($upload_paths['baseurl'])) {
+        if ($upload_paths['error'] !== false) {
             return new Checklist\CheckResult(null, esc_html__('BC Security has failed to determine whether directory listing is disabled.', 'bc-security'));
         }
 
