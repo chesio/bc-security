@@ -6,6 +6,7 @@ abstract class FormHelper
 {
     /**
      * @link https://developer.mozilla.org/en-US/docs/Web/HTML/Element/textarea
+     *
      * @var int Default value of "cols" attribute of <textarea> element.
      */
     private const TEXTAREA_COLS_DEFAULT_VALUE = 20;
@@ -183,6 +184,7 @@ abstract class FormHelper
      * @see esc_attr()
      *
      * @param array $properties
+     *
      * @return string
      */
     protected static function renderFieldProperties(array $properties): string

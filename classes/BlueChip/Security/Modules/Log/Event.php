@@ -89,6 +89,7 @@ abstract class Event
      * property PHPDoc comment.
      *
      * @param \ReflectionProperty $property
+     *
      * @return string
      */
     private static function getPropertyLabel(\ReflectionProperty $property): string

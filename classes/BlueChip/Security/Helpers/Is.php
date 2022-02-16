@@ -11,6 +11,7 @@ class Is
      * Return true if current user is an admin.
      *
      * @param \WP_User $user
+     *
      * @return bool
      */
     public static function admin(\WP_User $user): bool
@@ -49,6 +50,7 @@ class Is
      * Return true if current request is of given $type.
      *
      * @param string $type One of: admin, ajax, cron, frontend or wp-cli.
+     *
      * @return bool True if current request is of given $type, false otherwise.
      */
     public static function request(string $type): bool

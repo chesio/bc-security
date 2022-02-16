@@ -78,6 +78,7 @@ class ListTable extends \BlueChip\Security\Core\ListTable
      * Return content for first column (IP address) including row actions.
      *
      * @param array $item
+     *
      * @return string
      */
     public function column_ip_address(array $item): string // phpcs:ignore
@@ -90,6 +91,7 @@ class ListTable extends \BlueChip\Security\Core\ListTable
      * Return content for "ban time" column.
      *
      * @param array $item
+     *
      * @return string
      */
     public function column_ban_time(array $item): string // phpcs:ignore
@@ -102,6 +104,7 @@ class ListTable extends \BlueChip\Security\Core\ListTable
      * Return content for "release time" column.
      *
      * @param array $item
+     *
      * @return string
      */
     public function column_release_time(array $item): string // phpcs:ignore
@@ -114,6 +117,7 @@ class ListTable extends \BlueChip\Security\Core\ListTable
      * Return human readable value for ban reason table column.
      *
      * @param array $item
+     *
      * @return string
      */
     public function column_reason(array $item): string // phpcs:ignore
@@ -304,6 +308,7 @@ class ListTable extends \BlueChip\Security\Core\ListTable
      * Translate integer code for ban reason into something human can read.
      *
      * @param int $banReason
+     *
      * @return string
      */
     private function explainBanReason(int $banReason): string

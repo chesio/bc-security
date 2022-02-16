@@ -28,6 +28,7 @@ class Admin
      * Initialize admin area of the plugin.
      *
      * @param string $plugin_filename
+     *
      * @return self
      */
     public function init(string $plugin_filename): self
@@ -43,6 +44,7 @@ class Admin
      * Add a page to plugin dashboard menu.
      *
      * @param \BlueChip\Security\Core\Admin\AbstractPage $page
+     *
      * @return self
      */
     public function addPage(Core\Admin\AbstractPage $page): self
@@ -111,6 +113,7 @@ class Admin
      * @filter https://developer.wordpress.org/reference/hooks/plugin_action_links_plugin_file/
      *
      * @param string[] $links
+     *
      * @return string[]
      */
     public function filterActionLinks(array $links): array
@@ -130,6 +133,7 @@ class Admin
      * Format counter indicator for menu title for given $page.
      *
      * @param \BlueChip\Security\Core\Admin\AbstractPage $page
+     *
      * @return string
      */
     private function renderCounter(Core\Admin\AbstractPage $page): string

@@ -82,6 +82,7 @@ class Resolver implements Modules\Activable, Modules\Initializable
      * Get hostname for remote IP address in blocking way.
      *
      * @param string $ip_address Remote IP address to resolve.
+     *
      * @return string Remote hostname on success, IP address if hostname could not be resolved, empty string on failure.
      */
     public function resolveHostnameInForeground(string $ip_address): string

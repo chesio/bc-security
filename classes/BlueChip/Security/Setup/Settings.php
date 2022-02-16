@@ -39,6 +39,7 @@ class Settings extends \BlueChip\Security\Core\Settings
      *
      * @param string $value
      * @param string $default
+     *
      * @return string
      */
     public static function sanitizeConnectionType(string $value, string $default): string

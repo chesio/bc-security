@@ -78,6 +78,7 @@ class Bookkeeper implements \BlueChip\Security\Modules\Installable
      *
      * @param string $ip_address
      * @param string $username
+     *
      * @return int Number of non-expired failed login attempts for $ip_address.
      */
     public function recordFailedLoginAttempt(string $ip_address, string $username): int

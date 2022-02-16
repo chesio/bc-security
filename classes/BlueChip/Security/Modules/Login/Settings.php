@@ -7,25 +7,39 @@ namespace BlueChip\Security\Modules\Login;
  */
 class Settings extends \BlueChip\Security\Core\Settings
 {
-    /** @var string Lock out for a short time after every N tries [int:5] */
+    /**
+     * @var string Lock out for a short time after every N tries [int:5]
+     */
     public const SHORT_LOCKOUT_AFTER = 'short_lockout_after';
 
-    /** @var string Lock out for a short time for this many minutes [int:10] */
+    /**
+     * @var string Lock out for a short time for this many minutes [int:10]
+     */
     public const SHORT_LOCKOUT_DURATION = 'short_lockout_duration';
 
-    /** @var string Lock out for a long time after every N tries [int:20] */
+    /**
+     * @var string Lock out for a long time after every N tries [int:20]
+     */
     public const LONG_LOCKOUT_AFTER = 'long_lockout_after';
 
-    /** @var string Lock out for a long time for this many hours [int:24] */
+    /**
+     * @var string Lock out for a long time for this many hours [int:24]
+     */
     public const LONG_LOCKOUT_DURATION = 'long_lockout_duration';
 
-    /** @var string Reset failed attempts after this many days [int:3] */
+    /**
+     * @var string Reset failed attempts after this many days [int:3]
+     */
     public const RESET_TIMEOUT = 'reset_timeout';
 
-    /** @var string List of usernames that trigger long lockout immediately when used to log in [array:empty] */
+    /**
+     * @var string List of usernames that trigger long lockout immediately when used to log in [array:empty]
+     */
     public const USERNAME_BLACKLIST = 'username_blacklist';
 
-    /** @var string Display generic login error message? [bool:no] */
+    /**
+     * @var string Display generic login error message? [bool:no]
+     */
     public const GENERIC_LOGIN_ERROR_MESSAGE = 'display_generic_error_message';
 
 
@@ -54,6 +68,7 @@ class Settings extends \BlueChip\Security\Core\Settings
      * Sanitize "username blacklist" setting. Must be list of valid usernames.
      *
      * @param string|string[] $value
+     *
      * @return string[]
      */
     public static function sanitizeUsernameBlacklist($value): array

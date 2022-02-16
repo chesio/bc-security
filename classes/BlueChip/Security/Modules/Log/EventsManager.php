@@ -7,7 +7,9 @@ namespace BlueChip\Security\Modules\Log;
  */
 abstract class EventsManager
 {
-    /** @var array */
+    /**
+     * @var array
+     */
     private static $mapping = [
         Events\AuthBadCookie::ID => Events\AuthBadCookie::class,
         Events\LoginFailure::ID => Events\LoginFailure::class,
@@ -21,6 +23,7 @@ abstract class EventsManager
      * Create event object for given $id.
      *
      * @param string $event_id Valid event ID.
+     *
      * @return \BlueChip\Security\Modules\Log\Event|null
      */
     public static function create(string $event_id): ?Event

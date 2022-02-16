@@ -104,6 +104,7 @@ abstract class ListTable extends \WP_List_Table
      * @param int $id
      * @param string $class
      * @param string $label
+     *
      * @return string
      */
     protected function renderRowAction(string $action, int $id, string $class, string $label): string
@@ -127,6 +128,7 @@ abstract class ListTable extends \WP_List_Table
      * Return content for "checkbox" column.
      *
      * @param array $item
+     *
      * @return string
      */
     public function column_cb($item) // phpcs:ignore
@@ -140,6 +142,7 @@ abstract class ListTable extends \WP_List_Table
      *
      * @param array $item
      * @param string $column_name
+     *
      * @return string
      */
     public function column_default($item, $column_name) // phpcs:ignore
@@ -152,6 +155,7 @@ abstract class ListTable extends \WP_List_Table
      * Display datetime database fields in local time.
      *
      * @param string $datetime Datetime string retrieved from database.
+     *
      * @return string Date and time of $datetime formatted in local time.
      */
     public function formatDateAndTime(string $datetime): string

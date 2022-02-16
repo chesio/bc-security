@@ -123,6 +123,7 @@ class PluginsIntegrity extends Checklist\AdvancedCheck
      * Get md5 checksums of plugin files from downloads.wordpress.org.
      *
      * @param string $url
+     *
      * @return object|null
      */
     private static function getChecksums(string $url): ?object

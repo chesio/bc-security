@@ -46,6 +46,7 @@ abstract class Plugin
 
     /**
      * @param string $plugin_basename
+     *
      * @return string Presumable URL of the plugin in WordPress.org Plugins Directory.
      */
     public static function getDirectoryUrl(string $plugin_basename): string
@@ -57,6 +58,7 @@ abstract class Plugin
     /**
      * @param string $plugin_basename
      * @param array $plugin_data
+     *
      * @return string Presumable URL of the plugin checksums file at WordPress.org.
      */
     public static function getChecksumsUrl(string $plugin_basename, array $plugin_data): string
@@ -69,6 +71,7 @@ abstract class Plugin
      * Get slug (ie. bc-security) for plugin with given basename (ie. bc-security/bc-security.php).
      *
      * @param string $plugin_basename
+     *
      * @return string Plugin slug or empty string if plugin does not seem to be installed in its own directory.
      */
     public static function getSlug(string $plugin_basename): string
@@ -83,6 +86,7 @@ abstract class Plugin
 
     /**
      * @param string $plugin_basename
+     *
      * @return bool True if there is readme.txt file present in plugin directory, false otherwise.
      */
     public static function hasReadmeTxt(string $plugin_basename): bool
@@ -96,6 +100,7 @@ abstract class Plugin
      *
      * @param string $plugin_basename
      * @param array $plugin_data
+     *
      * @return bool
      */
     public static function hasWordPressOrgUpdateUri(string $plugin_basename, array $plugin_data): bool
@@ -129,6 +134,7 @@ abstract class Plugin
 
     /**
      * @param string $plugin_basename
+     *
      * @return bool True if directory of given plugin seems to be under version control (Subversion or Git).
      */
     public static function isVersionControlled(string $plugin_basename): bool
@@ -172,7 +178,9 @@ abstract class Plugin
 
     /**
      * @internal Only use in admin (back-end) context.
+     *
      * @param string $plugin_basename
+     *
      * @return array
      */
     public static function getPluginData(string $plugin_basename): array
@@ -188,6 +196,7 @@ abstract class Plugin
      * @see get_plugins()
      *
      * @param string $plugin_basename Basename of plugin installed in its own directory.
+     *
      * @return string Absolute path to directory where plugin is installed.
      */
     public static function getPluginDirPath(string $plugin_basename): string
@@ -206,6 +215,7 @@ abstract class Plugin
      * @param array $plugins List of plugin data items
      * @param string $link_to [optional] Wrap plugin name in a link to URL stored under given key.
      * @param string $extend_by [optional] Append text stored under given key to plugin name.
+     *
      * @return array
      */
     public static function populateList(array $plugins, string $link_to = '', string $extend_by = ''): array

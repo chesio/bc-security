@@ -113,6 +113,7 @@ class Manager implements Modules\Countable, Modules\Installable, Modules\Initial
      * @internal Implements \BlueChip\Security\Modules\Countable interface.
      *
      * @param int $scope
+     *
      * @return int
      */
     public function countAll(int $scope = LockScope::ANY): int
@@ -133,6 +134,7 @@ class Manager implements Modules\Countable, Modules\Installable, Modules\Initial
      * @internal Implements \BlueChip\Security\Modules\Countable interface.
      *
      * @param int $timestamp
+     *
      * @return int
      */
     public function countFrom(int $timestamp): int
@@ -154,6 +156,7 @@ class Manager implements Modules\Countable, Modules\Installable, Modules\Initial
      * @param int $limit
      * @param string $order_by
      * @param string $order
+     *
      * @return array
      */
     public function fetch(int $scope = LockScope::ANY, int $from = 0, int $limit = 20, string $order_by = '', string $order = ''): array
@@ -191,6 +194,7 @@ class Manager implements Modules\Countable, Modules\Installable, Modules\Initial
      * Fetch all items on blacklist (optionally with given $scope).
      *
      * @param int $scope Blacklist scope [optional].
+     *
      * @return array
      */
     public function fetchAll(int $scope = LockScope::ANY): array
@@ -215,6 +219,7 @@ class Manager implements Modules\Countable, Modules\Installable, Modules\Initial
      *
      * @param string $ip_address IP address to check.
      * @param int $scope Blacklist scope.
+     *
      * @return bool True if IP address is on blacklist with given scope.
      */
     public function isLocked(string $ip_address, int $scope): bool
@@ -243,6 +248,7 @@ class Manager implements Modules\Countable, Modules\Installable, Modules\Initial
      * @param int $scope
      * @param int $reason
      * @param string $comment [optional]
+     *
      * @return bool True if IP address has been locked, false otherwise.
      */
     public function lock(string $ip_address, int $duration, int $scope, int $reason, string $comment = ''): bool
@@ -302,6 +308,7 @@ class Manager implements Modules\Countable, Modules\Installable, Modules\Initial
      * Remove record with primary key $id.
      *
      * @param int $id
+     *
      * @return bool True if record with $id has been removed, false otherwise.
      */
     public function remove(int $id): bool
@@ -317,6 +324,7 @@ class Manager implements Modules\Countable, Modules\Installable, Modules\Initial
      * Remove records with given primary keys.
      *
      * @param array $ids
+     *
      * @return int Number of deleted records.
      */
     public function removeMany(array $ids): int
@@ -344,6 +352,7 @@ class Manager implements Modules\Countable, Modules\Installable, Modules\Initial
      * @todo Only unlock really active locks.
      *
      * @param int $id
+     *
      * @return bool True if record with $id has been unlocked, false otherwise.
      */
     public function unlock(int $id): bool
@@ -367,6 +376,7 @@ class Manager implements Modules\Countable, Modules\Installable, Modules\Initial
      * @todo Only unlock really active locks.
      *
      * @param array $ids
+     *
      * @return int Number of unlocked records.
      */
     public function unlockMany(array $ids): int
@@ -396,6 +406,7 @@ class Manager implements Modules\Countable, Modules\Installable, Modules\Initial
      * @param string $ip_address IP address to check.
      * @param int $scope
      * @param int $reason
+     *
      * @return int|null Record ID or null if no record with given $ip_address, $scope and ban $reason exists.
      */
     protected function getId(string $ip_address, int $scope, int $reason): ?int

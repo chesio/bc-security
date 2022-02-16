@@ -76,6 +76,7 @@ class Plugin
      * @param string $remote_address
      * @param string $server_address
      * @param array $settings
+     *
      * @return array
      */
     private static function constructModules(\wpdb $wpdb, string $remote_address, string $server_address, array $settings): array

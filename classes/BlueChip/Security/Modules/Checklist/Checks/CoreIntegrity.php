@@ -87,6 +87,7 @@ class CoreIntegrity extends Checklist\AdvancedCheck
      * Get md5 checksums of core WordPress files from WordPress.org API.
      *
      * @param string $url
+     *
      * @return object|null
      */
     private static function getChecksums(string $url): ?object
@@ -112,6 +113,7 @@ class CoreIntegrity extends Checklist\AdvancedCheck
      * @hook \BlueChip\Security\Modules\Checklist\Hooks::IGNORED_CORE_MODIFIED_FILES
      *
      * @param object $checksums
+     *
      * @return array
      */
     private static function findModifiedFiles(object $checksums): array
@@ -145,6 +147,7 @@ class CoreIntegrity extends Checklist\AdvancedCheck
      * @hook \BlueChip\Security\Modules\Checklist\Hooks::IGNORED_CORE_UNKNOWN_FILES
      *
      * @param object $checksums
+     *
      * @return array
      */
     private static function findUnknownFiles(object $checksums): array

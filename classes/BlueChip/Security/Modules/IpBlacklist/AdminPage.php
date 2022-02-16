@@ -357,6 +357,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
      *
      * @param int $seconds
      * @param array $units_in_seconds
+     *
      * @return array
      */
     private function transformSecondsIntoFittingUnit(int $seconds, array $units_in_seconds): array

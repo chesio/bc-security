@@ -90,6 +90,7 @@ class Core implements \BlueChip\Security\Modules\Initializable
      * @filter https://developer.wordpress.org/reference/hooks/xmlrpc_methods/
      *
      * @param array $methods
+     *
      * @return array
      */
     public function disablePingbacks(array $methods): array
@@ -105,6 +106,7 @@ class Core implements \BlueChip\Security\Modules\Initializable
      * @filter https://developer.wordpress.org/reference/hooks/oembed_response_data/
      *
      * @param array $data
+     *
      * @return array
      */
     public function filterAuthorInOembed(array $data): array
@@ -125,6 +127,7 @@ class Core implements \BlueChip\Security\Modules\Initializable
      * @param \WP_HTTP_Response|\WP_Error $response
      * @param array $handler
      * @param \WP_REST_Request $request
+     *
      * @return \WP_HTTP_Response|\WP_Error
      */
     public function filterJsonAPIAuthor($response, array $handler, \WP_REST_Request $request)
@@ -172,6 +175,7 @@ class Core implements \BlueChip\Security\Modules\Initializable
      * @filter https://developer.wordpress.org/reference/hooks/rest_post_dispatch/
      *
      * @param \WP_HTTP_Response $response
+     *
      * @return \WP_HTTP_Response
      */
     public function adjustJsonAPIHeaders(\WP_HTTP_Response $response): \WP_HTTP_Response
@@ -188,6 +192,7 @@ class Core implements \BlueChip\Security\Modules\Initializable
      * @filter https://developer.wordpress.org/reference/hooks/request/
      *
      * @param array $query_vars
+     *
      * @return array
      */
     public function filterAuthorQuery(array $query_vars): array
@@ -207,6 +212,7 @@ class Core implements \BlueChip\Security\Modules\Initializable
      * @link https://hackertarget.com/wordpress-user-enumeration/
      *
      * @param array $query_vars
+     *
      * @return bool True if `author` key is present and its value is either an array or can be seen as numeric.
      */
     protected static function smellsLikeAuthorScan(array $query_vars): bool

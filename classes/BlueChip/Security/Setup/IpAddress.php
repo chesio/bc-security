@@ -42,6 +42,7 @@ abstract class IpAddress
      * Get remote address according to provided $type (with fallback to REMOTE_ADDR).
      *
      * @param string $type
+     *
      * @return string Remote IP or empty string if remote IP could not been determined.
      */
     public static function get(string $type): string
@@ -74,6 +75,7 @@ abstract class IpAddress
      * Get raw $_SERVER value for connection $type.
      *
      * @param string $type
+     *
      * @return string
      */
     public static function getRaw(string $type): string
@@ -97,6 +99,7 @@ abstract class IpAddress
      * Get the first from possibly multiple $ip_addresses.
      *
      * @param string $ip_addresses
+     *
      * @return string
      */
     private static function getFirst(string $ip_addresses): string

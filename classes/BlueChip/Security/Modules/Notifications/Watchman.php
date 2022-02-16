@@ -66,6 +66,7 @@ class Watchman implements Modules\Initializable, Modules\Activable
      * Format remote IP address - append result of reverse DNS lookup if successful.
      *
      * @param string $remote_address
+     *
      * @return string
      */
     private static function formatRemoteAddress(string $remote_address): string
@@ -387,6 +388,7 @@ class Watchman implements Modules\Initializable, Modules\Activable
      *
      * @param string $subject
      * @param string|string[] $message
+     *
      * @return bool|null Null if there are no recipients configured. True if email has been sent, false otherwise.
      */
     private function notify(string $subject, $message): ?bool

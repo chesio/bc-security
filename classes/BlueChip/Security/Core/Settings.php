@@ -48,6 +48,7 @@ abstract class Settings implements \ArrayAccess
      * Get value of setting under key $name.
      *
      * @param string $name
+     *
      * @return mixed A null value is returned if $name is not a valid key.
      */
     public function __get(string $name)
@@ -85,6 +86,7 @@ abstract class Settings implements \ArrayAccess
      * @internal Implements ArrayAccess interface.
      *
      * @param string $offset
+     *
      * @return bool
      */
     public function offsetExists($offset): bool
@@ -99,6 +101,7 @@ abstract class Settings implements \ArrayAccess
      * @internal Implements ArrayAccess interface.
      *
      * @param string $offset
+     *
      * @return mixed A null value is returned if $offset is not a valid key.
      */
     public function offsetGet($offset)
@@ -160,6 +163,7 @@ abstract class Settings implements \ArrayAccess
      * Set $data as option data.
      *
      * @param array $data
+     *
      * @return bool
      */
     public function set(array $data): bool
@@ -215,6 +219,7 @@ abstract class Settings implements \ArrayAccess
      *
      * @param array $settings Input data to sanitize.
      * @param array $defaults [optional] If provided, used as default values for sanitization instead of local data.
+     *
      * @return array
      */
     public function sanitize(array $settings, array $defaults = []): array
@@ -244,6 +249,7 @@ abstract class Settings implements \ArrayAccess
      *
      * @param mixed $value
      * @param mixed $default
+     *
      * @return mixed
      */
     protected static function sanitizeByType($value, $default)
@@ -266,6 +272,7 @@ abstract class Settings implements \ArrayAccess
      * Parse a list of items separated by EOL character into array. Trim any empty lines (items).
      *
      * @param string|string[] $list
+     *
      * @return string[]
      */
     protected static function parseList($list): array
@@ -279,6 +286,7 @@ abstract class Settings implements \ArrayAccess
      *
      * @param string $name
      * @param mixed $value
+     *
      * @return bool
      */
     protected function update(string $name, $value): bool
@@ -325,6 +333,7 @@ abstract class Settings implements \ArrayAccess
 
     /**
      * @action https://developer.wordpress.org/reference/hooks/update_option_option/
+     *
      * @param array $old_value
      * @param array $new_value
      */
