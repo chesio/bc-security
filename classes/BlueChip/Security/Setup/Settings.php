@@ -43,6 +43,6 @@ class Settings extends \BlueChip\Security\Core\Settings
      */
     public static function sanitizeConnectionType(string $value, string $default): string
     {
-        return \in_array($value, IpAddress::enlist(), true) ? $value : $default;
+        return \array_key_exists($value, IpAddress::enlist()) ? $value : $default;
     }
 }

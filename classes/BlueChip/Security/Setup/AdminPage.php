@@ -126,14 +126,12 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
 
     public function printSiteConnectionHint(): void
     {
-        $list = IpAddress::enlist(true);
-
         echo '<p>';
         echo esc_html__('Your server provides following information about remote addresses:', 'bc-security');
         echo '</p>';
 
         echo '<ol>';
-        foreach ($list as $type => $explanation) {
+        foreach (IpAddress::enlist() as $type => $explanation) {
             if (($ip_address = IpAddress::getRaw($type))) {
                 echo '<li>' . \sprintf('%s: <code>$_SERVER[<strong>%s</strong>] = <em>%s</em></code>', esc_html($explanation), $type, $ip_address) . '</li>';
             }
@@ -149,9 +147,8 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
      */
     private function getConnectionOptions(): array
     {
-        $list = IpAddress::enlist(true);
         $options = [];
-        foreach ($list as $type => $explanation) {
+        foreach (IpAddress::enlist() as $type => $explanation) {
             $options[$type] = \sprintf('%s: %s', $type, $explanation);
         }
         return $options;
