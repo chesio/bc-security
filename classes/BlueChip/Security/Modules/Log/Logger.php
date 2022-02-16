@@ -275,6 +275,7 @@ class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\
      */
     public function countFrom(int $timestamp): int
     {
+        /** @var string $query */
         $query = $this->wpdb->prepare(
             "SELECT COUNT(id) AS total FROM {$this->log_table} WHERE date_and_time > %s",
             MySQLDateTime::formatDateTime($timestamp)
@@ -333,11 +334,12 @@ class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\
      */
     public function getKnownIps(): array
     {
-        $result = $this->wpdb->get_results(
-            $this->wpdb->prepare("SELECT DISTINCT(ip_address) FROM {$this->log_table} WHERE event = %s", Events\LoginSuccessful::ID)
-        );
+        /** @var string $query */
+        $query = $this->wpdb->prepare("SELECT DISTINCT(ip_address) FROM {$this->log_table} WHERE event = %s", Events\LoginSuccessful::ID);
 
-        return \is_array($result) ? wp_list_pluck($result, 'ip_address') : [];
+        $result = $this->wpdb->get_results($query, ARRAY_A);
+
+        return \is_array($result) ? \array_column($result, 'ip_address') : [];
     }
 
 
@@ -362,6 +364,7 @@ class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\
         $max_age = $this->settings->getMaxAge();
 
         // Note: $wpdb->delete cannot be used as it does not support "<=" comparison)
+        /** @var string $query */
         $query = $this->wpdb->prepare(
             "DELETE FROM {$this->log_table} WHERE date_and_time <= %s",
             MySQLDateTime::formatDateTime(\time() - $max_age)
@@ -386,12 +389,14 @@ class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\
         }
 
         // Find the biggest ID from all records that should be pruned.
+        /** @var string $query_id */
         $query_id = $this->wpdb->prepare("SELECT id FROM {$this->log_table} ORDER BY id DESC LIMIT %d, 1", $max_size);
         if (empty($id = (int) $this->wpdb->get_var($query_id))) {
             return false;
         }
 
         // Note: $wpdb->delete cannot be used as it does not support "<=" comparison)
+        /** @var string $query */
         $query = $this->wpdb->prepare("DELETE FROM {$this->log_table} WHERE id <= %d", $id);
         // Execute query and return true/false status.
         return $this->wpdb->query($query) !== false;

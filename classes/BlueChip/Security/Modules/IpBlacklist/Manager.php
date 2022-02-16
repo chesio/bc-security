@@ -139,6 +139,7 @@ class Manager implements Modules\Countable, Modules\Installable, Modules\Initial
      */
     public function countFrom(int $timestamp): int
     {
+        /** @var string $query */
         $query = $this->wpdb->prepare(
             "SELECT COUNT(id) AS total FROM {$this->blacklist_table} WHERE ban_time > %s",
             MySQLDateTime::formatDateTime($timestamp)
@@ -226,6 +227,7 @@ class Manager implements Modules\Countable, Modules\Installable, Modules\Initial
     {
         // Prepare query. Because of different ban reasons, multiple records may
         // match the where condition, so pick up the most future release time.
+        /** @var string $query */
         $query = $this->wpdb->prepare(
             "SELECT MAX(release_time) FROM {$this->blacklist_table} WHERE scope = %d AND ip_address = %s",
             $scope,
@@ -293,6 +295,7 @@ class Manager implements Modules\Countable, Modules\Installable, Modules\Initial
     {
         // Prepare query
         // Note: $wpdb->delete cannot be used as it does not support "<=" comparison)
+        /** @var string $query */
         $query = $this->wpdb->prepare(
             "DELETE FROM {$this->blacklist_table} WHERE release_time <= %s",
             MySQLDateTime::formatDateTime(\time())
@@ -412,6 +415,7 @@ class Manager implements Modules\Countable, Modules\Installable, Modules\Initial
     protected function getId(string $ip_address, int $scope, int $reason): ?int
     {
         // Prepare query.
+        /** @var string $query */
         $query = $this->wpdb->prepare(
             "SELECT id FROM {$this->blacklist_table} WHERE scope = %d AND ip_address = %s AND reason = %d",
             $scope,

@@ -156,11 +156,12 @@ abstract class ListTable extends \WP_List_Table
      *
      * @param string $datetime Datetime string retrieved from database.
      *
-     * @return string Date and time of $datetime formatted in local time.
+     * @return string Date and time of $datetime formatted in local time. Empty string if $datetime could not be parsed.
      */
     public function formatDateAndTime(string $datetime): string
     {
-        return wp_date(self::DATETIME_FORMAT, MySQLDateTime::parseTimestamp($datetime));
+        $timestamp = MySQLDateTime::parseTimestamp($datetime);
+        return ($timestamp !== null) ? (wp_date(self::DATETIME_FORMAT, $timestamp) ?: '') : '';
     }
 
 

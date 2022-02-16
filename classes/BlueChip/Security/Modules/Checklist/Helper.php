@@ -15,13 +15,13 @@ abstract class Helper
             return '--';
         } else {
             $format = \sprintf('%s %s', get_option('date_format'), get_option('time_format'));
-            return wp_date($format, $timestamp);
+            return wp_date($format, $timestamp) ?: '';
         }
     }
 
 
     /**
-     * @param array $list
+     * @param string[] $list
      *
      * @return string
      */
@@ -80,7 +80,7 @@ abstract class Helper
      * @param object $checksums Dictionary with { filename: checksum } items. All filenames must be relative to $path.
      * @param array $ignored_files List of filenames to ignore [optional].
      *
-     * @return array
+     * @return string[]
      */
     public static function checkDirectoryForModifiedFiles(string $path, object $checksums, array $ignored_files = []): array
     {
@@ -122,7 +122,7 @@ abstract class Helper
      * @param object $checksums Dictionary with { filename: checksum } items. All filenames must be relative to $path.
      * @param bool $recursive Scan subdirectories too [optional].
      *
-     * @return array
+     * @return string[]
      */
     public static function scanDirectoryForUnknownFiles(string $directory, string $path, object $checksums, bool $recursive = false): array
     {

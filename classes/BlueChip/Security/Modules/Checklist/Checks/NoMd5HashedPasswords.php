@@ -39,17 +39,18 @@ class NoMd5HashedPasswords extends Checklist\BasicCheck
     protected function runInternal(): Checklist\CheckResult
     {
         // Get all users with old hash prefix
-        $result = $this->wpdb->get_results(\sprintf(
-            "SELECT `user_login` FROM {$this->wpdb->users} WHERE `user_pass` LIKE '%s%%';",
-            self::WP_OLD_HASH_PREFIX
-        ));
+        /** @var array|null $result */
+        $result = $this->wpdb->get_results(
+            \sprintf("SELECT `user_login` FROM {$this->wpdb->users} WHERE `user_pass` LIKE '%s%%';", self::WP_OLD_HASH_PREFIX),
+            ARRAY_A
+        );
 
         if ($result === null) {
             return new Checklist\CheckResult(null, esc_html__('BC Security has failed to determine whether there are any users with password hashed with default MD5-based algorithm.', 'bc-security'));
         } else {
-            return empty($result)
+            return ($result === [])
                 ? new Checklist\CheckResult(true, esc_html__('No users have password hashed with default MD5-based algorithm.', 'bc-security'))
-                : new Checklist\CheckResult(false, esc_html__('The following users have their password hashed with default MD5-based algorithm:', 'bc-security') . ' <em>' . \implode(', ', wp_list_pluck($result, 'user_login')) . '</em>')
+                : new Checklist\CheckResult(false, esc_html__('The following users have their password hashed with default MD5-based algorithm:', 'bc-security') . ' <em>' . \implode(', ', \array_column($result, 'user_login')) . '</em>')
             ;
         }
     }

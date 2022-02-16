@@ -216,7 +216,7 @@ abstract class Plugin
      * @param string $link_to [optional] Wrap plugin name in a link to URL stored under given key.
      * @param string $extend_by [optional] Append text stored under given key to plugin name.
      *
-     * @return array
+     * @return string[]
      */
     public static function populateList(array $plugins, string $link_to = '', string $extend_by = ''): array
     {
@@ -236,7 +236,7 @@ abstract class Plugin
 
                 return $plugin_link . $plugin_info;
             },
-            $plugins
+            \array_values($plugins) // = convert associative keys to numeric indices
         );
     }
 }

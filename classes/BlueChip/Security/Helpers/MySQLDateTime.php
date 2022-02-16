@@ -31,10 +31,11 @@ abstract class MySQLDateTime
      *
      * @param string $datetime
      *
-     * @return int
+     * @return int|null Timestamp for given $datetime string or null if $datetime cannot be parsed.
      */
-    public static function parseTimestamp(string $datetime): int
+    public static function parseTimestamp(string $datetime): ?int
     {
-        return \date_create_from_format(self::FORMAT, $datetime)->getTimestamp();
+        $datetime_from_format = \date_create_from_format(self::FORMAT, $datetime);
+        return $datetime_from_format ? $datetime_from_format->getTimestamp() : null;
     }
 }

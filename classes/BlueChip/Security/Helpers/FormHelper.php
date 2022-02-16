@@ -202,9 +202,9 @@ abstract class FormHelper
         );
         // Map keys and values together as key=value
         $mapped = \array_map(
-            function ($key, $value) {
+            function (string $key, $value) {
                 // Boolean values are replaced with key name: checked => true ---> checked="checked"
-                return \sprintf('%s="%s"', $key, esc_attr(\is_bool($value) ? $key : $value));
+                return \sprintf('%s="%s"', $key, esc_attr(\is_bool($value) ? $key : (string) $value));
             },
             \array_keys($filtered),
             \array_values($filtered)

@@ -97,6 +97,7 @@ class Bookkeeper implements \BlueChip\Security\Modules\Installable
         $this->wpdb->insert($this->failed_logins_table, $data, ['%s', '%s', '%s', '%d']);
 
         // Get count of all unexpired failed login attempts for given IP address.
+        /** @var string $query */
         $query = $this->wpdb->prepare(
             "SELECT COUNT(*) AS retries_count FROM {$this->failed_logins_table} WHERE ip_address = %s AND date_and_time > %s",
             $ip_address,
@@ -118,6 +119,7 @@ class Bookkeeper implements \BlueChip\Security\Modules\Installable
         $threshold = \time() - $this->settings->getResetTimeoutDuration();
         // Prepare query.
         // Note: $wpdb->delete cannot be used as it does not support "<" comparison)
+        /** @var string $query */
         $query = $this->wpdb->prepare(
             "DELETE FROM {$this->failed_logins_table} WHERE date_and_time <= %s",
             MySQLDateTime::formatDateTime($threshold)

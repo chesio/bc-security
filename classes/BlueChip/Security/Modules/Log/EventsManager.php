@@ -47,7 +47,7 @@ abstract class EventsManager
     /**
      * Return list of event instances indexed by their IDs.
      *
-     * @return \BlueChip\Security\Modules\Log\Event[]
+     * @return array
      */
     public static function getInstances(): array
     {

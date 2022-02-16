@@ -54,7 +54,7 @@ class PluginsIntegrity extends Checklist\AdvancedCheck
             $plugin_data['ChecksumsURL'] = $checksums_url;
 
             // Get checksums.
-            if (empty($checksums = $this->getChecksums($checksums_url))) {
+            if (($checksums = $this->getChecksums($checksums_url)) === null) {
                 $checksums_retrieval_failed[$plugin_basename] = $plugin_data;
                 continue;
             }
@@ -68,7 +68,7 @@ class PluginsIntegrity extends Checklist\AdvancedCheck
             $unknown_files = Checklist\Helper::scanDirectoryForUnknownFiles($plugin_dir, $plugin_dir, $checksums, true);
 
             // Trigger alert if any suspicious files have been found.
-            if (!empty($modified_files) || !empty($unknown_files)) {
+            if (($modified_files !== []) || ($unknown_files !== [])) {
                 $checksums_verification_failed[$plugin_basename] = \array_merge(
                     $plugin_data,
                     [
@@ -80,7 +80,7 @@ class PluginsIntegrity extends Checklist\AdvancedCheck
         }
 
         // Format check results into human-readable output.
-        if (!empty($checksums_verification_failed)) {
+        if ($checksums_verification_failed !== []) {
             $message_parts = [
                 esc_html__('The following plugins seem to have been altered in some way.', 'bc-security'),
             ];
@@ -88,15 +88,15 @@ class PluginsIntegrity extends Checklist\AdvancedCheck
             foreach ($checksums_verification_failed as $plugin_basename => $plugin_data) {
                 $message_parts[] = '';
                 $message_parts[] = \sprintf('<strong>%s</strong> <code>%s</code>', esc_html($plugin_data['Name']), $plugin_basename);
-                if (!empty($plugin_data['ModifiedFiles'])) {
+                if ($plugin_data['ModifiedFiles'] !== '') {
                     $message_parts[] = \sprintf(esc_html__('Modified files: %s', 'bc-security'), $plugin_data['ModifiedFiles']);
                 }
-                if (!empty($plugin_data['UnknownFiles'])) {
+                if ($plugin_data['UnknownFiles'] !== '') {
                     $message_parts[] = \sprintf(esc_html__('Unknown files: %s', 'bc-security'), $plugin_data['UnknownFiles']);
                 }
             }
 
-            if (!empty($checksums_retrieval_failed)) {
+            if ($checksums_retrieval_failed !== []) {
                 // Also report any plugins that could not be checked, just in case.
                 $message_parts[] = '';
                 $message_parts[] = \sprintf(
@@ -107,7 +107,7 @@ class PluginsIntegrity extends Checklist\AdvancedCheck
             return new Checklist\CheckResult(false, $message_parts);
         }
 
-        if (!empty($checksums_retrieval_failed)) {
+        if ($checksums_retrieval_failed !== []) {
             $message = \sprintf(
                 esc_html__('No modified plugins found, but checksums for the following plugins could not be fetched: %s', 'bc-security'),
                 \implode(', ', Helpers\Plugin::populateList($checksums_retrieval_failed, 'ChecksumsURL'))
