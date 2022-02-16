@@ -7,10 +7,10 @@ namespace BlueChip\Security\Modules\Log;
  */
 class Settings extends \BlueChip\Security\Core\Settings
 {
-    /** int: Maximum size of log table in thousands of records [20] */
+    /** @var string Maximum size of log table in thousands of records [int:20] */
     public const LOG_MAX_SIZE = 'log_max_size';
 
-    /** int: Maximum age of log record in days [365] */
+    /** @var string Maximum age of log record in days [int:365] */
     public const LOG_MAX_AGE = 'log_max_age';
 
 

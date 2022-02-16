@@ -7,10 +7,14 @@ namespace BlueChip\Security\Setup;
  */
 class Settings extends \BlueChip\Security\Core\Settings
 {
-    /** string: What is server connection type? [REMOTE_ADDR] */
+    /**
+     * @var string What is server connection type? [string:REMOTE_ADDR]
+     */
     public const CONNECTION_TYPE = 'connection-type';
 
-    /** string: Google API key (for Safe Browsing check) */
+    /**
+     * @var string Google API key (for Safe Browsing check) [string]
+     */
     public const GOOGLE_API_KEY = 'google-api-key';
 
 

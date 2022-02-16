@@ -7,6 +7,7 @@ namespace BlueChip\Security\Modules\Log;
  */
 abstract class EventsManager
 {
+    /** @var array */
     private static $mapping = [
         Events\AuthBadCookie::ID => Events\AuthBadCookie::class,
         Events\LoginFailure::ID => Events\LoginFailure::class,

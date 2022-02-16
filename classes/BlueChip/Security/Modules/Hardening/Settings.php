@@ -5,32 +5,32 @@ namespace BlueChip\Security\Modules\Hardening;
 class Settings extends \BlueChip\Security\Core\Settings
 {
     /**
-     * bool: Disable pingbacks? [No]
+     * @var string Disable pingbacks? [bool:no]
      */
     public const DISABLE_PINGBACKS = 'disable_pingbacks';
 
     /**
-     * bool: Disable XML RPC methods that require authentication? [No]
+     * @var string Disable XML RPC methods that require authentication? [bool:no]
      */
     public const DISABLE_XML_RPC = 'disable_xml_rpc';
 
     /**
-     * bool: Disable application passwords feature? [No]
+     * @var string Disable application passwords feature? [bool:no]
      */
     public const DISABLE_APPLICATION_PASSWORDS = 'disable_application_passwords';
 
     /**
-     * bool: Disable users listings via REST API `/wp/v2/users` endpoint and author scan via author=N query? [No]
+     * @var string Disable users listings via REST API `/wp/v2/users` endpoint and author scan via author=N query? [bool:no]
      */
     public const DISABLE_USERNAMES_DISCOVERY = 'disable_usernames_discovery';
 
     /**
-     * bool: Check existing passwords against Pwned Passwords database? [No]
+     * @var string Check existing passwords against Pwned Passwords database? [bool:no]
      */
     public const CHECK_PASSWORDS = 'check_passwords';
 
     /**
-     * bool: Validate new/updated passwords against Pwned Passwords database? [No]
+     * @var string Validate new/updated passwords against Pwned Passwords database? [bool:no]
      */
     public const VALIDATE_PASSWORDS = 'validate_passwords';
 
