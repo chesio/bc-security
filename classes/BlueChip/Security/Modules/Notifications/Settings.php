@@ -60,8 +60,8 @@ class Settings extends \BlueChip\Security\Core\Settings
     /**
      * Sanitize "notification recipients" setting. Must be list of emails.
      *
-     * @param array|string $value
-     * @return array
+     * @param string|string[] $value
+     * @return string[]
      */
     public static function sanitizeNotificationRecipient($value): array
     {

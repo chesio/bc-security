@@ -97,7 +97,7 @@ class SafeBrowsingClient
 
 
     /**
-     * @param array $urls List of URLs to look up.
+     * @param string[] $urls List of URLs to look up.
      * @return array|null List of matches (empty means no matches found) or null on error.
      */
     public function lookup(array $urls): ?array
@@ -159,7 +159,7 @@ class SafeBrowsingClient
     /**
      * @link https://developers.google.com/safe-browsing/v4/lookup-api#http-post-request
      *
-     * @param array $urls List of URLs to check
+     * @param string[] $urls List of URLs to check
      * @return array Safe Browsing request data
      */
     private static function getRequestBody(array $urls): array

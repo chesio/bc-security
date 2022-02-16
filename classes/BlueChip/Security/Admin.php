@@ -110,8 +110,8 @@ class Admin
      *
      * @filter https://developer.wordpress.org/reference/hooks/plugin_action_links_plugin_file/
      *
-     * @param array $links
-     * @return array
+     * @param string[] $links
+     * @return string[]
      */
     public function filterActionLinks(array $links): array
     {

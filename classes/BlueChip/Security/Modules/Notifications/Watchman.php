@@ -28,7 +28,7 @@ class Watchman implements Modules\Initializable, Modules\Activable
     private $logger;
 
     /**
-     * @var array List of notifications recipients
+     * @var string[] List of notifications recipients
      */
     private $recipients;
 
@@ -386,7 +386,7 @@ class Watchman implements Modules\Initializable, Modules\Activable
      * Send email notification with given $subject and $message to recipients configured in plugin settings.
      *
      * @param string $subject
-     * @param array|string $message
+     * @param string|string[] $message
      * @return bool|null Null if there are no recipients configured. True if email has been sent, false otherwise.
      */
     private function notify(string $subject, $message): ?bool

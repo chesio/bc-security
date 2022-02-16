@@ -265,8 +265,8 @@ abstract class Settings implements \ArrayAccess
     /**
      * Parse a list of items separated by EOL character into array. Trim any empty lines (items).
      *
-     * @param array|string $list
-     * @return array
+     * @param string|string[] $list
+     * @return string[]
      */
     protected static function parseList($list): array
     {
