@@ -114,7 +114,7 @@ class Plugin
      * Load the plugin by hooking into WordPress actions and filters.
      * Method should be invoked immediately on plugin load.
      */
-    public function load()
+    public function load(): void
     {
         // Load all modules that require immediate loading.
         foreach ($this->modules as $module) {
@@ -134,7 +134,7 @@ class Plugin
      *
      * @action https://developer.wordpress.org/reference/hooks/init/
      */
-    public function init()
+    public function init(): void
     {
         // Initialize all modules that require initialization.
         foreach ($this->modules as $module) {
@@ -187,7 +187,7 @@ class Plugin
      *
      * @link https://developer.wordpress.org/plugins/the-basics/activation-deactivation-hooks/
      */
-    public function activate()
+    public function activate(): void
     {
         // Explicitly persist every setting object, so related option is autoloaded.
         foreach ($this->settings as $settings) {
@@ -216,7 +216,7 @@ class Plugin
      *
      * @link https://developer.wordpress.org/plugins/the-basics/activation-deactivation-hooks/
      */
-    public function deactivate()
+    public function deactivate(): void
     {
         // Deactivate every module that requires it.
         foreach ($this->modules as $module) {
@@ -233,7 +233,7 @@ class Plugin
      *
      * @link https://developer.wordpress.org/plugins/the-basics/uninstall-methods/
      */
-    public function uninstall()
+    public function uninstall(): void
     {
         // Remove plugin settings.
         foreach ($this->settings as $settings) {

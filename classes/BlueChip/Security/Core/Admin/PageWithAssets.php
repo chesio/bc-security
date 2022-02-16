@@ -15,7 +15,7 @@ trait PageWithAssets
     /**
      * @param \BlueChip\Security\Core\AssetsManager $assets_manager
      */
-    protected function useAssetsManager(AssetsManager $assets_manager)
+    protected function useAssetsManager(AssetsManager $assets_manager): void
     {
         $this->assets_manager = $assets_manager;
     }
@@ -24,7 +24,7 @@ trait PageWithAssets
     /**
      * @param array $assets JS assets to enqueue in [ handle => filename ] format.
      */
-    protected function enqueueJsAssets(array $assets)
+    protected function enqueueJsAssets(array $assets): void
     {
         add_action('admin_enqueue_scripts', function () use ($assets) {
             foreach ($assets as $handle => $filename) {
@@ -43,7 +43,7 @@ trait PageWithAssets
     /**
      * @param array $assets CSS assets to enqueue in [ handle => filename ] format.
      */
-    protected function enqueueCssAssets(array $assets)
+    protected function enqueueCssAssets(array $assets): void
     {
         add_action('admin_enqueue_scripts', function () use ($assets) {
             foreach ($assets as $handle => $filename) {

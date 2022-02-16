@@ -48,7 +48,7 @@ class Gatekeeper implements \BlueChip\Security\Modules\Initializable, \BlueChip\
     /**
      * Check if IP is locked early on, but allow other plugins to interfere.
      */
-    public function load()
+    public function load(): void
     {
         add_action('plugins_loaded', [$this, 'removeAuthCookieIfIpIsLocked'], 5, 0);
     }
@@ -57,7 +57,7 @@ class Gatekeeper implements \BlueChip\Security\Modules\Initializable, \BlueChip\
     /**
      * Initialize login hardening.
      */
-    public function init()
+    public function init(): void
     {
         add_filter('illegal_user_logins', [$this, 'filterIllegalUserLogins'], 10, 1);
 
@@ -111,7 +111,7 @@ class Gatekeeper implements \BlueChip\Security\Modules\Initializable, \BlueChip\
      *
      * @param array $cookie_elements
      */
-    public function handleBadCookie(array $cookie_elements)
+    public function handleBadCookie(array $cookie_elements): void
     {
         // Clear authentication cookies completely
         $this->clearAuthCookie();
@@ -128,7 +128,7 @@ class Gatekeeper implements \BlueChip\Security\Modules\Initializable, \BlueChip\
      *
      * @param string $username
      */
-    public function handleFailedLogin(string $username)
+    public function handleFailedLogin(string $username): void
     {
         // If currently locked-out, bail (should not happen, but better safe than sorry)
         if ($this->bl_manager->isLocked($this->remote_address, IpBlacklist\LockScope::ADMIN)) {
@@ -200,7 +200,7 @@ class Gatekeeper implements \BlueChip\Security\Modules\Initializable, \BlueChip\
      * Remove all WordPress authentication cookies if IP is on black list.
      * Method should be called as early as possible.
      */
-    public function removeAuthCookieIfIpIsLocked()
+    public function removeAuthCookieIfIpIsLocked(): void
     {
         if ($this->bl_manager->isLocked($this->remote_address, IpBlacklist\LockScope::ADMIN)) {
             $this->clearAuthCookie();
@@ -213,7 +213,7 @@ class Gatekeeper implements \BlueChip\Security\Modules\Initializable, \BlueChip\
     /**
      * Clear all WordPress authentication cookies (also for current request).
      */
-    protected function clearAuthCookie()
+    protected function clearAuthCookie(): void
     {
         wp_clear_auth_cookie();
 
@@ -232,7 +232,7 @@ class Gatekeeper implements \BlueChip\Security\Modules\Initializable, \BlueChip\
      * @param int $duration Duration (in secs) of lockout
      * @param int $reason Lockout reason
      */
-    protected function lockOut(string $username, int $duration, int $reason)
+    protected function lockOut(string $username, int $duration, int $reason): void
     {
         // Trigger lockout action
         do_action(Hooks::LOCKOUT_EVENT, $this->remote_address, $username, $duration, $reason);

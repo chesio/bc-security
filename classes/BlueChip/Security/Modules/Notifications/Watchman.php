@@ -82,7 +82,7 @@ class Watchman implements Modules\Initializable, Modules\Activable
     /**
      * Initialize notification according to settings.
      */
-    public function init()
+    public function init(): void
     {
         // Bail early if no recipients are set or we are explicitly ordered to not disturb.
         if (empty($this->recipients) || self::isMuted()) {
@@ -111,7 +111,7 @@ class Watchman implements Modules\Initializable, Modules\Activable
     }
 
 
-    public function activate()
+    public function activate(): void
     {
         // Do nothing.
     }
@@ -120,7 +120,7 @@ class Watchman implements Modules\Initializable, Modules\Activable
     /**
      * Send notification that plugin has been deactivated.
      */
-    public function deactivate()
+    public function deactivate(): void
     {
         // Bail early if no recipients are set.
         if (empty($this->recipients)) {
@@ -156,7 +156,7 @@ class Watchman implements Modules\Initializable, Modules\Activable
      *
      * @param object $update_transient
      */
-    public function watchCoreUpdateAvailable($update_transient)
+    public function watchCoreUpdateAvailable($update_transient): void
     {
         // Check if update transient has the data we are interested in.
         if (!isset($update_transient->updates) || !\is_array($update_transient->updates) || empty($update_transient->updates)) {
@@ -200,7 +200,7 @@ class Watchman implements Modules\Initializable, Modules\Activable
      *
      * @param object $update_transient
      */
-    public function watchPluginUpdatesAvailable($update_transient)
+    public function watchPluginUpdatesAvailable($update_transient): void
     {
         // Check if update transient has the data we are interested in.
         if (!isset($update_transient->response) || !\is_array($update_transient->response)) {
@@ -257,7 +257,7 @@ class Watchman implements Modules\Initializable, Modules\Activable
      *
      * @param object $update_transient
      */
-    public function watchThemeUpdatesAvailable($update_transient)
+    public function watchThemeUpdatesAvailable($update_transient): void
     {
         // Check if update transient has the data we are interested in.
         if (!isset($update_transient->response) || !\is_array($update_transient->response)) {
@@ -306,7 +306,7 @@ class Watchman implements Modules\Initializable, Modules\Activable
      * @param string $username
      * @param int $duration
      */
-    public function watchLockoutEvents(string $remote_address, string $username, int $duration)
+    public function watchLockoutEvents(string $remote_address, string $username, int $duration): void
     {
         if (\in_array($remote_address, $this->logger->getKnownIps(), true)) {
             $subject = __('Known IP locked out', 'bc-security');
@@ -328,7 +328,7 @@ class Watchman implements Modules\Initializable, Modules\Activable
      * @param string $username
      * @param \WP_User $user
      */
-    public function watchWpLogin(string $username, \WP_User $user)
+    public function watchWpLogin(string $username, \WP_User $user): void
     {
         if (Is::admin($user)) {
             $subject = __('Admin user login', 'bc-security');
@@ -349,7 +349,7 @@ class Watchman implements Modules\Initializable, Modules\Activable
      * @param \BlueChip\Security\Modules\Checklist\Check $check
      * @param \BlueChip\Security\Modules\Checklist\CheckResult $result
      */
-    public function watchChecklistSingleCheckAlert(Checklist\Check $check, Checklist\CheckResult $result)
+    public function watchChecklistSingleCheckAlert(Checklist\Check $check, Checklist\CheckResult $result): void
     {
         $subject = __('Checklist monitoring alert', 'bc-security');
         $preamble = [
@@ -366,7 +366,7 @@ class Watchman implements Modules\Initializable, Modules\Activable
      *
      * @param array $issues Issues which triggered the alert (issue is an array with 'check' and 'result' keys).
      */
-    public function watchChecklistMultipleChecksAlert(array $issues)
+    public function watchChecklistMultipleChecksAlert(array $issues): void
     {
         $subject = __('Checklist monitoring alert', 'bc-security');
         $message = [

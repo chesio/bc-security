@@ -46,7 +46,7 @@ class Bookkeeper implements \BlueChip\Security\Modules\Installable
     /**
      * @link https://codex.wordpress.org/Creating_Tables_with_Plugins#Creating_or_Updating_the_Table
      */
-    public function install()
+    public function install(): void
     {
         // To have dbDelta()
         require_once ABSPATH . 'wp-admin/includes/upgrade.php';
@@ -67,7 +67,7 @@ class Bookkeeper implements \BlueChip\Security\Modules\Installable
     }
 
 
-    public function uninstall()
+    public function uninstall(): void
     {
         $this->wpdb->query(\sprintf('DROP TABLE IF EXISTS %s', $this->failed_logins_table));
     }

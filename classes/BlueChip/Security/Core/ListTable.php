@@ -80,7 +80,7 @@ abstract class ListTable extends \WP_List_Table
      * @param string $single The text to be used in notice if action affected single item.
      * @param string $plural The text to be used in notice if action affected multiple items.
      */
-    protected function displayNotice(string $action, string $single, string $plural)
+    protected function displayNotice(string $action, string $single, string $plural): void
     {
         // Have any items been affected by given action?
         $result = \filter_input(INPUT_GET, $action, FILTER_VALIDATE_INT);
@@ -162,6 +162,8 @@ abstract class ListTable extends \WP_List_Table
 
     /**
      * Output "no items" message.
+     *
+     * @return void
      */
     public function no_items() // phpcs:ignore
     {

@@ -125,7 +125,7 @@ class ListTable extends \BlueChip\Security\Core\ListTable
     /**
      * Display (dismissible) admin notices informing user that an action has been performed successfully.
      */
-    public function displayNotices()
+    public function displayNotices(): void
     {
         $this->displayNotice(
             self::NOTICE_RECORD_REMOVED,
@@ -231,6 +231,8 @@ class ListTable extends \BlueChip\Security\Core\ListTable
 
     /**
      * Prepare items for table.
+     *
+     * @return void
      */
     public function prepare_items() // phpcs:ignore
     {
@@ -253,7 +255,7 @@ class ListTable extends \BlueChip\Security\Core\ListTable
      *
      * @return void
      */
-    public function processActions()
+    public function processActions(): void
     {
         // Remove or unlock single record?
         if (($action = \filter_input(INPUT_GET, 'action'))) {

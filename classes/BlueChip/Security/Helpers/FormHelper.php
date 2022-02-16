@@ -35,7 +35,7 @@ abstract class FormHelper
      *
      * @param array $args Required: label_for, name, value. Optional: class, plain.
      */
-    public static function printCheckbox(array $args)
+    public static function printCheckbox(array $args): void
     {
         // Field properties
         $properties = [
@@ -66,7 +66,7 @@ abstract class FormHelper
      *
      * @param array $args Required: label_for, name, value. Optional: class.
      */
-    public static function printHiddenInput(array $args)
+    public static function printHiddenInput(array $args): void
     {
         // Field properties
         $properties = [
@@ -86,7 +86,7 @@ abstract class FormHelper
      *
      * @param array $args Required: label_for, name, value. Optional: class.
      */
-    public static function printNumberInput(array $args)
+    public static function printNumberInput(array $args): void
     {
         // Field properties
         $properties = [
@@ -108,7 +108,7 @@ abstract class FormHelper
      *
      * @param array $args Required: label_for, name, value. Optional: class.
      */
-    public static function printTextInput(array $args)
+    public static function printTextInput(array $args): void
     {
         // Field properties
         $properties = [
@@ -130,7 +130,7 @@ abstract class FormHelper
      *
      * @param array $args Required: label_for, name, value. Optional: class.
      */
-    public static function printSelect(array $args)
+    public static function printSelect(array $args): void
     {
         $properties = [
             'class'     => $args['class'] ?? '',
@@ -157,7 +157,7 @@ abstract class FormHelper
      *
      * @param array $args Required: label_for, name, value. Optional: class, cols, rows.
      */
-    public static function printTextArea(array $args)
+    public static function printTextArea(array $args): void
     {
         // Field properties
         $properties = [
@@ -219,7 +219,7 @@ abstract class FormHelper
      * @param array $args
      * @param bool $inline
      */
-    protected static function printAppendix(array $args, bool $inline)
+    protected static function printAppendix(array $args, bool $inline): void
     {
         if (isset($args['description'])) {
             echo \sprintf(

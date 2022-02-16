@@ -7,10 +7,10 @@ interface Activable
     /**
      * Activate module (add cron jobs etc.)
      */
-    public function activate();
+    public function activate(): void;
 
     /**
      * Deactivate module (remove cron jobs etc.)
      */
-    public function deactivate();
+    public function deactivate(): void;
 }

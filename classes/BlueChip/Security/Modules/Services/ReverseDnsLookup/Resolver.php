@@ -26,20 +26,20 @@ class Resolver implements Modules\Activable, Modules\Initializable
     private const CACHE_TTL = DAY_IN_SECONDS;
 
 
-    public function activate()
+    public function activate(): void
     {
         // Do nothing.
     }
 
 
-    public function deactivate()
+    public function deactivate(): void
     {
         // Unschedule all cron jobs consumed by this module.
         wp_unschedule_hook(self::RESOLVE_REMOTE_ADDRESS);
     }
 
 
-    public function init()
+    public function init(): void
     {
         // Register action for non-blocking hostname resolution.
         add_action(self::RESOLVE_REMOTE_ADDRESS, [$this, 'resolveHostname'], 10, 3);
@@ -55,7 +55,7 @@ class Resolver implements Modules\Activable, Modules\Initializable
      * @param string $action Name of action to invoke with resolved hostname.
      * @param array $context Additional parameters that are passed to the action.
      */
-    public function resolveHostname(string $ip_address, string $action, array $context)
+    public function resolveHostname(string $ip_address, string $action, array $context): void
     {
         if (!empty($hostname = $this->resolveHostnameInForeground($ip_address))) {
             do_action($action, new Response($ip_address, $hostname, $context));
@@ -72,7 +72,7 @@ class Resolver implements Modules\Activable, Modules\Initializable
      * @param string $action Name of action to call when remote hostname is resolved.
      * @param array $context [optional] Additional parameters to pass to the action.
      */
-    public function resolveHostnameInBackground(string $ip_address, string $action, array $context = [])
+    public function resolveHostnameInBackground(string $ip_address, string $action, array $context = []): void
     {
         wp_schedule_single_event(\time(), self::RESOLVE_REMOTE_ADDRESS, [$ip_address, $action, $context]);
     }

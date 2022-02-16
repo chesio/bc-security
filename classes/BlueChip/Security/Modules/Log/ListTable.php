@@ -197,6 +197,8 @@ class ListTable extends \BlueChip\Security\Core\ListTable
 
     /**
      * Prepare items for table.
+     *
+     * @return void
      */
     public function prepare_items() // phpcs:ignore
     {

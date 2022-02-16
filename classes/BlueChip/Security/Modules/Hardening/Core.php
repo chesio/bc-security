@@ -44,7 +44,7 @@ class Core implements \BlueChip\Security\Modules\Initializable
     /**
      * Initialize WP hardening.
      */
-    public function init()
+    public function init(): void
     {
         if ($this->settings[Settings::DISABLE_PINGBACKS]) {
             // Disable pingbacks.
@@ -220,7 +220,7 @@ class Core implements \BlueChip\Security\Modules\Initializable
      *
      * @param \WP $wp
      */
-    public function stopAuthorScan(\WP $wp)
+    public function stopAuthorScan(\WP $wp): void
     {
         if ($wp->query_vars[self::AUTHOR_SCAN_QUERY_VAR] ?? false) {
             status_header(404);
@@ -243,7 +243,7 @@ class Core implements \BlueChip\Security\Modules\Initializable
      * @param string $username
      * @param \WP_User $user
      */
-    public function checkUserPassword(string $username, \WP_User $user)
+    public function checkUserPassword(string $username, \WP_User $user): void
     {
         if (empty($password = \filter_input(INPUT_POST, 'pwd'))) {
             // Non-interactive sign on (probably).
@@ -267,7 +267,7 @@ class Core implements \BlueChip\Security\Modules\Initializable
      *
      * @param \WP_Screen $screen
      */
-    public function displayPasswordPwnedNotice(\WP_Screen $screen)
+    public function displayPasswordPwnedNotice(\WP_Screen $screen): void
     {
         $user = wp_get_current_user();
 
@@ -302,7 +302,7 @@ class Core implements \BlueChip\Security\Modules\Initializable
      * @param bool $update Whether this is a user update.
      * @param object $user User object (passed by reference).
      */
-    public function validatePasswordUpdate(\WP_Error &$errors, bool $update, object &$user)
+    public function validatePasswordUpdate(\WP_Error &$errors, bool $update, object &$user): void
     {
         if ($errors->get_error_code()) {
             // There is an error reported already, skip the check.
@@ -326,7 +326,7 @@ class Core implements \BlueChip\Security\Modules\Initializable
      * @param \WP_Error $errors
      * @param \WP_User|\WP_Error $user WP_User object if the login and reset key match. WP_Error object otherwise.
      */
-    public function validatePasswordReset(\WP_Error $errors, object $user)
+    public function validatePasswordReset(\WP_Error $errors, object $user): void
     {
         if ($errors->get_error_code()) {
             // There is an error reported already, skip the check.
@@ -348,7 +348,7 @@ class Core implements \BlueChip\Security\Modules\Initializable
      * @param string $password
      * @param \WP_Error $errors WP_Error object (passed by reference).
      */
-    protected static function checkIfPasswordHasBeenPwned(string $password, \WP_Error &$errors)
+    protected static function checkIfPasswordHasBeenPwned(string $password, \WP_Error &$errors): void
     {
         if (HaveIBeenPwned::hasPasswordBeenPwned($password)) {
             $message = \sprintf(

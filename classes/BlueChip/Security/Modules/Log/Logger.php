@@ -59,7 +59,7 @@ class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\
     /**
      * @link https://codex.wordpress.org/Creating_Tables_with_Plugins#Creating_or_Updating_the_Table
      */
-    public function install()
+    public function install(): void
     {
         // To have dbDelta()
         require_once ABSPATH . 'wp-admin/includes/upgrade.php';
@@ -83,13 +83,13 @@ class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\
     }
 
 
-    public function uninstall()
+    public function uninstall(): void
     {
         $this->wpdb->query(\sprintf('DROP TABLE IF EXISTS %s', $this->log_table));
     }
 
 
-    public function load()
+    public function load(): void
     {
         // Expose log methods via do_action() - inspired by Wonolog:
         // https://github.com/inpsyde/Wonolog/blob/master/docs/02-basic-wonolog-concepts.md#level-rich-log-hooks
@@ -106,7 +106,7 @@ class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\
     }
 
 
-    public function init()
+    public function init(): void
     {
         // Hook into cron job execution.
         add_action(Modules\Cron\Jobs::LOGS_CLEAN_UP_BY_AGE, [$this, 'pruneByAge'], 10, 0);
@@ -174,7 +174,7 @@ class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\
      *
      * @param \BlueChip\Security\Modules\Log\Event $event
      */
-    public function logEvent(Event $event)
+    public function logEvent(Event $event): void
     {
         // Include event ID in context.
         $this->log($event->getLogLevel(), $event->getMessage(), \array_merge(['event' => $event->getId()], $event->getContext()));
@@ -218,7 +218,7 @@ class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\
      *
      * @param \BlueChip\Security\Modules\Services\ReverseDnsLookup\Response $response
      */
-    public function processReverseDnsLookupResponse(ReverseDnsLookup\Response $response)
+    public function processReverseDnsLookupResponse(ReverseDnsLookup\Response $response): void
     {
         $this->wpdb->update(
             $this->log_table,

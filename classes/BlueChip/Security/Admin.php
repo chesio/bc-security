@@ -55,7 +55,7 @@ class Admin
     /**
      * @action https://developer.wordpress.org/reference/hooks/admin_init/
      */
-    public function initAdminPages()
+    public function initAdminPages(): void
     {
         foreach ($this->pages as $page) {
             $page->initPage();
@@ -68,7 +68,7 @@ class Admin
      *
      * @action https://developer.wordpress.org/reference/hooks/admin_menu/
      */
-    public function makeAdminMenu()
+    public function makeAdminMenu(): void
     {
         if (empty($this->pages)) {
             // No pages registered = no pages (no menu) to show.

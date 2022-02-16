@@ -33,7 +33,7 @@ class Manager implements Modules\Activable
     }
 
 
-    public function activate()
+    public function activate(): void
     {
         // Schedule cron jobs that are active.
         foreach ($this->jobs as $hook => $job) {
@@ -44,7 +44,7 @@ class Manager implements Modules\Activable
     }
 
 
-    public function deactivate()
+    public function deactivate(): void
     {
         // Unschedule all scheduled cron jobs.
         foreach ($this->jobs as $job) {

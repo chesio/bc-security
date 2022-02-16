@@ -32,7 +32,7 @@ abstract class Transients
      *
      * @param \wpdb $wpdb WordPress database access abstraction object
      */
-    public static function flush(\wpdb $wpdb)
+    public static function flush(\wpdb $wpdb): void
     {
         $table_name = is_multisite() ? $wpdb->sitemeta : $wpdb->options;
 

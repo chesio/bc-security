@@ -67,7 +67,7 @@ abstract class Settings implements \ArrayAccess
      * @param string $name
      * @param mixed $value
      */
-    public function __set(string $name, $value)
+    public function __set(string $name, $value): void
     {
         if (isset($this->data[$name])) {
             $this->update($name, $value);
@@ -316,7 +316,7 @@ abstract class Settings implements \ArrayAccess
      *
      * @param callable $callback Callback that accepts up to three parameters: $old_value, $value, $option_name.
      */
-    public function addUpdateHook(callable $callback)
+    public function addUpdateHook(callable $callback): void
     {
         add_action("update_option_{$this->option_name}", [$this, 'updateOption'], 10, 2);
         add_action("update_option_{$this->option_name}", $callback, 10, 3);
@@ -328,7 +328,7 @@ abstract class Settings implements \ArrayAccess
      * @param array $old_value
      * @param array $new_value
      */
-    public function updateOption(array $old_value, array $new_value)
+    public function updateOption(array $old_value, array $new_value): void
     {
         $this->data = $new_value;
     }

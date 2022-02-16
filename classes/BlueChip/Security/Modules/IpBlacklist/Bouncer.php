@@ -36,7 +36,7 @@ class Bouncer implements \BlueChip\Security\Modules\Initializable, \BlueChip\Sec
     /**
      * Load module.
      */
-    public function load()
+    public function load(): void
     {
         // In case of non-cli context or if remote IP address is invalid, die immediately.
         if (!Helpers\Is::cli() && empty($this->remote_address)) {
@@ -51,7 +51,7 @@ class Bouncer implements \BlueChip\Security\Modules\Initializable, \BlueChip\Sec
     /**
      * Initialize module.
      */
-    public function init()
+    public function init(): void
     {
         add_filter('authenticate', [$this, 'checkLoginAttempt'], 1, 1); // Leave priority 0 for site maintainers.
     }
@@ -64,7 +64,7 @@ class Bouncer implements \BlueChip\Security\Modules\Initializable, \BlueChip\Sec
      *
      * @param string $ip_address Remote IP address to include in error message [optional].
      */
-    public static function blockAccessTemporarily(string $ip_address = '')
+    public static function blockAccessTemporarily(string $ip_address = ''): void
     {
         $error_msg = empty($ip_address)
             ? esc_html__('Access from your device has been temporarily disabled for security reasons.', 'bc-security')
@@ -80,7 +80,7 @@ class Bouncer implements \BlueChip\Security\Modules\Initializable, \BlueChip\Sec
     /**
      * Block access to the website when remote IP address is locked.
      */
-    public function checkAccess()
+    public function checkAccess(): void
     {
         if ($this->bl_manager->isLocked($this->remote_address, LockScope::WEBSITE)) {
             self::blockAccessTemporarily($this->remote_address);

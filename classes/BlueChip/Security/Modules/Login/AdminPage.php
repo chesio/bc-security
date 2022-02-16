@@ -28,7 +28,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
     }
 
 
-    public function loadPage()
+    public function loadPage(): void
     {
         $this->displaySettingsErrors();
     }
@@ -37,7 +37,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
     /**
      * Output page contents.
      */
-    public function printContents()
+    public function printContents(): void
     {
         echo '<div class="wrap">';
         echo '<h1>' . esc_html($this->page_title) . '</h1>';
@@ -49,7 +49,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
     /**
      * Initialize settings page: add sections and fields.
      */
-    public function initPage()
+    public function initPage(): void
     {
         // Register settings.
         $this->registerSettings();

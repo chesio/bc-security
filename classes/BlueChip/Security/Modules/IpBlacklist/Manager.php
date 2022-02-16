@@ -60,7 +60,7 @@ class Manager implements Modules\Countable, Modules\Installable, Modules\Initial
     /**
      * @link https://codex.wordpress.org/Creating_Tables_with_Plugins#Creating_or_Updating_the_Table
      */
-    public function install()
+    public function install(): void
     {
         // To have dbDelta()
         require_once ABSPATH . 'wp-admin/includes/upgrade.php';
@@ -83,13 +83,13 @@ class Manager implements Modules\Countable, Modules\Installable, Modules\Initial
     }
 
 
-    public function uninstall()
+    public function uninstall(): void
     {
         $this->wpdb->query(\sprintf('DROP TABLE IF EXISTS %s', $this->blacklist_table));
     }
 
 
-    public function init()
+    public function init(): void
     {
         // Hook into cron job execution.
         add_action(Modules\Cron\Jobs::IP_BLACKLIST_CLEAN_UP, [$this, 'prune'], 10, 0);

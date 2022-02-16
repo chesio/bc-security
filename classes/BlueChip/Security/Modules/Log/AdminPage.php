@@ -51,7 +51,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
     /**
      * Initialize settings page: add sections and fields.
      */
-    public function initPage()
+    public function initPage(): void
     {
         // Register settings.
         $this->registerSettings();
@@ -84,7 +84,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
     }
 
 
-    public function loadPage()
+    public function loadPage(): void
     {
         $this->resetCount();
         $this->displaySettingsErrors();
@@ -96,7 +96,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
     /**
      * Output page contents.
      */
-    public function printContents()
+    public function printContents(): void
     {
         echo '<div class="wrap">';
 
@@ -119,7 +119,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
     /**
      * Initialize list table instance.
      */
-    private function initListTable()
+    private function initListTable(): void
     {
         $this->list_table = new ListTable($this->getUrl(), $this->per_page_option_name, $this->logger);
         $this->list_table->prepare_items();

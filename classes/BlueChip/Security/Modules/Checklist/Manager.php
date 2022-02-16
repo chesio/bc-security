@@ -43,7 +43,7 @@ class Manager implements Modules\Initializable
     }
 
 
-    public function init()
+    public function init(): void
     {
         // When settings are updated, ensure that cron jobs for advanced checks are properly (de)activated.
         $this->settings->addUpdateHook([$this, 'updateCronJobs']);
@@ -191,7 +191,7 @@ class Manager implements Modules\Initializable
      *
      * @internal Method is intended to be run from within cron request.
      */
-    public function runBasicChecks()
+    public function runBasicChecks(): void
     {
         $checks = $this->getBasicChecks();
         $issues = [];
@@ -225,7 +225,7 @@ class Manager implements Modules\Initializable
      *
      * @internal Method is intended to be run from within AJAX requests.
      */
-    public function runCheck()
+    public function runCheck(): void
     {
         if (empty($check_id = \filter_input(INPUT_POST, 'check_id', FILTER_SANITIZE_STRING))) {
             wp_send_json_error([
@@ -253,7 +253,7 @@ class Manager implements Modules\Initializable
     /**
      * Activate or deactivate cron jobs for advanced checks according to settings.
      */
-    public function updateCronJobs()
+    public function updateCronJobs(): void
     {
         foreach ($this->getAdvancedChecks(false) as $check_id => $advanced_check) {
             if ($this->settings[$check_id]) {

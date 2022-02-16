@@ -7,10 +7,10 @@ interface Installable
     /**
      * Install module (add DB tables etc.)
      */
-    public function install();
+    public function install(): void;
 
     /**
      * Uninstall module (drop DB tables etc.)
      */
-    public function uninstall();
+    public function uninstall(): void;
 }
