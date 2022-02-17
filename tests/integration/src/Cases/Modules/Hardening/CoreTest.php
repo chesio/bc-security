@@ -25,15 +25,15 @@ class CoreTest extends TestCase
     /**
      * Set up $_POST data necessary to test via \edit_user() function.
      *
-     * @param bool $pwned Whether to set weak password (true) or strong password (false).
+     * @param string $password
      */
-    protected function setUpUserPostData(bool $pwned = false)
+    protected function setUpUserPostData(string $password)
     {
         // To be able to test \edit_user() method.
         $_POST['nickname'] = 'John Doe';
         $_POST['email'] = 'john@doe.com';
-        $_POST['pass1'] = $pwned ? Constants::PWNED_PASSWORD : Constants::SAFE_PASSWORD;
-        $_POST['pass2'] = $pwned ? Constants::PWNED_PASSWORD : Constants::SAFE_PASSWORD;
+        $_POST['pass1'] = $password;
+        $_POST['pass2'] = $password;
     }
 
 
@@ -74,11 +74,11 @@ class CoreTest extends TestCase
         $this->assertWpError(\wp_authenticate($user->user_login, Constants::FACTORY_PASSWORD));
 
         // Test strong password - should pass.
-        $this->setUpUserPostData(false);
+        $this->setUpUserPostData(Constants::SAFE_PASSWORD);
         $this->assertIsInt(\edit_user($user_id));
 
         // Test weak password - should not pass.
-        $this->setUpUserPostData(true);
+        $this->setUpUserPostData(Constants::PWNED_PASSWORD);
         $this->assertWpError(\edit_user($user_id));
 
         // Clean up.
@@ -111,11 +111,11 @@ class CoreTest extends TestCase
         $this->assertInstanceOf(\WP_User::class, \wp_authenticate($user->user_login, Constants::FACTORY_PASSWORD));
 
         // Test strong password - should pass.
-        $this->setUpUserPostData(false);
+        $this->setUpUserPostData(Constants::SAFE_PASSWORD);
         $this->assertIsInt(\edit_user($user_id));
 
         // Test weak password - should pass as well.
-        $this->setUpUserPostData(true);
+        $this->setUpUserPostData(Constants::PWNED_PASSWORD);
         $this->assertIsInt(\edit_user($user_id));
 
         // Clean up.
