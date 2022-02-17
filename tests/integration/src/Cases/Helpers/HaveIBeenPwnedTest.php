@@ -6,16 +6,41 @@ use BlueChip\Security\Helpers\HaveIBeenPwned;
 use BlueChip\Security\Tests\Integration\Constants;
 use BlueChip\Security\Tests\Integration\TestCase;
 
+/**
+ * Test integration with Pwned Passwords API.
+ *
+ * @internal These tests result in external requests to https://api.pwnedpasswords.com being made!
+ */
 class HaveIBeenPwnedTest extends TestCase
 {
     /**
-     * Test integration with Pwned Passwords API.
-     *
-     * Important: this test results in external requests to https://api.pwnedpasswords.com being made!
+     * Test that pwned password is reported as such.
      */
     public function testPwnedPassword()
     {
-        $this->assertTrue(HaveIBeenPwned::hasPasswordBeenPwned(Constants::PWNED_PASSWORD));
-        $this->assertFalse(HaveIBeenPwned::hasPasswordBeenPwned(Constants::SAFE_PASSWORD));
+        $result = HaveIBeenPwned::hasPasswordBeenPwned(Constants::PWNED_PASSWORD);
+
+        if ($result === null) {
+            $this->markTestSkipped('Request to api.pwnedpasswords.com failed.');
+            return;
+        }
+
+        $this->assertTrue($result);
+    }
+
+
+    /**
+     * Test that safe password is reported as such.
+     */
+    public function testSafePassword()
+    {
+        $result = HaveIBeenPwned::hasPasswordBeenPwned(Constants::SAFE_PASSWORD);
+
+        if ($result === null) {
+            $this->markTestSkipped('Request to api.pwnedpasswords.com failed.');
+            return;
+        }
+
+        $this->assertFalse($result);
     }
 }
