@@ -5,7 +5,7 @@ namespace BlueChip\Security\Helpers;
 /**
  * Various is::xxx() helpers.
  */
-class Is
+abstract class Is
 {
     /**
      * Return true if current user is an admin.
