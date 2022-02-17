@@ -23,6 +23,11 @@ class Plugin
     private $plugin_filename;
 
     /**
+     * @var string Remote address
+     */
+    private $remote_address;
+
+    /**
      * @var \wpdb WordPress database access abstraction object
      */
     private $wpdb;
@@ -45,8 +50,11 @@ class Plugin
         // Get setup info.
         $setup = new Setup\Core($settings->forSetup());
 
+        // Get remote address.
+        $this->remote_address = $setup->getRemoteAddress();
+
         // Construct modules.
-        $this->modules = self::constructModules($wpdb, $setup->getRemoteAddress(), $setup->getServerAddress(), $settings);
+        $this->modules = self::constructModules($wpdb, $this->remote_address, $setup->getServerAddress(), $settings);
     }
 
 
@@ -94,10 +102,17 @@ class Plugin
 
     /**
      * Load the plugin by hooking into WordPress actions and filters.
-     * Method should be invoked immediately on plugin load.
+     *
+     * @action https://developer.wordpress.org/reference/hooks/plugins_loaded/
      */
     public function load(): void
     {
+        // Plugin functionality relies heavily on knowledge of remote address,
+        // so die immediately if remote address is unknown (except in case of cli context).
+        if (($this->remote_address === '') && !Helpers\Is::cli()) {
+            Helpers\Utils::blockAccessTemporarily();
+        }
+
         // Load all modules that require immediate loading.
         foreach ($this->modules as $module) {
             if ($module instanceof Modules\Loadable) {
@@ -105,8 +120,12 @@ class Plugin
             }
         }
 
-        // Register initialization method.
-        add_action('init', [$this, 'init'], 10, 0);
+        // Run initialization if `init` hook has been fired already, otherwise just hook the init method to it.
+        if (did_action('init')) {
+            $this->init();
+        } else {
+            add_action('init', [$this, 'init'], 10, 0);
+        }
     }
 
 

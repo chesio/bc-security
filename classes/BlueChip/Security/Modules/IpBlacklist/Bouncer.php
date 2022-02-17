@@ -2,7 +2,7 @@
 
 namespace BlueChip\Security\Modules\IpBlacklist;
 
-use BlueChip\Security\Helpers;
+use BlueChip\Security\Helpers\Utils;
 
 /**
  * Bouncer takes care of bouncing uninvited guests by:
@@ -38,13 +38,10 @@ class Bouncer implements \BlueChip\Security\Modules\Initializable, \BlueChip\Sec
      */
     public function load(): void
     {
-        // In case of non-cli context or if remote IP address is invalid, die immediately.
-        if (!Helpers\Is::cli() && empty($this->remote_address)) {
-            self::blockAccessTemporarily();
+        // Check if access to website is allowed from given remote address.
+        if ($this->bl_manager->isLocked($this->remote_address, LockScope::WEBSITE)) {
+            Utils::blockAccessTemporarily($this->remote_address);
         }
-
-        // Check if access to website is allowed.
-        add_action('plugins_loaded', [$this, 'checkAccess'], 1, 0); // Leave priority 0 for site maintainers.
     }
 
 
@@ -57,36 +54,7 @@ class Bouncer implements \BlueChip\Security\Modules\Initializable, \BlueChip\Sec
     }
 
 
-    /**
-     * Terminate script execution via wp_die(), pass 503 as return code.
-     *
-     * @link https://httpstatusdogs.com/503-service-unavailable
-     *
-     * @param string $ip_address Remote IP address to include in error message [optional].
-     */
-    public static function blockAccessTemporarily(string $ip_address = ''): void
-    {
-        $error_msg = empty($ip_address)
-            ? esc_html__('Access from your device has been temporarily disabled for security reasons.', 'bc-security')
-            : \sprintf(esc_html__('Access from your IP address %1$s has been temporarily disabled for security reasons.', 'bc-security'), \sprintf('<em>%s</em>', $ip_address))
-        ;
-        //
-        wp_die($error_msg, __('Service Temporarily Unavailable', 'bc-security'), 503);
-    }
-
-
     //// Hookers - public methods that should in fact be private
-
-    /**
-     * Block access to the website when remote IP address is locked.
-     */
-    public function checkAccess(): void
-    {
-        if ($this->bl_manager->isLocked($this->remote_address, LockScope::WEBSITE)) {
-            self::blockAccessTemporarily($this->remote_address);
-        }
-    }
-
 
     /**
      * Block access to the login when remote IP address is locked.
@@ -98,7 +66,7 @@ class Bouncer implements \BlueChip\Security\Modules\Initializable, \BlueChip\Sec
     public function checkLoginAttempt($user)
     {
         if ($this->bl_manager->isLocked($this->remote_address, LockScope::ADMIN)) {
-            self::blockAccessTemporarily($this->remote_address);
+            Utils::blockAccessTemporarily($this->remote_address);
         }
 
         return $user;

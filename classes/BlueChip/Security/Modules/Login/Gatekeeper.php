@@ -2,6 +2,7 @@
 
 namespace BlueChip\Security\Modules\Login;
 
+use BlueChip\Security\Helpers\Utils;
 use BlueChip\Security\Modules\IpBlacklist;
 
 /**
@@ -46,11 +47,14 @@ class Gatekeeper implements \BlueChip\Security\Modules\Initializable, \BlueChip\
 
 
     /**
-     * Check if IP is locked early on, but allow other plugins to interfere.
+     * Load module.
      */
     public function load(): void
     {
-        add_action('plugins_loaded', [$this, 'removeAuthCookieIfIpIsLocked'], 5, 0);
+        // Remove all WordPress authentication cookies if remote address is on black list.
+        if ($this->bl_manager->isLocked($this->remote_address, IpBlacklist\LockScope::ADMIN)) {
+            $this->clearAuthCookie();
+        }
     }
 
 
@@ -244,6 +248,6 @@ class Gatekeeper implements \BlueChip\Security\Modules\Initializable, \BlueChip\
         $this->bl_manager->lock($this->remote_address, $duration, IpBlacklist\LockScope::ADMIN, $reason);
 
         // Block access
-        IpBlacklist\Bouncer::blockAccessTemporarily($this->remote_address);
+        Utils::blockAccessTemporarily($this->remote_address);
     }
 }
