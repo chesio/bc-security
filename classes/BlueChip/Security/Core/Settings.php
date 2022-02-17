@@ -9,7 +9,7 @@ namespace BlueChip\Security\Core;
  *
  * @link https://developer.wordpress.org/plugins/settings/settings-api/
  */
-abstract class Settings implements \ArrayAccess
+abstract class Settings implements \ArrayAccess, \IteratorAggregate
 {
     /**
      * @var array Default values for all settings. Descendant classes should override it.
@@ -134,6 +134,14 @@ abstract class Settings implements \ArrayAccess
     public function offsetUnset($offset): void
     {
         $this->update($offset, null);
+    }
+
+
+    //// IteratorAggregate API /////////////////////////////////////////////////
+
+    public function getIterator(): \Traversable
+    {
+        return new \ArrayIterator($this->data);
     }
 
 
