@@ -44,7 +44,7 @@ class Bouncer implements \BlueChip\Security\Modules\Initializable, \BlueChip\Sec
         }
 
         // Check if access to website is allowed.
-        add_filter('plugins_loaded', [$this, 'checkAccess'], 1, 0); // Leave priority 0 for site maintainers.
+        add_action('plugins_loaded', [$this, 'checkAccess'], 1, 0); // Leave priority 0 for site maintainers.
     }
 
 
