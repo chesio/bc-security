@@ -2,6 +2,8 @@
 
 namespace BlueChip\Security\Tests\Integration;
 
+use BlueChip\Security\Plugin;
+
 class Bootstrap
 {
     /** @var string plugin directory */
@@ -9,6 +11,15 @@ class Bootstrap
 
     /** @var string directory where wordpress-tests-lib is installed */
     public $wp_tests_dir;
+
+
+    /**
+     * @return string Path to root directory of the plugin.
+     */
+    public static function getPluginRootDirectory(): string
+    {
+        return dirname(dirname(dirname(__DIR__)));
+    }
 
 
     /**
@@ -25,7 +36,7 @@ class Bootstrap
      */
     public function __construct()
     {
-        $this->plugin_dir   = dirname(dirname(dirname(__DIR__)));
+        $this->plugin_dir   = self::getPluginRootDirectory();
         $this->wp_tests_dir = self::getWordPressTestsDirectory();
     }
 
@@ -46,17 +57,19 @@ class Bootstrap
         // Give access to tests_add_filter() function.
         require_once $this->wp_tests_dir . '/includes/functions.php';
 
+        // Clean existing install first.
         tests_add_filter('muplugins_loaded', function () {
-            // Clean existing install first.
             define('WP_UNINSTALL_PLUGIN', true);
             require_once $this->plugin_dir . '/uninstall.php';
         });
 
         tests_add_filter('muplugins_loaded', function () {
-            // Load the plugin.
+            // Bootstrap the plugin ...
             require_once $this->plugin_dir . '/bc-security.php';
-            // Manually activate the plugin.
-            $bc_security->activate();
+            // ... activate it ...
+            do_action('activate_' . plugin_basename($this->plugin_dir . '/bc-security.php'));
+            // ... but do not load it yet - it is loaded manually before every test.
+            remove_action('plugins_loaded', [$bc_security, 'load'], 0);
         });
 
         // Start up the WP testing environment.
