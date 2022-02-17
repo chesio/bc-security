@@ -2,8 +2,6 @@
 
 namespace BlueChip\Security\Tests\Integration;
 
-use BlueChip\Security\Plugin;
-
 class Bootstrap
 {
     /** @var string plugin directory */
