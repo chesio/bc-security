@@ -69,6 +69,20 @@ class Core implements \BlueChip\Security\Modules\Initializable
                 add_action('parse_request', [$this, 'stopAuthorScan'], 10, 1);
             }
         }
+        if ($this->settings[Settings::DISABLE_LOGIN_WITH_EMAIL]) {
+            // Remove the option to authenticate with email and password.
+            // https://developer.wordpress.org/reference/hooks/authenticate/#more-information
+            remove_filter('authenticate', 'wp_authenticate_email_password', 20);
+            // Add a warning to the login screen.
+            add_filter('login_message', [$this, 'warnAboutDisabledLoginWithEmail'], 100, 0);
+        }
+        if ($this->settings[Settings::DISABLE_LOGIN_WITH_USERNAME]) {
+            // Remove the option to authenticate with username and password.
+            // https://developer.wordpress.org/reference/hooks/authenticate/#more-information
+            remove_filter('authenticate', 'wp_authenticate_username_password', 20);
+            // Add a warning to the login screen.
+            add_filter('login_message', [$this, 'warnAboutDisabledLoginWithUsername'], 100, 0);
+        }
         if ($this->settings[Settings::CHECK_PASSWORDS]) {
             // Check user password on successful login.
             add_action('wp_login', [$this, 'checkUserPassword'], 10, 2);
@@ -238,6 +252,24 @@ class Core implements \BlueChip\Security\Modules\Initializable
 
             exit;
         }
+    }
+
+
+    /**
+     * @return string HTML string with warning about login with email being disabled.
+     */
+    public function warnAboutDisabledLoginWithEmail(): string
+    {
+        return '<p class="message">' . sprintf(esc_html__('%s: Login with email is disabled on this website!', 'bc-security'), '<strong>' . esc_html__('Important', 'bc-security') . '</strong>') . '</p>';
+    }
+
+
+    /**
+     * @return string HTML string with warning about login with username being disabled.
+     */
+    public function warnAboutDisabledLoginWithUsername(): string
+    {
+        return '<p class="message">' . sprintf(esc_html__('%s: Login with username is disabled on this website!', 'bc-security'), '<strong>' . esc_html__('Important', 'bc-security') . '</strong>') . '</p>';
     }
 
 

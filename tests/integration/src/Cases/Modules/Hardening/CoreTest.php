@@ -66,6 +66,13 @@ class CoreTest extends TestCase
         // Create dummy user object.
         $user_id = $this->factory->user->create();
 
+        /** @var \WP_User $user */
+        $user = \get_user_by('id', $user_id);
+
+        // Authentication with both email and login should fail.
+        $this->assertWpError(\wp_authenticate($user->user_email, Constants::FACTORY_PASSWORD));
+        $this->assertWpError(\wp_authenticate($user->user_login, Constants::FACTORY_PASSWORD));
+
         // Test strong password - should pass.
         $this->setUpUserPostData(false);
         $this->assertIsInt(\edit_user($user_id));
@@ -95,6 +102,13 @@ class CoreTest extends TestCase
 
         // Create dummy user object.
         $user_id = $this->factory->user->create();
+
+        /** @var \WP_User $user */
+        $user = \get_user_by('id', $user_id);
+
+        // Authentication with both email and login should pass.
+        $this->assertInstanceOf(\WP_User::class, \wp_authenticate($user->user_email, Constants::FACTORY_PASSWORD));
+        $this->assertInstanceOf(\WP_User::class, \wp_authenticate($user->user_login, Constants::FACTORY_PASSWORD));
 
         // Test strong password - should pass.
         $this->setUpUserPostData(false);

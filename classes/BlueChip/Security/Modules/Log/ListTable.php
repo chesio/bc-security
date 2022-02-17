@@ -52,6 +52,18 @@ class ListTable extends \BlueChip\Security\Core\ListTable
 
 
     /**
+     * @param string $url
+     * @param string $event_id
+     *
+     * @return string URL made from $url with query argument for view with $event_id appended.
+     */
+    public static function getViewUrl(string $url, string $event_id): string
+    {
+        return add_query_arg(self::VIEW_EVENT, $event_id, $url);
+    }
+
+
+    /**
      * Return content for first column (date and time) including row actions.
      *
      * @param array $item

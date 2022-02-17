@@ -49,6 +49,17 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
 
 
     /**
+     * @param string|null $event_id [optional] If provided, URL to list table view for given event is returned.
+     *
+     * @return string URL of admin page.
+     */
+    public static function getPageUrl(?string $event_id = null): string
+    {
+        return ($event_id === null) ? parent::getPageUrl() : ListTable::getViewUrl(parent::getPageUrl(), $event_id);
+    }
+
+
+    /**
      * Initialize settings page: add sections and fields.
      */
     public function initPage(): void

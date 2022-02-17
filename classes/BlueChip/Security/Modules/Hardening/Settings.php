@@ -25,6 +25,16 @@ class Settings extends \BlueChip\Security\Core\Settings
     public const DISABLE_USERNAMES_DISCOVERY = 'disable_usernames_discovery';
 
     /**
+     * @var string Remove the option to log in with email and password? [bool:no]
+     */
+    public const DISABLE_LOGIN_WITH_EMAIL = 'disable_login_with_email';
+
+    /**
+     * @var string Remove the option to log in with username and password? [bool:no]
+     */
+    public const DISABLE_LOGIN_WITH_USERNAME = 'disable_login_with_username';
+
+    /**
      * @var string Check existing passwords against Pwned Passwords database? [bool:no]
      */
     public const CHECK_PASSWORDS = 'check_passwords';
@@ -42,6 +52,8 @@ class Settings extends \BlueChip\Security\Core\Settings
         self::DISABLE_XML_RPC => false,
         self::DISABLE_APPLICATION_PASSWORDS => false,
         self::DISABLE_USERNAMES_DISCOVERY => false,
+        self::DISABLE_LOGIN_WITH_EMAIL => false,
+        self::DISABLE_LOGIN_WITH_USERNAME => false,
         self::CHECK_PASSWORDS => false,
         self::VALIDATE_PASSWORDS => false,
     ];
