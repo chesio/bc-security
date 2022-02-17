@@ -61,5 +61,5 @@ register_activation_hook(__FILE__, [$bc_security, 'activate']);
 // Register deactivation hook.
 register_deactivation_hook(__FILE__, [$bc_security, 'deactivate']);
 
-// Load the plugin immediately after all plugins are loaded.
+// Boot up the plugin immediately after all plugins are loaded.
 add_action('plugins_loaded', [$bc_security, 'load'], 0, 0);
