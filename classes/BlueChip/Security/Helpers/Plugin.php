@@ -114,7 +114,7 @@ abstract class Plugin
         $plugin_update_uri = $plugin_data['UpdateURI'];
 
         if ($plugin_update_uri === '') {
-            // If no Update URI is present, WordPress 5.8 return empty string.
+            // Empty string = no Update URI header is present.
             return true;
         }
 
