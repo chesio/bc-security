@@ -44,7 +44,8 @@
   "scripts": {
     "phpcs": "phpcs",
     "phpstan": "phpstan analyze",
-    "integration-tests": "phpunit --configuration tests/integration/phpunit.xml",
+    "full-integration-tests": "phpunit --configuration tests/integration/phpunit.xml",
+    "integration-tests": "phpunit --configuration tests/integration/phpunit.xml --exclude-group external",
     "unit-tests": "phpunit --configuration tests/unit/phpunit.xml",
     "ci": [
       "@phpcs",

@@ -15,6 +15,8 @@ class HaveIBeenPwnedTest extends TestCase
 {
     /**
      * Test that pwned password is reported as such.
+     *
+     * @group external
      */
     public function testPwnedPassword()
     {
@@ -31,6 +33,8 @@ class HaveIBeenPwnedTest extends TestCase
 
     /**
      * Test that safe password is reported as such.
+     *
+     * @group external
      */
     public function testSafePassword()
     {
