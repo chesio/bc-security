@@ -297,7 +297,7 @@ abstract class Settings implements \ArrayAccess, \IteratorAggregate
      *
      * @return bool
      */
-    protected function update(string $name, $value): bool
+    public function update(string $name, $value): bool
     {
         if (!isset($this->data[$name])) {
             // Cannot update, invalid setting name.
@@ -314,7 +314,7 @@ abstract class Settings implements \ArrayAccess, \IteratorAggregate
             $data[$name] = $value;
         }
 
-        // Sanitize new value and update cache
+        // Sanitize new value and update cache.
         $this->data = $this->sanitize($data);
         // Make changes permanent.
         return $this->persist();
