@@ -63,3 +63,6 @@ register_deactivation_hook(__FILE__, [$bc_security, 'deactivate']);
 
 // Boot up the plugin immediately after all plugins are loaded.
 add_action('plugins_loaded', [$bc_security, 'load'], 0, 0);
+
+// Clean up global instance variable.
+unset($bc_security);
