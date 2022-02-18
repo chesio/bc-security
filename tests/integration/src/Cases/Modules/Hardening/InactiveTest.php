@@ -4,44 +4,52 @@ namespace BlueChip\Security\Tests\Integration\Cases\Modules\Hardening;
 
 use BlueChip\Security\Tests\Integration\Constants;
 
+/**
+ * Test hardening with all options off.
+ */
 class InactiveTest extends TestCase
 {
-    public function prepareTest(): void
+    protected function prepareTest(): void
     {
+        parent::prepareTest();
+
         // Turn all hardening options off.
-        $this->getSettings(false)->persist();
+        $this->setHardening(false);
     }
 
 
     /**
-     * Test the case when no hardening option is active.
+     * Test everything that does not require external HTTP requests.
      */
-    public function testHardeningInactive()
+    public function testHardeningInactive(): void
     {
         $this->assertArrayHasKey(
             'pingback.ping',
-            apply_filters('xmlrpc_methods', ['pingback.ping' => 'this:pingback_ping', ])
+            \apply_filters('xmlrpc_methods', ['pingback.ping' => 'this:pingback_ping', ])
         );
 
-        $this->assertTrue(apply_filters('xmlrpc_enabled', true));
-
-        // Create dummy user object.
-        $user_id = $this->factory->user->create();
-
-        /** @var \WP_User $user */
-        $user = \get_user_by('id', $user_id);
+        $this->assertTrue(\apply_filters('xmlrpc_enabled', true));
 
         // Authentication with both email and login should pass.
-        $this->assertInstanceOf(\WP_User::class, \wp_authenticate($user->user_email, Constants::FACTORY_PASSWORD));
-        $this->assertInstanceOf(\WP_User::class, \wp_authenticate($user->user_login, Constants::FACTORY_PASSWORD));
+        $this->assertInstanceOf(\WP_User::class, \wp_authenticate(self::DUMMY_USER_EMAIL, Constants::FACTORY_PASSWORD));
+        $this->assertInstanceOf(\WP_User::class, \wp_authenticate(self::DUMMY_USER_LOGIN, Constants::FACTORY_PASSWORD));
+    }
 
+
+    /**
+     * Test user editation with password change.
+     *
+     * @group external
+     */
+    public function testPasswordChange(): void
+    {
         // Test strong password - should pass.
         $this->setUpUserPostData(Constants::SAFE_PASSWORD);
-        $this->assertIsInt(\edit_user($user_id));
+        $this->assertIsInt(\edit_user($this->dummy_user_id));
 
         // Test weak password - should pass as well.
         $this->setUpUserPostData(Constants::PWNED_PASSWORD);
-        $this->assertIsInt(\edit_user($user_id));
+        $this->assertIsInt(\edit_user($this->dummy_user_id));
 
         // Clean up.
         $this->tearDownUserPostData();

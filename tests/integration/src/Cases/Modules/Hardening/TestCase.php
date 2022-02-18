@@ -2,26 +2,45 @@
 
 namespace BlueChip\Security\Tests\Integration\Cases\Modules\Hardening;
 
-use BlueChip\Security\Modules\Hardening;
 use BlueChip\Security\Settings;
 use BlueChip\Security\Tests\Integration\TestCase as IntegrationTestCase;
 
 abstract class TestCase extends IntegrationTestCase
 {
     /**
-     * @param bool $active Set to true to get settings with all hardening options on and vice versa for false.
-     *
-     * @return Hardening\Settings Settings object for hardening module with all options either on or off.
+     * @var string
      */
-    protected function getSettings(bool $active): Hardening\Settings
+    protected const DUMMY_USER_EMAIL = 'dummy@example.com';
+
+    /**
+     * @var string
+     */
+    protected const DUMMY_USER_LOGIN = 'dummy';
+
+    /**
+     * @var int
+     */
+    protected $dummy_user_id;
+
+
+    protected function prepareTest(): void
+    {
+        // Create dummy user object.
+        $this->dummy_user_id = $this->factory->user->create([
+            'user_email' => self::DUMMY_USER_EMAIL,
+            'user_login' => self::DUMMY_USER_LOGIN,
+        ]);
+    }
+
+
+    /**
+     * @param bool $active Set to true to get settings with all hardening options on and vice versa for false.
+     */
+    protected function setHardening(bool $active): void
     {
         $settings = (new Settings())->forHardening();
 
-        foreach ($settings as $name => $value) {
-            $settings[$name] = $active;
-        }
-
-        return $settings;
+        $settings->set(\array_fill_keys(\array_keys($settings->get()), $active));
     }
 
 
@@ -30,7 +49,7 @@ abstract class TestCase extends IntegrationTestCase
      *
      * @param string $password
      */
-    protected function setUpUserPostData(string $password)
+    protected function setUpUserPostData(string $password): void
     {
         // To be able to test \edit_user() method.
         $_POST['nickname'] = 'John Doe';
@@ -43,7 +62,7 @@ abstract class TestCase extends IntegrationTestCase
     /**
      * Clean up $_POST data set in setUpUserPostData() method.
      */
-    protected function tearDownUserPostData()
+    protected function tearDownUserPostData(): void
     {
         unset($_POST['nickname']);
         unset($_POST['email']);
