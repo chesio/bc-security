@@ -63,7 +63,7 @@ class Bootstrap
 
         tests_add_filter('muplugins_loaded', function () {
             // Bootstrap the plugin ...
-            require_once $this->plugin_dir . '/bc-security.php';
+            $bc_security = require_once $this->plugin_dir . '/bc-security.php';
             // ... activate it ...
             do_action('activate_' . plugin_basename($this->plugin_dir . '/bc-security.php'));
             // ... but do not load it yet - it is loaded manually before every test.

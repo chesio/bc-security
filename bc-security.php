@@ -53,13 +53,18 @@ if (version_compare(PHP_VERSION, '7.3', '<')) {
 // Register autoloader for this plugin.
 require_once __DIR__ . '/autoload.php';
 
-// Construct plugin instance.
-$bc_security = new \BlueChip\Security\Plugin(__FILE__, $GLOBALS['wpdb']);
+return call_user_func(function () {
+    // Construct plugin instance.
+    $bc_security = new \BlueChip\Security\Plugin(__FILE__, $GLOBALS['wpdb']);
 
-// Register activation hook.
-register_activation_hook(__FILE__, [$bc_security, 'activate']);
-// Register deactivation hook.
-register_deactivation_hook(__FILE__, [$bc_security, 'deactivate']);
+    // Register activation hook.
+    register_activation_hook(__FILE__, [$bc_security, 'activate']);
+    // Register deactivation hook.
+    register_deactivation_hook(__FILE__, [$bc_security, 'deactivate']);
 
-// Boot up the plugin immediately after all plugins are loaded.
-add_action('plugins_loaded', [$bc_security, 'load'], 0, 0);
+    // Boot up the plugin immediately after all plugins are loaded.
+    add_action('plugins_loaded', [$bc_security, 'load'], 0, 0);
+
+    // Return the instance.
+    return $bc_security;
+});
