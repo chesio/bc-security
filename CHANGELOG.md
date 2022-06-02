@@ -1,6 +1,6 @@
 # BC Security Changelog
 
-## Upcoming version 0.19.0 (????-??-??)
+## Upcoming version 0.19.0 (2022-06-02)
 
 ### Added
 
