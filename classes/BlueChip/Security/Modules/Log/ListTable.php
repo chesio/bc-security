@@ -9,17 +9,25 @@ use BlueChip\Security\Modules\IpBlacklist;
  */
 class ListTable extends \BlueChip\Security\Core\ListTable
 {
-    /** @var string Name of blacklist action query argument */
+    /**
+     * @var string Name of blacklist action query argument
+     */
     private const ACTION_BLACKLIST = 'blacklist';
 
-    /** @var string Name of view query argument */
+    /**
+     * @var string Name of view query argument
+     */
     private const VIEW_EVENT = 'event';
 
 
-    /** @var \BlueChip\Security\Modules\Log\Logger */
+    /**
+     * @var \BlueChip\Security\Modules\Log\Logger
+     */
     private $logger;
 
-    /** @var \BlueChip\Security\Modules\Log\Event|null */
+    /**
+     * @var \BlueChip\Security\Modules\Log\Event|null
+     */
     private $event = null;
 
 
@@ -44,9 +52,22 @@ class ListTable extends \BlueChip\Security\Core\ListTable
 
 
     /**
+     * @param string $url
+     * @param string $event_id
+     *
+     * @return string URL made from $url with query argument for view with $event_id appended.
+     */
+    public static function getViewUrl(string $url, string $event_id): string
+    {
+        return add_query_arg(self::VIEW_EVENT, $event_id, $url);
+    }
+
+
+    /**
      * Return content for first column (date and time) including row actions.
      *
      * @param array $item
+     *
      * @return string
      */
     public function column_date_and_time(array $item): string // phpcs:ignore
@@ -60,6 +81,7 @@ class ListTable extends \BlueChip\Security\Core\ListTable
      *
      * @param array $item
      * @param string $column_name
+     *
      * @return string
      */
     public function column_default($item, $column_name) // phpcs:ignore
@@ -79,6 +101,7 @@ class ListTable extends \BlueChip\Security\Core\ListTable
      * Return content for event type column.
      *
      * @param array $item
+     *
      * @return string
      */
     public function column_event(array $item): string // phpcs:ignore
@@ -93,6 +116,7 @@ class ListTable extends \BlueChip\Security\Core\ListTable
      * Return content for IP address column.
      *
      * @param array $item
+     *
      * @return string
      */
     public function column_ip_address(array $item): string // phpcs:ignore
@@ -110,6 +134,7 @@ class ListTable extends \BlueChip\Security\Core\ListTable
      * Return content for message column.
      *
      * @param array $item
+     *
      * @return string
      */
     public function column_message(array $item): string // phpcs:ignore
@@ -122,6 +147,7 @@ class ListTable extends \BlueChip\Security\Core\ListTable
 
     /**
      * Define table columns
+     *
      * @return array
      */
     public function get_columns() // phpcs:ignore
@@ -149,6 +175,7 @@ class ListTable extends \BlueChip\Security\Core\ListTable
 
     /**
      * Define sortable columns
+     *
      * @return array
      */
     public function get_sortable_columns() // phpcs:ignore
@@ -163,6 +190,7 @@ class ListTable extends \BlueChip\Security\Core\ListTable
 
     /**
      * Define available views for this table.
+     *
      * @return array
      */
     protected function get_views() // phpcs:ignore
@@ -197,6 +225,8 @@ class ListTable extends \BlueChip\Security\Core\ListTable
 
     /**
      * Prepare items for table.
+     *
+     * @return void
      */
     public function prepare_items() // phpcs:ignore
     {
@@ -218,6 +248,7 @@ class ListTable extends \BlueChip\Security\Core\ListTable
 
     /**
      * @param array $item
+     *
      * @return array
      */
     private function getRowActions(array $item): array
@@ -249,6 +280,7 @@ class ListTable extends \BlueChip\Security\Core\ListTable
      * @see \BlueChip\Security\Modules\IpBlacklist\LockScope
      *
      * @param string $event_id One from event IDs defined in \BlueChip\Security\Modules\Log\Event.
+     *
      * @return int Lock scope code. LockScope::ANY indicates that given event does not warrant blacklisting.
      */
     private function getLockScopeFromEvent(string $event_id): int
@@ -271,6 +303,7 @@ class ListTable extends \BlueChip\Security\Core\ListTable
      *
      * @param string $message
      * @param array $context
+     *
      * @return string
      */
     private static function formatMessage(string $message, array $context): string

@@ -28,6 +28,7 @@ class Admin
      * Initialize admin area of the plugin.
      *
      * @param string $plugin_filename
+     *
      * @return self
      */
     public function init(string $plugin_filename): self
@@ -43,6 +44,7 @@ class Admin
      * Add a page to plugin dashboard menu.
      *
      * @param \BlueChip\Security\Core\Admin\AbstractPage $page
+     *
      * @return self
      */
     public function addPage(Core\Admin\AbstractPage $page): self
@@ -55,7 +57,7 @@ class Admin
     /**
      * @action https://developer.wordpress.org/reference/hooks/admin_init/
      */
-    public function initAdminPages()
+    public function initAdminPages(): void
     {
         foreach ($this->pages as $page) {
             $page->initPage();
@@ -68,7 +70,7 @@ class Admin
      *
      * @action https://developer.wordpress.org/reference/hooks/admin_menu/
      */
-    public function makeAdminMenu()
+    public function makeAdminMenu(): void
     {
         if (empty($this->pages)) {
             // No pages registered = no pages (no menu) to show.
@@ -80,11 +82,11 @@ class Admin
 
         // Add (main) menu page
         add_menu_page(
-            '', // obsolete as soon as page has subpages
+            '', // Page title is obsolete as soon as page has subpages.
             _x('BC Security', 'Dashboard menu item name', 'bc-security'),
             self::CAPABILITY,
             $main_page->getSlug(),
-            '', // obsolete as soon as page has subpages
+            '__return_empty_string', // Page content is obsolete as soon as page has subpages. Passing an empty string would prevent the callback being registered at all, but it breaks static analysis - see: https://core.trac.wordpress.org/ticket/52539
             self::ICON
         );
 
@@ -110,8 +112,9 @@ class Admin
      *
      * @filter https://developer.wordpress.org/reference/hooks/plugin_action_links_plugin_file/
      *
-     * @param array $links
-     * @return array
+     * @param string[] $links
+     *
+     * @return string[]
      */
     public function filterActionLinks(array $links): array
     {
@@ -130,6 +133,7 @@ class Admin
      * Format counter indicator for menu title for given $page.
      *
      * @param \BlueChip\Security\Core\Admin\AbstractPage $page
+     *
      * @return string
      */
     private function renderCounter(Core\Admin\AbstractPage $page): string

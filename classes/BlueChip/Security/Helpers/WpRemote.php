@@ -11,6 +11,7 @@ abstract class WpRemote
      * Fetch JSON data from remote $url.
      *
      * @param string $url
+     *
      * @return mixed
      */
     public static function getJson(string $url)
@@ -36,6 +37,7 @@ abstract class WpRemote
      *
      * @param string $url
      * @param mixed $body
+     *
      * @return mixed
      */
     public static function postJson(string $url, $body)

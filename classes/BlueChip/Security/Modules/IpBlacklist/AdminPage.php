@@ -78,7 +78,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
     }
 
 
-    public function loadPage()
+    public function loadPage(): void
     {
         $this->resetCount();
         $this->processActions();
@@ -90,7 +90,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
     /**
      * Output page contents.
      */
-    public function printContents()
+    public function printContents(): void
     {
         echo '<div class="wrap">';
         // Page heading
@@ -114,7 +114,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
      *
      * @hook \BlueChip\Security\Modules\IpBlacklist\Hooks::DEFAULT_MANUAL_LOCK_DURATION
      */
-    private function printBlacklistingForm()
+    private function printBlacklistingForm(): void
     {
         // IP address and lock scope can be "pre-filled".
         $ip_address = \filter_input(INPUT_GET, self::DEFAULT_IP_ADDRESS, FILTER_VALIDATE_IP);
@@ -193,7 +193,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
     /**
      * Output forms for IP blacklist pruning (including cron job activation and deactivation).
      */
-    private function printPruningActions()
+    private function printPruningActions(): void
     {
         echo '<h2>' . esc_html__('Blacklist pruning', 'bc-security') . '</h2>';
 
@@ -220,7 +220,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
     /**
      * Initialize list table instance.
      */
-    private function initListTable()
+    private function initListTable(): void
     {
         $this->list_table = new ListTable($this->getUrl(), $this->per_page_option_name, $this->bl_manager);
         $this->list_table->processActions(); // may trigger wp_redirect()
@@ -232,7 +232,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
     /**
      * Dispatch any action that is indicated by POST data (form submission).
      */
-    private function processActions()
+    private function processActions(): void
     {
         $nonce = \filter_input(INPUT_POST, self::NONCE_NAME, FILTER_SANITIZE_STRING);
         if (empty($nonce)) {
@@ -265,7 +265,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
     /**
      * Read POST data and attempt to add IP address to blacklist. Display notice about action outcome.
      */
-    private function processBlacklistAction()
+    private function processBlacklistAction(): void
     {
         $ip_address = \filter_input(INPUT_POST, 'ip-address', FILTER_VALIDATE_IP);
         $duration_length = \filter_input(INPUT_POST, 'duration-length', FILTER_VALIDATE_INT);
@@ -301,7 +301,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
     /**
      * Attempt to prune blacklist table. Display notice about action outcome.
      */
-    private function processPruneAction()
+    private function processPruneAction(): void
     {
         if ($this->bl_manager->prune()) {
             AdminNotices::add(
@@ -320,7 +320,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
     /**
      * Deactivate cron job for blacklist table pruning. Display notice about action outcome.
      */
-    private function processCronOffAction()
+    private function processCronOffAction(): void
     {
         $this->cron_manager->deactivateJob(Cron\Jobs::IP_BLACKLIST_CLEAN_UP);
         AdminNotices::add(
@@ -333,7 +333,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
     /**
      * Activate cron job for blacklist table pruning. Display notice about action outcome.
      */
-    private function processCronOnAction()
+    private function processCronOnAction(): void
     {
         if ($this->cron_manager->activateJob(Cron\Jobs::IP_BLACKLIST_CLEAN_UP)) {
             AdminNotices::add(
@@ -357,6 +357,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
      *
      * @param int $seconds
      * @param array $units_in_seconds
+     *
      * @return array
      */
     private function transformSecondsIntoFittingUnit(int $seconds, array $units_in_seconds): array

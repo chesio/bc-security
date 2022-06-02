@@ -31,7 +31,7 @@ abstract class AbstractPage
     /**
      * Output page contents.
      */
-    abstract public function printContents();
+    abstract public function printContents(): void;
 
 
     /**
@@ -87,7 +87,7 @@ abstract class AbstractPage
      *
      * @param string $page_hook
      */
-    public function setPageHook(string $page_hook)
+    public function setPageHook(string $page_hook): void
     {
         add_action('load-' . $page_hook, [$this, 'loadPage']);
     }
@@ -96,7 +96,7 @@ abstract class AbstractPage
     /**
      * Run on admin initialization (in `admin_init` hook).
      */
-    public function initPage()
+    public function initPage(): void
     {
         // By default do nothing.
     }
@@ -107,7 +107,7 @@ abstract class AbstractPage
      *
      * @action https://developer.wordpress.org/reference/hooks/load-page_hook/
      */
-    public function loadPage()
+    public function loadPage(): void
     {
         // By default do nothing.
     }

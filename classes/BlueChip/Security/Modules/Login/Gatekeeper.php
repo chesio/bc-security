@@ -2,6 +2,7 @@
 
 namespace BlueChip\Security\Modules\Login;
 
+use BlueChip\Security\Helpers\Utils;
 use BlueChip\Security\Modules\IpBlacklist;
 
 /**
@@ -46,12 +47,13 @@ class Gatekeeper implements \BlueChip\Security\Modules\Initializable, \BlueChip\
 
 
     /**
-     * Check if IP is locked early on, but allow other plugins to interfere.
+     * Load module.
      */
-    public function load()
+    public function load(): void
     {
-        if ($this->settings[Settings::CHECK_COOKIES]) {
-            add_action('plugins_loaded', [$this, 'removeAuthCookieIfIpIsLocked'], 5, 0);
+        // Remove all WordPress authentication cookies if remote address is on black list.
+        if ($this->bl_manager->isLocked($this->remote_address, IpBlacklist\LockScope::ADMIN)) {
+            $this->clearAuthCookie();
         }
     }
 
@@ -59,7 +61,7 @@ class Gatekeeper implements \BlueChip\Security\Modules\Initializable, \BlueChip\
     /**
      * Initialize login hardening.
      */
-    public function init()
+    public function init(): void
     {
         add_filter('illegal_user_logins', [$this, 'filterIllegalUserLogins'], 10, 1);
 
@@ -72,10 +74,9 @@ class Gatekeeper implements \BlueChip\Security\Modules\Initializable, \BlueChip\
 
         add_action('wp_login_failed', [$this, 'handleFailedLogin'], 100, 1);
 
-        if ($this->settings[Settings::CHECK_COOKIES]) {
-            add_action('auth_cookie_bad_username', [$this, 'handleBadCookie'], 10, 1);
-            add_action('auth_cookie_bad_hash', [$this, 'handleBadCookie'], 10, 1);
-        }
+        // Check authentication cookies:
+        add_action('auth_cookie_bad_username', [$this, 'handleBadCookie'], 10, 1);
+        add_action('auth_cookie_bad_hash', [$this, 'handleBadCookie'], 10, 1);
     }
 
 
@@ -87,6 +88,7 @@ class Gatekeeper implements \BlueChip\Security\Modules\Initializable, \BlueChip\
      * @filter https://developer.wordpress.org/reference/hooks/illegal_user_logins/
      *
      * @param array $usernames
+     *
      * @return array
      */
     public function filterIllegalUserLogins(array $usernames): array
@@ -99,6 +101,7 @@ class Gatekeeper implements \BlueChip\Security\Modules\Initializable, \BlueChip\
      * Let generic `authentication_failed` error shake the login form.
      *
      * @param array $error_codes
+     *
      * @return array
      */
     public function filterShakeErrorCodes(array $error_codes): array
@@ -109,12 +112,11 @@ class Gatekeeper implements \BlueChip\Security\Modules\Initializable, \BlueChip\
 
 
     /**
-     * Perform necessary actions when login via cookie fails due bad username
-     * or bad hash.
+     * Perform necessary actions when login via cookie fails due bad username or bad hash.
      *
      * @param array $cookie_elements
      */
-    public function handleBadCookie(array $cookie_elements)
+    public function handleBadCookie(array $cookie_elements): void
     {
         // Clear authentication cookies completely
         $this->clearAuthCookie();
@@ -131,7 +133,7 @@ class Gatekeeper implements \BlueChip\Security\Modules\Initializable, \BlueChip\
      *
      * @param string $username
      */
-    public function handleFailedLogin(string $username)
+    public function handleFailedLogin(string $username): void
     {
         // If currently locked-out, bail (should not happen, but better safe than sorry)
         if ($this->bl_manager->isLocked($this->remote_address, IpBlacklist\LockScope::ADMIN)) {
@@ -160,6 +162,7 @@ class Gatekeeper implements \BlueChip\Security\Modules\Initializable, \BlueChip\
      *
      * @param \WP_Error|\WP_User $user
      * @param string $username
+     *
      * @return \WP_Error|\WP_User
      */
     public function lockIpIfUsernameOnBlacklist($user, string $username)
@@ -183,6 +186,7 @@ class Gatekeeper implements \BlueChip\Security\Modules\Initializable, \BlueChip\
      * message.
      *
      * @param \WP_Error|\WP_User $user
+     *
      * @return \WP_Error|\WP_User|null
      */
     public function muteStandardErrorMessages($user)
@@ -203,7 +207,7 @@ class Gatekeeper implements \BlueChip\Security\Modules\Initializable, \BlueChip\
      * Remove all WordPress authentication cookies if IP is on black list.
      * Method should be called as early as possible.
      */
-    public function removeAuthCookieIfIpIsLocked()
+    public function removeAuthCookieIfIpIsLocked(): void
     {
         if ($this->bl_manager->isLocked($this->remote_address, IpBlacklist\LockScope::ADMIN)) {
             $this->clearAuthCookie();
@@ -214,21 +218,15 @@ class Gatekeeper implements \BlueChip\Security\Modules\Initializable, \BlueChip\
     //// Private and protected methods
 
     /**
-     * Clear all WordPress authentication cookies (also for current session).
+     * Clear all WordPress authentication cookies (also for current request).
      */
-    protected function clearAuthCookie()
+    protected function clearAuthCookie(): void
     {
         wp_clear_auth_cookie();
 
-        if (!empty($_COOKIE[AUTH_COOKIE])) {
-            $_COOKIE[AUTH_COOKIE] = '';
-        }
-        if (!empty($_COOKIE[SECURE_AUTH_COOKIE])) {
-            $_COOKIE[SECURE_AUTH_COOKIE] = '';
-        }
-        if (!empty($_COOKIE[LOGGED_IN_COOKIE])) {
-            $_COOKIE[LOGGED_IN_COOKIE] = '';
-        }
+        unset($_COOKIE[AUTH_COOKIE]);
+        unset($_COOKIE[SECURE_AUTH_COOKIE]);
+        unset($_COOKIE[LOGGED_IN_COOKIE]);
     }
 
 
@@ -241,7 +239,7 @@ class Gatekeeper implements \BlueChip\Security\Modules\Initializable, \BlueChip\
      * @param int $duration Duration (in secs) of lockout
      * @param int $reason Lockout reason
      */
-    protected function lockOut(string $username, int $duration, int $reason)
+    protected function lockOut(string $username, int $duration, int $reason): void
     {
         // Trigger lockout action
         do_action(Hooks::LOCKOUT_EVENT, $this->remote_address, $username, $duration, $reason);
@@ -250,6 +248,6 @@ class Gatekeeper implements \BlueChip\Security\Modules\Initializable, \BlueChip\
         $this->bl_manager->lock($this->remote_address, $duration, IpBlacklist\LockScope::ADMIN, $reason);
 
         // Block access
-        IpBlacklist\Bouncer::blockAccessTemporarily($this->remote_address);
+        Utils::blockAccessTemporarily($this->remote_address);
     }
 }

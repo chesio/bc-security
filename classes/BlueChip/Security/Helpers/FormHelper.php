@@ -6,6 +6,7 @@ abstract class FormHelper
 {
     /**
      * @link https://developer.mozilla.org/en-US/docs/Web/HTML/Element/textarea
+     *
      * @var int Default value of "cols" attribute of <textarea> element.
      */
     private const TEXTAREA_COLS_DEFAULT_VALUE = 20;
@@ -35,7 +36,7 @@ abstract class FormHelper
      *
      * @param array $args Required: label_for, name, value. Optional: class, plain.
      */
-    public static function printCheckbox(array $args)
+    public static function printCheckbox(array $args): void
     {
         // Field properties
         $properties = [
@@ -66,7 +67,7 @@ abstract class FormHelper
      *
      * @param array $args Required: label_for, name, value. Optional: class.
      */
-    public static function printHiddenInput(array $args)
+    public static function printHiddenInput(array $args): void
     {
         // Field properties
         $properties = [
@@ -86,7 +87,7 @@ abstract class FormHelper
      *
      * @param array $args Required: label_for, name, value. Optional: class.
      */
-    public static function printNumberInput(array $args)
+    public static function printNumberInput(array $args): void
     {
         // Field properties
         $properties = [
@@ -108,7 +109,7 @@ abstract class FormHelper
      *
      * @param array $args Required: label_for, name, value. Optional: class.
      */
-    public static function printTextInput(array $args)
+    public static function printTextInput(array $args): void
     {
         // Field properties
         $properties = [
@@ -130,7 +131,7 @@ abstract class FormHelper
      *
      * @param array $args Required: label_for, name, value. Optional: class.
      */
-    public static function printSelect(array $args)
+    public static function printSelect(array $args): void
     {
         $properties = [
             'class'     => $args['class'] ?? '',
@@ -157,7 +158,7 @@ abstract class FormHelper
      *
      * @param array $args Required: label_for, name, value. Optional: class, cols, rows.
      */
-    public static function printTextArea(array $args)
+    public static function printTextArea(array $args): void
     {
         // Field properties
         $properties = [
@@ -183,6 +184,7 @@ abstract class FormHelper
      * @see esc_attr()
      *
      * @param array $properties
+     *
      * @return string
      */
     protected static function renderFieldProperties(array $properties): string
@@ -200,9 +202,9 @@ abstract class FormHelper
         );
         // Map keys and values together as key=value
         $mapped = \array_map(
-            function ($key, $value) {
+            function (string $key, $value) {
                 // Boolean values are replaced with key name: checked => true ---> checked="checked"
-                return \sprintf('%s="%s"', $key, esc_attr(\is_bool($value) ? $key : $value));
+                return \sprintf('%s="%s"', $key, esc_attr(\is_bool($value) ? $key : (string) $value));
             },
             \array_keys($filtered),
             \array_values($filtered)
@@ -219,7 +221,7 @@ abstract class FormHelper
      * @param array $args
      * @param bool $inline
      */
-    protected static function printAppendix(array $args, bool $inline)
+    protected static function printAppendix(array $args, bool $inline): void
     {
         if (isset($args['description'])) {
             echo \sprintf(

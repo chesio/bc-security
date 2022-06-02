@@ -97,6 +97,7 @@ class Job
      * @link https://wordpress.stackexchange.com/a/223341
      *
      * @param string $time_string
+     *
      * @return int
      */
     public static function getTimestamp(string $time_string): int

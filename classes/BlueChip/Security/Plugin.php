@@ -13,7 +13,7 @@ class Plugin
     private $modules;
 
     /**
-     * @var \BlueChip\Security\Core\Settings[] Plugin setting objects
+     * @var Settings Plugin settings object
      */
     private $settings;
 
@@ -21,6 +21,11 @@ class Plugin
      * @var string Plugin filename
      */
     private $plugin_filename;
+
+    /**
+     * @var string Remote address
+     */
+    private $remote_address;
 
     /**
      * @var \wpdb WordPress database access abstraction object
@@ -40,32 +45,16 @@ class Plugin
         $this->wpdb = $wpdb;
 
         // Read plugin settings.
-        $this->settings = $settings = self::constructSettings();
+        $this->settings = $settings = new Settings();
 
         // Get setup info.
-        $setup = new Setup\Core($settings['setup']);
+        $setup = new Setup\Core($settings->forSetup());
+
+        // Get remote address.
+        $this->remote_address = $setup->getRemoteAddress();
 
         // Construct modules.
-        $this->modules = self::constructModules($wpdb, $setup->getRemoteAddress(), $setup->getServerAddress(), $settings);
-    }
-
-
-    /**
-     * Construct plugin settings.
-     *
-     * @return array
-     */
-    private static function constructSettings(): array
-    {
-        return [
-            'cron-jobs'         => new Modules\Cron\Settings('bc-security-cron-jobs'),
-            'checklist-autorun' => new Modules\Checklist\AutorunSettings('bc-security-checklist-autorun'),
-            'hardening'         => new Modules\Hardening\Settings('bc-security-hardening'),
-            'log'               => new Modules\Log\Settings('bc-security-log'),
-            'login'             => new Modules\Login\Settings('bc-security-login'),
-            'notifications'     => new Modules\Notifications\Settings('bc-security-notifications'),
-            'setup'             => new Setup\Settings('bc-security-setup'),
-        ];
+        $this->modules = self::constructModules($wpdb, $this->remote_address, $setup->getServerAddress(), $settings);
     }
 
 
@@ -75,24 +64,25 @@ class Plugin
      * @param \wpdb $wpdb
      * @param string $remote_address
      * @param string $server_address
-     * @param array $settings
+     * @param Settings $settings
+     *
      * @return array
      */
-    private static function constructModules(\wpdb $wpdb, string $remote_address, string $server_address, array $settings): array
+    private static function constructModules(\wpdb $wpdb, string $remote_address, string $server_address, Settings $settings): array
     {
-        $google_api = new Setup\GoogleAPI($settings['setup']);
+        $google_api = new Setup\GoogleAPI($settings->forSetup());
 
         $hostname_resolver  = new Modules\Services\ReverseDnsLookup\Resolver();
-        $cron_job_manager   = new Modules\Cron\Manager($settings['cron-jobs']);
-        $logger             = new Modules\Log\Logger($wpdb, $remote_address, $settings['log'], $hostname_resolver);
-        $checklist_manager  = new Modules\Checklist\Manager($settings['checklist-autorun'], $cron_job_manager, $wpdb, $google_api->getKey());
+        $cron_job_manager   = new Modules\Cron\Manager($settings->forCronJobs());
+        $logger             = new Modules\Log\Logger($wpdb, $remote_address, $settings->forLog(), $hostname_resolver);
+        $checklist_manager  = new Modules\Checklist\Manager($settings->forChecklistAutorun(), $cron_job_manager, $wpdb, $google_api->getKey());
         $monitor            = new Modules\Log\EventsMonitor($remote_address, $server_address);
-        $notifier           = new Modules\Notifications\Watchman($settings['notifications'], $remote_address, $logger);
-        $hardening          = new Modules\Hardening\Core($settings['hardening']);
+        $notifier           = new Modules\Notifications\Watchman($settings->forNotifications(), $remote_address, $logger);
+        $hardening          = new Modules\Hardening\Core($settings->forHardening());
         $blacklist_manager  = new Modules\IpBlacklist\Manager($wpdb);
         $blacklist_bouncer  = new Modules\IpBlacklist\Bouncer($remote_address, $blacklist_manager);
-        $bookkeeper         = new Modules\Login\Bookkeeper($settings['login'], $wpdb);
-        $gatekeeper         = new Modules\Login\Gatekeeper($settings['login'], $remote_address, $bookkeeper, $blacklist_manager);
+        $bookkeeper         = new Modules\Login\Bookkeeper($settings->forLogin(), $wpdb);
+        $gatekeeper         = new Modules\Login\Gatekeeper($settings->forLogin(), $remote_address, $bookkeeper, $blacklist_manager);
 
         return [
             'cron-job-manager'  => $cron_job_manager,
@@ -112,10 +102,17 @@ class Plugin
 
     /**
      * Load the plugin by hooking into WordPress actions and filters.
-     * Method should be invoked immediately on plugin load.
+     *
+     * @action https://developer.wordpress.org/reference/hooks/plugins_loaded/
      */
-    public function load()
+    public function load(): void
     {
+        // Plugin functionality relies heavily on knowledge of remote address,
+        // so die immediately if remote address is unknown (except in case of cli context).
+        if (($this->remote_address === '') && !Helpers\Is::cli()) {
+            Helpers\Utils::blockAccessTemporarily();
+        }
+
         // Load all modules that require immediate loading.
         foreach ($this->modules as $module) {
             if ($module instanceof Modules\Loadable) {
@@ -123,8 +120,12 @@ class Plugin
             }
         }
 
-        // Register initialization method.
-        add_action('init', [$this, 'init'], 10, 0);
+        // Run initialization if `init` hook has been fired already, otherwise just hook the init method to it.
+        if (did_action('init')) {
+            $this->init();
+        } else {
+            add_action('init', [$this, 'init'], 10, 0);
+        }
     }
 
 
@@ -134,7 +135,7 @@ class Plugin
      *
      * @action https://developer.wordpress.org/reference/hooks/init/
      */
-    public function init()
+    public function init(): void
     {
         // Initialize all modules that require initialization.
         foreach ($this->modules as $module) {
@@ -150,29 +151,29 @@ class Plugin
             (new Admin())->init($this->plugin_filename)
                 // Setup comes first...
                 ->addPage(new Setup\AdminPage(
-                    $this->settings['setup']
+                    $this->settings->forSetup()
                 ))
                 // ...then come admin pages.
                 ->addPage(new Modules\Checklist\AdminPage(
                     $this->modules['checklist-manager'],
-                    $this->settings['checklist-autorun'],
+                    $this->settings->forChecklistAutorun(),
                     $assets_manager
                 ))
                 ->addPage(new Modules\Hardening\AdminPage(
-                    $this->settings['hardening']
+                    $this->settings->forHardening()
                 ))
                 ->addPage(new Modules\Login\AdminPage(
-                    $this->settings['login']
+                    $this->settings->forLogin()
                 ))
                 ->addPage(new Modules\IpBlacklist\AdminPage(
                     $this->modules['blacklist-manager'],
                     $this->modules['cron-job-manager']
                 ))
                 ->addPage(new Modules\Notifications\AdminPage(
-                    $this->settings['notifications']
+                    $this->settings->forNotifications()
                 ))
                 ->addPage(new Modules\Log\AdminPage(
-                    $this->settings['log'],
+                    $this->settings->forLog(),
                     $this->modules['logger']
                 ))
                 ->addPage(new Modules\Tools\AdminPage($this->settings))
@@ -187,7 +188,7 @@ class Plugin
      *
      * @link https://developer.wordpress.org/plugins/the-basics/activation-deactivation-hooks/
      */
-    public function activate()
+    public function activate(): void
     {
         // Explicitly persist every setting object, so related option is autoloaded.
         foreach ($this->settings as $settings) {
@@ -216,7 +217,7 @@ class Plugin
      *
      * @link https://developer.wordpress.org/plugins/the-basics/activation-deactivation-hooks/
      */
-    public function deactivate()
+    public function deactivate(): void
     {
         // Deactivate every module that requires it.
         foreach ($this->modules as $module) {
@@ -233,7 +234,7 @@ class Plugin
      *
      * @link https://developer.wordpress.org/plugins/the-basics/uninstall-methods/
      */
-    public function uninstall()
+    public function uninstall(): void
     {
         // Remove plugin settings.
         foreach ($this->settings as $settings) {

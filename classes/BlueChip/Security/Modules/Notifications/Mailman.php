@@ -24,9 +24,10 @@ abstract class Mailman
      *
      * @see wp_mail()
      *
-     * @param array|string $to Email address(es) of notification recipient(s).
+     * @param string|string[] $to Email address(es) of notification recipient(s).
      * @param string $subject Subject of notification.
-     * @param array|string $message Body of notification.
+     * @param string|string[] $message Body of notification.
+     *
      * @return bool True if notification has been sent successfully, false otherwise.
      */
     public static function send($to, string $subject, $message): bool
@@ -42,16 +43,18 @@ abstract class Mailman
     /**
      * Strip any HTML tags from $message and add plugin boilerplate to it.
      *
-     * @param array $message Message body as list of lines.
+     * @param string[] $message Message body as list of lines.
+     *
      * @return string
      */
     private static function formatMessage(array $message): string
     {
         $boilerplate_intro = [
             \sprintf(
-                __('This email was sent from your website "%1$s" by BC Security plugin on %2$s at %3$s.'),
+                __('This email was sent from your website "%1$s" (%2$s) by BC Security plugin on %3$s at %4$s.'),
                 // Blog name must be decoded, see: https://github.com/chesio/bc-security/issues/86
                 wp_specialchars_decode(get_option('blogname'), ENT_QUOTES),
+                get_home_url(),
                 wp_date(get_option('date_format')),
                 wp_date(get_option('time_format'))
             ),
@@ -74,6 +77,7 @@ abstract class Mailman
      * Prepare subject for email (prepend site name and "BC Security Alert").
      *
      * @param string $subject
+     *
      * @return string
      */
     private static function formatSubject(string $subject): string
@@ -99,8 +103,9 @@ abstract class Mailman
      * [1] https://www.example.com
      * [2] https://www.one-more-example.com/
      *
-     * @param array $message Message as list of strings with HTML tags.
-     * @return array Message as list of strings without HTML tags with optional URL index appended.
+     * @param string[] $message Message as list of strings with HTML tags.
+     *
+     * @return string[] Message as list of strings without HTML tags with optional URL index appended.
      */
     private static function stripTags(array $message): array
     {

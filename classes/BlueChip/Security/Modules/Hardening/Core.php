@@ -44,7 +44,7 @@ class Core implements \BlueChip\Security\Modules\Initializable
     /**
      * Initialize WP hardening.
      */
-    public function init()
+    public function init(): void
     {
         if ($this->settings[Settings::DISABLE_PINGBACKS]) {
             // Disable pingbacks.
@@ -69,6 +69,20 @@ class Core implements \BlueChip\Security\Modules\Initializable
                 add_action('parse_request', [$this, 'stopAuthorScan'], 10, 1);
             }
         }
+        if ($this->settings[Settings::DISABLE_LOGIN_WITH_EMAIL]) {
+            // Remove the option to authenticate with email and password.
+            // https://developer.wordpress.org/reference/hooks/authenticate/#more-information
+            remove_filter('authenticate', 'wp_authenticate_email_password', 20);
+            // Add a warning to the login screen.
+            add_filter('login_message', [$this, 'warnAboutDisabledLoginWithEmail'], 100, 0);
+        }
+        if ($this->settings[Settings::DISABLE_LOGIN_WITH_USERNAME]) {
+            // Remove the option to authenticate with username and password.
+            // https://developer.wordpress.org/reference/hooks/authenticate/#more-information
+            remove_filter('authenticate', 'wp_authenticate_username_password', 20);
+            // Add a warning to the login screen.
+            add_filter('login_message', [$this, 'warnAboutDisabledLoginWithUsername'], 100, 0);
+        }
         if ($this->settings[Settings::CHECK_PASSWORDS]) {
             // Check user password on successful login.
             add_action('wp_login', [$this, 'checkUserPassword'], 10, 2);
@@ -90,6 +104,7 @@ class Core implements \BlueChip\Security\Modules\Initializable
      * @filter https://developer.wordpress.org/reference/hooks/xmlrpc_methods/
      *
      * @param array $methods
+     *
      * @return array
      */
     public function disablePingbacks(array $methods): array
@@ -105,6 +120,7 @@ class Core implements \BlueChip\Security\Modules\Initializable
      * @filter https://developer.wordpress.org/reference/hooks/oembed_response_data/
      *
      * @param array $data
+     *
      * @return array
      */
     public function filterAuthorInOembed(array $data): array
@@ -125,6 +141,7 @@ class Core implements \BlueChip\Security\Modules\Initializable
      * @param \WP_HTTP_Response|\WP_Error $response
      * @param array $handler
      * @param \WP_REST_Request $request
+     *
      * @return \WP_HTTP_Response|\WP_Error
      */
     public function filterJsonAPIAuthor($response, array $handler, \WP_REST_Request $request)
@@ -172,6 +189,7 @@ class Core implements \BlueChip\Security\Modules\Initializable
      * @filter https://developer.wordpress.org/reference/hooks/rest_post_dispatch/
      *
      * @param \WP_HTTP_Response $response
+     *
      * @return \WP_HTTP_Response
      */
     public function adjustJsonAPIHeaders(\WP_HTTP_Response $response): \WP_HTTP_Response
@@ -188,6 +206,7 @@ class Core implements \BlueChip\Security\Modules\Initializable
      * @filter https://developer.wordpress.org/reference/hooks/request/
      *
      * @param array $query_vars
+     *
      * @return array
      */
     public function filterAuthorQuery(array $query_vars): array
@@ -207,6 +226,7 @@ class Core implements \BlueChip\Security\Modules\Initializable
      * @link https://hackertarget.com/wordpress-user-enumeration/
      *
      * @param array $query_vars
+     *
      * @return bool True if `author` key is present and its value is either an array or can be seen as numeric.
      */
     protected static function smellsLikeAuthorScan(array $query_vars): bool
@@ -220,7 +240,7 @@ class Core implements \BlueChip\Security\Modules\Initializable
      *
      * @param \WP $wp
      */
-    public function stopAuthorScan(\WP $wp)
+    public function stopAuthorScan(\WP $wp): void
     {
         if ($wp->query_vars[self::AUTHOR_SCAN_QUERY_VAR] ?? false) {
             status_header(404);
@@ -236,6 +256,24 @@ class Core implements \BlueChip\Security\Modules\Initializable
 
 
     /**
+     * @return string HTML string with warning about login with email being disabled.
+     */
+    public function warnAboutDisabledLoginWithEmail(): string
+    {
+        return '<p class="message">' . sprintf(esc_html__('%s: Login with email is disabled on this website!', 'bc-security'), '<strong>' . esc_html__('Important', 'bc-security') . '</strong>') . '</p>';
+    }
+
+
+    /**
+     * @return string HTML string with warning about login with username being disabled.
+     */
+    public function warnAboutDisabledLoginWithUsername(): string
+    {
+        return '<p class="message">' . sprintf(esc_html__('%s: Login with username is disabled on this website!', 'bc-security'), '<strong>' . esc_html__('Important', 'bc-security') . '</strong>') . '</p>';
+    }
+
+
+    /**
      * Check user password against Pwned Passwords database after successful login.
      *
      * @action https://developer.wordpress.org/reference/hooks/wp_login/
@@ -243,7 +281,7 @@ class Core implements \BlueChip\Security\Modules\Initializable
      * @param string $username
      * @param \WP_User $user
      */
-    public function checkUserPassword(string $username, \WP_User $user)
+    public function checkUserPassword(string $username, \WP_User $user): void
     {
         if (empty($password = \filter_input(INPUT_POST, 'pwd'))) {
             // Non-interactive sign on (probably).
@@ -267,7 +305,7 @@ class Core implements \BlueChip\Security\Modules\Initializable
      *
      * @param \WP_Screen $screen
      */
-    public function displayPasswordPwnedNotice(\WP_Screen $screen)
+    public function displayPasswordPwnedNotice(\WP_Screen $screen): void
     {
         $user = wp_get_current_user();
 
@@ -302,7 +340,7 @@ class Core implements \BlueChip\Security\Modules\Initializable
      * @param bool $update Whether this is a user update.
      * @param object $user User object (passed by reference).
      */
-    public function validatePasswordUpdate(\WP_Error &$errors, bool $update, object &$user)
+    public function validatePasswordUpdate(\WP_Error &$errors, bool $update, object &$user): void
     {
         if ($errors->get_error_code()) {
             // There is an error reported already, skip the check.
@@ -326,7 +364,7 @@ class Core implements \BlueChip\Security\Modules\Initializable
      * @param \WP_Error $errors
      * @param \WP_User|\WP_Error $user WP_User object if the login and reset key match. WP_Error object otherwise.
      */
-    public function validatePasswordReset(\WP_Error $errors, object $user)
+    public function validatePasswordReset(\WP_Error $errors, object $user): void
     {
         if ($errors->get_error_code()) {
             // There is an error reported already, skip the check.
@@ -348,7 +386,7 @@ class Core implements \BlueChip\Security\Modules\Initializable
      * @param string $password
      * @param \WP_Error $errors WP_Error object (passed by reference).
      */
-    protected static function checkIfPasswordHasBeenPwned(string $password, \WP_Error &$errors)
+    protected static function checkIfPasswordHasBeenPwned(string $password, \WP_Error &$errors): void
     {
         if (HaveIBeenPwned::hasPasswordBeenPwned($password)) {
             $message = \sprintf(

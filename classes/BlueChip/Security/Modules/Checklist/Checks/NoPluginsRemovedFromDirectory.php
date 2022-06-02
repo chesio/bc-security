@@ -98,6 +98,7 @@ class NoPluginsRemovedFromDirectory extends Checklist\AdvancedCheck
 
     /**
      * @param array $plugins
+     *
      * @return array
      */
     private function getProblematicPlugins(array $plugins): array
@@ -144,6 +145,7 @@ class NoPluginsRemovedFromDirectory extends Checklist\AdvancedCheck
      * Attempt to extract plugin notice from $body HTML.
      *
      * @param string $body
+     *
      * @return string Plugin notice as plain text or empty string on failure.
      */
     private function extractPluginNotice(string $body): string

@@ -35,7 +35,7 @@ class DisplayOfPhpErrorsIsOff extends Checklist\BasicCheck
     protected function runInternal(): Checklist\CheckResult
     {
         // Craft temporary file name.
-        $name = \sprintf('bc-security-checklist-test-error-display-%s.php', \md5(\rand()));
+        $name = \sprintf('bc-security-checklist-test-error-display-%s.php', \md5((string) \rand()));
 
         // The file is going to be created in wp-content directory.
         $path = WP_CONTENT_DIR . '/' . $name;

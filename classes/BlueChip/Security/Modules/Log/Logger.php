@@ -59,7 +59,7 @@ class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\
     /**
      * @link https://codex.wordpress.org/Creating_Tables_with_Plugins#Creating_or_Updating_the_Table
      */
-    public function install()
+    public function install(): void
     {
         // To have dbDelta()
         require_once ABSPATH . 'wp-admin/includes/upgrade.php';
@@ -83,13 +83,13 @@ class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\
     }
 
 
-    public function uninstall()
+    public function uninstall(): void
     {
         $this->wpdb->query(\sprintf('DROP TABLE IF EXISTS %s', $this->log_table));
     }
 
 
-    public function load()
+    public function load(): void
     {
         // Expose log methods via do_action() - inspired by Wonolog:
         // https://github.com/inpsyde/Wonolog/blob/master/docs/02-basic-wonolog-concepts.md#level-rich-log-hooks
@@ -106,7 +106,7 @@ class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\
     }
 
 
-    public function init()
+    public function init(): void
     {
         // Hook into cron job execution.
         add_action(Modules\Cron\Jobs::LOGS_CLEAN_UP_BY_AGE, [$this, 'pruneByAge'], 10, 0);
@@ -174,7 +174,7 @@ class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\
      *
      * @param \BlueChip\Security\Modules\Log\Event $event
      */
-    public function logEvent(Event $event)
+    public function logEvent(Event $event): void
     {
         // Include event ID in context.
         $this->log($event->getLogLevel(), $event->getMessage(), \array_merge(['event' => $event->getId()], $event->getContext()));
@@ -185,6 +185,7 @@ class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\
      * Return integer code for given log level.
      *
      * @param string $level Log level constant: emergency, alert, critical, error, warning, notice, info or debug.
+     *
      * @return int|null Integer code for given log level or null if unknown level given.
      */
     public function translateLogLevel(string $level): ?int
@@ -218,7 +219,7 @@ class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\
      *
      * @param \BlueChip\Security\Modules\Services\ReverseDnsLookup\Response $response
      */
-    public function processReverseDnsLookupResponse(ReverseDnsLookup\Response $response)
+    public function processReverseDnsLookupResponse(ReverseDnsLookup\Response $response): void
     {
         $this->wpdb->update(
             $this->log_table,
@@ -247,6 +248,7 @@ class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\
      * @internal Implements \BlueChip\Security\Modules\Countable interface.
      *
      * @param string|null $event Only count records under event name (empty string is allowed).
+     *
      * @return int
      */
     public function countAll(?string $event = null): int
@@ -268,10 +270,12 @@ class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\
      * @internal Implements \BlueChip\Security\Modules\Countable interface.
      *
      * @param int $timestamp
+     *
      * @return int
      */
     public function countFrom(int $timestamp): int
     {
+        /** @var string $query */
         $query = $this->wpdb->prepare(
             "SELECT COUNT(id) AS total FROM {$this->log_table} WHERE date_and_time > %s",
             MySQLDateTime::formatDateTime($timestamp)
@@ -289,6 +293,7 @@ class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\
      * @param int $limit [optional] Maximum number of items to be returned. Default value is 20.
      * @param string $order_by [optional] Column name to order the records by.
      * @param string $order [optional] Order direction, either "asc" or "desc".
+     *
      * @return array
      */
     public function fetch(?string $event = null, int $from = 0, int $limit = 20, string $order_by = '', string $order = ''): array
@@ -329,11 +334,12 @@ class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\
      */
     public function getKnownIps(): array
     {
-        $result = $this->wpdb->get_results(
-            $this->wpdb->prepare("SELECT DISTINCT(ip_address) FROM {$this->log_table} WHERE event = %s", Events\LoginSuccessful::ID)
-        );
+        /** @var string $query */
+        $query = $this->wpdb->prepare("SELECT DISTINCT(ip_address) FROM {$this->log_table} WHERE event = %s", Events\LoginSuccessful::ID);
 
-        return \is_array($result) ? wp_list_pluck($result, 'ip_address') : [];
+        $result = $this->wpdb->get_results($query, ARRAY_A);
+
+        return \is_array($result) ? \array_column($result, 'ip_address') : [];
     }
 
 
@@ -358,6 +364,7 @@ class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\
         $max_age = $this->settings->getMaxAge();
 
         // Note: $wpdb->delete cannot be used as it does not support "<=" comparison)
+        /** @var string $query */
         $query = $this->wpdb->prepare(
             "DELETE FROM {$this->log_table} WHERE date_and_time <= %s",
             MySQLDateTime::formatDateTime(\time() - $max_age)
@@ -382,12 +389,14 @@ class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\
         }
 
         // Find the biggest ID from all records that should be pruned.
+        /** @var string $query_id */
         $query_id = $this->wpdb->prepare("SELECT id FROM {$this->log_table} ORDER BY id DESC LIMIT %d, 1", $max_size);
         if (empty($id = (int) $this->wpdb->get_var($query_id))) {
             return false;
         }
 
         // Note: $wpdb->delete cannot be used as it does not support "<=" comparison)
+        /** @var string $query */
         $query = $this->wpdb->prepare("DELETE FROM {$this->log_table} WHERE id <= %d", $id);
         // Execute query and return true/false status.
         return $this->wpdb->query($query) !== false;

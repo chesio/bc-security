@@ -6,6 +6,7 @@ abstract class Helper
 {
     /**
      * @param \BlueChip\Security\Modules\Checklist\Check $check
+     *
      * @return string
      */
     public static function formatLastRunTimestamp(Check $check): string
@@ -14,13 +15,14 @@ abstract class Helper
             return '--';
         } else {
             $format = \sprintf('%s %s', get_option('date_format'), get_option('time_format'));
-            return wp_date($format, $timestamp);
+            return wp_date($format, $timestamp) ?: '';
         }
     }
 
 
     /**
-     * @param array $list
+     * @param string[] $list
+     *
      * @return string
      */
     public static function formatListOfFiles(array $list): string
@@ -46,6 +48,7 @@ abstract class Helper
      *
      * @param string $url URL to check.
      * @param string|null $body Response body to check [optional].
+     *
      * @return bool|null
      */
     public static function isAccessToUrlForbidden(string $url, ?string $body = null): ?bool
@@ -76,7 +79,8 @@ abstract class Helper
      * @param string $path Absolute path to checksums root directory, must end with slash!
      * @param object $checksums Dictionary with { filename: checksum } items. All filenames must be relative to $path.
      * @param array $ignored_files List of filenames to ignore [optional].
-     * @return array
+     *
+     * @return string[]
      */
     public static function checkDirectoryForModifiedFiles(string $path, object $checksums, array $ignored_files = []): array
     {
@@ -117,7 +121,8 @@ abstract class Helper
      * @param string $path Absolute path to checksums root directory, must end with slash!
      * @param object $checksums Dictionary with { filename: checksum } items. All filenames must be relative to $path.
      * @param bool $recursive Scan subdirectories too [optional].
-     * @return array
+     *
+     * @return string[]
      */
     public static function scanDirectoryForUnknownFiles(string $directory, string $path, object $checksums, bool $recursive = false): array
     {

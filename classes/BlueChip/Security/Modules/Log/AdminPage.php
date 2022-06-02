@@ -49,9 +49,20 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
 
 
     /**
+     * @param string|null $event_id [optional] If provided, URL to list table view for given event is returned.
+     *
+     * @return string URL of admin page.
+     */
+    public static function getPageUrl(?string $event_id = null): string
+    {
+        return ($event_id === null) ? parent::getPageUrl() : ListTable::getViewUrl(parent::getPageUrl(), $event_id);
+    }
+
+
+    /**
      * Initialize settings page: add sections and fields.
      */
-    public function initPage()
+    public function initPage(): void
     {
         // Register settings.
         $this->registerSettings();
@@ -84,7 +95,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
     }
 
 
-    public function loadPage()
+    public function loadPage(): void
     {
         $this->resetCount();
         $this->displaySettingsErrors();
@@ -96,7 +107,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
     /**
      * Output page contents.
      */
-    public function printContents()
+    public function printContents(): void
     {
         echo '<div class="wrap">';
 
@@ -119,7 +130,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
     /**
      * Initialize list table instance.
      */
-    private function initListTable()
+    private function initListTable(): void
     {
         $this->list_table = new ListTable($this->getUrl(), $this->per_page_option_name, $this->logger);
         $this->list_table->prepare_items();

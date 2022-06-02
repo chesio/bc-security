@@ -33,7 +33,7 @@ class Manager implements Modules\Activable
     }
 
 
-    public function activate()
+    public function activate(): void
     {
         // Schedule cron jobs that are active.
         foreach ($this->jobs as $hook => $job) {
@@ -44,7 +44,7 @@ class Manager implements Modules\Activable
     }
 
 
-    public function deactivate()
+    public function deactivate(): void
     {
         // Unschedule all scheduled cron jobs.
         foreach ($this->jobs as $job) {
@@ -57,6 +57,7 @@ class Manager implements Modules\Activable
 
     /**
      * @param string $hook
+     *
      * @return \BlueChip\Security\Modules\Cron\Job
      */
     public function getJob(string $hook): Job
@@ -69,6 +70,7 @@ class Manager implements Modules\Activable
      * Activate cron job: schedule the job and mark it as permanently active if scheduling succeeds.
      *
      * @param string $hook
+     *
      * @return bool True if cron job has been activated or was active already, false otherwise.
      */
     public function activateJob(string $hook): bool
@@ -85,6 +87,7 @@ class Manager implements Modules\Activable
      * Deactivate cron job: unschedule the job and mark it as permanently inactive if unscheduling succeeds.
      *
      * @param string $hook
+     *
      * @return bool True if cron job has been deactivated or was inactive already, false otherwise.
      */
     public function deactivateJob(string $hook): bool

@@ -89,12 +89,13 @@ abstract class Event
      * property PHPDoc comment.
      *
      * @param \ReflectionProperty $property
+     *
      * @return string
      */
     private static function getPropertyLabel(\ReflectionProperty $property): string
     {
         $matches = [];
-        if (\preg_match("/__\('(.+)'\)/i", $property->getDocComment(), $matches)) {
+        if (\preg_match("/__\('(.+)'\)/i", $property->getDocComment() ?: '', $matches)) {
             return __($matches[1], 'bc-security');
         } else {
             return '';

@@ -3,8 +3,9 @@
 namespace BlueChip\Security\Tests\Integration\Cases\Modules\Cron;
 
 use BlueChip\Security\Modules\Cron;
+use BlueChip\Security\Tests\Integration\TestCase;
 
-class JobTest extends \BlueChip\Security\Tests\Integration\TestCase
+class JobTest extends TestCase
 {
     private const HOOK = 'test-job';
 
@@ -22,7 +23,7 @@ class JobTest extends \BlueChip\Security\Tests\Integration\TestCase
 
         // ...test...
         $this->assertTrue($job->isScheduled());
-        $this->assertInternalType('int', wp_next_scheduled(self::HOOK));
+        $this->assertIsInt(wp_next_scheduled(self::HOOK));
 
         // ...and forward the job.
         return $job;

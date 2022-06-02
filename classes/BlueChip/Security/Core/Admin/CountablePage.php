@@ -18,7 +18,7 @@ trait CountablePage
      *
      * @param \BlueChip\Security\Modules\Countable $counter
      */
-    protected function setCounter(\BlueChip\Security\Modules\Countable $counter)
+    protected function setCounter(\BlueChip\Security\Modules\Countable $counter): void
     {
         $this->counter = $counter;
     }
@@ -27,7 +27,7 @@ trait CountablePage
     /**
      * Reset count(er).
      */
-    protected function resetCount()
+    protected function resetCount(): void
     {
         $user = wp_get_current_user();
         // Update $user's last view time for this page.

@@ -3,6 +3,7 @@
 namespace BlueChip\Security\Modules\Tools;
 
 use BlueChip\Security\Helpers\AdminNotices;
+use BlueChip\Security\Settings;
 use BlueChip\Security\Setup;
 
 class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
@@ -29,15 +30,15 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
 
 
     /**
-     * @var \BlueChip\Security\Core\Settings[] Plugin settings collection
+     * @var \BlueChip\Security\Settings Plugin settings object
      */
-    private $settings = [];
+    private $settings;
 
 
     /**
-     * @param \BlueChip\Security\Core\Settings[] $settings Plugin settings collection
+     * @param \BlueChip\Security\Settings $settings Plugin settings object
      */
-    public function __construct(array $settings)
+    public function __construct(Settings $settings)
     {
         $this->page_title = _x('Tools', 'Dashboard page title', 'bc-security');
         $this->menu_title = _x('Tools', 'Dashboard menu item name', 'bc-security');
@@ -46,13 +47,13 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
     }
 
 
-    public function loadPage()
+    public function loadPage(): void
     {
         $this->processActions();
     }
 
 
-    public function printContents()
+    public function printContents(): void
     {
         echo '<div class="wrap">';
         echo '<h1>' . esc_html($this->page_title) . '</h1>';
@@ -67,7 +68,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
     }
 
 
-    private function printExportForm()
+    private function printExportForm(): void
     {
         echo '<h2>' . esc_html__('Export settings', 'bc-security') . '</h2>';
         echo '<p>' . esc_html__('Create JSON file with plugin settings that can be used as backup or to clone the settings to another installation.', 'bc-security') . '</p>';
@@ -80,7 +81,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
     }
 
 
-    private function printImportForm()
+    private function printImportForm(): void
     {
         echo '<h2>' . esc_html__('Import settings', 'bc-security') . '</h2>';
         echo '<p>' . esc_html__('Import only JSON files created with the same version of the plugin!', 'bc-security') . '</p>';
@@ -96,7 +97,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
     }
 
 
-    private function printResetForm()
+    private function printResetForm(): void
     {
         echo '<h2>' . esc_html__('Reset settings', 'bc-security') . '</h2>';
         echo '<p>';
@@ -122,7 +123,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
     /**
      * Dispatch any action that is indicated by POST data (form submission).
      */
-    private function processActions()
+    private function processActions(): void
     {
         $nonce = \filter_input(INPUT_POST, self::NONCE_NAME, FILTER_SANITIZE_STRING);
         if (empty($nonce)) {
@@ -147,7 +148,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
     }
 
 
-    private function processExportAction()
+    private function processExportAction(): void
     {
         $export = [];
 
@@ -166,7 +167,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
     }
 
 
-    private function processImportAction()
+    private function processImportAction(): void
     {
         $import_file = $_FILES['import-file'];
 
@@ -228,7 +229,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
     }
 
 
-    private function processResetAction()
+    private function processResetAction(): void
     {
         foreach ($this->settings as $settings) {
             $settings->reset();

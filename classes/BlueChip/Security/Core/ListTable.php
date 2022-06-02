@@ -80,7 +80,7 @@ abstract class ListTable extends \WP_List_Table
      * @param string $single The text to be used in notice if action affected single item.
      * @param string $plural The text to be used in notice if action affected multiple items.
      */
-    protected function displayNotice(string $action, string $single, string $plural)
+    protected function displayNotice(string $action, string $single, string $plural): void
     {
         // Have any items been affected by given action?
         $result = \filter_input(INPUT_GET, $action, FILTER_VALIDATE_INT);
@@ -104,6 +104,7 @@ abstract class ListTable extends \WP_List_Table
      * @param int $id
      * @param string $class
      * @param string $label
+     *
      * @return string
      */
     protected function renderRowAction(string $action, int $id, string $class, string $label): string
@@ -127,6 +128,7 @@ abstract class ListTable extends \WP_List_Table
      * Return content for "checkbox" column.
      *
      * @param array $item
+     *
      * @return string
      */
     public function column_cb($item) // phpcs:ignore
@@ -140,6 +142,7 @@ abstract class ListTable extends \WP_List_Table
      *
      * @param array $item
      * @param string $column_name
+     *
      * @return string
      */
     public function column_default($item, $column_name) // phpcs:ignore
@@ -152,16 +155,20 @@ abstract class ListTable extends \WP_List_Table
      * Display datetime database fields in local time.
      *
      * @param string $datetime Datetime string retrieved from database.
-     * @return string Date and time of $datetime formatted in local time.
+     *
+     * @return string Date and time of $datetime formatted in local time. Empty string if $datetime could not be parsed.
      */
     public function formatDateAndTime(string $datetime): string
     {
-        return wp_date(self::DATETIME_FORMAT, MySQLDateTime::parseTimestamp($datetime));
+        $timestamp = MySQLDateTime::parseTimestamp($datetime);
+        return ($timestamp !== null) ? (wp_date(self::DATETIME_FORMAT, $timestamp) ?: '') : '';
     }
 
 
     /**
      * Output "no items" message.
+     *
+     * @return void
      */
     public function no_items() // phpcs:ignore
     {

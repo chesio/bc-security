@@ -59,7 +59,7 @@ class LoginFailure extends Event
      */
     public function setError(\WP_Error $error): self
     {
-        $this->error_code = $error->get_error_code();
+        $this->error_code = (string) $error->get_error_code();
         $this->error_message = $error->get_error_message();
         return $this;
     }

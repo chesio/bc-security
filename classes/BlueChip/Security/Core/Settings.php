@@ -9,7 +9,7 @@ namespace BlueChip\Security\Core;
  *
  * @link https://developer.wordpress.org/plugins/settings/settings-api/
  */
-abstract class Settings implements \ArrayAccess
+abstract class Settings implements \ArrayAccess, \IteratorAggregate
 {
     /**
      * @var array Default values for all settings. Descendant classes should override it.
@@ -48,6 +48,7 @@ abstract class Settings implements \ArrayAccess
      * Get value of setting under key $name.
      *
      * @param string $name
+     *
      * @return mixed A null value is returned if $name is not a valid key.
      */
     public function __get(string $name)
@@ -67,7 +68,7 @@ abstract class Settings implements \ArrayAccess
      * @param string $name
      * @param mixed $value
      */
-    public function __set(string $name, $value)
+    public function __set(string $name, $value): void
     {
         if (isset($this->data[$name])) {
             $this->update($name, $value);
@@ -85,6 +86,7 @@ abstract class Settings implements \ArrayAccess
      * @internal Implements ArrayAccess interface.
      *
      * @param string $offset
+     *
      * @return bool
      */
     public function offsetExists($offset): bool
@@ -99,6 +101,7 @@ abstract class Settings implements \ArrayAccess
      * @internal Implements ArrayAccess interface.
      *
      * @param string $offset
+     *
      * @return mixed A null value is returned if $offset is not a valid key.
      */
     public function offsetGet($offset)
@@ -115,7 +118,7 @@ abstract class Settings implements \ArrayAccess
      * @param string $offset
      * @param mixed $value
      */
-    public function offsetSet($offset, $value)
+    public function offsetSet($offset, $value): void
     {
         $this->update($offset, $value);
     }
@@ -128,9 +131,17 @@ abstract class Settings implements \ArrayAccess
      *
      * @param string $offset
      */
-    public function offsetUnset($offset)
+    public function offsetUnset($offset): void
     {
         $this->update($offset, null);
+    }
+
+
+    //// IteratorAggregate API /////////////////////////////////////////////////
+
+    public function getIterator(): \Traversable
+    {
+        return new \ArrayIterator($this->data);
     }
 
 
@@ -160,6 +171,7 @@ abstract class Settings implements \ArrayAccess
      * Set $data as option data.
      *
      * @param array $data
+     *
      * @return bool
      */
     public function set(array $data): bool
@@ -215,6 +227,7 @@ abstract class Settings implements \ArrayAccess
      *
      * @param array $settings Input data to sanitize.
      * @param array $defaults [optional] If provided, used as default values for sanitization instead of local data.
+     *
      * @return array
      */
     public function sanitize(array $settings, array $defaults = []): array
@@ -244,6 +257,7 @@ abstract class Settings implements \ArrayAccess
      *
      * @param mixed $value
      * @param mixed $default
+     *
      * @return mixed
      */
     protected static function sanitizeByType($value, $default)
@@ -265,8 +279,9 @@ abstract class Settings implements \ArrayAccess
     /**
      * Parse a list of items separated by EOL character into array. Trim any empty lines (items).
      *
-     * @param array|string $list
-     * @return array
+     * @param string|string[] $list
+     *
+     * @return string[]
      */
     protected static function parseList($list): array
     {
@@ -279,9 +294,10 @@ abstract class Settings implements \ArrayAccess
      *
      * @param string $name
      * @param mixed $value
+     *
      * @return bool
      */
-    protected function update(string $name, $value): bool
+    public function update(string $name, $value): bool
     {
         if (!isset($this->data[$name])) {
             // Cannot update, invalid setting name.
@@ -298,7 +314,7 @@ abstract class Settings implements \ArrayAccess
             $data[$name] = $value;
         }
 
-        // Sanitize new value and update cache
+        // Sanitize new value and update cache.
         $this->data = $this->sanitize($data);
         // Make changes permanent.
         return $this->persist();
@@ -316,7 +332,7 @@ abstract class Settings implements \ArrayAccess
      *
      * @param callable $callback Callback that accepts up to three parameters: $old_value, $value, $option_name.
      */
-    public function addUpdateHook(callable $callback)
+    public function addUpdateHook(callable $callback): void
     {
         add_action("update_option_{$this->option_name}", [$this, 'updateOption'], 10, 2);
         add_action("update_option_{$this->option_name}", $callback, 10, 3);
@@ -325,10 +341,11 @@ abstract class Settings implements \ArrayAccess
 
     /**
      * @action https://developer.wordpress.org/reference/hooks/update_option_option/
+     *
      * @param array $old_value
      * @param array $new_value
      */
-    public function updateOption(array $old_value, array $new_value)
+    public function updateOption(array $old_value, array $new_value): void
     {
         $this->data = $new_value;
     }

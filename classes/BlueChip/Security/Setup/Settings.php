@@ -7,10 +7,14 @@ namespace BlueChip\Security\Setup;
  */
 class Settings extends \BlueChip\Security\Core\Settings
 {
-    /** string: What is server connection type? [REMOTE_ADDR] */
+    /**
+     * @var string What is server connection type? [string:REMOTE_ADDR]
+     */
     public const CONNECTION_TYPE = 'connection-type';
 
-    /** string: Google API key (for Safe Browsing check) */
+    /**
+     * @var string Google API key (for Safe Browsing check) [string]
+     */
     public const GOOGLE_API_KEY = 'google-api-key';
 
 
@@ -35,10 +39,11 @@ class Settings extends \BlueChip\Security\Core\Settings
      *
      * @param string $value
      * @param string $default
+     *
      * @return string
      */
     public static function sanitizeConnectionType(string $value, string $default): string
     {
-        return \in_array($value, IpAddress::enlist(), true) ? $value : $default;
+        return \array_key_exists($value, IpAddress::enlist()) ? $value : $default;
     }
 }

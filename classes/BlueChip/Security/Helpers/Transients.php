@@ -17,6 +17,7 @@ abstract class Transients
      * Delete transient.
      *
      * @param string ...$key
+     *
      * @return bool
      */
     public static function deleteFromSite(string ...$key): bool
@@ -32,7 +33,7 @@ abstract class Transients
      *
      * @param \wpdb $wpdb WordPress database access abstraction object
      */
-    public static function flush(\wpdb $wpdb)
+    public static function flush(\wpdb $wpdb): void
     {
         $table_name = is_multisite() ? $wpdb->sitemeta : $wpdb->options;
 
@@ -54,6 +55,7 @@ abstract class Transients
      * Get transient.
      *
      * @param string ...$key
+     *
      * @return mixed
      */
     public static function getForSite(string ...$key)
@@ -67,6 +69,7 @@ abstract class Transients
      *
      * @param mixed $value
      * @param mixed ...$args
+     *
      * @return bool
      */
     public static function setForSite($value, ...$args): bool
@@ -82,6 +85,7 @@ abstract class Transients
      * Create transient name from $key.
      *
      * @param string[] $key
+     *
      * @return string
      */
     private static function name(array $key): string

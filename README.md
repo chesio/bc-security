@@ -76,13 +76,13 @@ Since security measures for development instalations do not have to be as strict
 Basic checks cover common security practices. They do not require any information from third party sources to proceed and thus do not leak any information about your website:
 
 1. Is backend editing of plugin and theme PHP files disabled?
-1. Are directory listings disabled?
-1. Is execution of PHP files from uploads directory forbidden?
-1. Is display of PHP errors off by default? This check is only run in *live environment*.
-1. Is error log file not publicly available? This check is only run if both `WP_DEBUG` and `WP_DEBUG_LOG` constants are set to true.
-1. Are there no common usernames like admin or administrator on the system?
-1. Are user passwords hashed with [more secure hashing algorithm](https://roots.io/improving-wordpress-password-security/) than MD5 used by [WordPress by default](https://core.trac.wordpress.org/ticket/21022)?
-1. Is PHP version still supported?
+2. Are directory listings disabled?
+3. Is execution of PHP files from uploads directory forbidden?
+4. Is display of PHP errors off by default? This check is only run in *live environment*.
+5. Is error log file not publicly available? This check is only run if both `WP_DEBUG` and `WP_DEBUG_LOG` constants are set to true.
+6. Are there no common usernames like admin or administrator on the system?
+7. Are user passwords hashed with [more secure hashing algorithm](https://roots.io/improving-wordpress-password-security/) than MD5 used by [WordPress by default](https://core.trac.wordpress.org/ticket/21022)?
+8. Is PHP version still supported?
 
 #### Advanced checks
 
@@ -94,7 +94,7 @@ In the moment, list of installed plugins (but only those with _readme.txt_ file)
 
 WordPress core files verification is done in two phases:
 1. Official md5 checksums from WordPress.org are used to determine if any of core files have been modified.
-1. All files in root directory, _wp-admin_ directory (including subdirectories) and _wp-includes_ directory (including subdirectories) are checked against official checksums list in order to find out any unknown files.
+2. All files in root directory, _wp-admin_ directory (including subdirectories) and _wp-includes_ directory (including subdirectories) are checked against official checksums list in order to find out any unknown files.
 
 The check uses the same checksums API as [`core verify-checksums`](https://developer.wordpress.org/cli/commands/core/verify-checksums/) command from [WP-CLI](https://wp-cli.org/).
 
@@ -120,10 +120,11 @@ Both basic and advanced checks can be run manually from a dedicated page in back
 
 BC Security allows you to:
 1. Disable pingbacks
-1. Disable XML RPC methods that require authentication
-1. Disable application passwords
-1. Prevent usernames discovery via [REST API requests](https://developer.wordpress.org/rest-api/reference/users/) and [username enumeration](https://hackertarget.com/wordpress-user-enumeration/)
-1. Check and/or validate user passwords using [Pwned Passwords](https://haveibeenpwned.com/Passwords) database and [API](https://haveibeenpwned.com/API/v2#PwnedPasswords)
+2. Disable XML RPC methods that require authentication
+3. Disable application passwords
+4. Prevent usernames discovery via [REST API requests](https://developer.wordpress.org/rest-api/reference/users/) and [username eumeration](https://hackertarget.com/wordpress-user-enumeration/)
+5. Disable login with email or login with username to reduce risk from brute-force or [credential stuffing attacks](https://owasp.org/www-community/attacks/Credential_stuffing).
+6. Check and/or validate user passwords using [Pwned Passwords](https://haveibeenpwned.com/Passwords) database and [API](https://haveibeenpwned.com/API/v2#PwnedPasswords)
 
 #### Passwords check
 
@@ -136,7 +137,7 @@ Passwords are validated on user creation, password change or password reset. If 
 ### Login security
 
 1. BC Security allows you to limit number of login attempts from single IP address. Implementation of this feature is heavily inspired by popular [Limit Login Attempts](https://wordpress.org/plugins/limit-login-attempts/) plugin with an extra feature of immediate blocking of specific usernames (like _admin_ or _administrator_).
-1. BC Security offers an option to only display generic error message as a result of failed login attempt when wrong username, email or password is provided.
+2. BC Security offers an option to only display generic error message as a result of failed login attempt when wrong username, email or password is provided.
 
 ### IP blacklist
 
@@ -149,12 +150,12 @@ Out-dated records are automatically removed from the list by WP-Cron job schedul
 BC Security allows to send automatic email notification to configured recipients on following occasions:
 
 1. WordPress update is available.
-1. Plugin update is available.
-1. Theme update is available.
-1. User with administrator privileges has logged in.
-1. Known IP address has been locked out (see note below).
-1. [Checklist monitoring](#checklist-monitoring) triggers an alert. Note: there is one notification sent if any of basic checks fails, but separate notification is sent if any of advanced checks fails.
-1. BC Security plugin has been deactivated.
+2. Plugin update is available.
+3. Theme update is available.
+4. User with administrator privileges has logged in.
+5. Known IP address has been locked out (see note below).
+6. [Checklist monitoring](#checklist-monitoring) triggers an alert. Note: there is one notification sent if any of basic checks fails, but separate notification is sent if any of advanced checks fails.
+7. BC Security plugin has been deactivated.
 
 Note: _Known IP address_ is an IP address from which a successful login attempt had been previously made. Information about successful login attempts is fetched from [event logs](#events-logging).
 
@@ -165,8 +166,8 @@ You can mute all email notifications by setting constant `BC_SECURITY_MUTE_NOTIF
 BC Security logs both short and long lockout events (see [Login Security](#login-security) feature). Also, the following events triggered by WordPress core are logged:
 
 1. Attempts to authenticate with bad cookie
-1. Failed and successful login attempts
-1. Requests that result in 404 page
+2. Failed and successful login attempts
+3. Requests that result in 404 page
 
 Logs are stored in database and can be viewed on backend. Logs are automatically deleted based on their age and overall size: by default no more than 20 thousands of records are kept and any log records older than 365 days are removed, but these limits can be configured.
 
@@ -202,4 +203,4 @@ Some of the modules listed above come with settings panel. Further customization
 ## Alternatives (and why I do not use them)
 
 1. [Wordfence Security](https://wordpress.org/plugins/wordfence/) - likely the current number one plugin for WordPress Security. My problem with Wordfence is that _"when you use [Wordfence], statistics about your website visitors are automatically collected"_ (see the full [Terms of Use and Privacy Policy](https://www.wordfence.com/terms-of-use-and-privacy-policy/)). In other words, in order to offer some of its great features, Wordfence is [phoning home](https://en.wikipedia.org/wiki/Phoning_home).
-1. [All In One WP Security & Firewall](https://wordpress.org/plugins/all-in-one-wp-security-and-firewall/) - another very popular security plugin for WordPress. I have used AIOWPSF for quite some time; it has a lot of features, but also lot of small bugs (sometimes [not that small](https://sumofpwn.nl/advisory/2016/cross_site_scripting_in_all_in_one_wp_security___firewall_wordpress_plugin.html)). I [used to contribute](https://github.com/Arsenal21/all-in-one-wordpress-security/commits?author=chesio) to the plugin, but the codebase is [rather messy](https://github.com/Arsenal21/all-in-one-wordpress-security/pull/34) and after some time I got tired struggling with it.
+2. [All In One WP Security & Firewall](https://wordpress.org/plugins/all-in-one-wp-security-and-firewall/) - another very popular security plugin for WordPress. I have used AIOWPSF for quite some time; it has a lot of features, but also lot of small bugs (sometimes [not that small](https://sumofpwn.nl/advisory/2016/cross_site_scripting_in_all_in_one_wp_security___firewall_wordpress_plugin.html)). I [used to contribute](https://github.com/Arsenal21/all-in-one-wordpress-security/commits?author=chesio) to the plugin, but the codebase is [rather messy](https://github.com/Arsenal21/all-in-one-wordpress-security/pull/34) and after some time I got tired struggling with it.

@@ -15,6 +15,7 @@ interface Countable
      * Return number of all items newer than given $timestamp.
      *
      * @param int $timestamp
+     *
      * @return int Number of all items newer than given $timestamp.
      */
     public function countFrom(int $timestamp): int;

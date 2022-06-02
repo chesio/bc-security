@@ -4,12 +4,12 @@
  * Plugin Name: BC Security
  * Plugin URI: https://github.com/chesio/bc-security
  * Description: Helps keeping WordPress websites secure.
- * Version: 0.18.1
+ * Version: 0.19.0
  * Author: Česlav Przywara <ceslav@przywara.cz>
  * Author URI: https://www.chesio.com
  * Requires PHP: 7.3
  * Requires WP: 5.5
- * Tested up to: 5.8
+ * Tested up to: 6.0
  * Text Domain: bc-security
  * GitHub Plugin URI: https://github.com/chesio/bc-security
  * Update URI: https://github.com/chesio/bc-security
@@ -53,13 +53,18 @@ if (version_compare(PHP_VERSION, '7.3', '<')) {
 // Register autoloader for this plugin.
 require_once __DIR__ . '/autoload.php';
 
-// Construct plugin instance.
-$bc_security = new \BlueChip\Security\Plugin(__FILE__, $GLOBALS['wpdb']);
+return call_user_func(function () {
+    // Construct plugin instance.
+    $bc_security = new \BlueChip\Security\Plugin(__FILE__, $GLOBALS['wpdb']);
 
-// Register activation hook.
-register_activation_hook(__FILE__, [$bc_security, 'activate']);
-// Register deactivation hook.
-register_deactivation_hook(__FILE__, [$bc_security, 'deactivate']);
+    // Register activation hook.
+    register_activation_hook(__FILE__, [$bc_security, 'activate']);
+    // Register deactivation hook.
+    register_deactivation_hook(__FILE__, [$bc_security, 'deactivate']);
 
-// Load the plugin.
-$bc_security->load();
+    // Boot up the plugin immediately after all plugins are loaded.
+    add_action('plugins_loaded', [$bc_security, 'load'], 0, 0);
+
+    // Return the instance.
+    return $bc_security;
+});
