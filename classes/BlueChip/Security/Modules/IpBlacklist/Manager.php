@@ -192,28 +192,6 @@ class Manager implements Modules\Countable, Modules\Installable, Modules\Initial
 
 
     /**
-     * Fetch all items on blacklist (optionally with given $scope).
-     *
-     * @param int $scope Blacklist scope [optional].
-     *
-     * @return array
-     */
-    public function fetchAll(int $scope = LockScope::ANY): array
-    {
-        // Prepare query
-        $query = "SELECT * FROM {$this->blacklist_table}";
-        // Apply scope if given
-        if ($scope !== LockScope::ANY) {
-            $query .= $this->wpdb->prepare(" WHERE scope = %d", $scope);
-        }
-        // Execute query
-        $results = $this->wpdb->get_results($query);
-        // Return results
-        return \is_array($results) ? $results : [];
-    }
-
-
-    /**
      * Is $ip_address on blacklist with given $scope?
      *
      * @hook \BlueChip\Security\Modules\IpBlacklist\Hooks::IS_IP_ADDRESS_LOCKED
