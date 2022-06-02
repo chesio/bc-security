@@ -11,7 +11,7 @@
 
 ### Removed
 
-* "Check auth cookies" setting has been removed [#124](https://github.com/chesio/bc-security/issues/124).
+* "Check auth cookies" setting has been removed - the check is now always applied [#124](https://github.com/chesio/bc-security/issues/124).
 
 ## Version 0.18.1 (2021-12-29)
 
