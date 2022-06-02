@@ -44,7 +44,7 @@ abstract class ListTable extends \WP_List_Table
     /**
      * @param string $url URL of admin page where list table is displayed.
      * @param string $per_page_option_name Option name for "per page" screen option.
-     * @param array $args
+     * @param array<string,mixed> $args
      */
     public function __construct(string $url, string $per_page_option_name, array $args = [])
     {
@@ -127,20 +127,20 @@ abstract class ListTable extends \WP_List_Table
     /**
      * Return content for "checkbox" column.
      *
-     * @param array $item
+     * @param array<string,string> $item
      *
      * @return string
      */
     public function column_cb($item) // phpcs:ignore
     {
-        return \sprintf('<input type="checkbox" name="ids[]" value="%d" />', $item['id']);
+        return \sprintf('<input type="checkbox" name="ids[]" value="%d" />', (int) $item['id']);
     }
 
 
     /**
      * Return column contents without any extra processing.
      *
-     * @param array $item
+     * @param array<string,string> $item
      * @param string $column_name
      *
      * @return string

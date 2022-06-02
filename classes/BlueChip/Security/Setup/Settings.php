@@ -19,7 +19,7 @@ class Settings extends \BlueChip\Security\Core\Settings
 
 
     /**
-     * @var array Default values for all settings.
+     * @var array<string,string> Default values for all settings.
      */
     protected const DEFAULTS = [
         self::CONNECTION_TYPE => IpAddress::REMOTE_ADDR,
@@ -27,7 +27,7 @@ class Settings extends \BlueChip\Security\Core\Settings
     ];
 
     /**
-     * @var array Custom sanitizers.
+     * @var array<string,callable> Custom sanitizers.
      */
     protected const SANITIZERS = [
         self::CONNECTION_TYPE => [self::class, 'sanitizeConnectionType'],

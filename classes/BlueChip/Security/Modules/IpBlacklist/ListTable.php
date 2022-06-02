@@ -77,7 +77,7 @@ class ListTable extends \BlueChip\Security\Core\ListTable
     /**
      * Return content for first column (IP address) including row actions.
      *
-     * @param array $item
+     * @param array<string,string> $item
      *
      * @return string
      */
@@ -90,7 +90,7 @@ class ListTable extends \BlueChip\Security\Core\ListTable
     /**
      * Return content for "ban time" column.
      *
-     * @param array $item
+     * @param array<string,string> $item
      *
      * @return string
      */
@@ -103,7 +103,7 @@ class ListTable extends \BlueChip\Security\Core\ListTable
     /**
      * Return content for "release time" column.
      *
-     * @param array $item
+     * @param array<string,string> $item
      *
      * @return string
      */
@@ -116,13 +116,13 @@ class ListTable extends \BlueChip\Security\Core\ListTable
     /**
      * Return human readable value for ban reason table column.
      *
-     * @param array $item
+     * @param array<string,string> $item
      *
      * @return string
      */
     public function column_reason(array $item): string // phpcs:ignore
     {
-        return $this->explainBanReason($item['reason']);
+        return $this->explainBanReason((int) $item['reason']);
     }
 
 
@@ -146,7 +146,7 @@ class ListTable extends \BlueChip\Security\Core\ListTable
 
 
     /**
-     * @return array
+     * @return array<string,string>
      */
     public function get_bulk_actions() // phpcs:ignore
     {
@@ -160,7 +160,7 @@ class ListTable extends \BlueChip\Security\Core\ListTable
     /**
      * Define table columns.
      *
-     * @return array
+     * @return array<string,string>
      */
     public function get_columns() // phpcs:ignore
     {
@@ -178,7 +178,7 @@ class ListTable extends \BlueChip\Security\Core\ListTable
     /**
      * Define sortable columns.
      *
-     * @return array
+     * @return array<string,string>
      */
     public function get_sortable_columns() // phpcs:ignore
     {
@@ -196,7 +196,7 @@ class ListTable extends \BlueChip\Security\Core\ListTable
      *
      * @todo Better labels for scopes.
      *
-     * @return array
+     * @return array<string,string>
      */
     protected function get_views() // phpcs:ignore
     {
@@ -328,8 +328,9 @@ class ListTable extends \BlueChip\Security\Core\ListTable
 
 
     /**
-     * @param array $item
-     * @return array
+     * @param array<string,string> $item
+     *
+     * @return array<string,string>
      */
     private function getRowActions(array $item): array
     {
@@ -337,7 +338,7 @@ class ListTable extends \BlueChip\Security\Core\ListTable
             // Any item can be removed
             self::ACTION_REMOVE => $this->renderRowAction(
                 self::ACTION_REMOVE,
-                $item['id'],
+                (int) $item['id'],
                 'delete',
                 __('Remove', 'bc-security')
             ),
@@ -347,7 +348,7 @@ class ListTable extends \BlueChip\Security\Core\ListTable
             // Only active locks can be unlocked
             $actions[self::ACTION_UNLOCK] = $this->renderRowAction(
                 self::ACTION_UNLOCK,
-                $item['id'],
+                (int) $item['id'],
                 'unlock',
                 __('Unlock', 'bc-security')
             );

@@ -114,7 +114,7 @@ class CoreIntegrity extends Checklist\AdvancedCheck
      *
      * @param object $checksums
      *
-     * @return array
+     * @return string[]
      */
     private static function findModifiedFiles(object $checksums): array
     {
@@ -148,7 +148,7 @@ class CoreIntegrity extends Checklist\AdvancedCheck
      *
      * @param object $checksums
      *
-     * @return array
+     * @return string[]
      */
     private static function findUnknownFiles(object $checksums): array
     {

@@ -365,7 +365,7 @@ class Watchman implements Modules\Initializable, Modules\Activable
     /**
      * Send notification about multiple checks that failed during checklist monitoring.
      *
-     * @param array $issues Issues which triggered the alert (issue is an array with 'check' and 'result' keys).
+     * @param array{check:Checklist\Check,result:Checklist\CheckResult} $issues Issues which triggered the alert.
      */
     public function watchChecklistMultipleChecksAlert(array $issues): void
     {

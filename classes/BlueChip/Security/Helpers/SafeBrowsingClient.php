@@ -100,7 +100,7 @@ class SafeBrowsingClient
     /**
      * @param string[] $urls List of URLs to look up.
      *
-     * @return array|null List of matches (empty means no matches found) or null on error.
+     * @return object[]|null List of matches (empty means no matches found) or null on error.
      */
     public function lookup(array $urls): ?array
     {
@@ -165,7 +165,7 @@ class SafeBrowsingClient
      *
      * @param string[] $urls List of URLs to check
      *
-     * @return array Safe Browsing request data
+     * @return mixed[] Safe Browsing request data
      */
     private static function getRequestBody(array $urls): array
     {

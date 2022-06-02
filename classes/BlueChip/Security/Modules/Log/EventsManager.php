@@ -8,7 +8,7 @@ namespace BlueChip\Security\Modules\Log;
 abstract class EventsManager
 {
     /**
-     * @var array
+     * @var array<string,string>
      */
     private static $mapping = [
         Events\AuthBadCookie::ID => Events\AuthBadCookie::class,
@@ -36,7 +36,7 @@ abstract class EventsManager
     /**
      * Return list of event classes indexed by their IDs.
      *
-     * @return array
+     * @return array<string,string>
      */
     public static function getMapping(): array
     {
@@ -47,7 +47,7 @@ abstract class EventsManager
     /**
      * Return list of event instances indexed by their IDs.
      *
-     * @return array
+     * @return array<string,Event>
      */
     public static function getInstances(): array
     {

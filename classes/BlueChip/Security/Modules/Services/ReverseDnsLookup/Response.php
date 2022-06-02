@@ -18,7 +18,7 @@ class Response
     private $hostname;
 
     /**
-     * @var array
+     * @var array<string,mixed>
      */
     private $context;
 
@@ -26,7 +26,7 @@ class Response
     /**
      * @param string $ip_address
      * @param string $hostname
-     * @param array $context
+     * @param array<string,mixed> $context
      */
     public function __construct(string $ip_address, string $hostname, array $context)
     {
@@ -48,6 +48,9 @@ class Response
     }
 
 
+    /**
+     * @return array<string,mixed>
+     */
     public function getContext(): array
     {
         return $this->context;

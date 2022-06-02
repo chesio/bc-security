@@ -30,7 +30,7 @@ abstract class Jobs
 
 
     /**
-     * @return array List of all implemented cron jobs.
+     * @return array<string,string> List of all implemented cron jobs.
      */
     public static function enlist(): array
     {

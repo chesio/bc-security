@@ -156,7 +156,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
         // Duration
         echo '<span class="bc-security">';
         echo '<label for="ip-blacklist-duration">' . esc_html__('Lock duration', 'bc-security') . '</label>';
-        echo '<input type="number" id="ip-blacklist-duration" name="duration-length" class="small-text" value="' . esc_attr($duration_units) . '">';
+        echo '<input type="number" id="ip-blacklist-duration" name="duration-length" class="small-text" value="' . (string)$duration_units . '">';
         echo '<select name="duration-unit">';
         foreach ($units_in_seconds as $unit_in_seconds => $unit_name) {
             echo '<option value="' . $unit_in_seconds . '"' . selected($unit_in_seconds, $duration_unit_in_seconds, false) . '>' . esc_html($unit_name) . '</option>';
@@ -356,9 +356,9 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
      * can be used to represent the number of seconds without fractional component.
      *
      * @param int $seconds
-     * @param array $units_in_seconds
+     * @param int[] $units_in_seconds
      *
-     * @return array
+     * @return array{int,int}
      */
     private function transformSecondsIntoFittingUnit(int $seconds, array $units_in_seconds): array
     {

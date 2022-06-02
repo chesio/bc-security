@@ -63,7 +63,7 @@ class Manager implements Modules\Initializable
      * @param \wpdb $wpdb WordPress database access abstraction object
      * @param string $google_api_key Google API key for project with Safe Browsing API enabled.
      *
-     * @return array
+     * @return array<string,Check>
      */
     public function constructChecks(\wpdb $wpdb, string $google_api_key): array
     {
@@ -121,10 +121,8 @@ class Manager implements Modules\Initializable
     /**
      * Return list of all implemented checks, optionally filtered.
      *
-     * @param array $filters [optional] Extra conditions to filter the list by: meaningful (boolean),
-     *   monitored (boolean), status (null|boolean).
-     *
-     * @return \BlueChip\Security\Modules\Checklist\Check[]
+     * @param array{meaningful?:bool,monitored?:bool,status?:?bool} $filters [optional] Extra conditions to filter the list by.
+     * @return Check[]
      */
     public function getChecks(array $filters = []): array
     {

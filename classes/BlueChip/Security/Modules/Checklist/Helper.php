@@ -78,7 +78,7 @@ abstract class Helper
      *
      * @param string $path Absolute path to checksums root directory, must end with slash!
      * @param object $checksums Dictionary with { filename: checksum } items. All filenames must be relative to $path.
-     * @param array $ignored_files List of filenames to ignore [optional].
+     * @param string[] $ignored_files List of filenames to ignore [optional].
      *
      * @return string[]
      */

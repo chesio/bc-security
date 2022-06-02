@@ -53,7 +53,7 @@ class Settings extends \BlueChip\Security\Core\Settings
     public const NOTIFICATION_RECIPIENTS = 'notification_recipients';
 
     /**
-     * @var array Default values for all settings.
+     * @var array<string,mixed> Default values for all settings.
      */
     protected const DEFAULTS = [
         self::ADMIN_USER_LOGIN => true,
@@ -68,7 +68,7 @@ class Settings extends \BlueChip\Security\Core\Settings
     ];
 
     /**
-     * @var array Custom sanitizers.
+     * @var array<string,callable> Custom sanitizers.
      */
     protected const SANITIZERS = [
         self::NOTIFICATION_RECIPIENTS => [self::class, 'sanitizeNotificationRecipient'],

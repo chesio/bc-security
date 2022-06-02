@@ -139,7 +139,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
 
 
     /**
-     * @param array $basic_checks
+     * @param \BlueChip\Security\Modules\Checklist\Check[] $basic_checks
      */
     private function printBasicChecksSection(array $basic_checks): void
     {
@@ -158,7 +158,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
 
 
     /**
-     * @param array $advanced_checks
+     * @param \BlueChip\Security\Modules\Checklist\Check[] $advanced_checks
      */
     private function printAdvancedChecksSection(array $advanced_checks): void
     {
@@ -192,6 +192,10 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
     }
 
 
+    /**
+     * @param \BlueChip\Security\Modules\Checklist\Check[] $checks
+     * @param string $checks_class
+     */
     private function printChecklistTable(array $checks, string $checks_class): void
     {
         echo '<table class="wp-list-table widefat striped">';

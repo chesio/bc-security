@@ -87,9 +87,9 @@ class Gatekeeper implements \BlueChip\Security\Modules\Initializable, \BlueChip\
      *
      * @filter https://developer.wordpress.org/reference/hooks/illegal_user_logins/
      *
-     * @param array $usernames
+     * @param string[] $usernames
      *
-     * @return array
+     * @return string[]
      */
     public function filterIllegalUserLogins(array $usernames): array
     {
@@ -100,9 +100,9 @@ class Gatekeeper implements \BlueChip\Security\Modules\Initializable, \BlueChip\
     /**
      * Let generic `authentication_failed` error shake the login form.
      *
-     * @param array $error_codes
+     * @param string[] $error_codes
      *
-     * @return array
+     * @return string[]
      */
     public function filterShakeErrorCodes(array $error_codes): array
     {
@@ -114,7 +114,7 @@ class Gatekeeper implements \BlueChip\Security\Modules\Initializable, \BlueChip\
     /**
      * Perform necessary actions when login via cookie fails due bad username or bad hash.
      *
-     * @param array $cookie_elements
+     * @param array<string,string> $cookie_elements
      */
     public function handleBadCookie(array $cookie_elements): void
     {

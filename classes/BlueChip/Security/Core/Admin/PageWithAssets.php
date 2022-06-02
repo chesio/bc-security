@@ -22,7 +22,7 @@ trait PageWithAssets
 
 
     /**
-     * @param array $assets JS assets to enqueue in [ handle => filename ] format.
+     * @param array<string,string> $assets JS assets to enqueue in [ handle => filename ] format.
      */
     protected function enqueueJsAssets(array $assets): void
     {
@@ -41,7 +41,7 @@ trait PageWithAssets
 
 
     /**
-     * @param array $assets CSS assets to enqueue in [ handle => filename ] format.
+     * @param array<string,string> $assets CSS assets to enqueue in [ handle => filename ] format.
      */
     protected function enqueueCssAssets(array $assets): void
     {

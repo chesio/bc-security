@@ -36,7 +36,7 @@ abstract class AjaxHelper
      * @param string $handle
      * @param string $object_name
      * @param string $action
-     * @param array $data
+     * @param array<string,mixed> $data
      */
     public static function injectSetup(string $handle, string $object_name, string $action, array $data = []): void
     {

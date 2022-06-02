@@ -103,9 +103,9 @@ class Core implements \BlueChip\Security\Modules\Initializable
      *
      * @filter https://developer.wordpress.org/reference/hooks/xmlrpc_methods/
      *
-     * @param array $methods
+     * @param array<string,mixed> $methods
      *
-     * @return array
+     * @return array<string,mixed>
      */
     public function disablePingbacks(array $methods): array
     {
@@ -119,9 +119,9 @@ class Core implements \BlueChip\Security\Modules\Initializable
      *
      * @filter https://developer.wordpress.org/reference/hooks/oembed_response_data/
      *
-     * @param array $data
+     * @param array<string,mixed> $data
      *
-     * @return array
+     * @return array<string,mixed>
      */
     public function filterAuthorInOembed(array $data): array
     {
@@ -139,7 +139,7 @@ class Core implements \BlueChip\Security\Modules\Initializable
      * @filter https://developer.wordpress.org/reference/hooks/rest_request_before_callbacks/
      *
      * @param \WP_HTTP_Response|\WP_Error $response
-     * @param array $handler
+     * @param mixed[] $handler
      * @param \WP_REST_Request $request
      *
      * @return \WP_HTTP_Response|\WP_Error
@@ -205,9 +205,9 @@ class Core implements \BlueChip\Security\Modules\Initializable
     /**
      * @filter https://developer.wordpress.org/reference/hooks/request/
      *
-     * @param array $query_vars
+     * @param array<string,mixed> $query_vars
      *
-     * @return array
+     * @return array<string,mixed>
      */
     public function filterAuthorQuery(array $query_vars): array
     {
@@ -225,7 +225,7 @@ class Core implements \BlueChip\Security\Modules\Initializable
      *
      * @link https://hackertarget.com/wordpress-user-enumeration/
      *
-     * @param array $query_vars
+     * @param array<string,mixed> $query_vars
      *
      * @return bool True if `author` key is present and its value is either an array or can be seen as numeric.
      */

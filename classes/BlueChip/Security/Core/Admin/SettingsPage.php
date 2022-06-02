@@ -94,7 +94,8 @@ trait SettingsPage
      *
      * @param string $key
      * @param mixed $value [optional] Value to use instead of current value of setting with $key.
-     * @return array
+     *
+     * @return array<string,mixed>
      */
     protected function getFieldBaseProperties(string $key, $value = null): array
     {
@@ -140,7 +141,7 @@ trait SettingsPage
      * @param string $key Key of the field (must be proper key from Settings)
      * @param string $title Title of the field
      * @param callable $callback Callback that produces form input for the field
-     * @param array $args [Optional] Any extra arguments for $callback function
+     * @param array<string,mixed> $args [Optional] Any extra arguments for $callback function
      */
     public function addSettingsField(string $key, string $title, callable $callback, array $args = []): void
     {

@@ -143,7 +143,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
     /**
      * Return available connection options in format suitable for <select> field.
      *
-     * @return array
+     * @return array<string,string>
      */
     private function getConnectionOptions(): array
     {

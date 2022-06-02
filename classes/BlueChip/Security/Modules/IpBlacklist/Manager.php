@@ -34,7 +34,7 @@ class Manager implements Modules\Countable, Modules\Installable, Modules\Initial
     private $blacklist_table;
 
     /**
-     * @var array List of table columns
+     * @var string[] List of table columns
      */
     private $columns;
 
@@ -158,7 +158,7 @@ class Manager implements Modules\Countable, Modules\Installable, Modules\Initial
      * @param string $order_by
      * @param string $order
      *
-     * @return array
+     * @return array<int,array<string,string>>
      */
     public function fetch(int $scope = LockScope::ANY, int $from = 0, int $limit = 20, string $order_by = '', string $order = ''): array
     {
@@ -304,7 +304,7 @@ class Manager implements Modules\Countable, Modules\Installable, Modules\Initial
     /**
      * Remove records with given primary keys.
      *
-     * @param array $ids
+     * @param int[] $ids
      *
      * @return int Number of deleted records.
      */
@@ -356,7 +356,7 @@ class Manager implements Modules\Countable, Modules\Installable, Modules\Initial
      *
      * @todo Only unlock really active locks.
      *
-     * @param array $ids
+     * @param int[] $ids
      *
      * @return int Number of unlocked records.
      */

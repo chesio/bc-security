@@ -8,7 +8,7 @@ namespace BlueChip\Security;
 class Plugin
 {
     /**
-     * @var array Plugin module objects
+     * @var array<string,object> Plugin module objects
      */
     private $modules;
 
@@ -66,7 +66,7 @@ class Plugin
      * @param string $server_address
      * @param Settings $settings
      *
-     * @return array
+     * @return array<string,object>
      */
     private static function constructModules(\wpdb $wpdb, string $remote_address, string $server_address, Settings $settings): array
     {

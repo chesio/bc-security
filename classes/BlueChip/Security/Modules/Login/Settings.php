@@ -44,7 +44,7 @@ class Settings extends \BlueChip\Security\Core\Settings
 
 
     /**
-     * @var array Default values for all settings.
+     * @var array<string,mixed> Default values for all settings.
      */
     protected const DEFAULTS = [
         self::SHORT_LOCKOUT_AFTER => 5,
@@ -57,7 +57,7 @@ class Settings extends \BlueChip\Security\Core\Settings
     ];
 
     /**
-     * @var array Custom sanitizers.
+     * @var array<string,callable> Custom sanitizers.
      */
     protected const SANITIZERS = [
         self::USERNAME_BLACKLIST => [self::class, 'sanitizeUsernameBlacklist'],
@@ -109,7 +109,7 @@ class Settings extends \BlueChip\Security\Core\Settings
      *
      * @hook \BlueChip\Security\Modules\Login\Hooks::USERNAME_BLACKLIST
      *
-     * @return array
+     * @return string[]
      */
     public function getUsernameBlacklist(): array
     {

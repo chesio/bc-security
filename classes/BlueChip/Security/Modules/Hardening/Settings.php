@@ -45,7 +45,7 @@ class Settings extends \BlueChip\Security\Core\Settings
     public const VALIDATE_PASSWORDS = 'validate_passwords';
 
     /**
-     * @var array Default values for all settings.
+     * @var array<string,bool> Default values for all settings.
      */
     protected const DEFAULTS = [
         self::DISABLE_PINGBACKS => false,

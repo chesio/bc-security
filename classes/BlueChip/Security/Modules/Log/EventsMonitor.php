@@ -72,7 +72,7 @@ class EventsMonitor implements \BlueChip\Security\Modules\Initializable
     /**
      * Log when bad cookie is used for authentication.
      *
-     * @param array $cookie_elements
+     * @param array<string,string> $cookie_elements
      */
     public function logBadCookie(array $cookie_elements): void
     {

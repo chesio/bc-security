@@ -8,7 +8,7 @@ namespace BlueChip\Security\Modules\Checklist;
 class AutorunSettings extends \BlueChip\Security\Core\Settings
 {
     /**
-     * @var array Default values for all settings. By default, no checks are monitored.
+     * @var array<string,bool> Default values for all settings. By default, no checks are monitored.
      */
     protected const DEFAULTS = [
         Checks\PhpFilesEditationDisabled::class => false,

@@ -97,9 +97,9 @@ class NoPluginsRemovedFromDirectory extends Checklist\AdvancedCheck
 
 
     /**
-     * @param array $plugins
+     * @param array<string,array<string,mixed>> $plugins
      *
-     * @return array
+     * @return array{removed_plugins:array<string,array<string,mixed>>,unknown_plugins:array<string,array<string,mixed>>}
      */
     private function getProblematicPlugins(array $plugins): array
     {
