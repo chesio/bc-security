@@ -88,7 +88,7 @@ Basic checks cover common security practices. They do not require any informatio
 
 Advanced checks require data from external sources, therefore they leak some information about your website and take more time to execute.
 
-In the moment, list of installed plugins (but only those with _readme.txt_ file) is shared with WordPress.org and site URL is shared with Google.
+In the moment, list of installed plugins (but only those with _readme.md_ or _readme.txt_ file) is shared with WordPress.org and site URL is shared with Google.
 
 ##### WordPress core integrity check
 
@@ -179,8 +179,8 @@ Some of the modules listed above come with settings panel. Further customization
 * `bc-security/filter:is-live` - filters boolean value that determines whether your website is running in a live environment.
 * `bc-security/filter:plugin-changelog-url` - filters changelog URL of given plugin. Might come handy in case of plugins not hosted in Plugins Directory.
 * `bc-security/filter:obvious-usernames` - filters array of common usernames that are being checked via [checklist check](#basic-checks). By default, the array consists of _admin_ and _administrator_ values.
-* `bc-security/filter:plugins-to-check-for-integrity` - filters array of plugins that should have their integrity checked. By default, the array consists of all installed plugins that have _readme.txt_ file. Note that plugins under version control are automatically omitted.
-* `bc-security/filter:plugins-to-check-for-removal` - filters array of plugins to check for their presence in WordPress.org Plugins Directory. By default, the array consists of all installed plugins that have _readme.txt_ file.
+* `bc-security/filter:plugins-to-check-for-integrity` - filters array of plugins that should have their integrity checked. By default, the array consists of all installed plugins that have _readme.md__ or _readme.txt_ file. Note that plugins under version control are automatically omitted.
+* `bc-security/filter:plugins-to-check-for-removal` - filters array of plugins to check for their presence in WordPress.org Plugins Directory. By default, the array consists of all installed plugins that have _readme.md__ or _readme.txt_ file.
 * `bc-security/filter:modified-files-ignored-in-core-integrity-check` - filters array of files that should not be reported as __modified__ in checksum verification of core WordPress files. By default, the array consist of _wp-config-sample.php_ and _wp-includes/version.php_ values.
 * `bc-security/filter:unknown-files-ignored-in-core-integrity-check` - filters array of files that should not be reported as __unknown__ in checksum verification of core WordPress files. By default, the array consist of _.htaccess_, _wp-config.php_, _liesmich.html_, _olvasdel.html_ and _procitajme.html_ values.
 * `bc-security/filter:show-pwned-password-warning` - filters whether the ["pwned password" warning](#passwords-check) should be displayed for current user on current screen.

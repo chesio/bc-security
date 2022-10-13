@@ -1,6 +1,12 @@
 # BC Security Changelog
 
-## Upcoming version 0.19.0 (2022-06-02)
+## Upcoming version 0.20.0 (????-??-??)
+
+### Added
+
+* Improve detection of plugins hosted in Plugins Directory - include plugins that have `readme.md` instead of `readme.txt` file [#128](https://github.com/chesio/bc-security/issues/128).
+
+## Version 0.19.0 (2022-06-02)
 
 ### Added
 
