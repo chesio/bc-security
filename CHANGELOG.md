@@ -4,7 +4,11 @@
 
 ### Added
 
-* Improve detection of plugins hosted in Plugins Directory - include plugins that have `readme.md` instead of `readme.txt` file [#128](https://github.com/chesio/bc-security/issues/128).
+* Improve detection of plugins hosted in Plugins Directory: also include plugins that have `readme.md` instead of `readme.txt` file [#128](https://github.com/chesio/bc-security/issues/128).
+
+### Changed
+
+* WordPress 5.8 or newer is now required [#131](https://github.com/chesio/bc-security/issues/131).
 
 ## Version 0.19.0 (2022-06-02)
 
