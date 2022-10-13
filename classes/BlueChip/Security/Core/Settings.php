@@ -89,6 +89,7 @@ abstract class Settings implements \ArrayAccess, \IteratorAggregate
      *
      * @return bool
      */
+    #[\ReturnTypeWillChange]
     public function offsetExists($offset): bool
     {
         return isset($this->data[$offset]);
@@ -104,6 +105,7 @@ abstract class Settings implements \ArrayAccess, \IteratorAggregate
      *
      * @return mixed A null value is returned if $offset is not a valid key.
      */
+    #[\ReturnTypeWillChange]
     public function offsetGet($offset)
     {
         return isset($this->data[$offset]) ? $this->data[$offset] : null;

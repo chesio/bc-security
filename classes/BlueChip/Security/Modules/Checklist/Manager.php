@@ -231,7 +231,7 @@ class Manager implements Modules\Initializable
      */
     public function runCheck(): void
     {
-        if (empty($check_id = \filter_input(INPUT_POST, 'check_id', FILTER_SANITIZE_STRING))) {
+        if (empty($check_id = \filter_input(INPUT_POST, 'check_id'))) {
             wp_send_json_error([
                 'message' => __('No check ID provided!', 'bc-security'),
             ]);

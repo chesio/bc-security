@@ -234,7 +234,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
      */
     private function processActions(): void
     {
-        $nonce = \filter_input(INPUT_POST, self::NONCE_NAME, FILTER_SANITIZE_STRING);
+        $nonce = \filter_input(INPUT_POST, self::NONCE_NAME);
         if (empty($nonce)) {
             // No nonce, no action.
             return;
@@ -271,7 +271,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
         $duration_length = \filter_input(INPUT_POST, 'duration-length', FILTER_VALIDATE_INT);
         $duration_unit = \filter_input(INPUT_POST, 'duration-unit', FILTER_VALIDATE_INT);
         $scope = \filter_input(INPUT_POST, 'scope', FILTER_VALIDATE_INT);
-        $comment = \filter_input(INPUT_POST, 'comment', FILTER_SANITIZE_STRING);
+        $comment = \strip_tags(\filter_input(INPUT_POST, 'comment'));
 
         // Check whether input is formally valid.
         if (empty($ip_address) || empty($duration_length) || empty($duration_unit) || empty($scope)) {

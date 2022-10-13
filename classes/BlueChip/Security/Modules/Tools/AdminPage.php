@@ -125,7 +125,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
      */
     private function processActions(): void
     {
-        $nonce = \filter_input(INPUT_POST, self::NONCE_NAME, FILTER_SANITIZE_STRING);
+        $nonce = \filter_input(INPUT_POST, self::NONCE_NAME);
         if (empty($nonce)) {
             // No nonce, no action.
             return;

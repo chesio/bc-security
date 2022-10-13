@@ -101,6 +101,19 @@ class ListTable extends \BlueChip\Security\Core\ListTable
 
 
     /**
+     * Format comment column.
+     *
+     * @param array<string,string> $item
+     *
+     * @return string
+     */
+    public function column_comment(array $item): string // phpcs:ignore
+    {
+        return \htmlspecialchars($item['comment']);
+    }
+
+
+    /**
      * Return content for "release time" column.
      *
      * @param array<string,string> $item
