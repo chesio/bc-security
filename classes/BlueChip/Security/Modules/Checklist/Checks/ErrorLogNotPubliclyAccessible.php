@@ -36,10 +36,8 @@ class ErrorLogNotPubliclyAccessible extends Checklist\BasicCheck
 
     protected function runInternal(): Checklist\CheckResult
     {
-        $is_wordpress_51 = \version_compare(get_bloginfo('version'), '5.1', '>=');
-
-        if (!$is_wordpress_51 || \in_array(\strtolower((string) WP_DEBUG_LOG), ['true', '1'], true)) {
-            // `WP_DEBUG_LOG` is set truthy value (or we are on WordPress older than 5.1).
+        if (\in_array(\strtolower((string) \constant('WP_DEBUG_LOG')), ['true', '1'], true)) {
+            // `WP_DEBUG_LOG` is set truthy value.
             // Path to debug.log and filename is hardcoded in `wp-includes/load.php`.
             $url = WP_CONTENT_URL . '/debug.log';
 
