@@ -8,7 +8,7 @@
 
 ### Changed
 
-* WordPress 5.8 or newer is now required [#131](https://github.com/chesio/bc-security/issues/131).
+* WordPress 5.9 or newer is now required [#131](https://github.com/chesio/bc-security/issues/131).
 
 ## Version 0.19.0 (2022-06-02)
 

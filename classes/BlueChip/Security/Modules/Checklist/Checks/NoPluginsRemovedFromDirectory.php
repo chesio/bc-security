@@ -130,7 +130,7 @@ class NoPluginsRemovedFromDirectory extends Checklist\AdvancedCheck
             // Check response body for presence of "Download" button and download URL prefix.
             // Note: full URL contains the most recent version number, thus check only the prefix.
             $plugin_download_url_prefix = self::PLUGINS_DOWNLOAD_URL . Helpers\Plugin::getSlug($plugin_basename);
-            if ((\strpos($body, 'download-button') === false) || (\strpos($body, $plugin_download_url_prefix) === false)) {
+            if (!\str_contains($body, 'download-button') || !\str_contains($body, $plugin_download_url_prefix)) {
                 // Extract plugin notice with information why the plugin has been removed.
                 $plugin_data[self::PLUGIN_NOTICE_KEY] = $this->extractPluginNotice($body);
                 $removed_plugins[$plugin_basename] = $plugin_data;

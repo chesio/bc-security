@@ -135,7 +135,7 @@ class CoreIntegrity extends Checklist\AdvancedCheck
         return \array_filter(
             $modified_files,
             function ($filename) {
-                return \strpos($filename, 'wp-content/') !== 0;
+                return !\str_starts_with($filename, 'wp-content/');
             }
         );
     }
