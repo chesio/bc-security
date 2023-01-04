@@ -2,6 +2,7 @@
 
 [![GitHub Actions](https://github.com/chesio/bc-security/workflows/CI%20test%20suite/badge.svg)](https://github.com/chesio/bc-security/actions)
 [![Packagist](https://img.shields.io/packagist/v/chesio/bc-security.svg?color=34D058&style=popout)](https://packagist.org/packages/chesio/bc-security)
+[![Coverage Status](https://coveralls.io/repos/github/chesio/bc-security/badge.svg)](https://coveralls.io/github/chesio/bc-security)
 
 
 A WordPress plugin that helps keeping WordPress websites secure.
