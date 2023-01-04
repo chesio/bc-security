@@ -9,10 +9,10 @@
 >
     <coverage processUncoveredFiles="true">
         <include>
-            <directory suffix=".php">./classes</directory>
+            <directory suffix=".php">../../classes</directory>
         </include>
         <report>
-            <clover outputFile="build/logs/clover.xml"/>
+            <clover outputFile="../../build/logs/clover.xml"/>
         </report>
     </coverage>
     <testsuites>
