@@ -36,7 +36,7 @@ jobs:
 
       - name: "Check file permissions"
         run: |
-          test "$(find . -type f -not -path './.git/*' -executable)" = ""
+          test "$(find . -type f -not -path './.git/*' -not -path './tests/integration/bin/*' -executable)" = ""
 
       - name: "Find non-printable ASCII characters"
         run: |
