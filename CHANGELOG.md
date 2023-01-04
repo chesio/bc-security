@@ -4,6 +4,7 @@
 
 ### Added
 
+* PHP 8.2 is supported [#130](https://github.com/chesio/bc-security/issues/130).
 * WordPress 6.1 is supported [#129](https://github.com/chesio/bc-security/issues/129).
 * Improve detection of plugins hosted in Plugins Directory: also include plugins that have `readme.md` instead of `readme.txt` file [#128](https://github.com/chesio/bc-security/issues/128).
 
