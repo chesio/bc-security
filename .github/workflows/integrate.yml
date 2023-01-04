@@ -102,6 +102,7 @@ jobs:
         run: "composer require --dev --prefer-lowest --update-with-all-dependencies 'antecedent/patchwork:^2.0.8'"
 
       - name: "Execute unit tests"
+        if: "${{ ! (matrix.php-version == '8.1' && matrix.dependencies == 'highest') }}"
         run: "composer run-script unit-tests -- --no-coverage"
 
       - name: "Execute unit tests with coverage"
