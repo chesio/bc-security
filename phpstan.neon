@@ -6,12 +6,12 @@ parameters:
     # https://phpstan.org/config-reference#vague-typehints
     checkGenericClassInNonGenericObjectType: false
     paths:
-        - %currentWorkingDirectory%/classes/
+        - classes/
     bootstrapFiles:
-        - %currentWorkingDirectory%/tests/static-analysis/bootstrap.php
-        - %currentWorkingDirectory%/autoload.php
+        - tests/static-analysis/bootstrap.php
+        - autoload.php
     ignoreErrors:
-        # Uses func_get_args()
-        - '#^Function apply_filters(_ref_array)? invoked with [34567] parameters, 2 required\.$#'
         # Apply "checkMissingIterableValueType: false" to Psr\Log classes for the time being.
         - '#^Method Psr\\Log\\\w+::\w+\(\) has parameter \$context with no value type specified in iterable type array\.$#'
+        # We do not care about unused files in Psr\Log package.
+        - '#^Trait Psr\\Log\\\w+ is used zero times and is not analysed\.$#'

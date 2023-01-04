@@ -8,7 +8,7 @@ namespace BlueChip\Security;
 class Settings implements \IteratorAggregate
 {
     /**
-     * @var Modules\Checklist\AutorunSettings;
+     * @var Modules\Checklist\AutorunSettings
      */
     private $checklist_autorun;
 

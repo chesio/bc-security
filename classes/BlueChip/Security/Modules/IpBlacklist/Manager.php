@@ -92,7 +92,7 @@ class Manager implements Modules\Countable, Modules\Installable, Modules\Initial
     public function init(): void
     {
         // Hook into cron job execution.
-        add_action(Modules\Cron\Jobs::IP_BLACKLIST_CLEAN_UP, [$this, 'prune'], 10, 0);
+        add_action(Modules\Cron\Jobs::IP_BLACKLIST_CLEAN_UP, [$this, 'pruneInCron'], 10, 0);
     }
 
 
@@ -282,6 +282,17 @@ class Manager implements Modules\Countable, Modules\Installable, Modules\Initial
         $result = $this->wpdb->query($query);
         // Return result
         return $result !== false;
+    }
+
+
+    /**
+     * @hook \BlueChip\Security\Modules\Cron\Jobs::IP_BLACKLIST_CLEAN_UP
+     *
+     * @internal Runs `prune` method and discards its return value.
+     */
+    public function pruneInCron(): void
+    {
+        $this->prune();
     }
 
 

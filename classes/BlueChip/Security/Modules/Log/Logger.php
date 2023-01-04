@@ -123,8 +123,8 @@ class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\
     public function init(): void
     {
         // Hook into cron job execution.
-        add_action(Modules\Cron\Jobs::LOGS_CLEAN_UP_BY_AGE, [$this, 'pruneByAge'], 10, 0);
-        add_action(Modules\Cron\Jobs::LOGS_CLEAN_UP_BY_SIZE, [$this, 'pruneBySize'], 10, 0);
+        add_action(Modules\Cron\Jobs::LOGS_CLEAN_UP_BY_AGE, [$this, 'pruneByAgeInCron'], 10, 0);
+        add_action(Modules\Cron\Jobs::LOGS_CLEAN_UP_BY_SIZE, [$this, 'pruneBySizeInCron'], 10, 0);
         // Hook into reverse DNS lookup.
         add_action(Hooks::HOSTNAME_RESOLVED, [$this, 'processReverseDnsLookupResponse'], 10, 1);
     }
@@ -389,6 +389,17 @@ class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\
 
 
     /**
+     * @hook \BlueChip\Security\Modules\Cron\Jobs::LOGS_CLEAN_UP_BY_AGE
+     *
+     * @internal Runs `pruneByAge` method and discards its return value.
+     */
+    public function pruneByAgeInCron(): void
+    {
+        $this->pruneByAge();
+    }
+
+
+    /**
      * Remove all but configured number of recent records from the table.
      *
      * @return bool True on success, false on failure.
@@ -414,5 +425,16 @@ class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\
         $query = $this->wpdb->prepare("DELETE FROM {$this->log_table} WHERE id <= %d", $id);
         // Execute query and return true/false status.
         return $this->wpdb->query($query) !== false;
+    }
+
+
+    /**
+     * @hook \BlueChip\Security\Modules\Cron\Jobs::LOGS_CLEAN_UP_BY_SIZE
+     *
+     * @internal Runs `pruneBySize` method and discards its return value.
+     */
+    public function pruneBySizeInCron(): void
+    {
+        $this->pruneBySize();
     }
 }
