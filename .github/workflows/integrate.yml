@@ -36,11 +36,10 @@ jobs:
 
       - name: "Check file permissions"
         run: |
-          test "$(find . -type f -not -path './.git/*' -not -path './tests/integration/bin/*' -executable)" = ""
+          test "$(find . -type f -not -path './.git/*' -executable)" = "./tests/integration/bin/install-wp-tests.sh"
 
       - name: "Find non-printable ASCII characters"
         run: |
-          #! LC_ALL=C.UTF-8 find . -type f -name '*.php' -print0 | xargs -0 -- grep -PHn '[^ -~Č]' | grep -v '// @ignore-non-ascii$'
           ! LC_ALL=C.UTF-8 find . -type f -name '*.php' -print0 | xargs -0 -- grep -PHn '[^ -~Č]'
 
   syntax_errors:
@@ -71,7 +70,6 @@ jobs:
       - "byte_level"
       - "syntax_errors"
     strategy:
-      #fail-fast: false
       matrix:
         php-version:
           - "8.2"
@@ -105,15 +103,14 @@ jobs:
 
       - name: "Execute unit tests"
         run: "composer run-script unit-tests"
-        # @TODO Functional tests
 
-#      - name: "Send coverage to Coveralls"
-#        env:
-#          COVERALLS_REPO_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
-#        if: "${{ env.COVERALLS_REPO_TOKEN && matrix.php-version == '8.1' && matrix.dependencies == 'highest' }}"
-#        run: |
-#          wget "https://github.com/php-coveralls/php-coveralls/releases/download/v2.5.2/php-coveralls.phar"
-#          php ./php-coveralls.phar -v
+      - name: "Send coverage to Coveralls"
+        env:
+          COVERALLS_REPO_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+        if: "${{ env.COVERALLS_REPO_TOKEN && matrix.php-version == '8.1' && matrix.dependencies == 'highest' }}"
+        run: |
+          wget "https://github.com/php-coveralls/php-coveralls/releases/download/v2.5.2/php-coveralls.phar"
+          php ./php-coveralls.phar -v
 
   static_analysis:
     name: "3️⃣ Static Analysis"
@@ -145,7 +142,6 @@ jobs:
 
       - name: "Perform static analysis"
         run: "composer run-script phpstan"
-        # @TODO Mess Detector, Magic Number Detector, Copy-Paste Detector
 
   coding_standards:
     name: "4️⃣ Coding Standards"
