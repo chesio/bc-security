@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <phpunit
-	backupGlobals="false"
-	cacheResult="false"
-	colors="true"
-	convertErrorsToExceptions="true"
-	convertNoticesToExceptions="true"
-	convertWarningsToExceptions="true"
-	>
-	<testsuites>
-		<testsuite name="BC Security unit test">
-			<directory suffix="Test.php">./src/Cases</directory>
-		</testsuite>
-	</testsuites>
+    backupGlobals="false"
+    cacheResult="false"
+    colors="true"
+    convertErrorsToExceptions="true"
+    convertNoticesToExceptions="true"
+    convertWarningsToExceptions="true"
+    >
+    <testsuites>
+        <testsuite name="BC Security unit test">
+            <directory suffix="Test.php">./src/Cases</directory>
+        </testsuite>
+    </testsuites>
 </phpunit>
