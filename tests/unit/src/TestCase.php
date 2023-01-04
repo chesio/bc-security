@@ -13,7 +13,6 @@ class TestCase extends \PHPUnit\Framework\TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        require_once dirname(__DIR__, 3) . '/vendor/php-stubs/wordpress-stubs/wordpress-stubs.php';
         Monkey\setUp();
 
         // Mock some more WordPress functions
@@ -33,6 +32,8 @@ class TestCase extends \PHPUnit\Framework\TestCase
             ],
             false
         );
+
+        require_once dirname(__DIR__, 3) . '/vendor/php-stubs/wordpress-stubs/wordpress-stubs.php';
     }
 
 
