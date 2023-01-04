@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <phpunit
+    bootstrap="wordpress.php"
     backupGlobals="false"
     cacheResult="false"
     colors="true"

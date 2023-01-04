@@ -32,8 +32,6 @@ class TestCase extends \PHPUnit\Framework\TestCase
             ],
             false
         );
-
-        require_once dirname(__DIR__, 3) . '/vendor/php-stubs/wordpress-stubs/wordpress-stubs.php';
     }
 
 
