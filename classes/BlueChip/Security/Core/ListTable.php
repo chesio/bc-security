@@ -44,7 +44,7 @@ abstract class ListTable extends \WP_List_Table
     /**
      * @param string $url URL of admin page where list table is displayed.
      * @param string $per_page_option_name Option name for "per page" screen option.
-     * @param array $args
+     * @param array<string,mixed> $args
      */
     public function __construct(string $url, string $per_page_option_name, array $args = [])
     {
@@ -59,13 +59,13 @@ abstract class ListTable extends \WP_List_Table
         $this->url = $url;
         $this->items_per_page = $this->get_items_per_page($per_page_option_name);
 
-        $order_by = \filter_input(INPUT_GET, 'orderby', FILTER_SANITIZE_STRING);
+        $order_by = \filter_input(INPUT_GET, 'orderby');
         if (\in_array($order_by, $this->get_sortable_columns(), true)) {
             $this->order_by = $order_by;
             $this->url = add_query_arg('orderby', $order_by, $this->url);
         }
 
-        $order = \filter_input(INPUT_GET, 'order', FILTER_SANITIZE_STRING);
+        $order = \filter_input(INPUT_GET, 'order');
         if ($order === 'asc' || $order === 'desc') {
             $this->order = $order;
             $this->url = add_query_arg('order', $order, $this->url);
@@ -80,7 +80,7 @@ abstract class ListTable extends \WP_List_Table
      * @param string $single The text to be used in notice if action affected single item.
      * @param string $plural The text to be used in notice if action affected multiple items.
      */
-    protected function displayNotice(string $action, string $single, string $plural)
+    protected function displayNotice(string $action, string $single, string $plural): void
     {
         // Have any items been affected by given action?
         $result = \filter_input(INPUT_GET, $action, FILTER_VALIDATE_INT);
@@ -104,6 +104,7 @@ abstract class ListTable extends \WP_List_Table
      * @param int $id
      * @param string $class
      * @param string $label
+     *
      * @return string
      */
     protected function renderRowAction(string $action, int $id, string $class, string $label): string
@@ -126,20 +127,22 @@ abstract class ListTable extends \WP_List_Table
     /**
      * Return content for "checkbox" column.
      *
-     * @param array $item
+     * @param array<string,string> $item
+     *
      * @return string
      */
     public function column_cb($item) // phpcs:ignore
     {
-        return \sprintf('<input type="checkbox" name="ids[]" value="%d" />', $item['id']);
+        return \sprintf('<input type="checkbox" name="ids[]" value="%d" />', (int) $item['id']);
     }
 
 
     /**
      * Return column contents without any extra processing.
      *
-     * @param array $item
+     * @param array<string,string> $item
      * @param string $column_name
+     *
      * @return string
      */
     public function column_default($item, $column_name) // phpcs:ignore
@@ -152,16 +155,20 @@ abstract class ListTable extends \WP_List_Table
      * Display datetime database fields in local time.
      *
      * @param string $datetime Datetime string retrieved from database.
-     * @return string Date and time of $datetime formatted in local time.
+     *
+     * @return string Date and time of $datetime formatted in local time. Empty string if $datetime could not be parsed.
      */
     public function formatDateAndTime(string $datetime): string
     {
-        return wp_date(self::DATETIME_FORMAT, MySQLDateTime::parseTimestamp($datetime));
+        $timestamp = MySQLDateTime::parseTimestamp($datetime);
+        return ($timestamp !== null) ? (wp_date(self::DATETIME_FORMAT, $timestamp) ?: '') : '';
     }
 
 
     /**
      * Output "no items" message.
+     *
+     * @return void
      */
     public function no_items() // phpcs:ignore
     {

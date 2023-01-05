@@ -6,7 +6,7 @@ use BlueChip\Security\Setup\IpAddress;
 
 class IpAddressTest extends \BlueChip\Security\Tests\Unit\TestCase
 {
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -17,7 +17,7 @@ class IpAddressTest extends \BlueChip\Security\Tests\Unit\TestCase
     }
 
 
-    protected function tearDown()
+    protected function tearDown(): void
     {
         unset($_SERVER[IpAddress::REMOTE_ADDR]);
         unset($_SERVER[IpAddress::HTTP_X_FORWARDED_FOR]);
@@ -43,7 +43,7 @@ class IpAddressTest extends \BlueChip\Security\Tests\Unit\TestCase
     /**
      * @dataProvider provideRemoteAddressGetterData
      */
-    public function testRemoteAddressGetter($connection_type, $ip_address)
+    public function testRemoteAddressGetter(string $connection_type, string $ip_address): void
     {
         $this->assertSame($ip_address, IpAddress::get($connection_type));
     }
@@ -63,7 +63,7 @@ class IpAddressTest extends \BlueChip\Security\Tests\Unit\TestCase
      * Test the case when connection type is set to proxy, but there is actually no proxy info.
      * @dataProvider provideRemoteAddressGetterFallbackData
      */
-    public function testRemoteAddressGetterFallback($connection_type, $ip_address)
+    public function testRemoteAddressGetterFallback(string $connection_type, string $ip_address): void
     {
         // Make sure the requested connection info is empty.
         unset($_SERVER[$connection_type]);
@@ -87,7 +87,7 @@ class IpAddressTest extends \BlueChip\Security\Tests\Unit\TestCase
     /**
      * @dataProvider provideRawRemoteAddressGetterData
      */
-    public function testRemoteRawAddressGetter($connection_type, $ip_address)
+    public function testRemoteRawAddressGetter(string $connection_type, string $ip_address): void
     {
         $this->assertSame($ip_address, IpAddress::getRaw($connection_type));
     }

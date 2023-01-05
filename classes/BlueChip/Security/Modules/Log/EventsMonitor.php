@@ -28,7 +28,7 @@ class EventsMonitor implements \BlueChip\Security\Modules\Initializable
     }
 
 
-    public function init()
+    public function init(): void
     {
         // Log the following WordPress events:
         // - bad authentication cookie
@@ -58,7 +58,7 @@ class EventsMonitor implements \BlueChip\Security\Modules\Initializable
      *
      * @param \WP $wp
      */
-    public function log404Queries(\WP $wp)
+    public function log404Queries(\WP $wp): void
     {
         /** @var \WP_Query $wp_query */
         global $wp_query;
@@ -72,9 +72,9 @@ class EventsMonitor implements \BlueChip\Security\Modules\Initializable
     /**
      * Log when bad cookie is used for authentication.
      *
-     * @param array $cookie_elements
+     * @param array<string,string> $cookie_elements
      */
-    public function logBadCookie(array $cookie_elements)
+    public function logBadCookie(array $cookie_elements): void
     {
         do_action(Action::EVENT, (new Events\AuthBadCookie())->setUsername($cookie_elements['username']));
     }
@@ -86,7 +86,7 @@ class EventsMonitor implements \BlueChip\Security\Modules\Initializable
      * @param string $username
      * @param \WP_Error $error
      */
-    public function logFailedLogin(string $username, \WP_Error $error)
+    public function logFailedLogin(string $username, \WP_Error $error): void
     {
         do_action(Action::EVENT, (new Events\LoginFailure())->setUsername($username)->setError($error));
     }
@@ -97,7 +97,7 @@ class EventsMonitor implements \BlueChip\Security\Modules\Initializable
      *
      * @param string $username
      */
-    public function logSuccessfulLogin(string $username)
+    public function logSuccessfulLogin(string $username): void
     {
         do_action(Action::EVENT, (new Events\LoginSuccessful())->setUsername($username));
     }
@@ -110,7 +110,7 @@ class EventsMonitor implements \BlueChip\Security\Modules\Initializable
      * @param string $username
      * @param int $duration
      */
-    public function logLockoutEvent(string $remote_address, string $username, int $duration)
+    public function logLockoutEvent(string $remote_address, string $username, int $duration): void
     {
         do_action(Action::EVENT, (new Events\LoginLockout())->setDuration($duration)->setIpAddress($remote_address)->setUsername($username));
     }

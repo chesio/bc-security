@@ -48,7 +48,7 @@ class Job
 
 
     /**
-     * Schedule this cron job, if not scheduled yet.
+     * Schedule this cron job if not scheduled yet.
      *
      * @return bool True if cron job has been activated or was already active, false otherwise.
      */
@@ -97,6 +97,7 @@ class Job
      * @link https://wordpress.stackexchange.com/a/223341
      *
      * @param string $time_string
+     *
      * @return int
      */
     public static function getTimestamp(string $time_string): int
@@ -110,7 +111,7 @@ class Job
             // Assume $time_string denotes actual time like '01:02:03'.
             $time = $time_string;
         }
-        // Get time zone from settings. Fall back to UTC, if option is empty.
+        // Get time zone from settings. Fall back to UTC if option is empty.
         $time_zone = new \DateTimeZone(get_option('timezone_string') ?: 'UTC');
         // Get DateTime object.
         $date = new \DateTime($time, $time_zone);

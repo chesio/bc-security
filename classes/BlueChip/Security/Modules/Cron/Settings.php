@@ -8,7 +8,7 @@ namespace BlueChip\Security\Modules\Cron;
 class Settings extends \BlueChip\Security\Core\Settings
 {
     /**
-     * @var array Default values for all settings.
+     * @var array<string,bool> Default values for all settings.
      */
     protected const DEFAULTS = [
         Jobs::CHECKLIST_CHECK => true,

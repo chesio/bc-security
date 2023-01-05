@@ -18,6 +18,7 @@ abstract class MySQLDateTime
      * @link https://www.php.net/manual/en/date.php
      *
      * @param int $timestamp
+     *
      * @return string
      */
     public static function formatDateTime(int $timestamp): string
@@ -29,10 +30,12 @@ abstract class MySQLDateTime
      * @link https://www.php.net/manual/en/datetime.createfromformat.php
      *
      * @param string $datetime
-     * @return int
+     *
+     * @return int|null Timestamp for given $datetime string or null if $datetime cannot be parsed.
      */
-    public static function parseTimestamp(string $datetime): int
+    public static function parseTimestamp(string $datetime): ?int
     {
-        return \date_create_from_format(self::FORMAT, $datetime)->getTimestamp();
+        $datetime_from_format = \date_create_from_format(self::FORMAT, $datetime);
+        return $datetime_from_format ? $datetime_from_format->getTimestamp() : null;
     }
 }

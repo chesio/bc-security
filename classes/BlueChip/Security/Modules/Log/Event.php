@@ -51,7 +51,7 @@ abstract class Event
 
 
     /**
-     * @return array Context data for this event.
+     * @return array<string,string> Context data for this event.
      */
     public function getContext(): array
     {
@@ -67,7 +67,7 @@ abstract class Event
 
 
     /**
-     * @return array Context columns with human readable descriptions (labels).
+     * @return array<string,string> Context columns with human readable descriptions (labels).
      */
     public function explainContext(): array
     {
@@ -89,12 +89,13 @@ abstract class Event
      * property PHPDoc comment.
      *
      * @param \ReflectionProperty $property
+     *
      * @return string
      */
     private static function getPropertyLabel(\ReflectionProperty $property): string
     {
         $matches = [];
-        if (\preg_match("/__\('(.+)'\)/i", $property->getDocComment(), $matches)) {
+        if (\preg_match("/__\('(.+)'\)/i", $property->getDocComment() ?: '', $matches)) {
             return __($matches[1], 'bc-security');
         } else {
             return '';

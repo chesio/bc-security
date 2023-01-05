@@ -59,6 +59,7 @@ class SafeBrowsingClient
      * Check a single URL for presence in Safe Browsing blacklist.
      *
      * @param string $url URL to check.
+     *
      * @return bool|null True if URL is on Safe Browsing blacklist, false if it is not, null on error.
      */
     public function check(string $url): ?bool
@@ -97,8 +98,9 @@ class SafeBrowsingClient
 
 
     /**
-     * @param array $urls List of URLs to look up.
-     * @return array|null List of matches (empty means no matches found) or null on error.
+     * @param string[] $urls List of URLs to look up.
+     *
+     * @return object[]|null List of matches (empty means no matches found) or null on error.
      */
     public function lookup(array $urls): ?array
     {
@@ -126,6 +128,7 @@ class SafeBrowsingClient
      *
      * @param string $url
      * @param string $lang
+     *
      * @return string
      */
     public static function getReportUrl(string $url, string $lang = 'en'): string
@@ -138,6 +141,7 @@ class SafeBrowsingClient
      * @todo Maybe this wheel has already been invented?
      *
      * @param object $match
+     *
      * @return int|null Cache lifetime for $match in seconds or null if unknown.
      */
     private static function getCacheDuration(object $match): ?int
@@ -149,7 +153,7 @@ class SafeBrowsingClient
         $matches = [];
 
         if (\preg_match('/^(\d+(\.\d+)?)s$/i', $match->cacheDuration, $matches)) {
-            return \intval($matches[1]);
+            return (int) $matches[1];
         }
 
         return null;
@@ -159,8 +163,9 @@ class SafeBrowsingClient
     /**
      * @link https://developers.google.com/safe-browsing/v4/lookup-api#http-post-request
      *
-     * @param array $urls List of URLs to check
-     * @return array Safe Browsing request data
+     * @param string[] $urls List of URLs to check
+     *
+     * @return mixed[] Safe Browsing request data
      */
     private static function getRequestBody(array $urls): array
     {

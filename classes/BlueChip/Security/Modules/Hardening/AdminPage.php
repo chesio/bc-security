@@ -2,8 +2,11 @@
 
 namespace BlueChip\Security\Modules\Hardening;
 
+use BlueChip\Security\Helpers\AdminNotices;
 use BlueChip\Security\Helpers\FormHelper;
 use BlueChip\Security\Helpers\HaveIBeenPwned;
+use BlueChip\Security\Modules\Log\AdminPage as LogAdminPage;
+use BlueChip\Security\Modules\Log\Events\LoginFailure;
 
 class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
 {
@@ -29,16 +32,21 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
     }
 
 
-    public function loadPage()
+    public function loadPage(): void
     {
         $this->displaySettingsErrors();
+
+        // Show warning if both default login options are disabled at the same time.
+        if ($this->settings[Settings::DISABLE_LOGIN_WITH_EMAIL] && $this->settings[Settings::DISABLE_LOGIN_WITH_USERNAME]) {
+            AdminNotices::add(__('Both default login options (login with email and login with username) are disabled. Make sure there is an alternative login option available.', 'bc-security'), AdminNotices::WARNING);
+        }
     }
 
 
     /**
      * Output page contents.
      */
-    public function printContents()
+    public function printContents(): void
     {
         echo '<div class="wrap">';
         echo '<h1>' . esc_html($this->page_title) . '</h1>';
@@ -51,7 +59,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
     /**
      * Initialize settings page: add sections and fields.
      */
-    public function initPage()
+    public function initPage(): void
     {
         // Register settings.
         $this->registerSettings();
@@ -97,6 +105,27 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
             [FormHelper::class, 'printCheckbox']
         );
 
+        // Section: Disable application passwords
+        if (function_exists('wp_is_application_passwords_available')) { // WP 5.6 and newer
+            $this->addSettingsSection(
+                'disable-application-passwords',
+                __('Disable application passwords', 'bc-security'),
+                function () {
+                    echo '<p>' . \sprintf(
+                        /* translators: 1: Application passwords label, 2: link to Wordfence blog article on risks of application passwords */
+                        esc_html__('%1$s feature allows external applications to request permission to connect to a site and generate a password specific to that application. Once the application has been granted access, it can perform actions on behalf of a user via the WordPress REST API. Unfortunately, the way this feature is implemented also provides %2$s, so it is advised to disable it when it is not used.', 'bc-security'),
+                        '<strong>' . esc_html__('Application passwords', 'bc-security') . '</strong>',
+                        '<a href="https://www.wordfence.com/blog/2020/12/wordpress-5-6-introduces-a-new-risk-to-your-site-what-to-do/" rel="noreferrer">' . esc_html__('yet another attack vector', 'bc-security') . '</a>'
+                    ) . '</p>';
+                }
+            );
+            $this->addSettingsField(
+                Settings::DISABLE_APPLICATION_PASSWORDS,
+                __('Disable application passwords', 'bc-security'),
+                [FormHelper::class, 'printCheckbox']
+            );
+        }
+
         // Section: Disable usernames discovery
         $this->addSettingsSection(
             'disable-usernames-discovery',
@@ -121,6 +150,45 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
         $this->addSettingsField(
             Settings::DISABLE_USERNAMES_DISCOVERY,
             __('Disable usernames discovery', 'bc-security'),
+            [FormHelper::class, 'printCheckbox']
+        );
+
+        // Section: Disable login with username or email
+        $this->addSettingsSection(
+            'restrict-login-options',
+            __('Restrict login options', 'bc-security'),
+            function () {
+                echo '<p>' . esc_html__('WordPress by default allows users to log in with either their username or email. Disabling either of these two options can reduce risk from certain automated attacks:', 'bc-security') . '</p>';
+                echo '<ol>';
+                echo '<li>' . sprintf(
+                    /* translators: 1: Mitigation option title, 2: link to OWASP cheat sheet page on "Credential stuffing mitigation", 3: link to OWASP page on credential stuffing attacks */
+                    esc_html__('%1$s %2$s from %3$s.', 'bc-security'),
+                    '<strong>' . esc_html__('Disabling login with email', 'bc-security') . '</strong>',
+                    '<a href="https://cheatsheetseries.owasp.org/cheatsheets/Credential_Stuffing_Prevention_Cheat_Sheet.html#require-unpredictable-usernames" rel="noreferrer">' . esc_html__('reduces risk', 'bc-security') . '</a>',
+                    '<a href="https://owasp.org/www-community/attacks/Credential_stuffing" rel="noreferrer">' . esc_html__('credential stuffing attacks', 'bc-security') . '</a>'
+                ) . '</li>';
+                echo '<li>' . sprintf(
+                    /* translators: 1: Mitigation option title */
+                    esc_html__('%1$s renders brute-force attacks targeting existing usernames harmless.', 'bc-security'),
+                    '<strong>' . esc_html__('Disabling login with username', 'bc-security') . '</strong>',
+                ) . '</li>';
+                echo '</ol>';
+                echo '<p>' . sprintf(
+                    /* translators: 1: link to failed logins page */
+                    esc_html__('Examining %1$s may help to find out whether any of the options above makes sense for your website.', 'bc-security'),
+                    '<a href="' . LogAdminPage::getPageUrl(LoginFailure::ID) . '">' . esc_html__('failed login logs', 'bc-security') . '</a>'
+                ) . '</p>';
+                echo '<p><strong>' . esc_html__('Caution: You most likely do not want to disable both options at the same time unless there is an alternative login method provided!', 'bc-security') . '</strong></p>';
+            }
+        );
+        $this->addSettingsField(
+            Settings::DISABLE_LOGIN_WITH_EMAIL,
+            __('Disable login with email', 'bc-security'),
+            [FormHelper::class, 'printCheckbox']
+        );
+        $this->addSettingsField(
+            Settings::DISABLE_LOGIN_WITH_USERNAME,
+            __('Disable login with username', 'bc-security'),
             [FormHelper::class, 'printCheckbox']
         );
 

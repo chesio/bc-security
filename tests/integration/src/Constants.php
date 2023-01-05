@@ -8,6 +8,11 @@ namespace BlueChip\Security\Tests\Integration;
 abstract class Constants
 {
     /**
+     * @var string Password assigned to mocked WP_User instances by WordPress test suite.
+     */
+    public const FACTORY_PASSWORD = 'password';
+
+    /**
      * @var string Password that definitely have been pwned.
      */
     public const PWNED_PASSWORD = '123456';

@@ -14,7 +14,7 @@ class DisplayOfPhpErrorsIsOff extends Checklist\BasicCheck
             \sprintf(
                 /* translators: 1: link to PHP manual documentation on display-errors php.ini setting, 2: link to WordPress Handbook article */
                 esc_html__('%1$s to the screen as part of the output on live system. In WordPress environment, %2$s when directly loading certain files.', 'bc-security'),
-                '<a href="' . esc_url(__('https://secure.php.net/manual/en/errorfunc.configuration.php#ini.display-errors', 'bc-security')) . '" rel="noreferrer">' . esc_html__('Errors should never be printed', 'bc-security') . '</a>',
+                '<a href="' . esc_url(__('https://www.php.net/manual/en/errorfunc.configuration.php#ini.display-errors', 'bc-security')) . '" rel="noreferrer">' . esc_html__('Errors should never be printed', 'bc-security') . '</a>',
                 '<a href="' . esc_url(__('https://make.wordpress.org/core/handbook/testing/reporting-security-vulnerabilities/#why-are-there-path-disclosures-when-directly-loading-certain-files', 'bc-security')) . '" rel="noreferrer">' . esc_html__('display of errors can lead to path disclosures', 'bc-security') . '</a>'
             )
         );
@@ -35,7 +35,7 @@ class DisplayOfPhpErrorsIsOff extends Checklist\BasicCheck
     protected function runInternal(): Checklist\CheckResult
     {
         // Craft temporary file name.
-        $name = \sprintf('bc-security-checklist-test-error-display-%s.php', \md5(\rand()));
+        $name = \sprintf('bc-security-checklist-test-error-display-%s.php', \md5((string) \rand()));
 
         // The file is going to be created in wp-content directory.
         $path = WP_CONTENT_DIR . '/' . $name;

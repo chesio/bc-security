@@ -2,7 +2,35 @@
 
 namespace BlueChip\Security\Tests\Integration;
 
-class TestCase extends \WP_UnitTestCase
-{
+use BlueChip\Security\Plugin;
 
+/**
+ * Base class for all integration tests
+ */
+abstract class TestCase extends \WP_UnitTestCase
+{
+    /**
+     * Allow to load the plugin with context customised for particular test suite.
+     */
+    public function setUp(): void
+    {
+        global $wpdb;
+
+        parent::setUp(); // !
+
+        // Prepare test: change plugin settings etc.
+        $this->prepareTest();
+
+        // Load the plugin.
+        (new Plugin(Bootstrap::getPluginRootDirectory(), $wpdb))->load();
+    }
+
+
+    /**
+     * Method is executed in setup phase of every test just before the plugin is loaded.
+     */
+    protected function prepareTest(): void
+    {
+        // Empty by default, can be overriden in descendants.
+    }
 }

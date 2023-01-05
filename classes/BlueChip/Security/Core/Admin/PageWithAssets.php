@@ -15,16 +15,16 @@ trait PageWithAssets
     /**
      * @param \BlueChip\Security\Core\AssetsManager $assets_manager
      */
-    protected function useAssetsManager(AssetsManager $assets_manager)
+    protected function useAssetsManager(AssetsManager $assets_manager): void
     {
         $this->assets_manager = $assets_manager;
     }
 
 
     /**
-     * @param array $assets JS assets to enqueue in [ handle => filename ] format.
+     * @param array<string,string> $assets JS assets to enqueue in [ handle => filename ] format.
      */
-    protected function enqueueJsAssets(array $assets)
+    protected function enqueueJsAssets(array $assets): void
     {
         add_action('admin_enqueue_scripts', function () use ($assets) {
             foreach ($assets as $handle => $filename) {
@@ -32,7 +32,7 @@ trait PageWithAssets
                     $handle,
                     $this->assets_manager->getScriptFileUrl($filename),
                     ['jquery'],
-                    \filemtime($this->assets_manager->getScriptFilePath($filename)),
+                    (string) \filemtime($this->assets_manager->getScriptFilePath($filename)),
                     true
                 );
             }
@@ -41,9 +41,9 @@ trait PageWithAssets
 
 
     /**
-     * @param array $assets CSS assets to enqueue in [ handle => filename ] format.
+     * @param array<string,string> $assets CSS assets to enqueue in [ handle => filename ] format.
      */
-    protected function enqueueCssAssets(array $assets)
+    protected function enqueueCssAssets(array $assets): void
     {
         add_action('admin_enqueue_scripts', function () use ($assets) {
             foreach ($assets as $handle => $filename) {
@@ -51,7 +51,7 @@ trait PageWithAssets
                     $handle,
                     $this->assets_manager->getStyleFileUrl($filename),
                     [],
-                    \filemtime($this->assets_manager->getStyleFilePath($filename))
+                    (string) \filemtime($this->assets_manager->getStyleFilePath($filename))
                 );
             }
         }, 10, 0);

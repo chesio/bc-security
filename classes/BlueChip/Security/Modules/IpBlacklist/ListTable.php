@@ -77,7 +77,8 @@ class ListTable extends \BlueChip\Security\Core\ListTable
     /**
      * Return content for first column (IP address) including row actions.
      *
-     * @param array $item
+     * @param array<string,string> $item
+     *
      * @return string
      */
     public function column_ip_address(array $item): string // phpcs:ignore
@@ -89,7 +90,8 @@ class ListTable extends \BlueChip\Security\Core\ListTable
     /**
      * Return content for "ban time" column.
      *
-     * @param array $item
+     * @param array<string,string> $item
+     *
      * @return string
      */
     public function column_ban_time(array $item): string // phpcs:ignore
@@ -99,9 +101,23 @@ class ListTable extends \BlueChip\Security\Core\ListTable
 
 
     /**
+     * Format comment column.
+     *
+     * @param array<string,string> $item
+     *
+     * @return string
+     */
+    public function column_comment(array $item): string // phpcs:ignore
+    {
+        return \htmlspecialchars($item['comment']);
+    }
+
+
+    /**
      * Return content for "release time" column.
      *
-     * @param array $item
+     * @param array<string,string> $item
+     *
      * @return string
      */
     public function column_release_time(array $item): string // phpcs:ignore
@@ -113,19 +129,20 @@ class ListTable extends \BlueChip\Security\Core\ListTable
     /**
      * Return human readable value for ban reason table column.
      *
-     * @param array $item
+     * @param array<string,string> $item
+     *
      * @return string
      */
     public function column_reason(array $item): string // phpcs:ignore
     {
-        return $this->explainBanReason($item['reason']);
+        return $this->explainBanReason((int) $item['reason']);
     }
 
 
     /**
      * Display (dismissible) admin notices informing user that an action has been performed successfully.
      */
-    public function displayNotices()
+    public function displayNotices(): void
     {
         $this->displayNotice(
             self::NOTICE_RECORD_REMOVED,
@@ -142,7 +159,7 @@ class ListTable extends \BlueChip\Security\Core\ListTable
 
 
     /**
-     * @return array
+     * @return array<string,string>
      */
     public function get_bulk_actions() // phpcs:ignore
     {
@@ -156,7 +173,7 @@ class ListTable extends \BlueChip\Security\Core\ListTable
     /**
      * Define table columns.
      *
-     * @return array
+     * @return array<string,string>
      */
     public function get_columns() // phpcs:ignore
     {
@@ -174,7 +191,7 @@ class ListTable extends \BlueChip\Security\Core\ListTable
     /**
      * Define sortable columns.
      *
-     * @return array
+     * @return array<string,string>
      */
     public function get_sortable_columns() // phpcs:ignore
     {
@@ -192,7 +209,7 @@ class ListTable extends \BlueChip\Security\Core\ListTable
      *
      * @todo Better labels for scopes.
      *
-     * @return array
+     * @return array<string,string>
      */
     protected function get_views() // phpcs:ignore
     {
@@ -231,6 +248,8 @@ class ListTable extends \BlueChip\Security\Core\ListTable
 
     /**
      * Prepare items for table.
+     *
+     * @return void
      */
     public function prepare_items() // phpcs:ignore
     {
@@ -253,7 +272,7 @@ class ListTable extends \BlueChip\Security\Core\ListTable
      *
      * @return void
      */
-    public function processActions()
+    public function processActions(): void
     {
         // Remove or unlock single record?
         if (($action = \filter_input(INPUT_GET, 'action'))) {
@@ -302,6 +321,7 @@ class ListTable extends \BlueChip\Security\Core\ListTable
      * Translate integer code for ban reason into something human can read.
      *
      * @param int $banReason
+     *
      * @return string
      */
     private function explainBanReason(int $banReason): string
@@ -321,8 +341,9 @@ class ListTable extends \BlueChip\Security\Core\ListTable
 
 
     /**
-     * @param array $item
-     * @return array
+     * @param array<string,string> $item
+     *
+     * @return array<string,string>
      */
     private function getRowActions(array $item): array
     {
@@ -330,7 +351,7 @@ class ListTable extends \BlueChip\Security\Core\ListTable
             // Any item can be removed
             self::ACTION_REMOVE => $this->renderRowAction(
                 self::ACTION_REMOVE,
-                $item['id'],
+                (int) $item['id'],
                 'delete',
                 __('Remove', 'bc-security')
             ),
@@ -340,7 +361,7 @@ class ListTable extends \BlueChip\Security\Core\ListTable
             // Only active locks can be unlocked
             $actions[self::ACTION_UNLOCK] = $this->renderRowAction(
                 self::ACTION_UNLOCK,
-                $item['id'],
+                (int) $item['id'],
                 'unlock',
                 __('Unlock', 'bc-security')
             );

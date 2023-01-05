@@ -13,7 +13,7 @@ class EventsMonitorTest extends \BlueChip\Security\Tests\Unit\TestCase
     private $monitor;
 
 
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -21,7 +21,7 @@ class EventsMonitorTest extends \BlueChip\Security\Tests\Unit\TestCase
     }
 
 
-    public function testBadCookie()
+    public function testBadCookie(): void
     {
         Actions\expectDone(Log\Action::EVENT)->once()->with(\Mockery::type(Log\Events\AuthBadCookie::class));
 
@@ -29,7 +29,7 @@ class EventsMonitorTest extends \BlueChip\Security\Tests\Unit\TestCase
     }
 
 
-    public function testFailedLogin()
+    public function testFailedLogin(): void
     {
         Actions\expectDone(Log\Action::EVENT)->once()->with(\Mockery::type(Log\Events\LoginFailure::class));
         $wp_error = \Mockery::mock(\WP_Error::class);
@@ -42,7 +42,7 @@ class EventsMonitorTest extends \BlueChip\Security\Tests\Unit\TestCase
     }
 
 
-    public function testLoginLockout()
+    public function testLoginLockout(): void
     {
         Actions\expectDone(Log\Action::EVENT)->once()->with(\Mockery::type(Log\Events\LoginLockout::class));
 
@@ -50,7 +50,7 @@ class EventsMonitorTest extends \BlueChip\Security\Tests\Unit\TestCase
     }
 
 
-    public function testSuccessfulLogin()
+    public function testSuccessfulLogin(): void
     {
         Actions\expectDone(Log\Action::EVENT)->once()->with(\Mockery::type(Log\Events\LoginSuccessful::class));
 

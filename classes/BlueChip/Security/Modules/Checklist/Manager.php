@@ -46,7 +46,7 @@ class Manager implements Modules\Initializable
     }
 
 
-    public function init()
+    public function init(): void
     {
         // When settings are updated, ensure that cron jobs for advanced checks are properly (de)activated.
         $this->settings->addUpdateHook([$this, 'updateCronJobs']);
@@ -65,6 +65,8 @@ class Manager implements Modules\Initializable
      *
      * @param \wpdb $wpdb WordPress database access abstraction object
      * @param string $google_api_key Google API key for project with Safe Browsing API enabled.
+     *
+     * @return array<string,Check>
      */
     public function constructChecks(\wpdb $wpdb, string $google_api_key): array
     {
@@ -81,7 +83,7 @@ class Manager implements Modules\Initializable
             // Display of errors should be off in live environment.
             Checks\DisplayOfPhpErrorsIsOff::getId() => new Checks\DisplayOfPhpErrorsIsOff(),
 
-            // Error log should not be publicly visible, if debugging is on.
+            // Error log should not be publicly visible if debugging is on.
             Checks\ErrorLogNotPubliclyAccessible::getId() => new Checks\ErrorLogNotPubliclyAccessible(),
 
             // There should be no obvious usernames.
@@ -109,22 +111,25 @@ class Manager implements Modules\Initializable
 
 
     /**
+     * @param string $id
+     *
+     * @return \BlueChip\Security\Modules\Checklist\Check|null
+     */
+    public function getCheck(string $id): ?Check
+    {
+        return $this->checks[$id] ?? null;
+    }
+
+
+    /**
      * Return list of all implemented checks, optionally filtered.
      *
-     * @param array $filters [optional] Extra conditions to filter the list by: class (string), meaningful (boolean),
-     *   monitored (boolean), status (null|boolean).
+     * @param array{meaningful?:bool,monitored?:bool,status?:?bool} $filters [optional] Extra conditions to filter the list by.
      * @return list<TCheck>
      */
     public function getChecks(array $filters = []): array
     {
         $checks = $this->checks;
-
-        if (isset($filters['class'])) {
-            $class = $filters['class'];
-            $checks = \array_filter($checks, function (Check $check) use ($class): bool {
-                return $check instanceof $class;
-            });
-        }
 
         if (isset($filters['meaningful'])) {
             $is_meaningful = $filters['meaningful'];
@@ -154,29 +159,37 @@ class Manager implements Modules\Initializable
 
     /**
      * @param bool $only_meaningful If true (default), return only meaningful checks, otherwise return all checks.
+     *
      * @return \BlueChip\Security\Modules\Checklist\AdvancedCheck[]
      */
     public function getAdvancedChecks(bool $only_meaningful = true): array
     {
-        $filters = ['class' => AdvancedCheck::class];
+        $filters = [];
         if ($only_meaningful) {
             $filters['meaningful'] = true;
         }
-        return $this->getChecks($filters);
+
+        return \array_filter($this->getChecks($filters), function (Check $check): bool {
+            return $check instanceof AdvancedCheck;
+        });
     }
 
 
     /**
      * @param bool $only_meaningful If true (default), return only meaningful checks, otherwise return all checks.
+     *
      * @return \BlueChip\Security\Modules\Checklist\BasicCheck[]
      */
     public function getBasicChecks(bool $only_meaningful = true): array
     {
-        $filters = ['class' => BasicCheck::class];
+        $filters = [];
         if ($only_meaningful) {
             $filters['meaningful'] = true;
         }
-        return $this->getChecks($filters);
+
+        return \array_filter($this->getChecks($filters), function (Check $check): bool {
+            return $check instanceof BasicCheck;
+        });
     }
 
 
@@ -185,7 +198,7 @@ class Manager implements Modules\Initializable
      *
      * @internal Method is intended to be run from within cron request.
      */
-    public function runBasicChecks()
+    public function runBasicChecks(): void
     {
         $checks = $this->getBasicChecks();
         $issues = [];
@@ -207,7 +220,7 @@ class Manager implements Modules\Initializable
             }
         }
 
-        if (!empty($issues)) {
+        if ($issues !== []) {
             // Trigger an action to report found issues.
             do_action(Hooks::BASIC_CHECKS_ALERT, $issues);
         }
@@ -219,16 +232,15 @@ class Manager implements Modules\Initializable
      *
      * @internal Method is intended to be run from within AJAX requests.
      */
-    public function runCheck()
+    public function runCheck(): void
     {
-        if (empty($check_id = \filter_input(INPUT_POST, 'check_id', FILTER_SANITIZE_STRING))) {
+        if (empty($check_id = \filter_input(INPUT_POST, 'check_id'))) {
             wp_send_json_error([
                 'message' => __('No check ID provided!', 'bc-security'),
             ]);
         }
 
-        $checks = $this->getChecks();
-        if (empty($check = $checks[$check_id])) {
+        if (($check = $this->getCheck($check_id)) === null) {
             wp_send_json_error([
                 'message' => \sprintf(__('Unknown check ID: %s', 'bc-security'), $check_id),
             ]);
@@ -248,7 +260,7 @@ class Manager implements Modules\Initializable
     /**
      * Activate or deactivate cron jobs for advanced checks according to settings.
      */
-    public function updateCronJobs()
+    public function updateCronJobs(): void
     {
         foreach ($this->getAdvancedChecks(false) as $check_id => $advanced_check) {
             if ($this->settings[$check_id]) {

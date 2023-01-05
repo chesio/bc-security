@@ -28,7 +28,7 @@ class Watchman implements Modules\Initializable, Modules\Activable
     private $logger;
 
     /**
-     * @var array List of notifications recipients
+     * @var string[] List of notifications recipients
      */
     private $recipients;
 
@@ -54,7 +54,7 @@ class Watchman implements Modules\Initializable, Modules\Activable
 
 
     /**
-     * @return bool True, if notifications are muted via `BC_SECURITY_MUTE_NOTIFICATIONS` constant, false otherwise.
+     * @return bool True if notifications are muted via `BC_SECURITY_MUTE_NOTIFICATIONS` constant, false otherwise.
      */
     public static function isMuted(): bool
     {
@@ -63,9 +63,10 @@ class Watchman implements Modules\Initializable, Modules\Activable
 
 
     /**
-     * Format remote IP address - append result of reverse DNS lookup, if successful.
+     * Format remote IP address - append result of reverse DNS lookup if successful.
      *
      * @param string $remote_address
+     *
      * @return string
      */
     private static function formatRemoteAddress(string $remote_address): string
@@ -82,9 +83,9 @@ class Watchman implements Modules\Initializable, Modules\Activable
     /**
      * Initialize notification according to settings.
      */
-    public function init()
+    public function init(): void
     {
-        // Bail early, if no recipients are set or we are explicitly ordered to not disturb.
+        // Bail early if no recipients are set or we are explicitly ordered to not disturb.
         if (empty($this->recipients) || self::isMuted()) {
             return;
         }
@@ -111,7 +112,7 @@ class Watchman implements Modules\Initializable, Modules\Activable
     }
 
 
-    public function activate()
+    public function activate(): void
     {
         // Do nothing.
     }
@@ -120,9 +121,9 @@ class Watchman implements Modules\Initializable, Modules\Activable
     /**
      * Send notification that plugin has been deactivated.
      */
-    public function deactivate()
+    public function deactivate(): void
     {
-        // Bail early, if no recipients are set.
+        // Bail early if no recipients are set.
         if (empty($this->recipients)) {
             return;
         }
@@ -156,9 +157,9 @@ class Watchman implements Modules\Initializable, Modules\Activable
      *
      * @param object $update_transient
      */
-    public function watchCoreUpdateAvailable($update_transient)
+    public function watchCoreUpdateAvailable($update_transient): void
     {
-        // Check, if update transient has the data we are interested in.
+        // Check if update transient has the data we are interested in.
         if (!isset($update_transient->updates) || !\is_array($update_transient->updates) || empty($update_transient->updates)) {
             return;
         }
@@ -200,9 +201,9 @@ class Watchman implements Modules\Initializable, Modules\Activable
      *
      * @param object $update_transient
      */
-    public function watchPluginUpdatesAvailable($update_transient)
+    public function watchPluginUpdatesAvailable($update_transient): void
     {
-        // Check, if update transient has the data we are interested in.
+        // Check if update transient has the data we are interested in.
         if (!isset($update_transient->response) || !\is_array($update_transient->response)) {
             return;
         }
@@ -228,7 +229,7 @@ class Watchman implements Modules\Initializable, Modules\Activable
                 $plugin_update_data->new_version
             );
 
-            if (!empty($plugin_changelog_url = Plugin::getChangelogUrl($plugin_file))) {
+            if (!empty($plugin_changelog_url = Plugin::getChangelogUrl($plugin_file, $plugin_data))) {
                 // Append link to changelog, if available.
                 $plugin_message .= ' ' . \sprintf(
                     __('Changelog: %1$s', 'bc-security'),
@@ -257,9 +258,9 @@ class Watchman implements Modules\Initializable, Modules\Activable
      *
      * @param object $update_transient
      */
-    public function watchThemeUpdatesAvailable($update_transient)
+    public function watchThemeUpdatesAvailable($update_transient): void
     {
-        // Check, if update transient has the data we are interested in.
+        // Check if update transient has the data we are interested in.
         if (!isset($update_transient->response) || !\is_array($update_transient->response)) {
             return;
         }
@@ -306,7 +307,7 @@ class Watchman implements Modules\Initializable, Modules\Activable
      * @param string $username
      * @param int $duration
      */
-    public function watchLockoutEvents(string $remote_address, string $username, int $duration)
+    public function watchLockoutEvents(string $remote_address, string $username, int $duration): void
     {
         if (\in_array($remote_address, $this->logger->getKnownIps(), true)) {
             $subject = __('Known IP locked out', 'bc-security');
@@ -328,7 +329,7 @@ class Watchman implements Modules\Initializable, Modules\Activable
      * @param string $username
      * @param \WP_User $user
      */
-    public function watchWpLogin(string $username, \WP_User $user)
+    public function watchWpLogin(string $username, \WP_User $user): void
     {
         if (Is::admin($user)) {
             $subject = __('Admin user login', 'bc-security');
@@ -349,25 +350,24 @@ class Watchman implements Modules\Initializable, Modules\Activable
      * @param \BlueChip\Security\Modules\Checklist\Check $check
      * @param \BlueChip\Security\Modules\Checklist\CheckResult $result
      */
-    public function watchChecklistSingleCheckAlert(Checklist\Check $check, Checklist\CheckResult $result)
+    public function watchChecklistSingleCheckAlert(Checklist\Check $check, Checklist\CheckResult $result): void
     {
         $subject = __('Checklist monitoring alert', 'bc-security');
-        $message = [
+        $preamble = [
             \sprintf(__('An issue has been found during checklist monitoring of "%s" check:', 'bc-security'), $check->getName()),
             '',
-            $result->getMessageAsPlainText(),
         ];
 
-        $this->notify($subject, $message);
+        $this->notify($subject, \array_merge($preamble, $result->getMessage()));
     }
 
 
     /**
      * Send notification about multiple checks that failed during checklist monitoring.
      *
-     * @param array $issues Issues which triggered the alert (issue is an array with 'check' and 'result' keys).
+     * @param array{check:Checklist\Check,result:Checklist\CheckResult} $issues Issues which triggered the alert.
      */
-    public function watchChecklistMultipleChecksAlert(array $issues)
+    public function watchChecklistMultipleChecksAlert(array $issues): void
     {
         $subject = __('Checklist monitoring alert', 'bc-security');
         $message = [
@@ -387,8 +387,9 @@ class Watchman implements Modules\Initializable, Modules\Activable
      * Send email notification with given $subject and $message to recipients configured in plugin settings.
      *
      * @param string $subject
-     * @param array|string $message
-     * @return bool|null Null, if there are no recipients configured. True, if email has been sent, false otherwise.
+     * @param string|string[] $message
+     *
+     * @return bool|null Null if there are no recipients configured. True if email has been sent, false otherwise.
      */
     private function notify(string $subject, $message): ?bool
     {

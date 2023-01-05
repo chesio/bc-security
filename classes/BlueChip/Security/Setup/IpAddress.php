@@ -25,19 +25,16 @@ abstract class IpAddress
     /**
      * Get a list of all connection types supported by the plugin.
      *
-     * @param bool $explain Return array with type as key and explanation as value.
-     * @return array Array of known (valid) connection types.
+     * @return array<string,string> Array of known (valid) connection types.
      */
-    public static function enlist(bool $explain = false): array
+    public static function enlist(): array
     {
-        $list = [
+        return [
             self::REMOTE_ADDR => __('Direct connection to the Internet', 'bc-security'),
             self::HTTP_CF_CONNECTING_IP => __('Behind CloudFlare CDN and reverse proxy', 'bc-security'),
             self::HTTP_X_FORWARDED_FOR => __('Behind a reverse proxy or load balancer', 'bc-security'),
             self::HTTP_X_REAL_IP => __('Behind a reverse proxy or load balancer', 'bc-security'),
         ];
-
-        return $explain ? $list : \array_keys($list);
     }
 
 
@@ -45,11 +42,12 @@ abstract class IpAddress
      * Get remote address according to provided $type (with fallback to REMOTE_ADDR).
      *
      * @param string $type
-     * @return string Remote IP or empty string, if remote IP could not been determined.
+     *
+     * @return string Remote IP or empty string if remote IP could not been determined.
      */
     public static function get(string $type): string
     {
-        if (!\in_array($type, self::enlist(), true)) {
+        if (!\array_key_exists($type, self::enlist())) {
             // Invalid type, fall back to direct address.
             $type = self::REMOTE_ADDR;
         }
@@ -58,7 +56,7 @@ abstract class IpAddress
             return self::getFirst($_SERVER[$type]);
         }
 
-        // Not found, try to fall back to direct address, if proxy has been requested.
+        // Not found: try to fall back to direct address if proxy has been requested.
         if (($type !== self::REMOTE_ADDR) && isset($_SERVER[self::REMOTE_ADDR])) {
             // NOTE: Even though we fall back to direct address -- meaning you
             // can get a mostly working plugin when connection type is not set
@@ -77,11 +75,12 @@ abstract class IpAddress
      * Get raw $_SERVER value for connection $type.
      *
      * @param string $type
+     *
      * @return string
      */
     public static function getRaw(string $type): string
     {
-        return (\in_array($type, self::enlist(), true) && isset($_SERVER[$type])) ? $_SERVER[$type] : '';
+        return \array_key_exists($type, self::enlist()) ? ($_SERVER[$type] ?? '') : '';
     }
 
 
@@ -100,6 +99,7 @@ abstract class IpAddress
      * Get the first from possibly multiple $ip_addresses.
      *
      * @param string $ip_addresses
+     *
      * @return string
      */
     private static function getFirst(string $ip_addresses): string

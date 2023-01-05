@@ -25,7 +25,7 @@ class CoreIntegrity extends Checklist\AdvancedCheck
             __('WordPress core files are untouched', 'bc-security'),
             \sprintf(
                 /* translators: 1: link to Wikipedia article about md5sum, 2: link to checksums file at WordPress.org */
-                esc_html__('By comparing %1$s of local core files with %2$s it is possible to determine, if any of core files have been modified or if there are any unknown files in core directories.', 'bc-security'),
+                esc_html__('By comparing %1$s of local core files with %2$s it is possible to determine whether any of core files have been modified or there are any unknown files in core directories.', 'bc-security'),
                 '<a href="' . esc_url(__('https://en.wikipedia.org/wiki/Md5sum', 'bc-security')) . '" rel="noreferrer">' . esc_html__('MD5 checksums', 'bc-security') . '</a>',
                 '<a href="' . esc_url(self::getChecksumsUrl()) . '" rel="noreferrer">' . esc_html__('checksums downloaded from WordPress.org', 'bc-security') . '</a>'
             )
@@ -87,6 +87,7 @@ class CoreIntegrity extends Checklist\AdvancedCheck
      * Get md5 checksums of core WordPress files from WordPress.org API.
      *
      * @param string $url
+     *
      * @return object|null
      */
     private static function getChecksums(string $url): ?object
@@ -112,7 +113,8 @@ class CoreIntegrity extends Checklist\AdvancedCheck
      * @hook \BlueChip\Security\Modules\Checklist\Hooks::IGNORED_CORE_MODIFIED_FILES
      *
      * @param object $checksums
-     * @return array
+     *
+     * @return string[]
      */
     private static function findModifiedFiles(object $checksums): array
     {
@@ -133,7 +135,7 @@ class CoreIntegrity extends Checklist\AdvancedCheck
         return \array_filter(
             $modified_files,
             function ($filename) {
-                return \strpos($filename, 'wp-content/') !== 0;
+                return !\str_starts_with($filename, 'wp-content/');
             }
         );
     }
@@ -145,7 +147,8 @@ class CoreIntegrity extends Checklist\AdvancedCheck
      * @hook \BlueChip\Security\Modules\Checklist\Hooks::IGNORED_CORE_UNKNOWN_FILES
      *
      * @param object $checksums
-     * @return array
+     *
+     * @return string[]
      */
     private static function findUnknownFiles(object $checksums): array
     {

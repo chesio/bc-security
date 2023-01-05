@@ -24,7 +24,7 @@ class NoAccessToPhpFilesInUploadsDirectory extends Checklist\BasicCheck
         $php_file_message = 'It is more secure to not allow PHP files to be accessed from within WordPress uploads directory.';
 
         // Prepare temporary file name and contents.
-        $name = \sprintf('bc-security-checklist-test-%s.txt', \md5(\rand())); // .txt extension to avoid upload file MIME check killing our test
+        $name = \sprintf('bc-security-checklist-test-%s.txt', \md5((string) \rand())); // .txt extension to avoid upload file MIME check killing our test
         $bits = \sprintf('<?php echo "%s";', $php_file_message);
 
         // Create temporary PHP file in uploads directory.
@@ -43,7 +43,7 @@ class NoAccessToPhpFilesInUploadsDirectory extends Checklist\BasicCheck
 
         $url = \substr($result['url'], 0, -3) . 'php';
 
-        // Check, if access to PHP file is forbidden.
+        // Check if access to PHP file is forbidden.
         $status = Checklist\Helper::isAccessToUrlForbidden($url, $php_file_message);
 
         // Remove temporary PHP file from uploads directory

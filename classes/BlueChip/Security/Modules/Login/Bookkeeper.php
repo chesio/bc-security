@@ -46,7 +46,7 @@ class Bookkeeper implements \BlueChip\Security\Modules\Installable
     /**
      * @link https://codex.wordpress.org/Creating_Tables_with_Plugins#Creating_or_Updating_the_Table
      */
-    public function install()
+    public function install(): void
     {
         // To have dbDelta()
         require_once ABSPATH . 'wp-admin/includes/upgrade.php';
@@ -67,7 +67,7 @@ class Bookkeeper implements \BlueChip\Security\Modules\Installable
     }
 
 
-    public function uninstall()
+    public function uninstall(): void
     {
         $this->wpdb->query(\sprintf('DROP TABLE IF EXISTS %s', $this->failed_logins_table));
     }
@@ -78,6 +78,7 @@ class Bookkeeper implements \BlueChip\Security\Modules\Installable
      *
      * @param string $ip_address
      * @param string $username
+     *
      * @return int Number of non-expired failed login attempts for $ip_address.
      */
     public function recordFailedLoginAttempt(string $ip_address, string $username): int
@@ -96,13 +97,14 @@ class Bookkeeper implements \BlueChip\Security\Modules\Installable
         $this->wpdb->insert($this->failed_logins_table, $data, ['%s', '%s', '%s', '%d']);
 
         // Get count of all unexpired failed login attempts for given IP address.
+        /** @var string $query */
         $query = $this->wpdb->prepare(
             "SELECT COUNT(*) AS retries_count FROM {$this->failed_logins_table} WHERE ip_address = %s AND date_and_time > %s",
             $ip_address,
             MySQLDateTime::formatDateTime($now - $this->settings->getResetTimeoutDuration())
         );
 
-        return \intval($this->wpdb->get_var($query));
+        return (int) $this->wpdb->get_var($query);
     }
 
 
@@ -117,6 +119,7 @@ class Bookkeeper implements \BlueChip\Security\Modules\Installable
         $threshold = \time() - $this->settings->getResetTimeoutDuration();
         // Prepare query.
         // Note: $wpdb->delete cannot be used as it does not support "<" comparison)
+        /** @var string $query */
         $query = $this->wpdb->prepare(
             "DELETE FROM {$this->failed_logins_table} WHERE date_and_time <= %s",
             MySQLDateTime::formatDateTime($threshold)

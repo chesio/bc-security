@@ -38,7 +38,7 @@ trait SettingsPage
      *
      * @param \BlueChip\Security\Core\Settings $settings
      */
-    protected function useSettings(\BlueChip\Security\Core\Settings $settings)
+    protected function useSettings(\BlueChip\Security\Core\Settings $settings): void
     {
         // Remember the settings.
         $this->settings = $settings;
@@ -50,7 +50,7 @@ trait SettingsPage
     /**
      * Display settings errors via admin notices.
      */
-    public function displaySettingsErrors()
+    public function displaySettingsErrors(): void
     {
         add_action('admin_notices', 'settings_errors');
     }
@@ -59,7 +59,7 @@ trait SettingsPage
     /**
      * Register setting.
      */
-    public function registerSettings()
+    public function registerSettings(): void
     {
         register_setting($this->option_group, $this->option_name, [$this->settings, 'sanitize']);
     }
@@ -68,7 +68,7 @@ trait SettingsPage
     /**
      * Unregister setting.
      */
-    public function unregisterSettings()
+    public function unregisterSettings(): void
     {
         unregister_setting($this->option_group, $this->option_name);
     }
@@ -81,7 +81,7 @@ trait SettingsPage
      * of SETTINGS_* constants as $page.
      * @param string $page
      */
-    public function setSettingsPage(string $page)
+    public function setSettingsPage(string $page): void
     {
         $this->recent_page = $page;
     }
@@ -94,7 +94,8 @@ trait SettingsPage
      *
      * @param string $key
      * @param mixed $value [optional] Value to use instead of current value of setting with $key.
-     * @return array
+     *
+     * @return array<string,mixed>
      */
     protected function getFieldBaseProperties(string $key, $value = null): array
     {
@@ -118,7 +119,7 @@ trait SettingsPage
      * @param string $title
      * @param callable|null $callback [optional]
      */
-    public function addSettingsSection(string $section, string $title, ?callable $callback = null)
+    public function addSettingsSection(string $section, string $title, ?callable $callback = null): void
     {
         if (!\is_string($this->recent_page)) {
             _doing_it_wrong(__METHOD__, 'No recent page set yet!', '0.1.0');
@@ -140,9 +141,9 @@ trait SettingsPage
      * @param string $key Key of the field (must be proper key from Settings)
      * @param string $title Title of the field
      * @param callable $callback Callback that produces form input for the field
-     * @param array $args [Optional] Any extra arguments for $callback function
+     * @param array<string,mixed> $args [Optional] Any extra arguments for $callback function
      */
-    public function addSettingsField(string $key, string $title, callable $callback, array $args = [])
+    public function addSettingsField(string $key, string $title, callable $callback, array $args = []): void
     {
         if (!\is_string($this->recent_page)) {
             _doing_it_wrong(__METHOD__, 'No recent page set yet!', '0.1.0');
@@ -170,7 +171,7 @@ trait SettingsPage
     /**
      * Output nonce, action and other hidden fields.
      */
-    public function printSettingsFields()
+    public function printSettingsFields(): void
     {
         settings_fields($this->option_group);
     }
@@ -179,7 +180,7 @@ trait SettingsPage
     /**
      * Output visible form fields.
      */
-    public function printSettingsSections()
+    public function printSettingsSections(): void
     {
         if (!\is_string($this->recent_page)) {
             _doing_it_wrong(__METHOD__, 'No recent page set!', '0.1.0');
@@ -193,7 +194,7 @@ trait SettingsPage
     /**
      * Output form for settings manipulation.
      */
-    protected function printSettingsForm()
+    protected function printSettingsForm(): void
     {
         echo '<form method="post" action="' . admin_url('options.php') . '">';
 

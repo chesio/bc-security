@@ -29,7 +29,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
     }
 
 
-    public function loadPage()
+    public function loadPage(): void
     {
         $this->displaySettingsErrors();
 
@@ -64,7 +64,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
     /**
      * Output page contents.
      */
-    public function printContents()
+    public function printContents(): void
     {
         echo '<div class="wrap">';
         echo '<h1>' . esc_html($this->page_title) . '</h1>';
@@ -76,7 +76,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
     /**
      * Initialize settings page: add sections and fields.
      */
-    public function initPage()
+    public function initPage(): void
     {
         // Register settings.
         $this->registerSettings();
@@ -111,7 +111,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
     }
 
 
-    public function printGoogleAPIHint()
+    public function printGoogleAPIHint(): void
     {
         echo '<p>';
         echo sprintf(
@@ -124,16 +124,14 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
     }
 
 
-    public function printSiteConnectionHint()
+    public function printSiteConnectionHint(): void
     {
-        $list = IpAddress::enlist(true);
-
         echo '<p>';
         echo esc_html__('Your server provides following information about remote addresses:', 'bc-security');
         echo '</p>';
 
         echo '<ol>';
-        foreach ($list as $type => $explanation) {
+        foreach (IpAddress::enlist() as $type => $explanation) {
             if (($ip_address = IpAddress::getRaw($type))) {
                 echo '<li>' . \sprintf('%s: <code>$_SERVER[<strong>%s</strong>] = <em>%s</em></code>', esc_html($explanation), $type, $ip_address) . '</li>';
             }
@@ -145,13 +143,12 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
     /**
      * Return available connection options in format suitable for <select> field.
      *
-     * @return array
+     * @return array<string,string>
      */
     private function getConnectionOptions(): array
     {
-        $list = IpAddress::enlist(true);
         $options = [];
-        foreach ($list as $type => $explanation) {
+        foreach (IpAddress::enlist() as $type => $explanation) {
             $options[$type] = \sprintf('%s: %s', $type, $explanation);
         }
         return $options;

@@ -14,6 +14,7 @@ abstract class HaveIBeenPwned
 
     /**
      * @link https://haveibeenpwned.com/API/v2#SearchingPwnedPasswordsByRange
+     *
      * @var string URL of Pwned Passwords API range search end-point
      */
     public const PWNEDPASSWORDS_API_RANGE_SEARCH_URL = 'https://api.pwnedpasswords.com/range/';
@@ -21,8 +22,10 @@ abstract class HaveIBeenPwned
 
     /**
      * @link https://haveibeenpwned.com/API/v2#PwnedPasswords
+     *
      * @param string $password Password to check.
-     * @return bool True, if $password has been previously exposed in a data breach, false if not, null if check failed.
+     *
+     * @return bool True if $password has been previously exposed in a data breach, false if not, null if check failed.
      */
     public static function hasPasswordBeenPwned(string $password): ?bool
     {

@@ -17,11 +17,11 @@ class NullLogger extends AbstractLogger
      *
      * @param mixed  $level
      * @param string $message
-     * @param array  $context
+     * @param array $context
      *
      * @return void
      */
-    public function log($level, $message, array $context = array())
+    public function log($level, $message, array $context = [])
     {
         // noop
     }

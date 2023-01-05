@@ -24,7 +24,7 @@ interface Hooks
      *     \BlueChip\Security\Modules\IpBlacklist\Hooks::DEFAULT_MANUAL_LOCK_DURATION,
      *     function (bool $result, string $ip_address, int $scope) {
      *         // Block any IP address that starts with "1"
-     *         return strpos($ip_address, '1') === 0;
+     *         return str_starts_with($ip_address, '1');
      *     },
      *     10,
      *     3

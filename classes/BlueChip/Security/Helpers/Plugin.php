@@ -25,15 +25,17 @@ abstract class Plugin
 
     /**
      * @param string $plugin_basename
-     * @return string URL of the plugin changelog page or empty string, if it cannot be determined.
+     * @param array<string,mixed> $plugin_data
+     *
+     * @return string URL of the plugin changelog page or empty string if it cannot be determined.
      */
-    public static function getChangelogUrl(string $plugin_basename): string
+    public static function getChangelogUrl(string $plugin_basename, array $plugin_data): string
     {
         // By default, changelog URL is unknown.
         $url = '';
 
-        if (self::hasReadmeTxt($plugin_basename)) {
-            // Assume that any plugin with readme.txt comes from Plugins Directory.
+        if (self::hasReadme($plugin_basename) && self::hasWordPressOrgUpdateUri($plugin_basename, $plugin_data)) {
+            // Assume that any plugin with readme file comes from Plugins Directory.
             $url = self::getDirectoryUrl($plugin_basename) . self::PLUGINS_DIRECTORY_CHANGELOG_PATH;
         }
 
@@ -44,6 +46,7 @@ abstract class Plugin
 
     /**
      * @param string $plugin_basename
+     *
      * @return string Presumable URL of the plugin in WordPress.org Plugins Directory.
      */
     public static function getDirectoryUrl(string $plugin_basename): string
@@ -54,7 +57,8 @@ abstract class Plugin
 
     /**
      * @param string $plugin_basename
-     * @param array $plugin_data
+     * @param array<string,mixed> $plugin_data
+     *
      * @return string Presumable URL of the plugin checksums file at WordPress.org.
      */
     public static function getChecksumsUrl(string $plugin_basename, array $plugin_data): string
@@ -67,7 +71,8 @@ abstract class Plugin
      * Get slug (ie. bc-security) for plugin with given basename (ie. bc-security/bc-security.php).
      *
      * @param string $plugin_basename
-     * @return string Plugin slug or empty string, if plugin does not seem to be installed in its own directory.
+     *
+     * @return string Plugin slug or empty string if plugin does not seem to be installed in its own directory.
      */
     public static function getSlug(string $plugin_basename): string
     {
@@ -81,17 +86,58 @@ abstract class Plugin
 
     /**
      * @param string $plugin_basename
-     * @return bool True, if there is readme.txt file present in plugin directory, false otherwise.
+     *
+     * @return bool True if there is readme.md or readme.txt file present in plugin directory, false otherwise.
      */
-    public static function hasReadmeTxt(string $plugin_basename): bool
+    public static function hasReadme(string $plugin_basename): bool
     {
-        return \is_file(self::getPluginDirPath($plugin_basename) . '/readme.txt');
+        $plugin_dir_path = self::getPluginDirPath($plugin_basename);
+        // Check txt file first as it is far more popular.
+        return \is_file($plugin_dir_path . '/readme.txt') || \is_file($plugin_dir_path . '/readme.md');
+    }
+
+
+    /**
+     * Return true if plugin has no Update URI set or if the Update URI has either wordpress.org or w.org as hostname.
+     *
+     * @param string $plugin_basename
+     * @param array<string,mixed> $plugin_data
+     *
+     * @return bool
+     */
+    public static function hasWordPressOrgUpdateUri(string $plugin_basename, array $plugin_data): bool
+    {
+        // Compatibility check with older WordPress versions:
+        if (!isset($plugin_data['UpdateURI'])) {
+            // The field is not available in WordPress 5.7 or older.
+            return true;
+        }
+
+        $plugin_update_uri = $plugin_data['UpdateURI'];
+
+        if ($plugin_update_uri === '') {
+            // Empty string = no Update URI header is present.
+            return true;
+        }
+
+        $plugin_slug = self::getSlug($plugin_basename);
+
+        if ($plugin_update_uri === "https://wordpress.org/plugins/{$plugin_slug}/") {
+            return true;
+        }
+
+        if ($plugin_update_uri === "w.org/plugin/{$plugin_slug}") {
+            return true;
+        }
+
+        return false;
     }
 
 
     /**
      * @param string $plugin_basename
-     * @return bool True, if directory of given plugin seems to be under version control (Subversion or Git).
+     *
+     * @return bool True if directory of given plugin seems to be under version control (Subversion or Git).
      */
     public static function isVersionControlled(string $plugin_basename): bool
     {
@@ -101,10 +147,13 @@ abstract class Plugin
 
 
     /**
-     * Get all installed plugins that seems to be hosted at WordPress.org repository (= have readme.txt file).
+     * Get all installed plugins that seems to be hosted at WordPress.org repository = all plugins that:
+     * 1. have readme.md or readme.txt file in their root directory and
+     * 2. either have no Update URI header set or the URI has wordpress.org or w.org in hostname
+     *
      * Method effectively discards any plugins that are not in their own directory (like Hello Dolly) from output.
      *
-     * @return array
+     * @return array<string,array<string,mixed>>
      */
     public static function getPluginsInstalledFromWordPressOrg(): array
     {
@@ -113,12 +162,17 @@ abstract class Plugin
             require_once ABSPATH . 'wp-admin/includes/plugin.php';
         }
 
-        // There seem to be no easy way to find out if plugin is hosted at WordPress.org repository or not, see:
-        // https://core.trac.wordpress.org/ticket/32101
+        $wordpress_org_plugins = \array_filter(
+            get_plugins(),
+            function (array $plugin_data, string $plugin_basename): bool {
+                return Plugin::hasWordPressOrgUpdateUri($plugin_basename, $plugin_data);
+            },
+            ARRAY_FILTER_USE_BOTH
+        );
 
         return \array_filter(
-            get_plugins(),
-            [self::class, 'hasReadmeTxt'],
+            $wordpress_org_plugins,
+            [self::class, 'hasReadme'],
             ARRAY_FILTER_USE_KEY
         );
     }
@@ -126,8 +180,10 @@ abstract class Plugin
 
     /**
      * @internal Only use in admin (back-end) context.
+     *
      * @param string $plugin_basename
-     * @return array
+     *
+     * @return array<string,mixed>
      */
     public static function getPluginData(string $plugin_basename): array
     {
@@ -142,6 +198,7 @@ abstract class Plugin
      * @see get_plugins()
      *
      * @param string $plugin_basename Basename of plugin installed in its own directory.
+     *
      * @return string Absolute path to directory where plugin is installed.
      */
     public static function getPluginDirPath(string $plugin_basename): string
@@ -151,26 +208,37 @@ abstract class Plugin
 
 
     /**
-     * Create comma separated list of plugin names optionally with a link to plugin related URL.
+     * Convert list of items with plugin data to list of plugin names that is optionally:
+     * - wrapped in a link to plugin related URL
+     * - suffixed with additional information
      *
-     * @param array $plugins
-     * @param string $linkTo [optional] If provided, plugin name will be turned into link to URL under given data key.
-     * @return string
+     * Also, plugin name is wrapped in <strong> and additional information in <em> tag.
+     *
+     * @param array<string,array<string,mixed>> $plugins List of plugin data items
+     * @param string $link_to [optional] Wrap plugin name in a link to URL stored under given key.
+     * @param string $extend_by [optional] Append text stored under given key to plugin name.
+     *
+     * @return string[]
      */
-    public static function implodeList(array $plugins, string $linkTo = ''): string
+    public static function populateList(array $plugins, string $link_to = '', string $extend_by = ''): array
     {
-        return \implode(
-            ', ',
-            \array_map(
-                function (array $plugin_data) use ($linkTo): string {
-                    $plugin_name = '<em>' . esc_html($plugin_data['Name']) . '</em>';
-                    return $linkTo
-                        ? '<a href="' . esc_url($plugin_data[$linkTo]) . '" rel="noreferrer">' . $plugin_name . '</a>'
-                        : $plugin_name
-                    ;
-                },
-                $plugins
-            )
+        return \array_map(
+            function (array $plugin_data) use ($link_to, $extend_by): string {
+                $plugin_name = '<strong>' . esc_html($plugin_data['Name']) . '</strong>';
+
+                $plugin_link = ($link_to && ('' !== ($url = $plugin_data[$link_to] ?? '')))
+                    ? ('<a href="' . esc_url($url) . '" rel="noreferrer">' . $plugin_name . '</a>')
+                    : $plugin_name
+                ;
+
+                $plugin_info = ($extend_by && ('' !== ($info = $plugin_data[$extend_by] ?? '')))
+                    ? (': <em>' . $info . '</em>')
+                    : ''
+                ;
+
+                return $plugin_link . $plugin_info;
+            },
+            \array_values($plugins) // = convert associative keys to numeric indices
         );
     }
 }

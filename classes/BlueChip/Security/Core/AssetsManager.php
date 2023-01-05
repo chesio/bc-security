@@ -31,6 +31,7 @@ class AssetsManager
 
     /**
      * @param string $filename Asset filename (ie. asset.js).
+     *
      * @return string Absolute path to the asset.
      */
     public function getScriptFilePath(string $filename): string
@@ -41,6 +42,7 @@ class AssetsManager
 
     /**
      * @param string $filename Asset filename (ie. asset.js).
+     *
      * @return string URL of the asset.
      */
     public function getScriptFileUrl(string $filename): string
@@ -51,6 +53,7 @@ class AssetsManager
 
     /**
      * @param string $filename Asset filename (ie. asset.css).
+     *
      * @return string Absolute path to the asset.
      */
     public function getStyleFilePath(string $filename): string
@@ -61,6 +64,7 @@ class AssetsManager
 
     /**
      * @param string $filename Asset filename (ie. asset.css).
+     *
      * @return string URL of the asset.
      */
     public function getStyleFileUrl(string $filename): string

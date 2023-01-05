@@ -12,6 +12,15 @@ class Bootstrap
 
 
     /**
+     * @return string Path to root directory of the plugin.
+     */
+    public static function getPluginRootDirectory(): string
+    {
+        return dirname(dirname(dirname(__DIR__)));
+    }
+
+
+    /**
      * @return string Path to where WordPress tests library is installed.
      */
     public static function getWordPressTestsDirectory(): string
@@ -25,7 +34,7 @@ class Bootstrap
      */
     public function __construct()
     {
-        $this->plugin_dir   = dirname(dirname(dirname(__DIR__)));
+        $this->plugin_dir   = self::getPluginRootDirectory();
         $this->wp_tests_dir = self::getWordPressTestsDirectory();
     }
 
@@ -43,20 +52,22 @@ class Bootstrap
             $_SERVER['SERVER_NAME'] = 'bc-security.test';
         }
 
-        // Load test function so tests_add_filter() is available.
+        // Give access to tests_add_filter() function.
         require_once $this->wp_tests_dir . '/includes/functions.php';
 
+        // Clean existing install first.
         tests_add_filter('muplugins_loaded', function () {
-            // Clean existing install first.
             define('WP_UNINSTALL_PLUGIN', true);
             require_once $this->plugin_dir . '/uninstall.php';
         });
 
         tests_add_filter('muplugins_loaded', function () {
-            // Load the plugin.
-            require_once $this->plugin_dir . '/bc-security.php';
-            // Manually activate the plugin.
-            $bc_security->activate();
+            // Bootstrap the plugin ...
+            $bc_security = require_once $this->plugin_dir . '/bc-security.php';
+            // ... activate it ...
+            do_action('activate_' . plugin_basename($this->plugin_dir . '/bc-security.php'));
+            // ... but do not load it yet - it is loaded manually before every test.
+            remove_action('plugins_loaded', [$bc_security, 'load'], 0);
         });
 
         // Start up the WP testing environment.

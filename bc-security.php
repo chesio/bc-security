@@ -4,23 +4,24 @@
  * Plugin Name: BC Security
  * Plugin URI: https://github.com/chesio/bc-security
  * Description: Helps keeping WordPress websites secure.
- * Version: develop
+ * Version: 0.20.0-dev
  * Author: Česlav Przywara <ceslav@przywara.cz>
  * Author URI: https://www.chesio.com
- * Requires PHP: 7.2
- * Requires WP: 5.5
- * Tested up to: 5.5
+ * Requires PHP: 7.3
+ * Requires WP: 5.9
+ * Tested up to: 6.1
  * Text Domain: bc-security
  * GitHub Plugin URI: https://github.com/chesio/bc-security
+ * Update URI: https://github.com/chesio/bc-security
  */
 
-if (version_compare(PHP_VERSION, '7.2', '<')) {
+if (version_compare(PHP_VERSION, '7.3', '<')) {
     // Warn user that his/her PHP version is too low for this plugin to function.
     add_action('admin_notices', function () {
         echo '<div class="notice notice-error"><p>';
         echo esc_html(
             sprintf(
-                __('BC Security plugin requires PHP 7.2 to function properly, but you have version %s installed. The plugin has been auto-deactivated.', 'bc-security'),
+                __('BC Security plugin requires PHP 7.3 to function properly, but you have version %s installed. The plugin has been auto-deactivated.', 'bc-security'),
                 PHP_VERSION
             )
         );
@@ -30,7 +31,7 @@ if (version_compare(PHP_VERSION, '7.2', '<')) {
         echo sprintf(
             __('PHP version %1$s is <a href="%2$s">no longer supported</a>. You should consider upgrading PHP on your webhost.', 'bc-security'),
             PHP_VERSION,
-            'https://secure.php.net/supported-versions.php'
+            'https://www.php.net/supported-versions.php'
         );
         echo '</p></div>';
         // https://make.wordpress.org/plugins/2015/06/05/policy-on-php-versions/
@@ -52,13 +53,18 @@ if (version_compare(PHP_VERSION, '7.2', '<')) {
 // Register autoloader for this plugin.
 require_once __DIR__ . '/autoload.php';
 
-// Construct plugin instance.
-$bc_security = new \BlueChip\Security\Plugin(__FILE__, $GLOBALS['wpdb']);
+return call_user_func(function () {
+    // Construct plugin instance.
+    $bc_security = new \BlueChip\Security\Plugin(__FILE__, $GLOBALS['wpdb']);
 
-// Register activation hook.
-register_activation_hook(__FILE__, [$bc_security, 'activate']);
-// Register deactivation hook.
-register_deactivation_hook(__FILE__, [$bc_security, 'deactivate']);
+    // Register activation hook.
+    register_activation_hook(__FILE__, [$bc_security, 'activate']);
+    // Register deactivation hook.
+    register_deactivation_hook(__FILE__, [$bc_security, 'deactivate']);
 
-// Load the plugin.
-$bc_security->load();
+    // Boot up the plugin immediately after all plugins are loaded.
+    add_action('plugins_loaded', [$bc_security, 'load'], 0, 0);
+
+    // Return the instance.
+    return $bc_security;
+});

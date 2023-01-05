@@ -31,7 +31,7 @@ abstract class AdvancedCheck extends Check
      *
      * @hook \BlueChip\Security\Modules\Checklist\Hooks::ADVANCED_CHECK_ALERT
      */
-    public function runInCron()
+    public function runInCron(): void
     {
         $result = $this->run();
 

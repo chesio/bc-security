@@ -11,9 +11,9 @@ class PhpFilesEditationDisabled extends Checklist\BasicCheck
         parent::__construct(
             __('PHP files editation disabled', 'bc-security'),
             \sprintf(
-                /* translators: 1: link to Codex page on WordPress hardening */
+                /* translators: 1: link to article on WordPress hardening */
                 esc_html__('It is generally recommended to %1$s.', 'bc-security'),
-                '<a href="' . esc_url(__('https://codex.wordpress.org/Hardening_WordPress#Disable_File_Editing', 'bc-security')) . '" rel="noreferrer">' . esc_html__('disable editation of PHP files', 'bc-security') . '</a>'
+                '<a href="' . esc_url(__('https://wordpress.org/support/article/hardening-wordpress/#disable-file-editing', 'bc-security')) . '" rel="noreferrer">' . esc_html__('disable editation of PHP files', 'bc-security') . '</a>'
             )
         );
     }

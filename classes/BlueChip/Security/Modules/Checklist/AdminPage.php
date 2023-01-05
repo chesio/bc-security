@@ -2,6 +2,7 @@
 
 namespace BlueChip\Security\Modules\Checklist;
 
+use BlueChip\Security\Core\AssetsManager;
 use BlueChip\Security\Helpers\AjaxHelper;
 use BlueChip\Security\Helpers\FormHelper;
 use BlueChip\Security\Modules\Hardening;
@@ -32,7 +33,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
      * @param \BlueChip\Security\Modules\Checklist\AutorunSettings $settings
      * @param \BlueChip\Security\Core\AssetsManager $assets_manager
      */
-    public function __construct(Manager $checklist_manager, AutorunSettings $settings, \BlueChip\Security\Core\AssetsManager $assets_manager)
+    public function __construct(Manager $checklist_manager, AutorunSettings $settings, AssetsManager $assets_manager)
     {
         $this->page_title = _x('Security Checklist', 'Dashboard page title', 'bc-security');
         $this->menu_title = _x('Checklist', 'Dashboard menu item name', 'bc-security');
@@ -47,7 +48,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
     /**
      * Initialize settings page: register settings etc.
      */
-    public function initPage()
+    public function initPage(): void
     {
         // Register settings.
         $this->registerSettings();
@@ -57,7 +58,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
     }
 
 
-    public function loadPage()
+    public function loadPage(): void
     {
         $this->enqueueCssAssets(['checklist' => 'checklist.css',]);
         $this->enqueueJsAssets(['checklist' => 'checklist.js',]);
@@ -89,7 +90,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
     /**
      * Output admin page.
      */
-    public function printContents()
+    public function printContents(): void
     {
         echo '<div class="wrap">';
 
@@ -138,9 +139,9 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
 
 
     /**
-     * @param array $basic_checks
+     * @param \BlueChip\Security\Modules\Checklist\Check[] $basic_checks
      */
-    private function printBasicChecksSection(array $basic_checks)
+    private function printBasicChecksSection(array $basic_checks): void
     {
         echo '<h2>' . esc_html__('Basic checks', 'bc-security') . '</h2>';
 
@@ -157,9 +158,9 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
 
 
     /**
-     * @param array $advanced_checks
+     * @param \BlueChip\Security\Modules\Checklist\Check[] $advanced_checks
      */
-    private function printAdvancedChecksSection(array $advanced_checks)
+    private function printAdvancedChecksSection(array $advanced_checks): void
     {
         echo '<h2>' . esc_html__('Advanced checks', 'bc-security') . '</h2>';
 
@@ -175,7 +176,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
     }
 
 
-    private function printChecklistMonitoringSection()
+    private function printChecklistMonitoringSection(): void
     {
         echo '<h2>' . esc_html__('Checklist monitoring', 'bc-security') . '</h2>';
 
@@ -183,15 +184,19 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
         echo esc_html__('You can let BC Security monitor the checklist automatically. Just select the checks you want to monitor:', 'bc-security');
         echo ' ';
         echo \implode(' ', [
-            '<button type="button" id="bcs-mark-all-checks" disabled="disabled">' . esc_html__('select all', 'bc-security') . '</button>',
-            '<button type="button" id="bcs-mark-no-checks" disabled="disabled">' . esc_html__('select none', 'bc-security') . '</button>',
-            '<button type="button" id="bcs-mark-passing-checks" disabled="disabled">' . esc_html__('select only passing', 'bc-security') . '</button>',
+            '<button type="button" class="button" id="bcs-mark-all-checks" disabled="disabled">' . esc_html__('select all checks', 'bc-security') . '</button>',
+            '<button type="button" class="button" id="bcs-mark-no-checks" disabled="disabled">' . esc_html__('deselect all checks', 'bc-security') . '</button>',
+            '<button type="button" class="button" id="bcs-mark-passing-checks" disabled="disabled">' . esc_html__('select only passing checks', 'bc-security') . '</button>',
         ]);
         echo '</p>';
     }
 
 
-    private function printChecklistTable(array $checks, string $checks_class)
+    /**
+     * @param \BlueChip\Security\Modules\Checklist\Check[] $checks
+     * @param string $checks_class
+     */
+    private function printChecklistTable(array $checks, string $checks_class): void
     {
         echo '<table class="wp-list-table widefat striped">';
 
@@ -218,7 +223,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
     /**
      * Output single table row with data labels.
      */
-    private function printLabelsRow()
+    private function printLabelsRow(): void
     {
         echo '<tr>';
         echo '<th>' . esc_html__('Monitor', 'bc-security') . '</th>';
@@ -227,6 +232,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
         echo '<th>' . esc_html__('Last run', 'bc-security') . '</th>';
         echo '<th>' . esc_html__('Status', 'bc-security') . '</th>';
         echo '<th>' . esc_html__('Result', 'bc-security') . '</th>';
+        echo '<th>' . '</th>';
         echo '<tr>';
     }
 
@@ -236,19 +242,20 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
      *
      * @param \BlueChip\Security\Modules\Checklist\Check $check
      */
-    private function printCheckRow(Check $check, string $check_class)
+    private function printCheckRow(Check $check, string $check_class): void
     {
         $check_id = $check::getId();
+        $check_html_id = array_reverse(explode("\\", $check_id))[0];
         $result = $check->getResult();
         $status = $result->getStatus();
         $status_class = \is_bool($status) ? ($status ? 'bcs-check--ok' : 'bcs-check--ko') : '';
 
-        echo '<tr class="bcs-check ' . esc_attr($check_class) . ' ' . $status_class . '" data-check-id="' . esc_attr($check_id) . '">';
+        echo '<tr class="bcs-check ' . esc_attr($check_class) . ' ' . $status_class . '" id="' . esc_attr($check_html_id) . '" data-check-id="' . esc_attr($check_id) . '">';
 
         // Background monitoring toggle.
         echo '<th>';
         if (isset($this->settings[$check_id])) {
-            FormHelper::printCheckbox($this->getFieldBaseProperties($check_id, \intval($this->settings[$check_id])));
+            FormHelper::printCheckbox($this->getFieldBaseProperties($check_id, (int) $this->settings[$check_id]));
         }
         echo '</th>';
         // Name should be short and descriptive and without HTML tags.
@@ -261,6 +268,8 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
         echo '<td class="bcs-check__status"><span class="dashicons"></span></td>';
         // Check result message.
         echo '<td class="bcs-check__message">' . $result->getMessageAsHtml() . '</td>';
+        // Rerun check button.
+        echo '<td><button type="button" class="button  bcs-run-check" data-check-id="' . esc_attr($check_html_id) . '">' . esc_html__('Rerun', 'bc-security') . '</button></td>';
 
         echo '</tr>';
     }

@@ -6,6 +6,7 @@ abstract class FormHelper
 {
     /**
      * @link https://developer.mozilla.org/en-US/docs/Web/HTML/Element/textarea
+     *
      * @var int Default value of "cols" attribute of <textarea> element.
      */
     private const TEXTAREA_COLS_DEFAULT_VALUE = 20;
@@ -33,9 +34,9 @@ abstract class FormHelper
      * its value overwrites hidden field value.
      * See: http://stackoverflow.com/a/1992745
      *
-     * @param array $args Required: label_for, name, value. Optional: class, plain.
+     * @param array{label_for:string,name:string,value:bool,class?:string,plain?:bool} $args
      */
-    public static function printCheckbox(array $args)
+    public static function printCheckbox(array $args): void
     {
         // Field properties
         $properties = [
@@ -44,7 +45,7 @@ abstract class FormHelper
             'value'     => 'true',
             'id'        => $args['label_for'],
             'name'      => $args['name'],
-            'checked'   => \boolval($args['value']),
+            'checked'   => (bool) $args['value'],
         ];
 
         if (!isset($args['plain'])) {
@@ -64,9 +65,9 @@ abstract class FormHelper
     /**
      * Print <input type="hidden"> element.
      *
-     * @param array $args Required: label_for, name, value. Optional: class.
+     * @param array{label_for:string,name:string,value:bool,class?:string} $args
      */
-    public static function printHiddenInput(array $args)
+    public static function printHiddenInput(array $args): void
     {
         // Field properties
         $properties = [
@@ -84,9 +85,9 @@ abstract class FormHelper
     /**
      * Print <input type="number"> element.
      *
-     * @param array $args Required: label_for, name, value. Optional: class.
+     * @param array{label_for:string,name:string,value:int,class?:string} $args
      */
-    public static function printNumberInput(array $args)
+    public static function printNumberInput(array $args): void
     {
         // Field properties
         $properties = [
@@ -106,9 +107,9 @@ abstract class FormHelper
     /**
      * Print <input type="text"> element.
      *
-     * @param array $args Required: label_for, name, value. Optional: class.
+     * @param array{label_for:string,name:string,value:string,class?:string} $args
      */
-    public static function printTextInput(array $args)
+    public static function printTextInput(array $args): void
     {
         // Field properties
         $properties = [
@@ -128,9 +129,9 @@ abstract class FormHelper
     /**
      * Print <select /> element.
      *
-     * @param array $args Required: label_for, name, value. Optional: class.
+     * @param array{label_for:string,name:string,value:string,options:array<string,string>,class?:string} $args
      */
-    public static function printSelect(array $args)
+    public static function printSelect(array $args): void
     {
         $properties = [
             'class'     => $args['class'] ?? '',
@@ -155,9 +156,9 @@ abstract class FormHelper
      *
      * Note: method expects the value argument `$args['value']` to be an array (of lines).
      *
-     * @param array $args Required: label_for, name, value. Optional: class, cols, rows.
+     * @param array{label_for:string,name:string,value:string[],class?:string,cols?:int,rows?:int} $args
      */
-    public static function printTextArea(array $args)
+    public static function printTextArea(array $args): void
     {
         // Field properties
         $properties = [
@@ -182,7 +183,8 @@ abstract class FormHelper
      *
      * @see esc_attr()
      *
-     * @param array $properties
+     * @param mixed[] $properties
+     *
      * @return string
      */
     protected static function renderFieldProperties(array $properties): string
@@ -200,9 +202,9 @@ abstract class FormHelper
         );
         // Map keys and values together as key=value
         $mapped = \array_map(
-            function ($key, $value) {
+            function (string $key, $value) {
                 // Boolean values are replaced with key name: checked => true ---> checked="checked"
-                return \sprintf('%s="%s"', $key, esc_attr(\is_bool($value) ? $key : $value));
+                return \sprintf('%s="%s"', $key, esc_attr(\is_bool($value) ? $key : (string) $value));
             },
             \array_keys($filtered),
             \array_values($filtered)
@@ -216,10 +218,10 @@ abstract class FormHelper
      * Print optional appendix information provided by "description" or "append" keys in $args.
      * Note that "description" takes precedence over "append".
      *
-     * @param array $args
+     * @param array{description?:string,append?:string} $args
      * @param bool $inline
      */
-    protected static function printAppendix(array $args, bool $inline)
+    protected static function printAppendix(array $args, bool $inline): void
     {
         if (isset($args['description'])) {
             echo \sprintf(

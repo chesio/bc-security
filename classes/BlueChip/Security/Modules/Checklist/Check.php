@@ -80,7 +80,7 @@ abstract class Check
 
 
     /**
-     * @return int Timestamp of last run or 0, if no info about last run is available.
+     * @return int Timestamp of last run or 0 if no info about last run is available.
      */
     public function getTimeOfLastRun(): int
     {

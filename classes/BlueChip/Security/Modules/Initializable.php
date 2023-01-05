@@ -7,5 +7,5 @@ interface Initializable
     /**
      * Initialize module (perform any tasks that should be done init hook)
      */
-    public function init();
+    public function init(): void;
 }

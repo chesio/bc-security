@@ -20,32 +20,32 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
     public const SLUG = 'bc-security-ip-blacklist';
 
     /**
-     * @var Name for blacklist action (used for both nonce action and submit name)
+     * @var string Name for blacklist action (used for both nonce action and submit name)
      */
     private const BLACKLIST_ACTION = 'add-to-ip-blacklist';
 
     /**
-     * @var Name for prune action (used for both nonce action and submit name)
+     * @var string Name for prune action (used for both nonce action and submit name)
      */
     private const PRUNE_ACTION = 'prune-ip-blacklist';
 
     /**
-     * @var Name for cron activation action (used for both nonce action and submit name)
+     * @var string Name for cron activation action (used for both nonce action and submit name)
      */
     private const CRON_ACTION_ON = 'auto-ip-blacklist-pruning-on';
 
     /**
-     * @var Name for cron deactivation action (used for both nonce action and submit name)
+     * @var string Name for cron deactivation action (used for both nonce action and submit name)
      */
     private const CRON_ACTION_OFF = 'auto-ip-blacklist-pruning-off';
 
     /**
-     * @var Name for query argument that prefills IP address in the form
+     * @var string Name for query argument that prefills IP address in the form
      */
     public const DEFAULT_IP_ADDRESS = 'default-ip-address';
 
     /**
-     * @var Name for query argument that prefills lock scope in the form
+     * @var string Name for query argument that prefills lock scope in the form
      */
     public const DEFAULT_SCOPE = 'default-scope';
 
@@ -78,7 +78,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
     }
 
 
-    public function loadPage()
+    public function loadPage(): void
     {
         $this->resetCount();
         $this->processActions();
@@ -90,7 +90,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
     /**
      * Output page contents.
      */
-    public function printContents()
+    public function printContents(): void
     {
         echo '<div class="wrap">';
         // Page heading
@@ -114,7 +114,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
      *
      * @hook \BlueChip\Security\Modules\IpBlacklist\Hooks::DEFAULT_MANUAL_LOCK_DURATION
      */
-    private function printBlacklistingForm()
+    private function printBlacklistingForm(): void
     {
         // IP address and lock scope can be "pre-filled".
         $ip_address = \filter_input(INPUT_GET, self::DEFAULT_IP_ADDRESS, FILTER_VALIDATE_IP);
@@ -156,7 +156,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
         // Duration
         echo '<span class="bc-security">';
         echo '<label for="ip-blacklist-duration">' . esc_html__('Lock duration', 'bc-security') . '</label>';
-        echo '<input type="number" id="ip-blacklist-duration" name="duration-length" class="small-text" value="' . esc_attr($duration_units) . '">';
+        echo '<input type="number" id="ip-blacklist-duration" name="duration-length" class="small-text" value="' . (string)$duration_units . '">';
         echo '<select name="duration-unit">';
         foreach ($units_in_seconds as $unit_in_seconds => $unit_name) {
             echo '<option value="' . $unit_in_seconds . '"' . selected($unit_in_seconds, $duration_unit_in_seconds, false) . '>' . esc_html($unit_name) . '</option>';
@@ -193,7 +193,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
     /**
      * Output forms for IP blacklist pruning (including cron job activation and deactivation).
      */
-    private function printPruningActions()
+    private function printPruningActions(): void
     {
         echo '<h2>' . esc_html__('Blacklist pruning', 'bc-security') . '</h2>';
 
@@ -220,7 +220,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
     /**
      * Initialize list table instance.
      */
-    private function initListTable()
+    private function initListTable(): void
     {
         $this->list_table = new ListTable($this->getUrl(), $this->per_page_option_name, $this->bl_manager);
         $this->list_table->processActions(); // may trigger wp_redirect()
@@ -232,9 +232,9 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
     /**
      * Dispatch any action that is indicated by POST data (form submission).
      */
-    private function processActions()
+    private function processActions(): void
     {
-        $nonce = \filter_input(INPUT_POST, self::NONCE_NAME, FILTER_SANITIZE_STRING);
+        $nonce = \filter_input(INPUT_POST, self::NONCE_NAME);
         if (empty($nonce)) {
             // No nonce, no action.
             return;
@@ -265,22 +265,22 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
     /**
      * Read POST data and attempt to add IP address to blacklist. Display notice about action outcome.
      */
-    private function processBlacklistAction()
+    private function processBlacklistAction(): void
     {
         $ip_address = \filter_input(INPUT_POST, 'ip-address', FILTER_VALIDATE_IP);
         $duration_length = \filter_input(INPUT_POST, 'duration-length', FILTER_VALIDATE_INT);
         $duration_unit = \filter_input(INPUT_POST, 'duration-unit', FILTER_VALIDATE_INT);
         $scope = \filter_input(INPUT_POST, 'scope', FILTER_VALIDATE_INT);
-        $comment = \filter_input(INPUT_POST, 'comment', FILTER_SANITIZE_STRING);
+        $comment = \strip_tags(\filter_input(INPUT_POST, 'comment'));
 
-        // Check, if input is formally valid.
+        // Check whether input is formally valid.
         if (empty($ip_address) || empty($duration_length) || empty($duration_unit) || empty($scope)) {
             return;
         }
 
         $duration = $duration_length * $duration_unit;
 
-        // Check, if input is semantically valid.
+        // Check whether input is semantically valid.
         if (($duration <= 0) || !\in_array($scope, [LockScope::ADMIN, LockScope::COMMENTS, LockScope::WEBSITE], true)) {
             return;
         }
@@ -301,7 +301,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
     /**
      * Attempt to prune blacklist table. Display notice about action outcome.
      */
-    private function processPruneAction()
+    private function processPruneAction(): void
     {
         if ($this->bl_manager->prune()) {
             AdminNotices::add(
@@ -320,7 +320,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
     /**
      * Deactivate cron job for blacklist table pruning. Display notice about action outcome.
      */
-    private function processCronOffAction()
+    private function processCronOffAction(): void
     {
         $this->cron_manager->deactivateJob(Cron\Jobs::IP_BLACKLIST_CLEAN_UP);
         AdminNotices::add(
@@ -333,7 +333,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
     /**
      * Activate cron job for blacklist table pruning. Display notice about action outcome.
      */
-    private function processCronOnAction()
+    private function processCronOnAction(): void
     {
         if ($this->cron_manager->activateJob(Cron\Jobs::IP_BLACKLIST_CLEAN_UP)) {
             AdminNotices::add(
@@ -356,8 +356,9 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
      * can be used to represent the number of seconds without fractional component.
      *
      * @param int $seconds
-     * @param array $units_in_seconds
-     * @return array
+     * @param int[] $units_in_seconds
+     *
+     * @return array{int,int}
      */
     private function transformSecondsIntoFittingUnit(int $seconds, array $units_in_seconds): array
     {

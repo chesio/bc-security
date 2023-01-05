@@ -28,7 +28,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
     }
 
 
-    public function loadPage()
+    public function loadPage(): void
     {
         $this->displaySettingsErrors();
     }
@@ -37,7 +37,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
     /**
      * Output page contents.
      */
-    public function printContents()
+    public function printContents(): void
     {
         echo '<div class="wrap">';
         echo '<h1>' . esc_html($this->page_title) . '</h1>';
@@ -49,7 +49,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
     /**
      * Initialize settings page: add sections and fields.
      */
-    public function initPage()
+    public function initPage(): void
     {
         // Register settings.
         $this->registerSettings();
@@ -115,17 +115,6 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
             __('Username blacklist', 'bc-security'),
             [FormHelper::class, 'printTextArea'],
             [ 'append' => __('Enter one username per line.', 'bc-security'), ]
-        );
-
-        // Section: Authentication cookies
-        $this->addSettingsSection(
-            'auth-cookies',
-            _x('Auth cookies', 'Settings section title', 'bc-security')
-        );
-        $this->addSettingsField(
-            Settings::CHECK_COOKIES,
-            __('Check auth cookies', 'bc-security'),
-            [FormHelper::class, 'printCheckbox']
         );
 
         // Section: Display generic error message on failed login

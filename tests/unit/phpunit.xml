@@ -1,15 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <phpunit
-	bootstrap="./bootstrap.php"
-	backupGlobals="false"
-	colors="true"
-	convertErrorsToExceptions="true"
-	convertNoticesToExceptions="true"
-	convertWarningsToExceptions="true"
-	>
-	<testsuites>
-		<testsuite name="BC Security unit test">
-			<directory suffix="Test.php">./src/Cases</directory>
-		</testsuite>
-	</testsuites>
+    bootstrap="wordpress.php"
+    backupGlobals="false"
+    cacheResult="false"
+    colors="true"
+    convertErrorsToExceptions="true"
+    convertNoticesToExceptions="true"
+    convertWarningsToExceptions="true"
+>
+    <coverage processUncoveredFiles="true">
+        <include>
+            <directory suffix=".php">../../classes</directory>
+        </include>
+        <report>
+            <clover outputFile="../../build/logs/clover.xml"/>
+        </report>
+    </coverage>
+    <testsuites>
+        <testsuite name="BC Security unit test">
+            <directory suffix="Test.php">./src/Cases</directory>
+        </testsuite>
+    </testsuites>
 </phpunit>

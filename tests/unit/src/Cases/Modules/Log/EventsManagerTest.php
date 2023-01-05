@@ -9,7 +9,7 @@ class EventsManagerTest extends \BlueChip\Security\Tests\Unit\TestCase
     /**
      * Ensure that mapping from event ID to event class is sane.
      */
-    public function testMapping()
+    public function testMapping(): void
     {
         $events = Log\EventsManager::getMapping();
 
