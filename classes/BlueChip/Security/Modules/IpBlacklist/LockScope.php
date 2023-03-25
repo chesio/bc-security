@@ -5,7 +5,7 @@ namespace BlueChip\Security\Modules\IpBlacklist;
 /**
  * IP access is restricted based on scope.
  */
-interface LockScope
+abstract class LockScope
 {
     /**
      * Not a real scope, just a safe value to use whenever scope is undefined.
@@ -26,4 +26,22 @@ interface LockScope
      * No access to website from IP address is allowed.
      */
     public const WEBSITE = 3;
+
+    /**
+     * Get a list of all lock scopes.
+     *
+     * @param bool $explain Return array with scope as key and explanation as value.
+     * @return array Array of known (valid) lock scopes.
+     */
+    public static function enlist(bool $explain = false): array
+    {
+        $list = [
+            self::ANY => __('Do not block anything', 'bc-security'),
+            self::ADMIN => __('Block access to backend and login page', 'bc-security'),
+            self::COMMENTS => __('Block access to comments functionality', 'bc-security'),
+            self::WEBSITE => __('Block access to entire website', 'bc-security'),
+        ];
+
+        return $explain ? $list : \array_keys($list);
+    }
 }
