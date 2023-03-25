@@ -72,30 +72,32 @@ class Plugin
     {
         $google_api = new Setup\GoogleAPI($settings->forSetup());
 
-        $hostname_resolver  = new Modules\Services\ReverseDnsLookup\Resolver();
-        $cron_job_manager   = new Modules\Cron\Manager($settings->forCronJobs());
-        $logger             = new Modules\Log\Logger($wpdb, $remote_address, $settings->forLog(), $hostname_resolver);
-        $checklist_manager  = new Modules\Checklist\Manager($settings->forChecklistAutorun(), $cron_job_manager, $wpdb, $google_api->getKey());
-        $monitor            = new Modules\Log\EventsMonitor($remote_address, $server_address);
-        $notifier           = new Modules\Notifications\Watchman($settings->forNotifications(), $remote_address, $logger);
-        $hardening          = new Modules\Hardening\Core($settings->forHardening());
-        $blacklist_manager  = new Modules\IpBlacklist\Manager($wpdb);
-        $access_bouncer     = new Modules\Access\Bouncer($remote_address, $blacklist_manager);
-        $bookkeeper         = new Modules\Login\Bookkeeper($settings->forLogin(), $wpdb);
-        $gatekeeper         = new Modules\Login\Gatekeeper($settings->forLogin(), $remote_address, $bookkeeper, $blacklist_manager);
+        $hostname_resolver          = new Modules\Services\ReverseDnsLookup\Resolver();
+        $cron_job_manager           = new Modules\Cron\Manager($settings->forCronJobs());
+        $logger                     = new Modules\Log\Logger($wpdb, $remote_address, $settings->forLog(), $hostname_resolver);
+        $checklist_manager          = new Modules\Checklist\Manager($settings->forChecklistAutorun(), $cron_job_manager, $wpdb, $google_api->getKey());
+        $monitor                    = new Modules\Log\EventsMonitor($remote_address, $server_address);
+        $notifier                   = new Modules\Notifications\Watchman($settings->forNotifications(), $remote_address, $logger);
+        $hardening                  = new Modules\Hardening\Core($settings->forHardening());
+        $blacklist_manager          = new Modules\IpBlacklist\Manager($wpdb);
+        $external_blocklist_manager = new Modules\Hardening\ExternalBlocklist\Manager();
+        $access_bouncer             = new Modules\Access\Bouncer($remote_address, $blacklist_manager, $external_blocklist_manager);
+        $bookkeeper                 = new Modules\Login\Bookkeeper($settings->forLogin(), $wpdb);
+        $gatekeeper                 = new Modules\Login\Gatekeeper($settings->forLogin(), $remote_address, $bookkeeper, $blacklist_manager);
 
         return [
-            'cron-job-manager'  => $cron_job_manager,
-            'hostname-resolver' => $hostname_resolver,
-            'logger'            => $logger,
-            'checklist-manager' => $checklist_manager,
-            'events-monitor'    => $monitor,
-            'notifier'          => $notifier,
-            'hardening-core'    => $hardening,
-            'blacklist-manager' => $blacklist_manager,
-            'access-bouncer'    => $access_bouncer,
-            'login-bookkeeper'  => $bookkeeper,
-            'login-gatekeeper'  => $gatekeeper,
+            'cron-job-manager'              => $cron_job_manager,
+            'hostname-resolver'             => $hostname_resolver,
+            'logger'                        => $logger,
+            'checklist-manager'             => $checklist_manager,
+            'events-monitor'                => $monitor,
+            'notifier'                      => $notifier,
+            'hardening-core'                => $hardening,
+            'blacklist-manager'             => $blacklist_manager,
+            'external-blocklist-manager'    => $external_blocklist_manager,
+            'access-bouncer'                => $access_bouncer,
+            'login-bookkeeper'              => $bookkeeper,
+            'login-gatekeeper'              => $gatekeeper,
         ];
     }
 
