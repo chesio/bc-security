@@ -83,7 +83,7 @@ class Plugin
         $external_blocklist_manager = new Modules\Hardening\ExternalBlocklist\Manager();
         $access_bouncer             = new Modules\Access\Bouncer($remote_address, $blacklist_manager, $external_blocklist_manager);
         $bookkeeper                 = new Modules\Login\Bookkeeper($settings->forLogin(), $wpdb);
-        $gatekeeper                 = new Modules\Login\Gatekeeper($settings->forLogin(), $remote_address, $bookkeeper, $blacklist_manager);
+        $gatekeeper                 = new Modules\Login\Gatekeeper($settings->forLogin(), $remote_address, $bookkeeper, $blacklist_manager, $access_bouncer);
 
         return [
             'cron-job-manager'              => $cron_job_manager,

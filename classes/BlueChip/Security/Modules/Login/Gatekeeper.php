@@ -3,6 +3,7 @@
 namespace BlueChip\Security\Modules\Login;
 
 use BlueChip\Security\Helpers\Utils;
+use BlueChip\Security\Modules\Access\Bouncer;
 use BlueChip\Security\Modules\Access\Scope;
 use BlueChip\Security\Modules\IpBlacklist;
 
@@ -31,19 +32,25 @@ class Gatekeeper implements \BlueChip\Security\Modules\Initializable, \BlueChip\
      */
     private $bl_manager;
 
+    /**
+     * @var Bouncer
+     */
+    private $bouncer;
 
     /**
      * @param \BlueChip\Security\Modules\Login\Settings $settings
      * @param string $remote_address Remote IP address.
      * @param \BlueChip\Security\Modules\Login\Bookkeeper $bookkeeper
      * @param \BlueChip\Security\Modules\IpBlacklist\Manager $bl_manager
+     * @param Bouncer $bouncer
      */
-    public function __construct(Settings $settings, string $remote_address, Bookkeeper $bookkeeper, IpBlacklist\Manager $bl_manager)
+    public function __construct(Settings $settings, string $remote_address, Bookkeeper $bookkeeper, IpBlacklist\Manager $bl_manager, Bouncer $bouncer)
     {
         $this->remote_address = $remote_address;
         $this->settings = $settings;
         $this->bookkeeper = $bookkeeper;
         $this->bl_manager = $bl_manager;
+        $this->bouncer = $bouncer;
     }
 
 
@@ -52,8 +59,8 @@ class Gatekeeper implements \BlueChip\Security\Modules\Initializable, \BlueChip\
      */
     public function load(): void
     {
-        // Remove all WordPress authentication cookies if remote address is on black list.
-        if ($this->bl_manager->isLocked($this->remote_address, Scope::ADMIN)) {
+        // Remove all WordPress authentication cookies if remote access to admin is blocked.
+        if ($this->bouncer->isBlocked(Scope::ADMIN)) {
             $this->clearAuthCookie();
         }
     }
@@ -136,11 +143,6 @@ class Gatekeeper implements \BlueChip\Security\Modules\Initializable, \BlueChip\
      */
     public function handleFailedLogin(string $username): void
     {
-        // If currently locked-out, bail (should not happen, but better safe than sorry)
-        if ($this->bl_manager->isLocked($this->remote_address, Scope::ADMIN)) {
-            return;
-        }
-
         // Record failed login attempt, get total number of retries for IP
         $retries = $this->bookkeeper->recordFailedLoginAttempt($this->remote_address, $username);
 
@@ -201,18 +203,6 @@ class Gatekeeper implements \BlueChip\Security\Modules\Initializable, \BlueChip\
             }
         }
         return $user;
-    }
-
-
-    /**
-     * Remove all WordPress authentication cookies if IP is on black list.
-     * Method should be called as early as possible.
-     */
-    public function removeAuthCookieIfIpIsLocked(): void
-    {
-        if ($this->bl_manager->isLocked($this->remote_address, Scope::ADMIN)) {
-            $this->clearAuthCookie();
-        }
     }
 
 
