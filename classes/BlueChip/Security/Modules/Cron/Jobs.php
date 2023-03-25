@@ -7,8 +7,8 @@ abstract class Jobs
     /** string: Hook name for "Checklist autorun" cron job */
     public const CHECKLIST_CHECK = 'bc-security/checklist-autorun';
 
-    /** string: Hook name for "Automatic IP blacklist purging" cron job */
-    public const IP_BLACKLIST_CLEAN_UP = 'bc-security/ip-blacklist-clean-up';
+    /** string: Hook name for "Automatic internal blocklist purging" cron job */
+    public const INTERNAL_BLOCKLIST_CLEAN_UP = 'bc-security/internal-blocklist-clean-up';
 
     /** string: Hook name for "Clean logs by age" cron job */
     public const LOGS_CLEAN_UP_BY_AGE = 'bc-security/logs-clean-up-by-age';

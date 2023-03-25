@@ -3,7 +3,7 @@
 namespace BlueChip\Security\Modules\Access;
 
 use BlueChip\Security\Modules\Initializable;
-use BlueChip\Security\Modules\IpBlacklist\Manager as IpBlacklistManager;
+use BlueChip\Security\Modules\InternalBlocklist\Manager as InternalBlocklistManager;
 use BlueChip\Security\Modules\Loadable;
 use BlueChip\Security\Helpers\Utils;
 use BlueChip\Security\Modules\Hardening\ExternalBlocklist\Manager as ExternalBlocklistManager;
@@ -16,9 +16,9 @@ use BlueChip\Security\Modules\Hardening\ExternalBlocklist\Manager as ExternalBlo
 class Bouncer implements Initializable, Loadable
 {
     /**
-     * @var IpBlacklistManager
+     * @var InternalBlocklistManager
      */
-    private $bl_manager;
+    private $ib_manager;
 
     /**
      * @var ExternalBlocklistManager
@@ -33,12 +33,12 @@ class Bouncer implements Initializable, Loadable
 
     /**
      * @param string $remote_address Remote IP address.
-     * @param IpBlacklistManager $bl_manager
+     * @param InternalBlocklistManager $ib_manager
      * @param ExternalBlocklistManager $eb_manager
      */
-    public function __construct(string $remote_address, IpBlacklistManager $bl_manager, ExternalBlocklistManager $eb_manager)
+    public function __construct(string $remote_address, InternalBlocklistManager $ib_manager, ExternalBlocklistManager $eb_manager)
     {
-        $this->bl_manager = $bl_manager;
+        $this->ib_manager = $ib_manager;
         $this->eb_manager = $eb_manager;
         $this->remote_address = $remote_address;
     }
@@ -71,7 +71,7 @@ class Bouncer implements Initializable, Loadable
      */
     public function isBlocked(int $scope): bool
     {
-        $result = $this->eb_manager->isBlocked($this->remote_address, $scope) || $this->bl_manager->isLocked($this->remote_address, $scope);
+        $result = $this->eb_manager->isBlocked($this->remote_address, $scope) || $this->ib_manager->isLocked($this->remote_address, $scope);
 
         return apply_filters(Hooks::IS_IP_ADDRESS_BLOCKED, $result, $this->remote_address, $scope);
     }

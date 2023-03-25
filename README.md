@@ -140,7 +140,7 @@ Passwords are validated on user creation, password change or password reset. If 
 1. BC Security allows you to limit number of login attempts from single IP address. Implementation of this feature is heavily inspired by popular [Limit Login Attempts](https://wordpress.org/plugins/limit-login-attempts/) plugin with an extra feature of immediate blocking of specific usernames (like _admin_ or _administrator_).
 2. BC Security offers an option to only display generic error message as a result of failed login attempt when wrong username, email or password is provided.
 
-### IP blacklist
+### Internal blocklist
 
 BC Security maintains a list of IP addresses with limited access to the website. This list is automatically populated by [Login Security](#login-security) module, but manual addition of IP addresses is also possible.
 
@@ -185,8 +185,9 @@ Some of the modules listed above come with settings panel. Further customization
 * `bc-security/filter:modified-files-ignored-in-core-integrity-check` - filters array of files that should not be reported as __modified__ in checksum verification of core WordPress files. By default, the array consist of _wp-config-sample.php_ and _wp-includes/version.php_ values.
 * `bc-security/filter:unknown-files-ignored-in-core-integrity-check` - filters array of files that should not be reported as __unknown__ in checksum verification of core WordPress files. By default, the array consist of _.htaccess_, _wp-config.php_, _liesmich.html_, _olvasdel.html_ and _procitajme.html_ values.
 * `bc-security/filter:show-pwned-password-warning` - filters whether the ["pwned password" warning](#passwords-check) should be displayed for current user on current screen.
-* `bc-security/filter:ip-blacklist-default-manual-lock-duration` - filters number of seconds that is used as default value in lock duration field of manual IP blacklisting form. By default, the value is equal to one month in seconds.
-* `bc-security/filter:is-ip-address-locked` - filters boolean value that determines whether given IP address is currently locked within given scope. By default, the value is based on plugin bookkeeping data.
+* `bc-security/filter:internal-blocklist-default-manual-lock-duration` - filters number of seconds that is used as default value in lock duration field of manual internal blocklisting form. By default, the value is equal to one month in seconds.
+* `bc-security/filter:is-ip-address-locked` - filters boolean value that determines whether given IP address is currently on internal blocklist (within given scope).
+* `bc-security/filter:is-ip-address-blocked` - filters boolean value that determines whether given IP address is currently blocked either by external or internal blocklist.
 * `bc-security/filter:log-404-event` - filters boolean value that determines whether current HTTP request that resulted in [404 response](https://en.wikipedia.org/wiki/HTTP_404) should be logged or not. To completely disable logging of 404 events, you can attach [`__return_false`](https://developer.wordpress.org/reference/functions/__return_false/) function to the filter.
 * `bc-security/filter:events-with-hostname-resolution` - filters array of IDs of events for which hostname of involved IP address should be resolved via reverse DNS lookup. By default the following events are registered: attempts to authenticate with bad cookie, failed and successful login attempts and lockout events. Note that this functionality only relates to event logs report in backend - in case email notification is sent, hostname of reported IP address (if any) is always resolved separately.
 * `bc-security/filter:username-blacklist` - filters array of blacklisted usernames. Blacklisted usernames cannot be registered when opening new account and any login attempt using non-existing blacklisted username triggers long lockout. There are no default values, but the filter operates on usernames set via module settings, so it can be used to enforce blacklisting of particular usernames.
