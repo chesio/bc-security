@@ -2,7 +2,7 @@
 
 namespace BlueChip\Security\Modules\Hardening;
 
-use BlueChip\Security\Modules\IpBlacklist\LockScope;
+use BlueChip\Security\Modules\Access\Scope;
 
 class Settings extends \BlueChip\Security\Core\Settings
 {
@@ -63,14 +63,14 @@ class Settings extends \BlueChip\Security\Core\Settings
         self::DISABLE_LOGIN_WITH_USERNAME => false,
         self::CHECK_PASSWORDS => false,
         self::VALIDATE_PASSWORDS => false,
-        self::BLOCK_REQUESTS_FROM_AMAZON_WEB_SERVICES => LockScope::ANY,
+        self::BLOCK_REQUESTS_FROM_AMAZON_WEB_SERVICES => Scope::ANY,
     ];
 
     /**
      * @var array Custom sanitizers.
      */
     protected const SANITIZERS = [
-        self::BLOCK_REQUESTS_FROM_AMAZON_WEB_SERVICES => [self::class, 'sanitizeLockScope'],
+        self::BLOCK_REQUESTS_FROM_AMAZON_WEB_SERVICES => [self::class, 'sanitizeAccessScope'],
     ];
 
     /**
@@ -81,8 +81,8 @@ class Settings extends \BlueChip\Security\Core\Settings
      *
      * @return int
      */
-    public static function sanitizeLockScope(int $value, int $default): int
+    public static function sanitizeAccessScope(int $value, int $default): int
     {
-        return \in_array($value, LockScope::enlist(), true) ? $value : $default;
+        return \in_array($value, Scope::enlist(), true) ? $value : $default;
     }
 }

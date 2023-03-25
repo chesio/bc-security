@@ -1,11 +1,11 @@
 <?php
 
-namespace BlueChip\Security\Modules\IpBlacklist;
+namespace BlueChip\Security\Modules\Access;
 
 /**
- * IP access is restricted based on scope.
+ * A different ways to restrict access to the website from a remote address.
  */
-abstract class LockScope
+abstract class Scope
 {
     /**
      * Not a real scope, just a safe value to use whenever scope is undefined.

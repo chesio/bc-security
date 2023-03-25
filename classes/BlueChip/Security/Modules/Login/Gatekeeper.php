@@ -3,6 +3,7 @@
 namespace BlueChip\Security\Modules\Login;
 
 use BlueChip\Security\Helpers\Utils;
+use BlueChip\Security\Modules\Access\Scope;
 use BlueChip\Security\Modules\IpBlacklist;
 
 /**
@@ -52,7 +53,7 @@ class Gatekeeper implements \BlueChip\Security\Modules\Initializable, \BlueChip\
     public function load(): void
     {
         // Remove all WordPress authentication cookies if remote address is on black list.
-        if ($this->bl_manager->isLocked($this->remote_address, IpBlacklist\LockScope::ADMIN)) {
+        if ($this->bl_manager->isLocked($this->remote_address, Scope::ADMIN)) {
             $this->clearAuthCookie();
         }
     }
@@ -136,7 +137,7 @@ class Gatekeeper implements \BlueChip\Security\Modules\Initializable, \BlueChip\
     public function handleFailedLogin(string $username): void
     {
         // If currently locked-out, bail (should not happen, but better safe than sorry)
-        if ($this->bl_manager->isLocked($this->remote_address, IpBlacklist\LockScope::ADMIN)) {
+        if ($this->bl_manager->isLocked($this->remote_address, Scope::ADMIN)) {
             return;
         }
 
@@ -209,7 +210,7 @@ class Gatekeeper implements \BlueChip\Security\Modules\Initializable, \BlueChip\
      */
     public function removeAuthCookieIfIpIsLocked(): void
     {
-        if ($this->bl_manager->isLocked($this->remote_address, IpBlacklist\LockScope::ADMIN)) {
+        if ($this->bl_manager->isLocked($this->remote_address, Scope::ADMIN)) {
             $this->clearAuthCookie();
         }
     }
@@ -245,7 +246,7 @@ class Gatekeeper implements \BlueChip\Security\Modules\Initializable, \BlueChip\
         do_action(Hooks::LOCKOUT_EVENT, $this->remote_address, $username, $duration, $reason);
 
         // Lock IP address
-        $this->bl_manager->lock($this->remote_address, $duration, IpBlacklist\LockScope::ADMIN, $reason);
+        $this->bl_manager->lock($this->remote_address, $duration, Scope::ADMIN, $reason);
 
         // Block access
         Utils::blockAccessTemporarily($this->remote_address);

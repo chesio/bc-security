@@ -80,7 +80,7 @@ class Plugin
         $notifier           = new Modules\Notifications\Watchman($settings->forNotifications(), $remote_address, $logger);
         $hardening          = new Modules\Hardening\Core($settings->forHardening());
         $blacklist_manager  = new Modules\IpBlacklist\Manager($wpdb);
-        $blacklist_bouncer  = new Modules\IpBlacklist\Bouncer($remote_address, $blacklist_manager);
+        $access_bouncer     = new Modules\Access\Bouncer($remote_address, $blacklist_manager);
         $bookkeeper         = new Modules\Login\Bookkeeper($settings->forLogin(), $wpdb);
         $gatekeeper         = new Modules\Login\Gatekeeper($settings->forLogin(), $remote_address, $bookkeeper, $blacklist_manager);
 
@@ -93,7 +93,7 @@ class Plugin
             'notifier'          => $notifier,
             'hardening-core'    => $hardening,
             'blacklist-manager' => $blacklist_manager,
-            'blacklist-bouncer' => $blacklist_bouncer,
+            'access-bouncer'    => $access_bouncer,
             'login-bookkeeper'  => $bookkeeper,
             'login-gatekeeper'  => $gatekeeper,
         ];

@@ -5,7 +5,7 @@ namespace BlueChip\Security\Modules\Hardening;
 use BlueChip\Security\Helpers\AdminNotices;
 use BlueChip\Security\Helpers\FormHelper;
 use BlueChip\Security\Helpers\HaveIBeenPwned;
-use BlueChip\Security\Modules\IpBlacklist\LockScope;
+use BlueChip\Security\Modules\Access\Scope;
 use BlueChip\Security\Modules\Log\AdminPage as LogAdminPage;
 use BlueChip\Security\Modules\Log\Events\LoginFailure;
 
@@ -251,7 +251,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
             Settings::BLOCK_REQUESTS_FROM_AMAZON_WEB_SERVICES,
             __('Block requests from AWS', 'bc-security'),
             [FormHelper::class, 'printSelect'],
-            ['options' => LockScope::enlist(true)]
+            ['options' => Scope::enlist(true)]
         );
     }
 }

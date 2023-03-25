@@ -3,6 +3,7 @@
 namespace BlueChip\Security\Modules\IpBlacklist;
 
 use BlueChip\Security\Helpers\AdminNotices;
+use BlueChip\Security\Modules\Access\Scope;
 use BlueChip\Security\Modules\Cron;
 
 class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
@@ -168,9 +169,9 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
         echo '<span class="bc-security">';
         echo '<label for="ip-blacklist-scope">' . esc_html__('Lock scope', 'bc-security') . '</label>';
         echo '<select id="ip-blacklist-scope" name="scope">';
-        echo '<option value="' . LockScope::ADMIN . '"' . selected(LockScope::ADMIN, $scope, false) . '>' . esc_html__('Admin', 'bc-security') . '</option>';
-        echo '<option value="' . LockScope::COMMENTS . '"' . selected(LockScope::COMMENTS, $scope, false) . '>' . esc_html__('Comments', 'bc-security') . '</option>';
-        echo '<option value="' . LockScope::WEBSITE . '"' . selected(LockScope::WEBSITE, $scope, false) . '>' . esc_html__('Website', 'bc-security') . '</option>';
+        echo '<option value="' . Scope::ADMIN . '"' . selected(Scope::ADMIN, $scope, false) . '>' . esc_html__('Admin', 'bc-security') . '</option>';
+        echo '<option value="' . Scope::COMMENTS . '"' . selected(Scope::COMMENTS, $scope, false) . '>' . esc_html__('Comments', 'bc-security') . '</option>';
+        echo '<option value="' . Scope::WEBSITE . '"' . selected(Scope::WEBSITE, $scope, false) . '>' . esc_html__('Website', 'bc-security') . '</option>';
         echo '</select>';
         echo '</span>';
 
@@ -281,7 +282,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
         $duration = $duration_length * $duration_unit;
 
         // Check whether input is semantically valid.
-        if (($duration <= 0) || !\in_array($scope, [LockScope::ADMIN, LockScope::COMMENTS, LockScope::WEBSITE], true)) {
+        if (($duration <= 0) || !\in_array($scope, Scope::enlist(), true)) {
             return;
         }
 

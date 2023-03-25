@@ -1,7 +1,8 @@
 <?php
 
-namespace BlueChip\Security\Modules\IpBlacklist;
+namespace BlueChip\Security\Modules\Access;
 
+use BlueChip\Security\Modules\IpBlacklist\Manager as IpBlacklistManager;
 use BlueChip\Security\Helpers\Utils;
 
 /**
@@ -12,7 +13,7 @@ use BlueChip\Security\Helpers\Utils;
 class Bouncer implements \BlueChip\Security\Modules\Initializable, \BlueChip\Security\Modules\Loadable
 {
     /**
-     * @var \BlueChip\Security\Modules\IpBlacklist\Manager
+     * @var IpBlacklistManager
      */
     private $bl_manager;
 
@@ -26,7 +27,7 @@ class Bouncer implements \BlueChip\Security\Modules\Initializable, \BlueChip\Sec
      * @param string $remote_address Remote IP address.
      * @param Manager $bl_manager
      */
-    public function __construct(string $remote_address, Manager $bl_manager)
+    public function __construct(string $remote_address, IpBlacklistManager $bl_manager)
     {
         $this->bl_manager = $bl_manager;
         $this->remote_address = $remote_address;
@@ -39,7 +40,7 @@ class Bouncer implements \BlueChip\Security\Modules\Initializable, \BlueChip\Sec
     public function load(): void
     {
         // Check if access to website is allowed from given remote address.
-        if ($this->bl_manager->isLocked($this->remote_address, LockScope::WEBSITE)) {
+        if ($this->bl_manager->isLocked($this->remote_address, Scope::WEBSITE)) {
             Utils::blockAccessTemporarily($this->remote_address);
         }
     }
@@ -65,7 +66,7 @@ class Bouncer implements \BlueChip\Security\Modules\Initializable, \BlueChip\Sec
      */
     public function checkLoginAttempt($user)
     {
-        if ($this->bl_manager->isLocked($this->remote_address, LockScope::ADMIN)) {
+        if ($this->bl_manager->isLocked($this->remote_address, Scope::ADMIN)) {
             Utils::blockAccessTemporarily($this->remote_address);
         }
 

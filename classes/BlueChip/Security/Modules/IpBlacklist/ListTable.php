@@ -3,6 +3,7 @@
 namespace BlueChip\Security\Modules\IpBlacklist;
 
 use BlueChip\Security\Helpers\MySQLDateTime;
+use BlueChip\Security\Modules\Access\Scope;
 
 /**
  * IP blacklist table
@@ -67,8 +68,8 @@ class ListTable extends \BlueChip\Security\Core\ListTable
 
         $this->bl_manager = $bl_manager;
 
-        $this->scope = \filter_input(INPUT_GET, self::VIEW_SCOPE, FILTER_VALIDATE_INT, ['options' => ['default' => LockScope::ANY]]);
-        if ($this->scope !== LockScope::ANY) {
+        $this->scope = \filter_input(INPUT_GET, self::VIEW_SCOPE, FILTER_VALIDATE_INT, ['options' => ['default' => Scope::ANY]]);
+        if ($this->scope !== Scope::ANY) {
             $this->url = add_query_arg(self::VIEW_SCOPE, $this->scope, $this->url);
         }
     }
@@ -217,30 +218,30 @@ class ListTable extends \BlueChip\Security\Core\ListTable
             'any' => \sprintf(
                 '<a href="%s" class="%s">%s</a> (%d)',
                 remove_query_arg([self::VIEW_SCOPE], $this->url),
-                $this->scope === LockScope::ANY ? 'current' : '',
+                $this->scope === Scope::ANY ? 'current' : '',
                 esc_html__('Any', 'bc-security'),
                 $this->bl_manager->countAll()
             ),
             'admin' => \sprintf(
                 '<a href="%s" class="%s">%s</a> (%d)',
-                add_query_arg([self::VIEW_SCOPE => LockScope::ADMIN], $this->url),
-                $this->scope === LockScope::ADMIN ? 'current' : '',
+                add_query_arg([self::VIEW_SCOPE => Scope::ADMIN], $this->url),
+                $this->scope === Scope::ADMIN ? 'current' : '',
                 esc_html__('Admin', 'bc-security'),
-                $this->bl_manager->countAll(LockScope::ADMIN)
+                $this->bl_manager->countAll(Scope::ADMIN)
             ),
             'comments' => \sprintf(
                 '<a href="%s" class="%s">%s</a> (%d)',
-                add_query_arg([self::VIEW_SCOPE => LockScope::COMMENTS], $this->url),
-                $this->scope === LockScope::COMMENTS ? 'current' : '',
+                add_query_arg([self::VIEW_SCOPE => Scope::COMMENTS], $this->url),
+                $this->scope === Scope::COMMENTS ? 'current' : '',
                 esc_html__('Comments', 'bc-security'),
-                $this->bl_manager->countAll(LockScope::COMMENTS)
+                $this->bl_manager->countAll(Scope::COMMENTS)
             ),
             'website' => \sprintf(
                 '<a href="%s" class="%s">%s</a> (%d)',
-                add_query_arg([self::VIEW_SCOPE => LockScope::WEBSITE], $this->url),
-                $this->scope === LockScope::WEBSITE ? 'current' : '',
+                add_query_arg([self::VIEW_SCOPE => Scope::WEBSITE], $this->url),
+                $this->scope === Scope::WEBSITE ? 'current' : '',
                 esc_html__('Website', 'bc-security'),
-                $this->bl_manager->countAll(LockScope::WEBSITE)
+                $this->bl_manager->countAll(Scope::WEBSITE)
             ),
         ];
     }

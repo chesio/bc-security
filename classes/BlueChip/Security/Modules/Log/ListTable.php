@@ -2,6 +2,7 @@
 
 namespace BlueChip\Security\Modules\Log;
 
+use BlueChip\Security\Modules\Access\Scope;
 use BlueChip\Security\Modules\IpBlacklist;
 
 /**
@@ -253,7 +254,7 @@ class ListTable extends \BlueChip\Security\Core\ListTable
      */
     private function getRowActions(array $item): array
     {
-        if (($scope = $this->getLockScopeFromEvent($item['event'])) === IpBlacklist\LockScope::ANY) {
+        if (($scope = $this->getLockScopeFromEvent($item['event'])) === Scope::ANY) {
             // No specific scope, no action.
             return [];
         }
@@ -277,23 +278,23 @@ class ListTable extends \BlueChip\Security\Core\ListTable
     /**
      * Return appropriate lock scope for $event type.
      *
-     * @see \BlueChip\Security\Modules\IpBlacklist\LockScope
+     * @see \BlueChip\Security\Modules\Access\Scope
      *
      * @param string $event_id One from event IDs defined in \BlueChip\Security\Modules\Log\Event.
      *
-     * @return int Lock scope code. LockScope::ANY indicates that given event does not warrant blacklisting.
+     * @return int Lock scope code. Scope::ANY indicates that given event does not warrant blacklisting.
      */
     private function getLockScopeFromEvent(string $event_id): int
     {
         switch ($event_id) {
             case Events\Query404::ID:
-                return IpBlacklist\LockScope::WEBSITE;
+                return Scope::WEBSITE;
             case Events\AuthBadCookie::ID:
             case Events\LoginFailure::ID:
             case Events\LoginLockout::ID:
-                return IpBlacklist\LockScope::ADMIN;
+                return Scope::ADMIN;
             default:
-                return IpBlacklist\LockScope::ANY;
+                return Scope::ANY;
         }
     }
 

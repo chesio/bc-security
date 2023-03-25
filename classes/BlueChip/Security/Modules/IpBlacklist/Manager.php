@@ -4,6 +4,7 @@ namespace BlueChip\Security\Modules\IpBlacklist;
 
 use BlueChip\Security\Helpers\MySQLDateTime;
 use BlueChip\Security\Modules;
+use BlueChip\Security\Modules\Access\Scope;
 
 /**
  * Who's on the blacklist, baby?
@@ -116,11 +117,11 @@ class Manager implements Modules\Countable, Modules\Installable, Modules\Initial
      *
      * @return int
      */
-    public function countAll(int $scope = LockScope::ANY): int
+    public function countAll(int $scope = Scope::ANY): int
     {
         $query = "SELECT COUNT(id) AS total FROM {$this->blacklist_table}";
 
-        if ($scope !== LockScope::ANY) {
+        if ($scope !== Scope::ANY) {
             $query .= $this->wpdb->prepare(" WHERE scope = %d", $scope);
         }
 
@@ -160,13 +161,13 @@ class Manager implements Modules\Countable, Modules\Installable, Modules\Initial
      *
      * @return array<int,array<string,string>>
      */
-    public function fetch(int $scope = LockScope::ANY, int $from = 0, int $limit = 20, string $order_by = '', string $order = ''): array
+    public function fetch(int $scope = Scope::ANY, int $from = 0, int $limit = 20, string $order_by = '', string $order = ''): array
     {
         // Prepare query
         $query = "SELECT * FROM {$this->blacklist_table}";
 
         // Apply scope if given
-        if ($scope !== LockScope::ANY) {
+        if ($scope !== Scope::ANY) {
             $query .= \sprintf(" WHERE scope = %d", $scope);
         }
 
