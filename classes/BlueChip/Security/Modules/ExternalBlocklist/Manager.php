@@ -7,9 +7,9 @@ use BlueChip\Security\Modules\Cron\Jobs;
 use BlueChip\Security\Modules\Cron\Manager as CronManager;
 use BlueChip\Security\Modules\ExternalBlocklist\Sources\AmazonWebServices;
 use BlueChip\Security\Modules\Initializable;
-use BlueChip\Security\Modules\Loadable;
+use InvalidArgumentException;
 
-class Manager implements Loadable, Initializable
+class Manager implements Initializable
 {
     /**
      * @var array<string, array<string, string>> List of available sources for external blocklists.
@@ -44,19 +44,7 @@ class Manager implements Loadable, Initializable
 
         foreach (Scope::enlist() as $access_scope) {
             if ($access_scope !== Scope::ANY) {
-                $this->blocklists[$access_scope] = new Blocklist();
-            }
-        }
-    }
-
-
-    public function load(): void
-    {
-        // Initialize blocklists from all enabled sources.
-        foreach (self::SOURCES as $class => ['settings_key' => $key]) {
-            $access_scope = $this->settings[$key];
-            if ($access_scope !== Scope::ANY) {
-                $this->blocklists[$access_scope]->addIpPrefixes((new $class()));
+                $this->blocklists[$access_scope] = null;
             }
         }
     }
@@ -67,13 +55,37 @@ class Manager implements Loadable, Initializable
         // Some cron jobs needs to be (de)activated depending on active hardening options settings.
         $this->settings->addUpdateHook([$this, 'updateBlocklists']);
 
-        // Activate update cron jobs for all enabled sources.
+        // Set warm up cron jobs for all enabled sources.
         foreach (self::SOURCES as $class => ['settings_key' => $key, 'cron_job_id' => $cron_job_id]) {
             $access_scope = $this->settings[$key];
             if ($access_scope !== Scope::ANY) {
                 add_action($cron_job_id, [new $class(), 'warmUp'], 10, 0);
             }
         }
+    }
+
+
+    public function getBlocklist(int $access_scope): Blocklist
+    {
+        // Blocklist for non-scope should not be requested.
+        if ($access_scope === Scope::ANY) {
+            throw new InvalidArgumentException("Cannot get blocklist for unspecified access scope!");
+        }
+
+        // Lazy load the blocklist for given access scope if necessary.
+        if ($this->blocklists[$access_scope] === null) {
+            $blocklist = new Blocklist();
+
+            foreach (self::SOURCES as $class => ['settings_key' => $key]) {
+                if ($this->settings[$key] === $access_scope) {
+                    $blocklist->addIpPrefixes(new $class());
+                }
+            }
+
+            $this->blocklists[$access_scope] = $blocklist;
+        }
+
+        return $this->blocklists[$access_scope];
     }
 
 
@@ -87,7 +99,7 @@ class Manager implements Loadable, Initializable
      */
     public function isBlocked(string $ip_address, int $access_scope): bool
     {
-        return $this->blocklists[$access_scope]->hasIpAddress($ip_address);
+        return $this->getBlocklist($access_scope)->hasIpAddress($ip_address);
     }
 
 
