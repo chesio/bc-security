@@ -4,11 +4,14 @@ namespace BlueChip\Security\Modules\Cron;
 
 abstract class Jobs
 {
+    /** string: Hook name for "Amazon Web Services IP prefixes refresh" cron job */
+    public const AWS_IP_PREFIXES_REFRESH = 'bc-security/aws-ip-prefixes-refresh';
+
     /** string: Hook name for "Checklist autorun" cron job */
     public const CHECKLIST_CHECK = 'bc-security/checklist-autorun';
 
-    /** string: Hook name for "Automatic IP blacklist purging" cron job */
-    public const IP_BLACKLIST_CLEAN_UP = 'bc-security/ip-blacklist-clean-up';
+    /** string: Hook name for "Automatic internal blocklist purging" cron job */
+    public const INTERNAL_BLOCKLIST_CLEAN_UP = 'bc-security/internal-blocklist-clean-up';
 
     /** string: Hook name for "Clean logs by age" cron job */
     public const LOGS_CLEAN_UP_BY_AGE = 'bc-security/logs-clean-up-by-age';
@@ -27,7 +30,6 @@ abstract class Jobs
 
     /** string: Hook name for "Site is not blacklisted by Google" check monitor */
     public const SAFE_BROWSING_CHECK = 'bc-security/safe-browsing-check';
-
 
     /**
      * @return array<string,string> List of all implemented cron jobs.

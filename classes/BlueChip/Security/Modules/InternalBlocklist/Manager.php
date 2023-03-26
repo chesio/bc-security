@@ -1,37 +1,38 @@
 <?php
 
-namespace BlueChip\Security\Modules\IpBlacklist;
+namespace BlueChip\Security\Modules\InternalBlocklist;
 
 use BlueChip\Security\Helpers\MySQLDateTime;
 use BlueChip\Security\Modules;
+use BlueChip\Security\Modules\Access\Scope;
 
 /**
- * Who's on the blacklist, baby?
+ * Who's on the blocklist, baby?
  *
- * Note on blacklist release time with respect to <, =, > comparisons against
+ * Note on blocklist release time with respect to <, =, > comparisons against
  * current time: item is locked (lock is active) if release time is in the
  * future, in other words: release_time > current_time. Otherwise, the item is
  * not locked (lock is expired).
  *
- * Another important note to make is that single IP address can be blacklisted
+ * Another important note to make is that single IP address can be blocked
  * several times because of different scope, but also because of different
  * reason. Unlike the scope, the reason is not important for actual application
  * of lock, so practical approach is to use the most restrictive lock (ie. the
- * release date that is the most future one) if single IP is locked multiple
+ * release date that is the most future one) if single IP is blocked multiple
  * times in the same scope.
  */
 class Manager implements Modules\Countable, Modules\Installable, Modules\Initializable, \Countable
 {
     /**
-     * @var string Name of DB table where IP blacklist is stored
+     * @var string Name of DB table where internal blocklist is stored
      */
-    private const BLACKLIST_TABLE = 'bc_security_ip_blacklist';
+    private const BLOCKLIST_TABLE = 'bc_security_internal_blocklist';
 
 
     /**
-     * @var string Name of DB table where blacklist is stored (including table prefix)
+     * @var string Name of DB table where blocklist is stored (including table prefix)
      */
-    private $blacklist_table;
+    private $blocklist_table;
 
     /**
      * @var string[] List of table columns
@@ -49,7 +50,7 @@ class Manager implements Modules\Countable, Modules\Installable, Modules\Initial
      */
     public function __construct(\wpdb $wpdb)
     {
-        $this->blacklist_table = $wpdb->prefix . self::BLACKLIST_TABLE;
+        $this->blocklist_table = $wpdb->prefix . self::BLOCKLIST_TABLE;
         $this->columns = [
             'id', 'scope', 'ip_address', 'ban_time', 'release_time', 'reason', 'comment',
         ];
@@ -68,7 +69,7 @@ class Manager implements Modules\Countable, Modules\Installable, Modules\Initial
         $charset_collate = $this->wpdb->get_charset_collate();
 
         dbDelta(\implode(PHP_EOL, [
-            "CREATE TABLE {$this->blacklist_table} (",
+            "CREATE TABLE {$this->blocklist_table} (",
             "id int unsigned NOT NULL AUTO_INCREMENT,",
             "scope tinyint unsigned NOT NULL,",
             "ip_address char(128) NOT NULL,",
@@ -85,14 +86,14 @@ class Manager implements Modules\Countable, Modules\Installable, Modules\Initial
 
     public function uninstall(): void
     {
-        $this->wpdb->query(\sprintf('DROP TABLE IF EXISTS %s', $this->blacklist_table));
+        $this->wpdb->query(\sprintf('DROP TABLE IF EXISTS %s', $this->blocklist_table));
     }
 
 
     public function init(): void
     {
         // Hook into cron job execution.
-        add_action(Modules\Cron\Jobs::IP_BLACKLIST_CLEAN_UP, [$this, 'pruneInCron'], 10, 0);
+        add_action(Modules\Cron\Jobs::INTERNAL_BLOCKLIST_CLEAN_UP, [$this, 'pruneInCron'], 10, 0);
     }
 
 
@@ -108,7 +109,7 @@ class Manager implements Modules\Countable, Modules\Installable, Modules\Initial
 
 
     /**
-     * Return number of all records on blacklist (active and expired).
+     * Return number of all records on blocklist (active and expired).
      *
      * @internal Implements \BlueChip\Security\Modules\Countable interface.
      *
@@ -116,11 +117,11 @@ class Manager implements Modules\Countable, Modules\Installable, Modules\Initial
      *
      * @return int
      */
-    public function countAll(int $scope = LockScope::ANY): int
+    public function countAll(int $scope = Scope::ANY): int
     {
-        $query = "SELECT COUNT(id) AS total FROM {$this->blacklist_table}";
+        $query = "SELECT COUNT(id) AS total FROM {$this->blocklist_table}";
 
-        if ($scope !== LockScope::ANY) {
+        if ($scope !== Scope::ANY) {
             $query .= $this->wpdb->prepare(" WHERE scope = %d", $scope);
         }
 
@@ -141,7 +142,7 @@ class Manager implements Modules\Countable, Modules\Installable, Modules\Initial
     {
         /** @var string $query */
         $query = $this->wpdb->prepare(
-            "SELECT COUNT(id) AS total FROM {$this->blacklist_table} WHERE ban_time > %s",
+            "SELECT COUNT(id) AS total FROM {$this->blocklist_table} WHERE ban_time > %s",
             MySQLDateTime::formatDateTime($timestamp)
         );
 
@@ -150,7 +151,7 @@ class Manager implements Modules\Countable, Modules\Installable, Modules\Initial
 
 
     /**
-     * Fetch all items on blacklist that match provided arguments.
+     * Fetch all items on blocklist that match provided arguments.
      *
      * @param int $scope
      * @param int $from
@@ -160,13 +161,13 @@ class Manager implements Modules\Countable, Modules\Installable, Modules\Initial
      *
      * @return array<int,array<string,string>>
      */
-    public function fetch(int $scope = LockScope::ANY, int $from = 0, int $limit = 20, string $order_by = '', string $order = ''): array
+    public function fetch(int $scope = Scope::ANY, int $from = 0, int $limit = 20, string $order_by = '', string $order = ''): array
     {
         // Prepare query
-        $query = "SELECT * FROM {$this->blacklist_table}";
+        $query = "SELECT * FROM {$this->blocklist_table}";
 
         // Apply scope if given
-        if ($scope !== LockScope::ANY) {
+        if ($scope !== Scope::ANY) {
             $query .= \sprintf(" WHERE scope = %d", $scope);
         }
 
@@ -192,14 +193,14 @@ class Manager implements Modules\Countable, Modules\Installable, Modules\Initial
 
 
     /**
-     * Is $ip_address on blacklist with given $scope?
+     * Is $ip_address on blocklist with given $scope?
      *
-     * @hook \BlueChip\Security\Modules\IpBlacklist\Hooks::IS_IP_ADDRESS_LOCKED
+     * @hook \BlueChip\Security\Modules\InternalBlocklist\Hooks::IS_IP_ADDRESS_LOCKED
      *
      * @param string $ip_address IP address to check.
-     * @param int $scope Blacklist scope.
+     * @param int $scope Access scope.
      *
-     * @return bool True if IP address is on blacklist with given scope.
+     * @return bool True if IP address is on blocklist with given access scope.
      */
     public function isLocked(string $ip_address, int $scope): bool
     {
@@ -207,7 +208,7 @@ class Manager implements Modules\Countable, Modules\Installable, Modules\Initial
         // match the where condition, so pick up the most future release time.
         /** @var string $query */
         $query = $this->wpdb->prepare(
-            "SELECT MAX(release_time) FROM {$this->blacklist_table} WHERE scope = %d AND ip_address = %s",
+            "SELECT MAX(release_time) FROM {$this->blocklist_table} WHERE scope = %d AND ip_address = %s",
             $scope,
             $ip_address
         );
@@ -254,10 +255,10 @@ class Manager implements Modules\Countable, Modules\Installable, Modules\Initial
         // Determine, whether IP needs to be inserted or updated.
         if ($this->getId($ip_address, $scope, $reason)) {
             // Update
-            $result = $this->wpdb->update($this->blacklist_table, $data, $where, $format, $where_format);
+            $result = $this->wpdb->update($this->blocklist_table, $data, $where, $format, $where_format);
         } else {
             // Insert: merge $data with $where, $format with $where_format.
-            $result = $this->wpdb->insert($this->blacklist_table, \array_merge($data, $where), \array_merge($format, $where_format));
+            $result = $this->wpdb->insert($this->blocklist_table, \array_merge($data, $where), \array_merge($format, $where_format));
         }
 
         return $result !== false;
@@ -265,7 +266,7 @@ class Manager implements Modules\Countable, Modules\Installable, Modules\Initial
 
 
     /**
-     * Remove expired entries from blacklist table.
+     * Remove expired entries from blocklist table.
      *
      * @return bool True on success, false on failure.
      */
@@ -275,7 +276,7 @@ class Manager implements Modules\Countable, Modules\Installable, Modules\Initial
         // Note: $wpdb->delete cannot be used as it does not support "<=" comparison)
         /** @var string $query */
         $query = $this->wpdb->prepare(
-            "DELETE FROM {$this->blacklist_table} WHERE release_time <= %s",
+            "DELETE FROM {$this->blocklist_table} WHERE release_time <= %s",
             MySQLDateTime::formatDateTime(\time())
         );
         // Execute query
@@ -286,7 +287,7 @@ class Manager implements Modules\Countable, Modules\Installable, Modules\Initial
 
 
     /**
-     * @hook \BlueChip\Security\Modules\Cron\Jobs::IP_BLACKLIST_CLEAN_UP
+     * @hook \BlueChip\Security\Modules\Cron\Jobs::INTERNAL_BLOCKLIST_CLEAN_UP
      *
      * @internal Runs `prune` method and discards its return value.
      */
@@ -306,7 +307,7 @@ class Manager implements Modules\Countable, Modules\Installable, Modules\Initial
     public function remove(int $id): bool
     {
         // Execute query.
-        $result = $this->wpdb->delete($this->blacklist_table, ['id' => $id], ['%d']);
+        $result = $this->wpdb->delete($this->blocklist_table, ['id' => $id], ['%d']);
         // Return status.
         return $result !== false;
     }
@@ -326,7 +327,7 @@ class Manager implements Modules\Countable, Modules\Installable, Modules\Initial
         }
         // Prepare query.
         $query = \sprintf(
-            "DELETE FROM {$this->blacklist_table} WHERE %s",
+            "DELETE FROM {$this->blocklist_table} WHERE %s",
             \implode(' OR ', \array_map(function ($id) {
                 return \sprintf('id = %d', $id);
             }, $ids))
@@ -351,7 +352,7 @@ class Manager implements Modules\Countable, Modules\Installable, Modules\Initial
     {
         // Execute query.
         $result = $this->wpdb->update(
-            $this->blacklist_table,
+            $this->blocklist_table,
             ['release_time' => MySQLDateTime::formatDateTime(\time())],
             ['id' => $id],
             ['%s'],
@@ -378,7 +379,7 @@ class Manager implements Modules\Countable, Modules\Installable, Modules\Initial
         }
         // Prepare query.
         $query = \sprintf(
-            "UDPATE {$this->blacklist_table} SET release_time = '%s' WHERE %s",
+            "UDPATE {$this->blocklist_table} SET release_time = '%s' WHERE %s",
             MySQLDateTime::formatDateTime(\time()),
             \implode(' OR ', \array_map(function ($id) {
                 return \sprintf('id = %d', $id);
@@ -406,7 +407,7 @@ class Manager implements Modules\Countable, Modules\Installable, Modules\Initial
         // Prepare query.
         /** @var string $query */
         $query = $this->wpdb->prepare(
-            "SELECT id FROM {$this->blacklist_table} WHERE scope = %d AND ip_address = %s AND reason = %d",
+            "SELECT id FROM {$this->blocklist_table} WHERE scope = %d AND ip_address = %s AND reason = %d",
             $scope,
             $ip_address,
             $reason

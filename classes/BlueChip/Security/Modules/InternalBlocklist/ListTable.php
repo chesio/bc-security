@@ -1,11 +1,12 @@
 <?php
 
-namespace BlueChip\Security\Modules\IpBlacklist;
+namespace BlueChip\Security\Modules\InternalBlocklist;
 
 use BlueChip\Security\Helpers\MySQLDateTime;
+use BlueChip\Security\Modules\Access\Scope;
 
 /**
- * IP blacklist table
+ * Internal blocklist table
  */
 class ListTable extends \BlueChip\Security\Core\ListTable
 {
@@ -46,9 +47,9 @@ class ListTable extends \BlueChip\Security\Core\ListTable
 
 
     /**
-     * @var \BlueChip\Security\Modules\IpBlacklist\Manager
+     * @var Manager
      */
-    private $bl_manager;
+    private $ib_manager;
 
     /**
      * @var int
@@ -59,16 +60,16 @@ class ListTable extends \BlueChip\Security\Core\ListTable
     /**
      * @param string $url
      * @param string $per_page_option_name
-     * @param \BlueChip\Security\Modules\IpBlacklist\Manager $bl_manager
+     * @param Manager $ib_manager
      */
-    public function __construct(string $url, string $per_page_option_name, Manager $bl_manager)
+    public function __construct(string $url, string $per_page_option_name, Manager $ib_manager)
     {
         parent::__construct($url, $per_page_option_name);
 
-        $this->bl_manager = $bl_manager;
+        $this->ib_manager = $ib_manager;
 
-        $this->scope = \filter_input(INPUT_GET, self::VIEW_SCOPE, FILTER_VALIDATE_INT, ['options' => ['default' => LockScope::ANY]]);
-        if ($this->scope !== LockScope::ANY) {
+        $this->scope = \filter_input(INPUT_GET, self::VIEW_SCOPE, FILTER_VALIDATE_INT, ['options' => ['default' => Scope::ANY]]);
+        if ($this->scope !== Scope::ANY) {
             $this->url = add_query_arg(self::VIEW_SCOPE, $this->scope, $this->url);
         }
     }
@@ -217,30 +218,30 @@ class ListTable extends \BlueChip\Security\Core\ListTable
             'any' => \sprintf(
                 '<a href="%s" class="%s">%s</a> (%d)',
                 remove_query_arg([self::VIEW_SCOPE], $this->url),
-                $this->scope === LockScope::ANY ? 'current' : '',
+                $this->scope === Scope::ANY ? 'current' : '',
                 esc_html__('Any', 'bc-security'),
-                $this->bl_manager->countAll()
+                $this->ib_manager->countAll()
             ),
             'admin' => \sprintf(
                 '<a href="%s" class="%s">%s</a> (%d)',
-                add_query_arg([self::VIEW_SCOPE => LockScope::ADMIN], $this->url),
-                $this->scope === LockScope::ADMIN ? 'current' : '',
+                add_query_arg([self::VIEW_SCOPE => Scope::ADMIN], $this->url),
+                $this->scope === Scope::ADMIN ? 'current' : '',
                 esc_html__('Admin', 'bc-security'),
-                $this->bl_manager->countAll(LockScope::ADMIN)
+                $this->ib_manager->countAll(Scope::ADMIN)
             ),
             'comments' => \sprintf(
                 '<a href="%s" class="%s">%s</a> (%d)',
-                add_query_arg([self::VIEW_SCOPE => LockScope::COMMENTS], $this->url),
-                $this->scope === LockScope::COMMENTS ? 'current' : '',
+                add_query_arg([self::VIEW_SCOPE => Scope::COMMENTS], $this->url),
+                $this->scope === Scope::COMMENTS ? 'current' : '',
                 esc_html__('Comments', 'bc-security'),
-                $this->bl_manager->countAll(LockScope::COMMENTS)
+                $this->ib_manager->countAll(Scope::COMMENTS)
             ),
             'website' => \sprintf(
                 '<a href="%s" class="%s">%s</a> (%d)',
-                add_query_arg([self::VIEW_SCOPE => LockScope::WEBSITE], $this->url),
-                $this->scope === LockScope::WEBSITE ? 'current' : '',
+                add_query_arg([self::VIEW_SCOPE => Scope::WEBSITE], $this->url),
+                $this->scope === Scope::WEBSITE ? 'current' : '',
                 esc_html__('Website', 'bc-security'),
-                $this->bl_manager->countAll(LockScope::WEBSITE)
+                $this->ib_manager->countAll(Scope::WEBSITE)
             ),
         ];
     }
@@ -256,14 +257,14 @@ class ListTable extends \BlueChip\Security\Core\ListTable
         $current_page = $this->get_pagenum();
         $per_page = $this->items_per_page;
 
-        $total_items = $this->bl_manager->countAll($this->scope);
+        $total_items = $this->ib_manager->countAll($this->scope);
 
         $this->set_pagination_args([
             'total_items' => $total_items,
             'per_page' => $per_page,
         ]);
 
-        $this->items = $this->bl_manager->fetch($this->scope, ($current_page - 1) * $per_page, $per_page, $this->order_by, $this->order);
+        $this->items = $this->ib_manager->fetch($this->scope, ($current_page - 1) * $per_page, $per_page, $this->order_by, $this->order);
     }
 
 
@@ -288,12 +289,12 @@ class ListTable extends \BlueChip\Security\Core\ListTable
                 return;
             }
 
-            if (($action === self::ACTION_REMOVE) && $this->bl_manager->remove($id)) {
+            if (($action === self::ACTION_REMOVE) && $this->ib_manager->remove($id)) {
                 // Record removed successfully, redirect to overview (and trigger admin notice)
                 wp_redirect(add_query_arg(self::NOTICE_RECORD_REMOVED, 1, $this->url));
             }
 
-            if (($action === self::ACTION_UNLOCK) && $this->bl_manager->unlock($id)) {
+            if (($action === self::ACTION_UNLOCK) && $this->ib_manager->unlock($id)) {
                 // Record unlocked successfully, redirect to overview (and trigger admin notice)
                 wp_redirect(add_query_arg(self::NOTICE_RECORD_UNLOCKED, 1, $this->url));
             }
@@ -304,12 +305,12 @@ class ListTable extends \BlueChip\Security\Core\ListTable
             // Sanitize: convert IDs to unsigned int and remove any zero values.
             $ids = \array_filter(\array_map('absint', $_POST['ids']));
 
-            if ($current_action === self::BULK_ACTION_REMOVE && ($removed = $this->bl_manager->removeMany($ids))) {
+            if ($current_action === self::BULK_ACTION_REMOVE && ($removed = $this->ib_manager->removeMany($ids))) {
                 // Records removed successfully, redirect to overview (and trigger admin notice)
                 wp_redirect(add_query_arg(self::NOTICE_RECORD_REMOVED, $removed, $this->url));
             }
 
-            if ($current_action === self::BULK_ACTION_UNLOCK && ($unlocked = $this->bl_manager->unlockMany($ids))) {
+            if ($current_action === self::BULK_ACTION_UNLOCK && ($unlocked = $this->ib_manager->unlockMany($ids))) {
                 // Records unlocked successfully, redirect to overview (and trigger admin notice)
                 wp_redirect(add_query_arg(self::NOTICE_RECORD_UNLOCKED, $unlocked, $this->url));
             }
@@ -332,8 +333,8 @@ class ListTable extends \BlueChip\Security\Core\ListTable
                 return _x('Too many failed login attempts', 'Ban reason', 'bc-security');
             case BanReason::USERNAME_BLACKLIST:
                 return _x('Login attempt using blacklisted username', 'Ban reason', 'bc-security');
-            case BanReason::MANUALLY_BLACKLISTED:
-                return _x('Manually blacklisted', 'Ban reason', 'bc-security');
+            case BanReason::MANUALLY_BLOCKED:
+                return _x('Manually blocked', 'Ban reason', 'bc-security');
             default:
                 return _x('Unknown', 'Ban reason', 'bc-security');
         }

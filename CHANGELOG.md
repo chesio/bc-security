@@ -2,6 +2,12 @@
 
 ## Upcoming version 0.20.0 (????-??-??)
 
+This version introduces some breaking changes. It is recommended to:
+1. Deactivate the plugin.
+2. Rename the database table `bc_security_ip_blacklist` to `bc_security_internal_blocklist`.
+3. Update the plugin.
+4. Reactivate the plugin.
+
 ### Added
 
 * PHP 8.2 is supported [#130](https://github.com/chesio/bc-security/issues/130).

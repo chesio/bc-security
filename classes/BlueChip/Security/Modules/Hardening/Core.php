@@ -26,14 +26,11 @@ class Core implements \BlueChip\Security\Modules\Initializable
     private $rest_api_supressed;
 
     /**
-     * @var \BlueChip\Security\Modules\Hardening\Settings
+     * @var Settings
      */
     private $settings;
 
 
-    /**
-     * @param \BlueChip\Security\Modules\Hardening\Settings $settings
-     */
     public function __construct(Settings $settings)
     {
         $this->settings = $settings;

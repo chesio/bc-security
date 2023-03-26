@@ -11,8 +11,9 @@ class Settings extends \BlueChip\Security\Core\Settings
      * @var array<string,bool> Default values for all settings.
      */
     protected const DEFAULTS = [
+        Jobs::AWS_IP_PREFIXES_REFRESH => false,
         Jobs::CHECKLIST_CHECK => true,
-        Jobs::IP_BLACKLIST_CLEAN_UP => true,
+        Jobs::INTERNAL_BLOCKLIST_CLEAN_UP => true,
         Jobs::LOGS_CLEAN_UP_BY_AGE => true,
         Jobs::LOGS_CLEAN_UP_BY_SIZE => true,
         Jobs::CORE_INTEGRITY_CHECK => false,

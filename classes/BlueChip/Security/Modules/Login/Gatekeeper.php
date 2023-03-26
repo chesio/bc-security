@@ -3,12 +3,17 @@
 namespace BlueChip\Security\Modules\Login;
 
 use BlueChip\Security\Helpers\Utils;
-use BlueChip\Security\Modules\IpBlacklist;
+use BlueChip\Security\Modules\Access\Bouncer;
+use BlueChip\Security\Modules\Access\Scope;
+use BlueChip\Security\Modules\Initializable;
+use BlueChip\Security\Modules\InternalBlocklist\BanReason;
+use BlueChip\Security\Modules\InternalBlocklist\Manager as InternalBlocklistManager;
+use BlueChip\Security\Modules\Loadable;
 
 /**
  * Gatekeeper keeps bots out of admin area.
  */
-class Gatekeeper implements \BlueChip\Security\Modules\Initializable, \BlueChip\Security\Modules\Loadable
+class Gatekeeper implements Initializable, Loadable
 {
     /**
      * @var string
@@ -16,33 +21,39 @@ class Gatekeeper implements \BlueChip\Security\Modules\Initializable, \BlueChip\
     private $remote_address;
 
     /**
-     * @var \BlueChip\Security\Modules\Login\Settings
+     * @var Settings
      */
     private $settings;
 
     /**
-     * @var \BlueChip\Security\Modules\Login\Bookkeeper
+     * @var Bookkeeper
      */
     private $bookkeeper;
 
     /**
-     * @var \BlueChip\Security\Modules\IpBlacklist\Manager
+     * @var InternalBlocklistManager
      */
-    private $bl_manager;
-
+    private $ib_manager;
 
     /**
-     * @param \BlueChip\Security\Modules\Login\Settings $settings
-     * @param string $remote_address Remote IP address.
-     * @param \BlueChip\Security\Modules\Login\Bookkeeper $bookkeeper
-     * @param \BlueChip\Security\Modules\IpBlacklist\Manager $bl_manager
+     * @var Bouncer
      */
-    public function __construct(Settings $settings, string $remote_address, Bookkeeper $bookkeeper, IpBlacklist\Manager $bl_manager)
+    private $bouncer;
+
+    /**
+     * @param Settings $settings
+     * @param string $remote_address Remote IP address.
+     * @param Bookkeeper $bookkeeper
+     * @param InternalBlocklistManager $ib_manager
+     * @param Bouncer $bouncer
+     */
+    public function __construct(Settings $settings, string $remote_address, Bookkeeper $bookkeeper, InternalBlocklistManager $ib_manager, Bouncer $bouncer)
     {
         $this->remote_address = $remote_address;
         $this->settings = $settings;
         $this->bookkeeper = $bookkeeper;
-        $this->bl_manager = $bl_manager;
+        $this->ib_manager = $ib_manager;
+        $this->bouncer = $bouncer;
     }
 
 
@@ -51,8 +62,8 @@ class Gatekeeper implements \BlueChip\Security\Modules\Initializable, \BlueChip\
      */
     public function load(): void
     {
-        // Remove all WordPress authentication cookies if remote address is on black list.
-        if ($this->bl_manager->isLocked($this->remote_address, IpBlacklist\LockScope::ADMIN)) {
+        // Remove all WordPress authentication cookies if remote access to admin is blocked.
+        if ($this->bouncer->isBlocked(Scope::ADMIN)) {
             $this->clearAuthCookie();
         }
     }
@@ -135,21 +146,16 @@ class Gatekeeper implements \BlueChip\Security\Modules\Initializable, \BlueChip\
      */
     public function handleFailedLogin(string $username): void
     {
-        // If currently locked-out, bail (should not happen, but better safe than sorry)
-        if ($this->bl_manager->isLocked($this->remote_address, IpBlacklist\LockScope::ADMIN)) {
-            return;
-        }
-
         // Record failed login attempt, get total number of retries for IP
         $retries = $this->bookkeeper->recordFailedLoginAttempt($this->remote_address, $username);
 
         // Determine whether it is the lockout time:
         if ($retries % $this->settings[Settings::LONG_LOCKOUT_AFTER] === 0) {
             // Long lockout
-            $this->lockOut($username, $this->settings->getLongLockoutDuration(), IpBlacklist\BanReason::LOGIN_LOCKOUT_LONG);
+            $this->lockOut($username, $this->settings->getLongLockoutDuration(), BanReason::LOGIN_LOCKOUT_LONG);
         } elseif ($retries % $this->settings[Settings::SHORT_LOCKOUT_AFTER] === 0) {
             // Short lockout
-            $this->lockOut($username, $this->settings->getShortLockoutDuration(), IpBlacklist\BanReason::LOGIN_LOCKOUT_SHORT);
+            $this->lockOut($username, $this->settings->getShortLockoutDuration(), BanReason::LOGIN_LOCKOUT_SHORT);
         }
     }
 
@@ -172,7 +178,7 @@ class Gatekeeper implements \BlueChip\Security\Modules\Initializable, \BlueChip\
             // ...is found on black list...
             if (\in_array($username, $this->settings->getUsernameBlacklist(), true)) {
                 // ...lock IP out!
-                $this->lockOut($username, $this->settings->getLongLockoutDuration(), IpBlacklist\BanReason::USERNAME_BLACKLIST);
+                $this->lockOut($username, $this->settings->getLongLockoutDuration(), BanReason::USERNAME_BLACKLIST);
             }
         }
 
@@ -200,18 +206,6 @@ class Gatekeeper implements \BlueChip\Security\Modules\Initializable, \BlueChip\
             }
         }
         return $user;
-    }
-
-
-    /**
-     * Remove all WordPress authentication cookies if IP is on black list.
-     * Method should be called as early as possible.
-     */
-    public function removeAuthCookieIfIpIsLocked(): void
-    {
-        if ($this->bl_manager->isLocked($this->remote_address, IpBlacklist\LockScope::ADMIN)) {
-            $this->clearAuthCookie();
-        }
     }
 
 
@@ -245,7 +239,7 @@ class Gatekeeper implements \BlueChip\Security\Modules\Initializable, \BlueChip\
         do_action(Hooks::LOCKOUT_EVENT, $this->remote_address, $username, $duration, $reason);
 
         // Lock IP address
-        $this->bl_manager->lock($this->remote_address, $duration, IpBlacklist\LockScope::ADMIN, $reason);
+        $this->ib_manager->lock($this->remote_address, $duration, Scope::ADMIN, $reason);
 
         // Block access
         Utils::blockAccessTemporarily($this->remote_address);
