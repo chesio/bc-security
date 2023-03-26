@@ -49,7 +49,7 @@ class Bouncer implements Initializable, Loadable
      */
     public function load(): void
     {
-        add_action('plugins_loaded', [$this, 'checkAccess'], 1, 0); // Leave priority 0 for site maintainers.
+        $this->checkAccess();
     }
 
 
