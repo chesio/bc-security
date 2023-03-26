@@ -18,6 +18,11 @@ class Settings implements \IteratorAggregate
     private $cron_jobs;
 
     /**
+     * @var Modules\ExternalBlocklist\Settings
+     */
+    private $external_blocklist;
+
+    /**
      * @var Modules\Hardening\Settings
      */
     private $hardening;
@@ -47,6 +52,7 @@ class Settings implements \IteratorAggregate
     {
         $this->checklist_autorun    = new Modules\Checklist\AutorunSettings('bc-security-checklist-autorun');
         $this->cron_jobs            = new Modules\Cron\Settings('bc-security-cron-jobs');
+        $this->external_blocklist   = new Modules\ExternalBlocklist\Settings('bc-security-external-blocklist');
         $this->hardening            = new Modules\Hardening\Settings('bc-security-hardening');
         $this->log                  = new Modules\Log\Settings('bc-security-log');
         $this->login                = new Modules\Login\Settings('bc-security-login');
@@ -67,6 +73,11 @@ class Settings implements \IteratorAggregate
     public function forCronJobs(): Modules\Cron\Settings
     {
         return $this->cron_jobs;
+    }
+
+    public function forExternalBlocklist(): Modules\ExternalBlocklist\Settings
+    {
+        return $this->external_blocklist;
     }
 
     public function forHardening(): Modules\Hardening\Settings

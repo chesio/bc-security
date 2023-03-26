@@ -2,8 +2,6 @@
 
 namespace BlueChip\Security\Modules\Hardening;
 
-use BlueChip\Security\Modules\Access\Scope;
-
 class Settings extends \BlueChip\Security\Core\Settings
 {
     /**
@@ -47,11 +45,6 @@ class Settings extends \BlueChip\Security\Core\Settings
     public const VALIDATE_PASSWORDS = 'validate_passwords';
 
     /**
-     * @var string Block requests from Amazon web services? [int:0]
-     */
-    public const BLOCK_REQUESTS_FROM_AMAZON_WEB_SERVICES = 'block_requests_from_aws';
-
-    /**
      * @var array<string,bool> Default values for all settings.
      */
     protected const DEFAULTS = [
@@ -63,26 +56,5 @@ class Settings extends \BlueChip\Security\Core\Settings
         self::DISABLE_LOGIN_WITH_USERNAME => false,
         self::CHECK_PASSWORDS => false,
         self::VALIDATE_PASSWORDS => false,
-        self::BLOCK_REQUESTS_FROM_AMAZON_WEB_SERVICES => Scope::ANY,
     ];
-
-    /**
-     * @var array Custom sanitizers.
-     */
-    protected const SANITIZERS = [
-        self::BLOCK_REQUESTS_FROM_AMAZON_WEB_SERVICES => [self::class, 'sanitizeAccessScope'],
-    ];
-
-    /**
-     * Sanitize lock scope values. Allow only expected values.
-     *
-     * @param int $value
-     * @param int $default
-     *
-     * @return int
-     */
-    public static function sanitizeAccessScope(int $value, int $default): int
-    {
-        return \in_array($value, Scope::enlist(), true) ? $value : $default;
-    }
 }

@@ -6,7 +6,7 @@ use BlueChip\Security\Modules\Initializable;
 use BlueChip\Security\Modules\InternalBlocklist\Manager as InternalBlocklistManager;
 use BlueChip\Security\Modules\Loadable;
 use BlueChip\Security\Helpers\Utils;
-use BlueChip\Security\Modules\Hardening\ExternalBlocklist\Manager as ExternalBlocklistManager;
+use BlueChip\Security\Modules\ExternalBlocklist\Manager as ExternalBlocklistManager;
 
 /**
  * Bouncer takes care of bouncing uninvited guests by:
@@ -82,7 +82,7 @@ class Bouncer implements Initializable, Loadable
     /**
      * Check if access to website is allowed from given remote address.
      */
-    public function checkAccess()
+    public function checkAccess(): void
     {
         if ($this->isBlocked(Scope::WEBSITE)) {
             Utils::blockAccessTemporarily($this->remote_address);

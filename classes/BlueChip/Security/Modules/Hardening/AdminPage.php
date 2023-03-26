@@ -5,7 +5,6 @@ namespace BlueChip\Security\Modules\Hardening;
 use BlueChip\Security\Helpers\AdminNotices;
 use BlueChip\Security\Helpers\FormHelper;
 use BlueChip\Security\Helpers\HaveIBeenPwned;
-use BlueChip\Security\Modules\Access\Scope;
 use BlueChip\Security\Modules\Log\AdminPage as LogAdminPage;
 use BlueChip\Security\Modules\Log\Events\LoginFailure;
 
@@ -232,26 +231,6 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
             Settings::CHECK_PASSWORDS,
             __('Check passwords of existing users', 'bc-security'),
             [FormHelper::class, 'printCheckbox']
-        );
-
-        // Section: Block requests from Amazon Web Services.
-        $this->addSettingsSection(
-            'block-requests-from-aws',
-            __('Block requests from Amazon Web Services', 'bc-security'),
-            function () {
-                echo '<p>' . \sprintf(
-                    /* translators: 1: link to Wikipedia page about Amazon Web Services, 2: link to Wordfence Blog article on brute force attacks originating from AWS */
-                    esc_html__('%1$s can be misused to perform automated attacks against WordPress websites - for example %2$s. Blocking requests from AWS might help reduce amount of such attacks.', 'bc-security'),
-                    '<a href="https://en.wikipedia.org/wiki/Amazon_Web_Services" rel="noreferrer">' . esc_html__('Amazon Web Services', 'bc-security') . '</a>',
-                    '<a href="https://www.wordfence.com/blog/2021/11/aws-attacks-targeting-wordpress-increase-5x/" rel="noreferrer">' . esc_html__('brute force logging attacks', 'bc-security') . '</a>'
-                ) . '</p>';
-            }
-        );
-        $this->addSettingsField(
-            Settings::BLOCK_REQUESTS_FROM_AMAZON_WEB_SERVICES,
-            __('Block requests from AWS', 'bc-security'),
-            [FormHelper::class, 'printSelect'],
-            ['options' => Scope::enlist(true)]
         );
     }
 }

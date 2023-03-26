@@ -80,7 +80,7 @@ class Plugin
         $notifier                   = new Modules\Notifications\Watchman($settings->forNotifications(), $remote_address, $logger);
         $hardening                  = new Modules\Hardening\Core($settings->forHardening());
         $internal_blocklist_manager = new Modules\InternalBlocklist\Manager($wpdb);
-        $external_blocklist_manager = new Modules\Hardening\ExternalBlocklist\Manager();
+        $external_blocklist_manager = new Modules\ExternalBlocklist\Manager($settings->forExternalBlocklist(), $cron_job_manager);
         $access_bouncer             = new Modules\Access\Bouncer($remote_address, $internal_blocklist_manager, $external_blocklist_manager);
         $bookkeeper                 = new Modules\Login\Bookkeeper($settings->forLogin(), $wpdb);
         $gatekeeper                 = new Modules\Login\Gatekeeper($settings->forLogin(), $remote_address, $bookkeeper, $internal_blocklist_manager, $access_bouncer);
@@ -170,6 +170,9 @@ class Plugin
                 ->addPage(new Modules\InternalBlocklist\AdminPage(
                     $this->modules['internal-blocklist-manager'],
                     $this->modules['cron-job-manager']
+                ))
+                ->addPage(new Modules\ExternalBlocklist\AdminPage(
+                    $this->settings->forExternalBlocklist()
                 ))
                 ->addPage(new Modules\Notifications\AdminPage(
                     $this->settings->forNotifications()
