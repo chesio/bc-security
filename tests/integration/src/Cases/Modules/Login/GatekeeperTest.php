@@ -14,7 +14,7 @@ class GatekeeperTest extends TestCase
      *
      * @var string Existing username that is on username blacklist.
      */
-    private const ADMIN = 'admin';
+    private const ADMIN = Constants::DEFAULT_USERNAME;
 
     /**
      * @var string Non-existing username that is on username blacklist.

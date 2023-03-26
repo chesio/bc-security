@@ -4,7 +4,7 @@ namespace BlueChip\Security\Modules\ExternalBlocklist;
 
 use BlueChip\Security\Helpers\IpAddress;
 
-class Blocklist
+class Blocklist implements \Countable
 {
     /**
      * @var string[]
@@ -17,6 +17,11 @@ class Blocklist
     public function addIpPrefixes(Source $source): void
     {
         $this->ip_prefixes = \array_merge($this->ip_prefixes, $source->getIpPrefixes());
+    }
+
+    public function count(): int
+    {
+        return \count($this->ip_prefixes);
     }
 
     /**

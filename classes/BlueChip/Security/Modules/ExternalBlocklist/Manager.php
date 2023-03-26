@@ -22,7 +22,7 @@ class Manager implements Initializable
     ];
 
     /**
-     * @var array<int, Blocklist> List of external blocklists per access scope.
+     * @var array<int, Blocklist|null> List of external blocklists per access scope (lazy-loaded).
      */
     private $blocklists = [];
 
