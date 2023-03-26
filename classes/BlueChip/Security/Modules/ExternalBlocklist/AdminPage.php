@@ -76,7 +76,7 @@ class AdminPage extends AbstractPage
                 $ip_prefixes_count = (new AmazonWebServices())->getSize();
                 if ($ip_prefixes_count > 0) {
                     echo '<p>' . \sprintf(
-                        esc_html__('There are currently %s IP prefixes in this blocklist.', 'bc-security'),
+                        esc_html__('There are currently %s IP prefixes cached from this source.', 'bc-security'),
                         \sprintf('<strong>%d</strong>', $ip_prefixes_count)
                     );
                 }
