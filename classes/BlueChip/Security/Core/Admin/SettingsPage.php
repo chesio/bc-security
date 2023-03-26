@@ -18,14 +18,14 @@ trait SettingsPage
     protected $option_name;
 
     /**
-     * @var string Recent page serves as default $page for add_settings_field() and add_settings_section() functions.
+     * @var string|null Recent page serves as default $page for add_settings_field() and add_settings_section() functions.
      */
-    protected $recent_page;
+    protected $recent_page = null;
 
     /**
-     * @var string Recent section serves as default $section for add_settings_field() function.
+     * @var string|null Recent section serves as default $section for add_settings_field() function.
      */
-    protected $recent_section;
+    protected $recent_section = null;
 
     /**
      * @var \BlueChip\Security\Core\Settings Object with actual settings.
