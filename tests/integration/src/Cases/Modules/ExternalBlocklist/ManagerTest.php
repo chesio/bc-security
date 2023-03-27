@@ -3,8 +3,9 @@
 namespace BlueChip\Security\Tests\Unit\Cases\Modules\ExternalBlocklist;
 
 use BlueChip\Security\Modules\Access\Scope;
-use BlueChip\Security\Modules\ExternalBlocklist\Settings as ExternalBlocklistSettings;
+use BlueChip\Security\Modules\Cron\Jobs;
 use BlueChip\Security\Modules\ExternalBlocklist\Sources\AmazonWebServices;
+use BlueChip\Security\Modules\ExternalBlocklist\WarmUpException;
 use BlueChip\Security\Settings;
 use BlueChip\Security\Setup\IpAddress;
 use BlueChip\Security\Tests\Integration\Constants;
@@ -22,11 +23,8 @@ class ManagerTest extends TestCase
         // Run all tests in this suite with AWS IP address.
         $_SERVER[IpAddress::REMOTE_ADDR] = Constants::AMAZON_WEB_SERVICE_IP_ADDRESS;
 
-        // Warm up AWS blocklist.
-        (new AmazonWebServices())->warmUp();
-
         // Activate AWS blocklist for backend login.
-        (new Settings())->forExternalBlocklist()->update(ExternalBlocklistSettings::AMAZON_WEB_SERVICES, Scope::ADMIN);
+        (new Settings())->forExternalBlocklist()->update(AmazonWebServices::class, Scope::ADMIN);
     }
 
 
@@ -37,8 +35,11 @@ class ManagerTest extends TestCase
      */
     public function testAmazonWebServicesBlocklist()
     {
-        // In case warm-up of AWS IP prefixes failed, skip the test.
-        if ((new AmazonWebServices())->getSize() === 0) {
+        // Refresh external blocklist.
+        try {
+            do_action(Jobs::EXTERNAL_BLOCKLIST_REFRESH);
+        } catch (WarmUpException $e) {
+            // In case warm-up of AWS IP prefixes failed, skip the test.
             $this->markTestSkipped('Populating of external blocklist with AWS IP prefixes failed.');
             return;
         }

@@ -19,16 +19,23 @@ class AdminPage extends AbstractPage
      */
     public const SLUG = 'bc-security-external-blocklist';
 
+    /**
+     * @var Manager
+     */
+    private $eb_manager;
+
 
     /**
      * @param Settings $settings Settings for external blocklist
      */
-    public function __construct(Settings $settings)
+    public function __construct(Settings $settings, Manager $eb_manager)
     {
         $this->page_title = _x('External Blocklist', 'Dashboard page title', 'bc-security');
         $this->menu_title = _x('External Blocklist', 'Dashboard menu item name', 'bc-security');
 
         $this->useSettings($settings);
+
+        $this->eb_manager = $eb_manager;
     }
 
 
@@ -73,7 +80,7 @@ class AdminPage extends AbstractPage
                     '<a href="https://www.wordfence.com/blog/2021/11/aws-attacks-targeting-wordpress-increase-5x/" rel="noreferrer">' . esc_html__('brute force logging attacks', 'bc-security') . '</a>'
                 ) . '</p>';
 
-                $ip_prefixes_count = (new AmazonWebServices())->getSize();
+                $ip_prefixes_count = $this->eb_manager->getSource(AmazonWebServices::class)->getSize();
                 if ($ip_prefixes_count > 0) {
                     echo '<p>' . \sprintf(
                         esc_html__('There are currently %s IP prefixes cached from this source.', 'bc-security'),
@@ -83,7 +90,7 @@ class AdminPage extends AbstractPage
             }
         );
         $this->addSettingsField(
-            Settings::AMAZON_WEB_SERVICES,
+            AmazonWebServices::class,
             __('Block requests from AWS', 'bc-security'),
             [FormHelper::class, 'printSelect'],
             ['options' => Scope::enlist(true)]

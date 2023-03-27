@@ -172,7 +172,8 @@ class Plugin
                     $this->modules['cron-job-manager']
                 ))
                 ->addPage(new Modules\ExternalBlocklist\AdminPage(
-                    $this->settings->forExternalBlocklist()
+                    $this->settings->forExternalBlocklist(),
+                    $this->modules['external-blocklist-manager']
                 ))
                 ->addPage(new Modules\Notifications\AdminPage(
                     $this->settings->forNotifications()

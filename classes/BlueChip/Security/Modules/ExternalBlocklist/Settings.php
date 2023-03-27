@@ -3,26 +3,22 @@
 namespace BlueChip\Security\Modules\ExternalBlocklist;
 
 use BlueChip\Security\Modules\Access\Scope;
+use BlueChip\Security\Modules\ExternalBlocklist\Sources\AmazonWebServices;
 
 class Settings extends \BlueChip\Security\Core\Settings
 {
     /**
-     * @var string Block requests from Amazon web services? [int:0]
-     */
-    public const AMAZON_WEB_SERVICES = 'amazon_web_services';
-
-    /**
      * @var array<string,int> Default values for all settings.
      */
     protected const DEFAULTS = [
-        self::AMAZON_WEB_SERVICES => Scope::ANY,
+        AmazonWebServices::class => Scope::ANY,
     ];
 
     /**
      * @var array<string,callable> Custom sanitizers.
      */
     protected const SANITIZERS = [
-        self::AMAZON_WEB_SERVICES => [self::class, 'sanitizeAccessScope'],
+        AmazonWebServices::class => [self::class, 'sanitizeAccessScope'],
     ];
 
     /**
@@ -36,5 +32,15 @@ class Settings extends \BlueChip\Security\Core\Settings
     public static function sanitizeAccessScope(int $value, int $default): int
     {
         return \in_array($value, Scope::enlist(), true) ? $value : $default;
+    }
+
+    /**
+     * @param string $class Source class
+     *
+     * @return bool True if source with $class is enabled in settings, false otherwise.
+     */
+    public function isEnabled(string $class): bool
+    {
+        return $this->data[$class] !== Scope::ANY;
     }
 }

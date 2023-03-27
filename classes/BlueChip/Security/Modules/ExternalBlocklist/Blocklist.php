@@ -2,39 +2,32 @@
 
 namespace BlueChip\Security\Modules\ExternalBlocklist;
 
-use BlueChip\Security\Helpers\IpAddress;
-
-class Blocklist implements \Countable
+class Blocklist
 {
     /**
-     * @var string[]
+     * @var Source[] List of sources on this blacklist.
      */
-    private $ip_prefixes = [];
+    private $sources = [];
 
     /**
-     * Add IP prefixes from $source.
+     * Add source to blocklist.
      */
-    public function addIpPrefixes(Source $source): void
+    public function addSource(Source $source): void
     {
-        $this->ip_prefixes = \array_merge($this->ip_prefixes, $source->getIpPrefixes());
-    }
-
-    public function count(): int
-    {
-        return \count($this->ip_prefixes);
+        $this->sources[get_class($source)] = $source;
     }
 
     /**
-     * @return bool True if blocklist contains given IP address in it, false otherwise.
+     * Get source that has given $ip_address or null if no such source exists in this blocklist.
      */
-    public function hasIpAddress(string $ip_address): bool
+    public function getSource(string $ip_address): ?Source
     {
-        foreach ($this->ip_prefixes as $ip_prefix) {
-            if (IpAddress::matchesPrefix($ip_address, $ip_prefix)) {
-                return true;
+        foreach ($this->sources as $source) {
+            if ($source->hasIpAddress($ip_address)) {
+                return $source;
             }
         }
 
-        return false;
+        return null;
     }
 }

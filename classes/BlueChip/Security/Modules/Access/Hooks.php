@@ -8,6 +8,16 @@ namespace BlueChip\Security\Modules\Access;
 interface Hooks
 {
     /**
+     * Action: triggers when request results in external blocklist hit.
+     */
+    public const EXTERNAL_BLOCKLIST_HIT_EVENT = 'bc-security/action:external-blocklist-hit';
+
+    /**
+     * Action: triggers when request results in internal blocklist hit.
+     */
+    public const INTERNAL_BLOCKLIST_HIT_EVENT = 'bc-security/action:internal-blocklist-hit';
+
+    /**
      * Filter: allows to filter result of "is IP address blocked" check.
      *
      * add_filter(

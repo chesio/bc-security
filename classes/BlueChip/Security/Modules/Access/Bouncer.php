@@ -49,7 +49,11 @@ class Bouncer implements Initializable, Loadable
      */
     public function load(): void
     {
-        $this->checkAccess();
+        // As much as I hate to add callbacks to hooks that are already being executed,
+        // I have to balance two requirements here:
+        // 1) Run the access check as early as possible (I consider `init` hook too late).
+        // 2) Allow myself and others to hook stuff (ie. events logger) in a clean way before access check executes.
+        add_action('plugins_loaded', [$this, 'checkAccess'], 1, 0);
     }
 
 
@@ -71,9 +75,20 @@ class Bouncer implements Initializable, Loadable
      */
     public function isBlocked(int $scope): bool
     {
-        $result = $this->eb_manager->isBlocked($this->remote_address, $scope) || $this->ib_manager->isLocked($this->remote_address, $scope);
+        // Check external blocklist.
+        $source = $this->eb_manager->getBlocklist($scope)->getSource($this->remote_address);
+        $eb_result = $source !== null;
+        $ib_result = $this->ib_manager->isLocked($this->remote_address, $scope);
 
-        return apply_filters(Hooks::IS_IP_ADDRESS_BLOCKED, $result, $this->remote_address, $scope);
+        if ($eb_result) {
+            do_action(Hooks::EXTERNAL_BLOCKLIST_HIT_EVENT, $this->remote_address, $scope, $source);
+        }
+
+        if ($ib_result) {
+            do_action(Hooks::INTERNAL_BLOCKLIST_HIT_EVENT, $this->remote_address, $scope);
+        }
+
+        return apply_filters(Hooks::IS_IP_ADDRESS_BLOCKED, $eb_result || $ib_result, $this->remote_address, $scope);
     }
 
 

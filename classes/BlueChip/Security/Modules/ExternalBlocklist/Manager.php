@@ -2,6 +2,8 @@
 
 namespace BlueChip\Security\Modules\ExternalBlocklist;
 
+use BlueChip\Security\Helpers\Is;
+use BlueChip\Security\Helpers\Transients;
 use BlueChip\Security\Modules\Access\Scope;
 use BlueChip\Security\Modules\Cron\Jobs;
 use BlueChip\Security\Modules\Cron\Manager as CronManager;
@@ -12,14 +14,16 @@ use InvalidArgumentException;
 class Manager implements Initializable
 {
     /**
-     * @var array<string, array<string, string>> List of available sources for external blocklists.
+     * @var string[] List of available sources for external blocklists.
      */
     private const SOURCES = [
-        AmazonWebServices::class => [
-            'settings_key' => Settings::AMAZON_WEB_SERVICES,
-            'cron_job_id' => Jobs::AWS_IP_PREFIXES_REFRESH,
-        ],
+        AmazonWebServices::class,
     ];
+
+    /**
+     * @var string Key used as base for storing IP ranges for external blocklist sources.
+     */
+    private const TRANSIENT_KEY = 'external-blocklist-source';
 
     /**
      * @var array<int, Blocklist|null> List of external blocklists per access scope (lazy-loaded).
@@ -36,6 +40,11 @@ class Manager implements Initializable
      */
     private $settings;
 
+    /**
+     * @var array<string,Source> List of sources.
+     */
+    private $sources = [];
+
 
     public function __construct(Settings $settings, CronManager $cron_manager)
     {
@@ -47,24 +56,28 @@ class Manager implements Initializable
                 $this->blocklists[$access_scope] = null;
             }
         }
+
+        foreach (self::SOURCES as $class) {
+            $this->sources[$class] = new $class();
+        }
     }
 
 
     public function init(): void
     {
-        // Some cron jobs needs to be (de)activated depending on active hardening options settings.
-        $this->settings->addUpdateHook([$this, 'updateBlocklists']);
+        // Whenever list of enabled sources changes, update local cache and enable or disable related cron job.
+        $this->settings->addUpdateHook([$this, 'updateLocalCacheState']);
 
-        // Set warm up cron jobs for all enabled sources.
-        foreach (self::SOURCES as $class => ['settings_key' => $key, 'cron_job_id' => $cron_job_id]) {
-            $access_scope = $this->settings[$key];
-            if ($access_scope !== Scope::ANY) {
-                add_action($cron_job_id, [new $class(), 'warmUp'], 10, 0);
-            }
-        }
+        // Hook to action triggered by cron job (and integration tests).
+        add_action(Jobs::EXTERNAL_BLOCKLIST_REFRESH, [$this, 'refreshSources'], 10, 0);
     }
 
 
+    /**
+     * Get blocklist for given $access_scope.
+     *
+     * @internal Lazy-loads blocklists and IP ranges for sources assigned to the blocklists.
+     */
     public function getBlocklist(int $access_scope): Blocklist
     {
         // Blocklist for non-scope should not be requested.
@@ -76,9 +89,12 @@ class Manager implements Initializable
         if ($this->blocklists[$access_scope] === null) {
             $blocklist = new Blocklist();
 
-            foreach (self::SOURCES as $class => ['settings_key' => $key]) {
-                if ($this->settings[$key] === $access_scope) {
-                    $blocklist->addIpPrefixes(new $class());
+            foreach ($this->sources as $class => $source) {
+                if ($this->settings[$class] === $access_scope) {
+                    // Read IP ranges from local cache.
+                    $this->populate($source);
+                    // Add source to blacklist.
+                    $blocklist->addSource($source);
                 }
             }
 
@@ -86,6 +102,19 @@ class Manager implements Initializable
         }
 
         return $this->blocklists[$access_scope];
+    }
+
+
+    /**
+     * Get source instance for given $class with IP ranges populated from local cache.
+     */
+    public function getSource(string $class): Source
+    {
+        $source = $this->sources[$class];
+
+        $this->populate($source);
+
+        return $source;
     }
 
 
@@ -99,26 +128,83 @@ class Manager implements Initializable
      */
     public function isBlocked(string $ip_address, int $access_scope): bool
     {
-        return $this->getBlocklist($access_scope)->hasIpAddress($ip_address);
+        return $this->getBlocklist($access_scope)->getSource($ip_address) !== null;
     }
 
 
     /**
-     * Warm up or tear down blocklist sourcees depending on their activation status.
-     * Also activate or deactivate cron jobs to rerun warm up in the background.
+     * Warm up or tear down blocklist sources depending on their activation status.
+     * Also activate or deactivate cron job for blocklist refresh.
+     *
+     * @internal Not part of public API.
      */
-    public function updateBlocklists(): void
+    public function updateLocalCacheState(): void
     {
-        foreach (self::SOURCES as $class => ['settings_key' => $key, 'cron_job_id' => $cron_job_id]) {
-            $access_scope = $this->settings[$key];
-            // Source needs to be regularly updated only if there is access lock scope set.
-            if ($access_scope !== Scope::ANY) {
-                (new $class())->warmUp();
-                $this->cron_manager->activateJob($cron_job_id);
+        $cron_job_required = false;
+
+        foreach ($this->sources as $class => $source) {
+            if ($this->settings->isEnabled($class)) {
+                $this->warmUp($source);
+                $cron_job_required = true;
             } else {
-                (new $class())->tearDown();
-                $this->cron_manager->deactivateJob($cron_job_id);
+                $this->tearDown($source);
             }
         }
+
+        if ($cron_job_required) {
+            $this->cron_manager->activateJob(Jobs::EXTERNAL_BLOCKLIST_REFRESH);
+        } else {
+            $this->cron_manager->deactivateJob(Jobs::EXTERNAL_BLOCKLIST_REFRESH);
+        }
+    }
+
+
+    /**
+     * Warm up all enabled sources.
+     *
+     * @internal Not part of public API.
+     */
+    public function refreshSources(): void
+    {
+        foreach ($this->sources as $class => $source) {
+            if ($this->settings->isEnabled($class)) {
+                $this->warmUp($source);
+            }
+        }
+    }
+
+
+    /**
+     * Read IP prefixes for $source from local cache.
+     */
+    private function populate(Source $source): void
+    {
+        $source->setIpPrefixes(Transients::getForSite(self::TRANSIENT_KEY, get_class($source)) ?: []);
+    }
+
+
+    /**
+     * Update IP prefixes for $source and write them to local cache.
+     */
+    private function warmUp(Source $source): void
+    {
+        if ($source->updateIpPrefixes()) {
+            // Cache IP ranges for one week only, don't rely on too old data.
+            Transients::setForSite($source->getIpPrefixes(), WEEK_IN_SECONDS, self::TRANSIENT_KEY, get_class($source));
+        } else {
+            if (Is::cli()) {
+                // In PHP CLI context (unit and integration tests), throw an exception.
+                throw new WarmUpException(\sprintf('Failed to warm up "%s" blocklist.', $source->getTitle()));
+            }
+        }
+    }
+
+
+    /**
+     * Remove IP prefixes for $source from local cache.
+     */
+    private function tearDown(Source $source): void
+    {
+        Transients::deleteFromSite(self::TRANSIENT_KEY, get_class($source));
     }
 }

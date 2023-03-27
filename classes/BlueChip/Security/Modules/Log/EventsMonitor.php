@@ -2,9 +2,13 @@
 
 namespace BlueChip\Security\Modules\Log;
 
-use BlueChip\Security\Modules\Login;
+use BlueChip\Security\Modules\Access\Hooks as AccessHooks;
+use BlueChip\Security\Modules\ExternalBlocklist\Source;
+use BlueChip\Security\Modules\Initializable;
+use BlueChip\Security\Modules\Loadable;
+use BlueChip\Security\Modules\Login\Hooks as LoginHooks;
 
-class EventsMonitor implements \BlueChip\Security\Modules\Initializable
+class EventsMonitor implements Initializable, Loadable
 {
     /**
      * @var string Remote IP address
@@ -28,6 +32,14 @@ class EventsMonitor implements \BlueChip\Security\Modules\Initializable
     }
 
 
+    public function load(): void
+    {
+        // Depending on access scope, blocklist can be checked very early, so add these monitors early.
+        add_action(AccessHooks::EXTERNAL_BLOCKLIST_HIT_EVENT, [$this, 'logExternalBlocklistHit'], 10, 3);
+        add_action(AccessHooks::INTERNAL_BLOCKLIST_HIT_EVENT, [$this, 'logInternalBlocklistHit'], 10, 2);
+    }
+
+
     public function init(): void
     {
         // Log the following WordPress events:
@@ -45,7 +57,25 @@ class EventsMonitor implements \BlueChip\Security\Modules\Initializable
 
         // Log the following BC Security events:
         // - lockout event
-        add_action(Login\Hooks::LOCKOUT_EVENT, [$this, 'logLockoutEvent'], 10, 3);
+        add_action(LoginHooks::LOCKOUT_EVENT, [$this, 'logLockoutEvent'], 10, 3);
+    }
+
+
+    /**
+     * Log external blocklist hit.
+     */
+    public function logExternalBlocklistHit(string $remote_address, int $access_scope, Source $source): void
+    {
+        do_action(Action::EVENT, (new Events\BlocklistHit())->setIpAddress($remote_address)->setRequestType($access_scope)->setSource($source));
+    }
+
+
+    /**
+     * Log internal blocklist hit.
+     */
+    public function logInternalBlocklistHit(string $remote_address, int $access_scope): void
+    {
+        do_action(Action::EVENT, (new Events\BlocklistHit())->setIpAddress($remote_address)->setRequestType($access_scope));
     }
 
 
