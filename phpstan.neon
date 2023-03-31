@@ -10,6 +10,8 @@ parameters:
     bootstrapFiles:
         - tests/static-analysis/bootstrap.php
         - autoload.php
+    stubFiles:
+        - %currentWorkingDirectory%/tests/static-analysis/class-wp-list-table.stub
     ignoreErrors:
         # Apply "checkMissingIterableValueType: false" to Psr\Log classes for the time being.
         - '#^Method Psr\\Log\\\w+::\w+\(\) has parameter \$context with no value type specified in iterable type array\.$#'
