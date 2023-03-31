@@ -1,6 +1,6 @@
 # BC Security Changelog
 
-## Upcoming version 0.20.0 (????-??-??)
+## Version 0.20.0 (2023-03-31)
 
 This release brings a new feature: __external blocklist__. This feature has its own module named _External Blocklist_. To keep the naming consistent, _IP Blacklist_ module has been renamed to _Internal Blocklist_.
 
