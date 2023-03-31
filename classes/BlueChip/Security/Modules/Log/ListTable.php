@@ -2,7 +2,8 @@
 
 namespace BlueChip\Security\Modules\Log;
 
-use BlueChip\Security\Modules\IpBlacklist;
+use BlueChip\Security\Modules\Access\Scope;
+use BlueChip\Security\Modules\InternalBlocklist\AdminPage as InternalBlocklistAdminPage;
 
 /**
  * Logs table
@@ -10,9 +11,9 @@ use BlueChip\Security\Modules\IpBlacklist;
 class ListTable extends \BlueChip\Security\Core\ListTable
 {
     /**
-     * @var string Name of blacklist action query argument
+     * @var string Name of blocklist action query argument
      */
-    private const ACTION_BLACKLIST = 'blacklist';
+    private const ACTION_BLOCKLIST = 'blocklist';
 
     /**
      * @var string Name of view query argument
@@ -66,7 +67,7 @@ class ListTable extends \BlueChip\Security\Core\ListTable
     /**
      * Return content for first column (date and time) including row actions.
      *
-     * @param array $item
+     * @param array<string,string> $item
      *
      * @return string
      */
@@ -79,7 +80,7 @@ class ListTable extends \BlueChip\Security\Core\ListTable
     /**
      * Return column contents.
      *
-     * @param array $item
+     * @param array<string,string> $item
      * @param string $column_name
      *
      * @return string
@@ -100,7 +101,7 @@ class ListTable extends \BlueChip\Security\Core\ListTable
     /**
      * Return content for event type column.
      *
-     * @param array $item
+     * @param array<string,string> $item
      *
      * @return string
      */
@@ -115,7 +116,7 @@ class ListTable extends \BlueChip\Security\Core\ListTable
     /**
      * Return content for IP address column.
      *
-     * @param array $item
+     * @param array<string,string> $item
      *
      * @return string
      */
@@ -133,7 +134,7 @@ class ListTable extends \BlueChip\Security\Core\ListTable
     /**
      * Return content for message column.
      *
-     * @param array $item
+     * @param array<string,string> $item
      *
      * @return string
      */
@@ -148,7 +149,7 @@ class ListTable extends \BlueChip\Security\Core\ListTable
     /**
      * Define table columns
      *
-     * @return array
+     * @return array<string,string>
      */
     public function get_columns() // phpcs:ignore
     {
@@ -176,7 +177,7 @@ class ListTable extends \BlueChip\Security\Core\ListTable
     /**
      * Define sortable columns
      *
-     * @return array
+     * @return array<string,string>
      */
     public function get_sortable_columns() // phpcs:ignore
     {
@@ -191,7 +192,7 @@ class ListTable extends \BlueChip\Security\Core\ListTable
     /**
      * Define available views for this table.
      *
-     * @return array
+     * @return array<string,string>
      */
     protected function get_views() // phpcs:ignore
     {
@@ -247,53 +248,53 @@ class ListTable extends \BlueChip\Security\Core\ListTable
 
 
     /**
-     * @param array $item
+     * @param array<string,string> $item
      *
-     * @return array
+     * @return array<string,string>
      */
     private function getRowActions(array $item): array
     {
-        if (($scope = $this->getLockScopeFromEvent($item['event'])) === IpBlacklist\LockScope::ANY) {
+        if (($scope = $this->getLockScopeFromEvent($item['event'])) === Scope::ANY) {
             // No specific scope, no action.
             return [];
         }
 
         return [
-            self::ACTION_BLACKLIST => \sprintf(
+            self::ACTION_BLOCKLIST => \sprintf(
                 '<span class="delete"><a href="%s">%s</a></span>',
                 add_query_arg(
                     [
-                        IpBlacklist\AdminPage::DEFAULT_IP_ADDRESS => $item['ip_address'],
-                        IpBlacklist\AdminPage::DEFAULT_SCOPE => $scope,
+                        InternalBlocklistAdminPage::DEFAULT_IP_ADDRESS => $item['ip_address'],
+                        InternalBlocklistAdminPage::DEFAULT_SCOPE => $scope,
                     ],
-                    IpBlacklist\AdminPage::getPageUrl()
+                    InternalBlocklistAdminPage::getPageUrl()
                 ),
-                esc_html__('Add to blacklist', 'bc-security')
+                esc_html__('Add to internal blocklist', 'bc-security')
             ),
         ];
     }
 
 
     /**
-     * Return appropriate lock scope for $event type.
+     * Return appropriate access scope for lock based on $event type.
      *
-     * @see \BlueChip\Security\Modules\IpBlacklist\LockScope
+     * @see \BlueChip\Security\Modules\Access\Scope
      *
      * @param string $event_id One from event IDs defined in \BlueChip\Security\Modules\Log\Event.
      *
-     * @return int Lock scope code. LockScope::ANY indicates that given event does not warrant blacklisting.
+     * @return int Lock scope code. Scope::ANY indicates that given event does not warrant blocklisting.
      */
     private function getLockScopeFromEvent(string $event_id): int
     {
         switch ($event_id) {
             case Events\Query404::ID:
-                return IpBlacklist\LockScope::WEBSITE;
+                return Scope::WEBSITE;
             case Events\AuthBadCookie::ID:
             case Events\LoginFailure::ID:
             case Events\LoginLockout::ID:
-                return IpBlacklist\LockScope::ADMIN;
+                return Scope::ADMIN;
             default:
-                return IpBlacklist\LockScope::ANY;
+                return Scope::ANY;
         }
     }
 
@@ -302,7 +303,7 @@ class ListTable extends \BlueChip\Security\Core\ListTable
      * Replace placeholders in $message with values from $context.
      *
      * @param string $message
-     * @param array $context
+     * @param array<string,mixed> $context
      *
      * @return string
      */

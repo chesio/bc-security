@@ -7,8 +7,11 @@ abstract class Jobs
     /** string: Hook name for "Checklist autorun" cron job */
     public const CHECKLIST_CHECK = 'bc-security/checklist-autorun';
 
-    /** string: Hook name for "Automatic IP blacklist purging" cron job */
-    public const IP_BLACKLIST_CLEAN_UP = 'bc-security/ip-blacklist-clean-up';
+    /** string: Hook name for "External blocklist refresh" cron job */
+    public const EXTERNAL_BLOCKLIST_REFRESH = 'bc-security/external-blocklist-refresh';
+
+    /** string: Hook name for "Automatic internal blocklist purging" cron job */
+    public const INTERNAL_BLOCKLIST_CLEAN_UP = 'bc-security/internal-blocklist-clean-up';
 
     /** string: Hook name for "Clean logs by age" cron job */
     public const LOGS_CLEAN_UP_BY_AGE = 'bc-security/logs-clean-up-by-age';
@@ -28,9 +31,8 @@ abstract class Jobs
     /** string: Hook name for "Site is not blacklisted by Google" check monitor */
     public const SAFE_BROWSING_CHECK = 'bc-security/safe-browsing-check';
 
-
     /**
-     * @return array List of all implemented cron jobs.
+     * @return array<string,string> List of all implemented cron jobs.
      */
     public static function enlist(): array
     {

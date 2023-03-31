@@ -114,7 +114,7 @@ class CoreIntegrity extends Checklist\AdvancedCheck
      *
      * @param object $checksums
      *
-     * @return array
+     * @return string[]
      */
     private static function findModifiedFiles(object $checksums): array
     {
@@ -135,7 +135,7 @@ class CoreIntegrity extends Checklist\AdvancedCheck
         return \array_filter(
             $modified_files,
             function ($filename) {
-                return \strpos($filename, 'wp-content/') !== 0;
+                return !\str_starts_with($filename, 'wp-content/');
             }
         );
     }
@@ -148,7 +148,7 @@ class CoreIntegrity extends Checklist\AdvancedCheck
      *
      * @param object $checksums
      *
-     * @return array
+     * @return string[]
      */
     private static function findUnknownFiles(object $checksums): array
     {

@@ -44,7 +44,7 @@ abstract class ListTable extends \WP_List_Table
     /**
      * @param string $url URL of admin page where list table is displayed.
      * @param string $per_page_option_name Option name for "per page" screen option.
-     * @param array $args
+     * @param array<string,mixed> $args
      */
     public function __construct(string $url, string $per_page_option_name, array $args = [])
     {
@@ -59,13 +59,13 @@ abstract class ListTable extends \WP_List_Table
         $this->url = $url;
         $this->items_per_page = $this->get_items_per_page($per_page_option_name);
 
-        $order_by = \filter_input(INPUT_GET, 'orderby', FILTER_SANITIZE_STRING);
+        $order_by = \filter_input(INPUT_GET, 'orderby');
         if (\in_array($order_by, $this->get_sortable_columns(), true)) {
             $this->order_by = $order_by;
             $this->url = add_query_arg('orderby', $order_by, $this->url);
         }
 
-        $order = \filter_input(INPUT_GET, 'order', FILTER_SANITIZE_STRING);
+        $order = \filter_input(INPUT_GET, 'order');
         if ($order === 'asc' || $order === 'desc') {
             $this->order = $order;
             $this->url = add_query_arg('order', $order, $this->url);
@@ -127,20 +127,20 @@ abstract class ListTable extends \WP_List_Table
     /**
      * Return content for "checkbox" column.
      *
-     * @param array $item
+     * @param array<string,string> $item
      *
      * @return string
      */
     public function column_cb($item) // phpcs:ignore
     {
-        return \sprintf('<input type="checkbox" name="ids[]" value="%d" />', $item['id']);
+        return \sprintf('<input type="checkbox" name="ids[]" value="%d" />', (int) $item['id']);
     }
 
 
     /**
      * Return column contents without any extra processing.
      *
-     * @param array $item
+     * @param array<string,string> $item
      * @param string $column_name
      *
      * @return string

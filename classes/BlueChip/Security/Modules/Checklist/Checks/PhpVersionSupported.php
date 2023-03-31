@@ -7,7 +7,7 @@ use BlueChip\Security\Modules\Checklist;
 class PhpVersionSupported extends Checklist\BasicCheck
 {
     /**
-     * @var array List of supported PHP versions and their end-of-life dates
+     * @var array<string,string> List of supported PHP versions and their end-of-life dates
      */
     private const SUPPORTED_VERSIONS = [
         '7.4' => '2022-11-28',

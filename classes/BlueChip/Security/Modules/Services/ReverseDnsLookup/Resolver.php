@@ -53,7 +53,7 @@ class Resolver implements Modules\Activable, Modules\Initializable
      *
      * @param string $ip_address Remote IP address to resolve.
      * @param string $action Name of action to invoke with resolved hostname.
-     * @param array $context Additional parameters that are passed to the action.
+     * @param array<string,mixed> $context Additional parameters that are passed to the action.
      */
     public function resolveHostname(string $ip_address, string $action, array $context): void
     {
@@ -70,7 +70,7 @@ class Resolver implements Modules\Activable, Modules\Initializable
      *
      * @param string $ip_address Remote IP address to resolve.
      * @param string $action Name of action to call when remote hostname is resolved.
-     * @param array $context [optional] Additional parameters to pass to the action.
+     * @param array<string,mixed> $context [optional] Additional parameters to pass to the action.
      */
     public function resolveHostnameInBackground(string $ip_address, string $action, array $context = []): void
     {

@@ -14,26 +14,40 @@ use Psr\Log;
  */
 class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\Countable, Modules\Installable, Modules\Loadable, Modules\Initializable, \Countable
 {
-    /** @var string Name of DB table where logs are stored */
+    /**
+     * @var string Name of DB table where logs are stored
+     */
     private const LOG_TABLE = 'bc_security_log';
 
 
-    /** @var string Name of DB table where logs are stored (including table prefix) */
+    /**
+     * @var string Name of DB table where logs are stored (including table prefix)
+     */
     private $log_table;
 
-    /** @var array List of columns in DB table where logs are stored */
+    /**
+     * @var string[] List of columns in DB table where logs are stored
+     */
     private $columns;
 
-    /** @var string Remote IP address */
+    /**
+     * @var string Remote IP address
+     */
     private $remote_address;
 
-    /** @var \BlueChip\Security\Modules\Log\Settings Module settings */
+    /**
+     * @var \BlueChip\Security\Modules\Log\Settings Module settings
+     */
     private $settings;
 
-    /** @var \BlueChip\Security\Modules\Services\ReverseDnsLookup\Resolver */
+    /**
+     * @var \BlueChip\Security\Modules\Services\ReverseDnsLookup\Resolver
+     */
     private $hostname_resolver;
 
-    /** @var \wpdb WordPress database access abstraction object */
+    /**
+     * @var \wpdb WordPress database access abstraction object
+     */
     private $wpdb;
 
 
@@ -109,8 +123,8 @@ class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\
     public function init(): void
     {
         // Hook into cron job execution.
-        add_action(Modules\Cron\Jobs::LOGS_CLEAN_UP_BY_AGE, [$this, 'pruneByAge'], 10, 0);
-        add_action(Modules\Cron\Jobs::LOGS_CLEAN_UP_BY_SIZE, [$this, 'pruneBySize'], 10, 0);
+        add_action(Modules\Cron\Jobs::LOGS_CLEAN_UP_BY_AGE, [$this, 'pruneByAgeInCron'], 10, 0);
+        add_action(Modules\Cron\Jobs::LOGS_CLEAN_UP_BY_SIZE, [$this, 'pruneBySizeInCron'], 10, 0);
         // Hook into reverse DNS lookup.
         add_action(Hooks::HOSTNAME_RESOLVED, [$this, 'processReverseDnsLookupResponse'], 10, 1);
     }
@@ -121,7 +135,7 @@ class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\
      *
      * @param string $level
      * @param string $message
-     * @param array $context
+     * @param array<string,mixed> $context
      */
     public function log($level, $message, array $context = [])
     {
@@ -294,7 +308,7 @@ class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\
      * @param string $order_by [optional] Column name to order the records by.
      * @param string $order [optional] Order direction, either "asc" or "desc".
      *
-     * @return array
+     * @return array<int,array<string,mixed>>
      */
     public function fetch(?string $event = null, int $from = 0, int $limit = 20, string $order_by = '', string $order = ''): array
     {
@@ -330,7 +344,7 @@ class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\
     /**
      * Return list of distinct IP addresses from which a successful login has been made.
      *
-     * @return array
+     * @return string[]
      */
     public function getKnownIps(): array
     {
@@ -375,6 +389,17 @@ class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\
 
 
     /**
+     * @hook \BlueChip\Security\Modules\Cron\Jobs::LOGS_CLEAN_UP_BY_AGE
+     *
+     * @internal Runs `pruneByAge` method and discards its return value.
+     */
+    public function pruneByAgeInCron(): void
+    {
+        $this->pruneByAge();
+    }
+
+
+    /**
      * Remove all but configured number of recent records from the table.
      *
      * @return bool True on success, false on failure.
@@ -400,5 +425,16 @@ class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\
         $query = $this->wpdb->prepare("DELETE FROM {$this->log_table} WHERE id <= %d", $id);
         // Execute query and return true/false status.
         return $this->wpdb->query($query) !== false;
+    }
+
+
+    /**
+     * @hook \BlueChip\Security\Modules\Cron\Jobs::LOGS_CLEAN_UP_BY_SIZE
+     *
+     * @internal Runs `pruneBySize` method and discards its return value.
+     */
+    public function pruneBySizeInCron(): void
+    {
+        $this->pruneBySize();
     }
 }

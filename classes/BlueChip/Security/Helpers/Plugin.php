@@ -25,7 +25,7 @@ abstract class Plugin
 
     /**
      * @param string $plugin_basename
-     * @param array $plugin_data
+     * @param array<string,mixed> $plugin_data
      *
      * @return string URL of the plugin changelog page or empty string if it cannot be determined.
      */
@@ -34,8 +34,8 @@ abstract class Plugin
         // By default, changelog URL is unknown.
         $url = '';
 
-        if (self::hasReadmeTxt($plugin_basename) && self::hasWordPressOrgUpdateUri($plugin_basename, $plugin_data)) {
-            // Assume that any plugin with readme.txt comes from Plugins Directory.
+        if (self::hasReadme($plugin_basename) && self::hasWordPressOrgUpdateUri($plugin_basename, $plugin_data)) {
+            // Assume that any plugin with readme file comes from Plugins Directory.
             $url = self::getDirectoryUrl($plugin_basename) . self::PLUGINS_DIRECTORY_CHANGELOG_PATH;
         }
 
@@ -57,7 +57,7 @@ abstract class Plugin
 
     /**
      * @param string $plugin_basename
-     * @param array $plugin_data
+     * @param array<string,mixed> $plugin_data
      *
      * @return string Presumable URL of the plugin checksums file at WordPress.org.
      */
@@ -87,11 +87,13 @@ abstract class Plugin
     /**
      * @param string $plugin_basename
      *
-     * @return bool True if there is readme.txt file present in plugin directory, false otherwise.
+     * @return bool True if there is readme.md or readme.txt file present in plugin directory, false otherwise.
      */
-    public static function hasReadmeTxt(string $plugin_basename): bool
+    public static function hasReadme(string $plugin_basename): bool
     {
-        return \is_file(self::getPluginDirPath($plugin_basename) . '/readme.txt');
+        $plugin_dir_path = self::getPluginDirPath($plugin_basename);
+        // Check txt file first as it is far more popular.
+        return \is_file($plugin_dir_path . '/readme.txt') || \is_file($plugin_dir_path . '/readme.md');
     }
 
 
@@ -99,7 +101,7 @@ abstract class Plugin
      * Return true if plugin has no Update URI set or if the Update URI has either wordpress.org or w.org as hostname.
      *
      * @param string $plugin_basename
-     * @param array $plugin_data
+     * @param array<string,mixed> $plugin_data
      *
      * @return bool
      */
@@ -146,12 +148,12 @@ abstract class Plugin
 
     /**
      * Get all installed plugins that seems to be hosted at WordPress.org repository = all plugins that:
-     * 1. have readme.txt file and
+     * 1. have readme.md or readme.txt file in their root directory and
      * 2. either have no Update URI header set or the URI has wordpress.org or w.org in hostname
      *
      * Method effectively discards any plugins that are not in their own directory (like Hello Dolly) from output.
      *
-     * @return array
+     * @return array<string,array<string,mixed>>
      */
     public static function getPluginsInstalledFromWordPressOrg(): array
     {
@@ -170,7 +172,7 @@ abstract class Plugin
 
         return \array_filter(
             $wordpress_org_plugins,
-            [self::class, 'hasReadmeTxt'],
+            [self::class, 'hasReadme'],
             ARRAY_FILTER_USE_KEY
         );
     }
@@ -181,7 +183,7 @@ abstract class Plugin
      *
      * @param string $plugin_basename
      *
-     * @return array
+     * @return array<string,mixed>
      */
     public static function getPluginData(string $plugin_basename): array
     {
@@ -212,7 +214,7 @@ abstract class Plugin
      *
      * Also, plugin name is wrapped in <strong> and additional information in <em> tag.
      *
-     * @param array $plugins List of plugin data items
+     * @param array<string,array<string,mixed>> $plugins List of plugin data items
      * @param string $link_to [optional] Wrap plugin name in a link to URL stored under given key.
      * @param string $extend_by [optional] Append text stored under given key to plugin name.
      *

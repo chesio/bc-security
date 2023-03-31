@@ -18,14 +18,14 @@ trait SettingsPage
     protected $option_name;
 
     /**
-     * @var string Recent page serves as default $page for add_settings_field() and add_settings_section() functions.
+     * @var string|null Recent page serves as default $page for add_settings_field() and add_settings_section() functions.
      */
-    protected $recent_page;
+    protected $recent_page = null;
 
     /**
-     * @var string Recent section serves as default $section for add_settings_field() function.
+     * @var string|null Recent section serves as default $section for add_settings_field() function.
      */
-    protected $recent_section;
+    protected $recent_section = null;
 
     /**
      * @var \BlueChip\Security\Core\Settings Object with actual settings.
@@ -94,7 +94,8 @@ trait SettingsPage
      *
      * @param string $key
      * @param mixed $value [optional] Value to use instead of current value of setting with $key.
-     * @return array
+     *
+     * @return array<string,mixed>
      */
     protected function getFieldBaseProperties(string $key, $value = null): array
     {
@@ -140,7 +141,7 @@ trait SettingsPage
      * @param string $key Key of the field (must be proper key from Settings)
      * @param string $title Title of the field
      * @param callable $callback Callback that produces form input for the field
-     * @param array $args [Optional] Any extra arguments for $callback function
+     * @param array<string,mixed> $args [Optional] Any extra arguments for $callback function
      */
     public function addSettingsField(string $key, string $title, callable $callback, array $args = []): void
     {

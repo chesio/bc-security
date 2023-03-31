@@ -39,7 +39,7 @@ class NoMd5HashedPasswords extends Checklist\BasicCheck
     protected function runInternal(): Checklist\CheckResult
     {
         // Get all users with old hash prefix
-        /** @var array|null $result */
+        /** @var array<int,array<string,string>>|null $result */
         $result = $this->wpdb->get_results(
             \sprintf("SELECT `user_login` FROM {$this->wpdb->users} WHERE `user_pass` LIKE '%s%%';", self::WP_OLD_HASH_PREFIX),
             ARRAY_A

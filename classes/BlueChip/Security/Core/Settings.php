@@ -12,12 +12,12 @@ namespace BlueChip\Security\Core;
 abstract class Settings implements \ArrayAccess, \IteratorAggregate
 {
     /**
-     * @var array Default values for all settings. Descendant classes should override it.
+     * @var array<string,mixed> Default values for all settings. Descendant classes should override it.
      */
     protected const DEFAULTS = [];
 
     /**
-     * @var array Sanitization routines for settings that cannot be just sanitized based on type of their default value.
+     * @var array<string,callable> Sanitization routines for settings that cannot be just sanitized based on type of their default value.
      */
     protected const SANITIZERS = [];
 
@@ -28,7 +28,7 @@ abstract class Settings implements \ArrayAccess, \IteratorAggregate
     private $option_name;
 
     /**
-     * @var array Settings data (kind of cache for get_option() result).
+     * @var array<string,mixed> Settings data (kind of cache for get_option() result).
      */
     protected $data;
 
@@ -89,6 +89,7 @@ abstract class Settings implements \ArrayAccess, \IteratorAggregate
      *
      * @return bool
      */
+    #[\ReturnTypeWillChange]
     public function offsetExists($offset): bool
     {
         return isset($this->data[$offset]);
@@ -104,6 +105,7 @@ abstract class Settings implements \ArrayAccess, \IteratorAggregate
      *
      * @return mixed A null value is returned if $offset is not a valid key.
      */
+    #[\ReturnTypeWillChange]
     public function offsetGet($offset)
     {
         return isset($this->data[$offset]) ? $this->data[$offset] : null;
@@ -159,7 +161,7 @@ abstract class Settings implements \ArrayAccess, \IteratorAggregate
     /**
      * Get option data.
      *
-     * @return array
+     * @return array<string,mixed>
      */
     public function get(): array
     {
@@ -170,7 +172,7 @@ abstract class Settings implements \ArrayAccess, \IteratorAggregate
     /**
      * Set $data as option data.
      *
-     * @param array $data
+     * @param array<string,mixed> $data
      *
      * @return bool
      */
@@ -225,10 +227,10 @@ abstract class Settings implements \ArrayAccess, \IteratorAggregate
      * sanitized) as defaults. This way POST-ed data do not need to be complete, because any missing settings will be
      * kept as they were.
      *
-     * @param array $settings Input data to sanitize.
-     * @param array $defaults [optional] If provided, used as default values for sanitization instead of local data.
+     * @param array<string,mixed> $settings Input data to sanitize.
+     * @param array<string,mixed> $defaults [optional] If provided, used as default values for sanitization instead of local data.
      *
-     * @return array
+     * @return array<string,mixed>
      */
     public function sanitize(array $settings, array $defaults = []): array
     {
@@ -342,8 +344,8 @@ abstract class Settings implements \ArrayAccess, \IteratorAggregate
     /**
      * @action https://developer.wordpress.org/reference/hooks/update_option_option/
      *
-     * @param array $old_value
-     * @param array $new_value
+     * @param array<string,mixed> $old_value
+     * @param array<string,mixed> $new_value
      */
     public function updateOption(array $old_value, array $new_value): void
     {

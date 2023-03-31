@@ -25,7 +25,7 @@ abstract class IpAddress
     /**
      * Get a list of all connection types supported by the plugin.
      *
-     * @return array Array of known (valid) connection types.
+     * @return array<string,string> Array of known (valid) connection types.
      */
     public static function enlist(): array
     {

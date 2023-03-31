@@ -51,7 +51,7 @@ abstract class Event
 
 
     /**
-     * @return array Context data for this event.
+     * @return array<string,string> Context data for this event.
      */
     public function getContext(): array
     {
@@ -67,7 +67,7 @@ abstract class Event
 
 
     /**
-     * @return array Context columns with human readable descriptions (labels).
+     * @return array<string,string> Context columns with human readable descriptions (labels).
      */
     public function explainContext(): array
     {

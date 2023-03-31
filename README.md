@@ -2,6 +2,7 @@
 
 [![GitHub Actions](https://github.com/chesio/bc-security/workflows/CI%20test%20suite/badge.svg)](https://github.com/chesio/bc-security/actions)
 [![Packagist](https://img.shields.io/packagist/v/chesio/bc-security.svg?color=34D058&style=popout)](https://packagist.org/packages/chesio/bc-security)
+[![Coverage Status](https://coveralls.io/repos/github/chesio/bc-security/badge.svg)](https://coveralls.io/github/chesio/bc-security)
 
 
 A WordPress plugin that helps keeping WordPress websites secure.
@@ -9,7 +10,7 @@ A WordPress plugin that helps keeping WordPress websites secure.
 ## Requirements
 
 * [PHP](https://www.php.net/) 7.3 or newer
-* [WordPress](https://wordpress.org/) 5.5 or newer
+* [WordPress](https://wordpress.org/) 5.9 or newer
 
 ## Limitations
 
@@ -88,7 +89,7 @@ Basic checks cover common security practices. They do not require any informatio
 
 Advanced checks require data from external sources, therefore they leak some information about your website and take more time to execute.
 
-In the moment, list of installed plugins (but only those with _readme.txt_ file) is shared with WordPress.org and site URL is shared with Google.
+In the moment, list of installed plugins (but only those with _readme.md_ or _readme.txt_ file) is shared with WordPress.org and site URL is shared with Google.
 
 ##### WordPress core integrity check
 
@@ -139,11 +140,17 @@ Passwords are validated on user creation, password change or password reset. If 
 1. BC Security allows you to limit number of login attempts from single IP address. Implementation of this feature is heavily inspired by popular [Limit Login Attempts](https://wordpress.org/plugins/limit-login-attempts/) plugin with an extra feature of immediate blocking of specific usernames (like _admin_ or _administrator_).
 2. BC Security offers an option to only display generic error message as a result of failed login attempt when wrong username, email or password is provided.
 
-### IP blacklist
+### Internal blocklist
 
 BC Security maintains a list of IP addresses with limited access to the website. This list is automatically populated by [Login Security](#login-security) module, but manual addition of IP addresses is also possible.
 
 Out-dated records are automatically removed from the list by WP-Cron job scheduled to run every night. The job can be deactivated in backend, if desired.
+
+### External blocklist
+
+In addition to [internal blocklist](#internal-blocklist), BC Security can be configured to fetch list of IP addresses to block from external sources. Currently only [Amazon AWS IP ranges](https://ip-ranges.amazonaws.com/ip-ranges.json) can be used this way.
+
+As with internal blocklist, external blocklist can be used to limit access to entire website or login process only.
 
 ### Notifications
 
@@ -163,7 +170,12 @@ You can mute all email notifications by setting constant `BC_SECURITY_MUTE_NOTIF
 
 ### Events logging
 
-BC Security logs both short and long lockout events (see [Login Security](#login-security) feature). Also, the following events triggered by WordPress core are logged:
+Following events triggered by BC Security are logged:
+
+1. Short and long lockout events (see [Login Security](#login-security) feature)
+2. Requests blocked by [external](#external-blocklist) or [internal](#internal-blocklist) blocklist
+
+Following events triggered by WordPress core are logged:
 
 1. Attempts to authenticate with bad cookie
 2. Failed and successful login attempts
@@ -179,13 +191,14 @@ Some of the modules listed above come with settings panel. Further customization
 * `bc-security/filter:is-live` - filters boolean value that determines whether your website is running in a live environment.
 * `bc-security/filter:plugin-changelog-url` - filters changelog URL of given plugin. Might come handy in case of plugins not hosted in Plugins Directory.
 * `bc-security/filter:obvious-usernames` - filters array of common usernames that are being checked via [checklist check](#basic-checks). By default, the array consists of _admin_ and _administrator_ values.
-* `bc-security/filter:plugins-to-check-for-integrity` - filters array of plugins that should have their integrity checked. By default, the array consists of all installed plugins that have _readme.txt_ file. Note that plugins under version control are automatically omitted.
-* `bc-security/filter:plugins-to-check-for-removal` - filters array of plugins to check for their presence in WordPress.org Plugins Directory. By default, the array consists of all installed plugins that have _readme.txt_ file.
+* `bc-security/filter:plugins-to-check-for-integrity` - filters array of plugins that should have their integrity checked. By default, the array consists of all installed plugins that have _readme.md__ or _readme.txt_ file. Note that plugins under version control are automatically omitted.
+* `bc-security/filter:plugins-to-check-for-removal` - filters array of plugins to check for their presence in WordPress.org Plugins Directory. By default, the array consists of all installed plugins that have _readme.md__ or _readme.txt_ file.
 * `bc-security/filter:modified-files-ignored-in-core-integrity-check` - filters array of files that should not be reported as __modified__ in checksum verification of core WordPress files. By default, the array consist of _wp-config-sample.php_ and _wp-includes/version.php_ values.
 * `bc-security/filter:unknown-files-ignored-in-core-integrity-check` - filters array of files that should not be reported as __unknown__ in checksum verification of core WordPress files. By default, the array consist of _.htaccess_, _wp-config.php_, _liesmich.html_, _olvasdel.html_ and _procitajme.html_ values.
 * `bc-security/filter:show-pwned-password-warning` - filters whether the ["pwned password" warning](#passwords-check) should be displayed for current user on current screen.
-* `bc-security/filter:ip-blacklist-default-manual-lock-duration` - filters number of seconds that is used as default value in lock duration field of manual IP blacklisting form. By default, the value is equal to one month in seconds.
-* `bc-security/filter:is-ip-address-locked` - filters boolean value that determines whether given IP address is currently locked within given scope. By default, the value is based on plugin bookkeeping data.
+* `bc-security/filter:internal-blocklist-default-manual-lock-duration` - filters number of seconds that is used as default value in lock duration field of manual internal blocklisting form. By default, the value is equal to one month in seconds.
+* `bc-security/filter:is-ip-address-locked` - filters boolean value that determines whether given IP address is currently on internal blocklist (within given scope).
+* `bc-security/filter:is-ip-address-blocked` - filters boolean value that determines whether given IP address is currently blocked either by external or internal blocklist (within given scope).
 * `bc-security/filter:log-404-event` - filters boolean value that determines whether current HTTP request that resulted in [404 response](https://en.wikipedia.org/wiki/HTTP_404) should be logged or not. To completely disable logging of 404 events, you can attach [`__return_false`](https://developer.wordpress.org/reference/functions/__return_false/) function to the filter.
 * `bc-security/filter:events-with-hostname-resolution` - filters array of IDs of events for which hostname of involved IP address should be resolved via reverse DNS lookup. By default the following events are registered: attempts to authenticate with bad cookie, failed and successful login attempts and lockout events. Note that this functionality only relates to event logs report in backend - in case email notification is sent, hostname of reported IP address (if any) is always resolved separately.
 * `bc-security/filter:username-blacklist` - filters array of blacklisted usernames. Blacklisted usernames cannot be registered when opening new account and any login attempt using non-existing blacklisted username triggers long lockout. There are no default values, but the filter operates on usernames set via module settings, so it can be used to enforce blacklisting of particular usernames.
