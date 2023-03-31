@@ -31,26 +31,13 @@ class Manager implements Initializable
     private $blocklists = [];
 
     /**
-     * @var CronManager
-     */
-    private $cron_manager;
-
-    /**
-     * @var Settings
-     */
-    private $settings;
-
-    /**
      * @var array<string,Source> List of sources.
      */
     private $sources = [];
 
 
-    public function __construct(Settings $settings, CronManager $cron_manager)
+    public function __construct(private Settings $settings, private CronManager $cron_manager)
     {
-        $this->cron_manager = $cron_manager;
-        $this->settings = $settings;
-
         foreach (Scope::enlist() as $access_scope) {
             if ($access_scope !== Scope::ANY) {
                 $this->blocklists[$access_scope] = null;

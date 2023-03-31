@@ -21,21 +21,21 @@ class LoginFailure extends Event
      *
      * @var string Username used in failed login attempt.
      */
-    protected $username = '';
+    protected string $username = '';
 
     /**
      * __('Error code')
      *
      * @var string Reason why login failed as error code.
      */
-    protected $error_code = '';
+    protected string $error_code = '';
 
     /**
      * __('Error message')
      *
      * @var string Reason why login failed as human-readable message.
      */
-    protected $error_message = '';
+    protected string $error_message = '';
 
 
     public function getName(): string

@@ -3,6 +3,7 @@
 namespace BlueChip\Security\Modules\Checklist\Checks;
 
 use BlueChip\Security\Modules\Checklist;
+use wpdb;
 
 class NoMd5HashedPasswords extends Checklist\BasicCheck
 {
@@ -12,16 +13,7 @@ class NoMd5HashedPasswords extends Checklist\BasicCheck
     private const WP_OLD_HASH_PREFIX = '$P$';
 
 
-    /**
-     * @var \wpdb
-     */
-    private $wpdb;
-
-
-    /**
-     * @param \wpdb $wpdb
-     */
-    public function __construct(\wpdb $wpdb)
+    public function __construct(private wpdb $wpdb)
     {
         parent::__construct(
             __('No default MD5 password hashes', 'bc-security'),
@@ -31,8 +23,6 @@ class NoMd5HashedPasswords extends Checklist\BasicCheck
                 '<a href="https://github.com/roots/wp-password-bcrypt" rel="noreferrer">' . esc_html__('more secure alternatives', 'bc-security') . '</a>'
             )
         );
-
-        $this->wpdb = $wpdb;
     }
 
 

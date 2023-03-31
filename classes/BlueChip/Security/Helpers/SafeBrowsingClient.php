@@ -40,10 +40,7 @@ class SafeBrowsingClient
     private const TRANSIENT_ID = 'safe-browsing-lookup';
 
 
-    /**
-     * @var string
-     */
-    private $lookup_url;
+    private string $lookup_url;
 
 
     /**

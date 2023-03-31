@@ -2,6 +2,8 @@
 
 namespace BlueChip\Security\Core\Admin;
 
+use BlueChip\Security\Core\Settings;
+
 /**
  * Common settings API boilerplate for admin pages.
  */
@@ -10,35 +12,33 @@ trait SettingsPage
     /**
      * @var string Option group
      */
-    protected $option_group;
+    protected string $option_group;
 
     /**
      * @var string Option name
      */
-    protected $option_name;
+    protected string $option_name;
 
     /**
      * @var string|null Recent page serves as default $page for add_settings_field() and add_settings_section() functions.
      */
-    protected $recent_page = null;
+    protected ?string $recent_page = null;
 
     /**
      * @var string|null Recent section serves as default $section for add_settings_field() function.
      */
-    protected $recent_section = null;
+    protected ?string $recent_section = null;
 
     /**
-     * @var \BlueChip\Security\Core\Settings Object with actual settings.
+     * @var Settings Object with actual settings.
      */
-    protected $settings;
+    protected Settings $settings;
 
 
     /**
      * @link https://codex.wordpress.org/Settings_API
-     *
-     * @param \BlueChip\Security\Core\Settings $settings
      */
-    protected function useSettings(\BlueChip\Security\Core\Settings $settings): void
+    protected function useSettings(Settings $settings): void
     {
         // Remember the settings.
         $this->settings = $settings;

@@ -16,44 +16,19 @@ use BlueChip\Security\Modules\Loadable;
 class Gatekeeper implements Initializable, Loadable
 {
     /**
-     * @var string
-     */
-    private $remote_address;
-
-    /**
-     * @var Settings
-     */
-    private $settings;
-
-    /**
-     * @var Bookkeeper
-     */
-    private $bookkeeper;
-
-    /**
-     * @var InternalBlocklistManager
-     */
-    private $ib_manager;
-
-    /**
-     * @var Bouncer
-     */
-    private $bouncer;
-
-    /**
      * @param Settings $settings
      * @param string $remote_address Remote IP address.
      * @param Bookkeeper $bookkeeper
      * @param InternalBlocklistManager $ib_manager
      * @param Bouncer $bouncer
      */
-    public function __construct(Settings $settings, string $remote_address, Bookkeeper $bookkeeper, InternalBlocklistManager $ib_manager, Bouncer $bouncer)
-    {
-        $this->remote_address = $remote_address;
-        $this->settings = $settings;
-        $this->bookkeeper = $bookkeeper;
-        $this->ib_manager = $ib_manager;
-        $this->bouncer = $bouncer;
+    public function __construct(
+        private Settings $settings,
+        private string $remote_address,
+        private Bookkeeper $bookkeeper,
+        private InternalBlocklistManager $ib_manager,
+        private Bouncer $bouncer
+    ) {
     }
 
 

@@ -10,26 +10,20 @@ use BlueChip\Security\Modules;
 class Manager implements Modules\Activable
 {
     /**
-     * @var \BlueChip\Security\Modules\Cron\Job[] Cron jobs
+     * @var Job[] Cron jobs
      */
-    private $jobs = [];
-
-    /**
-     * @var \BlueChip\Security\Modules\Cron\Settings Module settings
-     */
-    private $settings;
+    private array $jobs = [];
 
 
     /**
-     * @param \BlueChip\Security\Modules\Cron\Settings $settings
+     * @param Settings $settings Module settings
      */
-    public function __construct(Settings $settings)
+    public function __construct(private Settings $settings)
     {
         // In the moment, all cron jobs can be scheduled in the same way (at night with daily recurrence).
         foreach (Jobs::enlist() as $hook) {
             $this->jobs[$hook] = new Job($hook, Job::RUN_AT_NIGHT, Recurrence::DAILY);
         }
-        $this->settings = $settings;
     }
 
 
@@ -55,11 +49,6 @@ class Manager implements Modules\Activable
     }
 
 
-    /**
-     * @param string $hook
-     *
-     * @return \BlueChip\Security\Modules\Cron\Job
-     */
     public function getJob(string $hook): Job
     {
         return $this->jobs[$hook];

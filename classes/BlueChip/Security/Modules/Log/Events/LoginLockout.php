@@ -21,21 +21,21 @@ class LoginLockout extends Event
      *
      * @var int Lockout duration (in seconds).
      */
-    protected $duration = 0;
+    protected int $duration = 0;
 
     /**
      * __('IP Address')
      *
      * @var string Remote IP address.
      */
-    protected $ip_address = '';
+    protected string $ip_address = '';
 
     /**
      * __('Username')
      *
      * @var string Username used in failed login attempt.
      */
-    protected $username = '';
+    protected string $username = '';
 
 
     public function getName(): string

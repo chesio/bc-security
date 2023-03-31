@@ -13,37 +13,18 @@ use BlueChip\Security\Modules\Login;
 class Watchman implements Modules\Initializable, Modules\Activable
 {
     /**
-     * @var string Remote IP address
-     */
-    private $remote_address;
-
-    /**
-     * @var \BlueChip\Security\Modules\Notifications\Settings
-     */
-    private $settings;
-
-    /**
-     * @var \BlueChip\Security\Modules\Log\Logger
-     */
-    private $logger;
-
-    /**
      * @var string[] List of notifications recipients
      */
     private $recipients;
 
 
     /**
-     * @param \BlueChip\Security\Modules\Notifications\Settings $settings
+     * @param Settings $settings
      * @param string $remote_address Remote IP address.
-     * @param \BlueChip\Security\Modules\Log\Logger $logger
+     * @param Logger $logger
      */
-    public function __construct(Settings $settings, string $remote_address, Logger $logger)
+    public function __construct(private Settings $settings, private string $remote_address, private Logger $logger)
     {
-        $this->remote_address = $remote_address;
-        $this->settings = $settings;
-        $this->logger = $logger;
-
         // Get recipients.
         $this->recipients = $settings[Settings::NOTIFICATION_RECIPIENTS];
         // If site admin should be notified to, include him as well.

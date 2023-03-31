@@ -19,14 +19,12 @@ class AdminPage extends AbstractPage
      */
     public const SLUG = 'bc-security-external-blocklist';
 
-    /**
-     * @var Manager
-     */
-    private $eb_manager;
+    private Manager $eb_manager;
 
 
     /**
      * @param Settings $settings Settings for external blocklist
+     * @param Manager $eb_manager
      */
     public function __construct(Settings $settings, Manager $eb_manager)
     {

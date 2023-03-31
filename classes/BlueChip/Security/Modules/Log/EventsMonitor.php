@@ -11,24 +11,11 @@ use BlueChip\Security\Modules\Login\Hooks as LoginHooks;
 class EventsMonitor implements Initializable, Loadable
 {
     /**
-     * @var string Remote IP address
-     */
-    private $remote_address;
-
-    /**
-     * @var string Server IP address
-     */
-    private $server_address;
-
-
-    /**
      * @param string $remote_address Remote IP address.
      * @param string $server_address Server IP address.
      */
-    public function __construct(string $remote_address, string $server_address)
+    public function __construct(private string $remote_address, private string $server_address)
     {
-        $this->remote_address = $remote_address;
-        $this->server_address = $server_address;
     }
 
 

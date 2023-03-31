@@ -4,15 +4,18 @@ namespace BlueChip\Security\Modules\Log;
 
 use BlueChip\Security\Helpers\MySQLDateTime;
 use BlueChip\Security\Modules;
-use BlueChip\Security\Modules\Services\ReverseDnsLookup;
-use Psr\Log;
+use BlueChip\Security\Modules\Services\ReverseDnsLookup\Resolver;
+use BlueChip\Security\Modules\Services\ReverseDnsLookup\Response;
+use Psr\Log\AbstractLogger;
+use Psr\Log\LoggerInterface;
+use wpdb;
 
 /**
  * Simple PSR-3 compliant logger with database backend.
  *
  * @link http://www.php-fig.org/psr/psr-3/
  */
-class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\Countable, Modules\Installable, Modules\Loadable, Modules\Initializable, \Countable
+class Logger extends AbstractLogger implements LoggerInterface, Modules\Countable, Modules\Installable, Modules\Loadable, Modules\Initializable, \Countable
 {
     /**
      * @var string Name of DB table where logs are stored
@@ -23,50 +26,26 @@ class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\
     /**
      * @var string Name of DB table where logs are stored (including table prefix)
      */
-    private $log_table;
+    private string $log_table;
 
     /**
      * @var string[] List of columns in DB table where logs are stored
      */
-    private $columns;
-
-    /**
-     * @var string Remote IP address
-     */
-    private $remote_address;
-
-    /**
-     * @var \BlueChip\Security\Modules\Log\Settings Module settings
-     */
-    private $settings;
-
-    /**
-     * @var \BlueChip\Security\Modules\Services\ReverseDnsLookup\Resolver
-     */
-    private $hostname_resolver;
-
-    /**
-     * @var \wpdb WordPress database access abstraction object
-     */
-    private $wpdb;
+    private array $columns;
 
 
     /**
-     * @param \wpdb $wpdb WordPress database access abstraction object
+     * @param wpdb $wpdb WordPress database access abstraction object
      * @param string $remote_address Remote IP address.
-     * @param \BlueChip\Security\Modules\Log\Settings $settings Module settings.
-     * @param \BlueChip\Security\Modules\Services\ReverseDnsLookup\Resolver $hostname_resolver
+     * @param Settings $settings Module settings.
+     * @param Resolver $hostname_resolver
      */
-    public function __construct(\wpdb $wpdb, string $remote_address, Settings $settings, ReverseDnsLookup\Resolver $hostname_resolver)
+    public function __construct(private wpdb $wpdb, private string $remote_address, private Settings $settings, private Resolver $hostname_resolver)
     {
         $this->log_table = $wpdb->prefix . self::LOG_TABLE;
         $this->columns = [
             'id', 'date_and_time', 'ip_address', 'hostname', 'event', 'level', 'message', 'context',
         ];
-        $this->remote_address = $remote_address;
-        $this->settings = $settings;
-        $this->hostname_resolver = $hostname_resolver;
-        $this->wpdb = $wpdb;
     }
 
 
@@ -186,7 +165,7 @@ class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\
     /**
      * Log $event.
      *
-     * @param \BlueChip\Security\Modules\Log\Event $event
+     * @param Event $event
      */
     public function logEvent(Event $event): void
     {
@@ -231,9 +210,9 @@ class Logger extends Log\AbstractLogger implements Log\LoggerInterface, Modules\
     /**
      * Process response from (non-blocking) reverse DNS lookup - update hostname of record with resolved IP address.
      *
-     * @param \BlueChip\Security\Modules\Services\ReverseDnsLookup\Response $response
+     * @param Response $response
      */
-    public function processReverseDnsLookupResponse(ReverseDnsLookup\Response $response): void
+    public function processReverseDnsLookupResponse(Response $response): void
     {
         $this->wpdb->update(
             $this->log_table,

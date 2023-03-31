@@ -21,7 +21,7 @@ class Admin
     /**
      * @var \BlueChip\Security\Core\Admin\AbstractPage[]
      */
-    private $pages = [];
+    private array $pages = [];
 
 
     /**

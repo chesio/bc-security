@@ -23,22 +23,16 @@ abstract class Settings implements \ArrayAccess, \IteratorAggregate
 
 
     /**
-     * @var string Option name under which settings are stored.
-     */
-    private $option_name;
-
-    /**
      * @var array<string,mixed> Settings data (kind of cache for get_option() result).
      */
-    protected $data;
+    protected array $data;
 
 
     /**
      * @param string $option_name Option name under which to store the settings.
      */
-    public function __construct(string $option_name)
+    public function __construct(private string $option_name)
     {
-        $this->option_name = $option_name;
         // Read settings from `wp_options` table and sanitize them right away using default values.
         $this->data = $this->sanitize(get_option($option_name, []), static::DEFAULTS);
     }

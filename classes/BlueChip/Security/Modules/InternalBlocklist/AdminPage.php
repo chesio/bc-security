@@ -55,24 +55,10 @@ class AdminPage extends AbstractPage
     public const DEFAULT_SCOPE = 'default-scope';
 
 
-    /**
-     * @var Manager
-     */
-    private $ib_manager;
-
-    /**
-     * @var CronManager
-     */
-    private $cron_manager;
-
-
-    public function __construct(Manager $ib_manager, CronManager $cron_manager)
+    public function __construct(private Manager $ib_manager, private CronManager $cron_manager)
     {
         $this->page_title = _x('Internal Blocklist', 'Dashboard page title', 'bc-security');
         $this->menu_title = _x('Internal Blocklist', 'Dashboard menu item name', 'bc-security');
-
-        $this->ib_manager = $ib_manager;
-        $this->cron_manager = $cron_manager;
 
         $this->setCounter($ib_manager);
         $this->setPerPageOption('bc_security_internal_blocklist_records_per_page');

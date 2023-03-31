@@ -14,18 +14,12 @@ class AssetsManager
      */
     private const JS_ASSETS_DIRECTORY_PATH = 'assets/js/';
 
-    /**
-     * @var string Absolute path to main plugin file.
-     */
-    private $plugin_filename;
-
 
     /**
      * @param string $plugin_filename Absolute path to main plugin file.
      */
-    public function __construct(string $plugin_filename)
+    public function __construct(private string $plugin_filename)
     {
-        $this->plugin_filename = $plugin_filename;
     }
 
 

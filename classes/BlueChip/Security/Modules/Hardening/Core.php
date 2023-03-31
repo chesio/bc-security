@@ -20,21 +20,12 @@ class Core implements \BlueChip\Security\Modules\Initializable
      */
     private const PWNED_PASSWORD_META_KEY = 'bc-security/pwned-password';
 
-    /**
-     * @var bool
-     */
-    private $rest_api_supressed;
 
-    /**
-     * @var Settings
-     */
-    private $settings;
+    private bool $rest_api_supressed = false;
 
 
-    public function __construct(Settings $settings)
+    public function __construct(private Settings $settings)
     {
-        $this->settings = $settings;
-        $this->rest_api_supressed = false;
     }
 
 

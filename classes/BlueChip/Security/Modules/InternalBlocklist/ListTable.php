@@ -46,22 +46,11 @@ class ListTable extends \BlueChip\Security\Core\ListTable
     private const VIEW_SCOPE = 'scope';
 
 
-    /**
-     * @var Manager
-     */
-    private $ib_manager;
+    private Manager $ib_manager;
 
-    /**
-     * @var int
-     */
-    private $scope;
+    private int $scope;
 
 
-    /**
-     * @param string $url
-     * @param string $per_page_option_name
-     * @param Manager $ib_manager
-     */
     public function __construct(string $url, string $per_page_option_name, Manager $ib_manager)
     {
         parent::__construct($url, $per_page_option_name);

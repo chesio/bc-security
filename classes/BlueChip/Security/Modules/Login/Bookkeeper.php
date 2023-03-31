@@ -3,6 +3,7 @@
 namespace BlueChip\Security\Modules\Login;
 
 use BlueChip\Security\Helpers\MySQLDateTime;
+use wpdb;
 
 /**
  * Storage and retrieval of lockout book-keeping data
@@ -18,24 +19,13 @@ class Bookkeeper implements \BlueChip\Security\Modules\Installable
     /**
      * @var string Name of DB table where failed logins are stored (including table prefix)
      */
-    private $failed_logins_table;
+    private string $failed_logins_table;
 
     /**
-     * @var \BlueChip\Security\Modules\Login\Settings
+     * @param Settings $settings
+     * @param wpdb $wpdb WordPress database access abstraction object
      */
-    private $settings;
-
-    /**
-     * @var \wpdb WordPress database access abstraction object
-     */
-    private $wpdb;
-
-
-    /**
-     * @param \BlueChip\Security\Modules\Login\Settings $settings
-     * @param \wpdb $wpdb WordPress database access abstraction object
-     */
-    public function __construct(Settings $settings, \wpdb $wpdb)
+    public function __construct(private Settings $settings, private wpdb $wpdb)
     {
         $this->failed_logins_table = $wpdb->prefix . self::FAILED_LOGINS_TABLE;
         $this->settings = $settings;

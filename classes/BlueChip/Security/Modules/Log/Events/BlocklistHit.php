@@ -36,28 +36,28 @@ class BlocklistHit extends Event
      *
      * @var string Type of blocklist (internal or external) that has the blocked IP address in it.
      */
-    protected $blocklist_type = self::BLOCKLIST_TYPE_INTERNAL;
+    protected string $blocklist_type = self::BLOCKLIST_TYPE_INTERNAL;
 
     /**
      * __('Request type')
      *
      * @var string Type of request that resulted in blocklist hit.
      */
-    protected $request_type = '';
+    protected string $request_type = '';
 
     /**
      * __('IP address')
      *
      * @var string IP address the blocked request originated at.
      */
-    protected $ip_address = '';
+    protected string $ip_address = '';
 
     /**
      * __('Blocklist source')
      *
      * @var string Blocklist source
      */
-    protected $source = '';
+    protected string $source = '';
 
 
     public function getName(): string

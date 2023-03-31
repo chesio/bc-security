@@ -16,31 +16,15 @@ use BlueChip\Security\Modules\ExternalBlocklist\Manager as ExternalBlocklistMana
 class Bouncer implements Initializable, Loadable
 {
     /**
-     * @var InternalBlocklistManager
-     */
-    private $ib_manager;
-
-    /**
-     * @var ExternalBlocklistManager
-     */
-    private $eb_manager;
-
-    /**
-     * @var string Remote IP address
-     */
-    private $remote_address;
-
-
-    /**
      * @param string $remote_address Remote IP address.
      * @param InternalBlocklistManager $ib_manager
      * @param ExternalBlocklistManager $eb_manager
      */
-    public function __construct(string $remote_address, InternalBlocklistManager $ib_manager, ExternalBlocklistManager $eb_manager)
-    {
-        $this->ib_manager = $ib_manager;
-        $this->eb_manager = $eb_manager;
-        $this->remote_address = $remote_address;
+    public function __construct(
+        private string $remote_address,
+        private InternalBlocklistManager $ib_manager,
+        private ExternalBlocklistManager $eb_manager
+    ) {
     }
 
 

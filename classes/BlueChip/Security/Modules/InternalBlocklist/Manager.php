@@ -5,6 +5,7 @@ namespace BlueChip\Security\Modules\InternalBlocklist;
 use BlueChip\Security\Helpers\MySQLDateTime;
 use BlueChip\Security\Modules;
 use BlueChip\Security\Modules\Access\Scope;
+use wpdb;
 
 /**
  * Who's on the blocklist, baby?
@@ -32,29 +33,23 @@ class Manager implements Modules\Countable, Modules\Installable, Modules\Initial
     /**
      * @var string Name of DB table where blocklist is stored (including table prefix)
      */
-    private $blocklist_table;
+    private string $blocklist_table;
 
     /**
      * @var string[] List of table columns
      */
-    private $columns;
-
-    /**
-     * @var \wpdb WordPress database access abstraction object
-     */
-    private $wpdb;
+    private array $columns;
 
 
     /**
-     * @param \wpdb $wpdb WordPress database access abstraction object
+     * @param wpdb $wpdb WordPress database access abstraction object
      */
-    public function __construct(\wpdb $wpdb)
+    public function __construct(private wpdb $wpdb)
     {
         $this->blocklist_table = $wpdb->prefix . self::BLOCKLIST_TABLE;
         $this->columns = [
             'id', 'scope', 'ip_address', 'ban_time', 'release_time', 'reason', 'comment',
         ];
-        $this->wpdb = $wpdb;
     }
 
 

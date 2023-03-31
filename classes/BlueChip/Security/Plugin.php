@@ -2,6 +2,8 @@
 
 namespace BlueChip\Security;
 
+use wpdb;
+
 /**
  * Main plugin class
  */
@@ -10,36 +12,36 @@ class Plugin
     /**
      * @var array<string,object> Plugin module objects
      */
-    private $modules;
+    private array $modules;
 
     /**
      * @var Settings Plugin settings object
      */
-    private $settings;
+    private Settings $settings;
 
     /**
      * @var string Plugin filename
      */
-    private $plugin_filename;
+    private string $plugin_filename;
 
     /**
      * @var string Remote address
      */
-    private $remote_address;
+    private string $remote_address;
 
     /**
-     * @var \wpdb WordPress database access abstraction object
+     * @var wpdb WordPress database access abstraction object
      */
-    private $wpdb;
+    private wpdb $wpdb;
 
 
     /**
      * Construct the plugin instance.
      *
      * @param string $plugin_filename Plugin filename
-     * @param \wpdb $wpdb WordPress database access abstraction object
+     * @param wpdb $wpdb WordPress database access abstraction object
      */
-    public function __construct(string $plugin_filename, \wpdb $wpdb)
+    public function __construct(string $plugin_filename, wpdb $wpdb)
     {
         $this->plugin_filename = $plugin_filename;
         $this->wpdb = $wpdb;
@@ -68,7 +70,7 @@ class Plugin
      *
      * @return array<string,object>
      */
-    private static function constructModules(\wpdb $wpdb, string $remote_address, string $server_address, Settings $settings): array
+    private static function constructModules(wpdb $wpdb, string $remote_address, string $server_address, Settings $settings): array
     {
         $google_api = new Setup\GoogleAPI($settings->forSetup());
 

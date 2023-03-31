@@ -2,17 +2,13 @@
 
 namespace BlueChip\Security\Core\Admin;
 
+use BlueChip\Security\Core\ListTable;
+
 trait ListingPage
 {
-    /**
-     * @var \BlueChip\Security\Core\ListTable
-     */
-    private $list_table;
+    private ListTable $list_table;
 
-    /**
-     * @var string
-     */
-    private $per_page_option_name;
+    private string $per_page_option_name;
 
 
     abstract protected function initListTable(): void;
@@ -20,8 +16,6 @@ trait ListingPage
 
     /**
      * @link https://developer.wordpress.org/reference/hooks/set-screen-option/
-     *
-     * @param string $option_name
      */
     private function setPerPageOption(string $option_name): void
     {

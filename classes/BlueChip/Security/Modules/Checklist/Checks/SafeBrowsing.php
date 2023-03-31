@@ -20,15 +20,9 @@ class SafeBrowsing extends Checklist\AdvancedCheck
 
 
     /**
-     * @var string
-     */
-    private $google_api_key;
-
-
-    /**
      * @param string $google_api_key Google API key for project with Safe Browsing API enabled.
      */
-    public function __construct(string $google_api_key)
+    public function __construct(private string $google_api_key)
     {
         $description = [
             sprintf(
@@ -51,8 +45,6 @@ class SafeBrowsing extends Checklist\AdvancedCheck
             __('Site is not blacklisted by Google', 'bc-security'),
             implode(' ', $description)
         );
-
-        $this->google_api_key = $google_api_key;
     }
 
 

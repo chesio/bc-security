@@ -2,62 +2,47 @@
 
 namespace BlueChip\Security;
 
+use BlueChip\Security\Modules\Checklist\AutorunSettings as ChecklistAutorunSettings;
+use BlueChip\Security\Modules\Cron\Settings as CronSettings;
+use BlueChip\Security\Modules\ExternalBlocklist\Settings as ExternalBlocklistSettings;
+use BlueChip\Security\Modules\Hardening\Settings as HardeningSettings;
+use BlueChip\Security\Modules\Log\Settings as LogSettings;
+use BlueChip\Security\Modules\Login\Settings as LoginSettings;
+use BlueChip\Security\Modules\Notifications\Settings as NotificationsSettings;
+use BlueChip\Security\Setup\Settings as SetupSettings;
+
 /**
  * Object that provides access to all plugin settings
  */
 class Settings implements \IteratorAggregate
 {
-    /**
-     * @var Modules\Checklist\AutorunSettings
-     */
-    private $checklist_autorun;
+    private ChecklistAutorunSettings $checklist_autorun;
 
-    /**
-     * @var Modules\Cron\Settings
-     */
-    private $cron_jobs;
+    private CronSettings $cron_jobs;
 
-    /**
-     * @var Modules\ExternalBlocklist\Settings
-     */
-    private $external_blocklist;
+    private ExternalBlocklistSettings $external_blocklist;
 
-    /**
-     * @var Modules\Hardening\Settings
-     */
-    private $hardening;
+    private HardeningSettings $hardening;
 
-    /**
-     * @var Modules\Log\Settings
-     */
-    private $log;
+    private LogSettings $log;
 
-    /**
-     * @var Modules\Login\Settings
-     */
-    private $login;
+    private LoginSettings $login;
 
-    /**
-     * @var Modules\Notifications\Settings
-     */
-    private $notifications;
+    private NotificationsSettings $notifications;
 
-    /**
-     * @var Setup\Settings
-     */
-    private $setup;
+    private SetupSettings $setup;
 
 
     public function __construct()
     {
-        $this->checklist_autorun    = new Modules\Checklist\AutorunSettings('bc-security-checklist-autorun');
-        $this->cron_jobs            = new Modules\Cron\Settings('bc-security-cron-jobs');
-        $this->external_blocklist   = new Modules\ExternalBlocklist\Settings('bc-security-external-blocklist');
-        $this->hardening            = new Modules\Hardening\Settings('bc-security-hardening');
-        $this->log                  = new Modules\Log\Settings('bc-security-log');
-        $this->login                = new Modules\Login\Settings('bc-security-login');
-        $this->notifications        = new Modules\Notifications\Settings('bc-security-notifications');
-        $this->setup                = new Setup\Settings('bc-security-setup');
+        $this->checklist_autorun    = new ChecklistAutorunSettings('bc-security-checklist-autorun');
+        $this->cron_jobs            = new CronSettings('bc-security-cron-jobs');
+        $this->external_blocklist   = new ExternalBlocklistSettings('bc-security-external-blocklist');
+        $this->hardening            = new HardeningSettings('bc-security-hardening');
+        $this->log                  = new LogSettings('bc-security-log');
+        $this->login                = new LoginSettings('bc-security-login');
+        $this->notifications        = new NotificationsSettings('bc-security-notifications');
+        $this->setup                = new SetupSettings('bc-security-setup');
     }
 
     public function getIterator(): \Traversable
@@ -65,42 +50,42 @@ class Settings implements \IteratorAggregate
         return new \ArrayIterator((array) $this);
     }
 
-    public function forChecklistAutorun(): Modules\Checklist\AutorunSettings
+    public function forChecklistAutorun(): ChecklistAutorunSettings
     {
         return $this->checklist_autorun;
     }
 
-    public function forCronJobs(): Modules\Cron\Settings
+    public function forCronJobs(): CronSettings
     {
         return $this->cron_jobs;
     }
 
-    public function forExternalBlocklist(): Modules\ExternalBlocklist\Settings
+    public function forExternalBlocklist(): ExternalBlocklistSettings
     {
         return $this->external_blocklist;
     }
 
-    public function forHardening(): Modules\Hardening\Settings
+    public function forHardening(): HardeningSettings
     {
         return $this->hardening;
     }
 
-    public function forLog(): Modules\Log\Settings
+    public function forLog(): LogSettings
     {
         return $this->log;
     }
 
-    public function forLogin(): Modules\Login\Settings
+    public function forLogin(): LoginSettings
     {
         return $this->login;
     }
 
-    public function forNotifications(): Modules\Notifications\Settings
+    public function forNotifications(): NotificationsSettings
     {
         return $this->notifications;
     }
 
-    public function forSetup(): Setup\Settings
+    public function forSetup(): SetupSettings
     {
         return $this->setup;
     }

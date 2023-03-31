@@ -4,11 +4,6 @@ namespace BlueChip\Security\Modules\Checklist;
 
 abstract class Helper
 {
-    /**
-     * @param \BlueChip\Security\Modules\Checklist\Check $check
-     *
-     * @return string
-     */
     public static function formatLastRunTimestamp(Check $check): string
     {
         if (empty($timestamp = $check->getTimeOfLastRun())) {
