@@ -2,10 +2,11 @@
 
 ## Upcoming version 0.21.0 (????-??-??)
 
-WordPress 6.0 or newer is now required.
+PHP 8.0 or newer and WordPress 6.0 or newer are now required.
 
 ### Changed
 
+* PHP 8.0 is required and the policy to run on supported PHP versions only has been restored [#117](https://github.com/chesio/bc-security/issues/117).
 * List of supported PHP versions for PHP version check has been updated to include PHP 8.2 and exclude PHP 7.4 [#137](https://github.com/chesio/bc-security/issues/137).
 
 ## Version 0.20.0 (2023-03-31)

@@ -7,7 +7,7 @@
  * Version: 0.21.0-dev
  * Author: Česlav Przywara <ceslav@przywara.cz>
  * Author URI: https://www.chesio.com
- * Requires PHP: 7.3
+ * Requires PHP: 8.0
  * Requires WP: 6.0
  * Tested up to: 6.2
  * Text Domain: bc-security
@@ -15,13 +15,13 @@
  * Update URI: https://github.com/chesio/bc-security
  */
 
-if (version_compare(PHP_VERSION, '7.3', '<')) {
+if (version_compare(PHP_VERSION, '8.0', '<')) {
     // Warn user that his/her PHP version is too low for this plugin to function.
     add_action('admin_notices', function () {
         echo '<div class="notice notice-error"><p>';
         echo esc_html(
             sprintf(
-                __('BC Security plugin requires PHP 7.3 to function properly, but you have version %s installed. The plugin has been auto-deactivated.', 'bc-security'),
+                __('BC Security plugin requires PHP 8.0 to function properly, but you have version %s installed. The plugin has been auto-deactivated.', 'bc-security'),
                 PHP_VERSION
             )
         );
