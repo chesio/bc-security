@@ -3,6 +3,7 @@
 namespace BlueChip\Security\Modules\Log\Events;
 
 use BlueChip\Security\Modules\Log\Event;
+use WP_Error;
 
 class LoginFailure extends Event
 {
@@ -52,12 +53,8 @@ class LoginFailure extends Event
 
     /**
      * Set reason why login attempt failed.
-     *
-     * @param \WP_Error $error
-     *
-     * @return self
      */
-    public function setError(\WP_Error $error): self
+    public function setError(WP_Error $error): self
     {
         $this->error_code = (string) $error->get_error_code();
         $this->error_message = $error->get_error_message();
@@ -67,10 +64,6 @@ class LoginFailure extends Event
 
     /**
      * Set username used in failed login attempt (if any).
-     *
-     * @param string $username
-     *
-     * @return self
      */
     public function setUsername(string $username): self
     {

@@ -9,6 +9,8 @@ use BlueChip\Security\Modules\Initializable;
 use BlueChip\Security\Modules\InternalBlocklist\BanReason;
 use BlueChip\Security\Modules\InternalBlocklist\Manager as InternalBlocklistManager;
 use BlueChip\Security\Modules\Loadable;
+use WP_Error;
+use WP_User;
 
 /**
  * Gatekeeper keeps bots out of admin area.
@@ -140,13 +142,8 @@ class Gatekeeper implements Initializable, Loadable
      * used to log in and is present on username blacklist.
      *
      * Filter is called from wp_authenticate().
-     *
-     * @param \WP_Error|\WP_User $user
-     * @param string $username
-     *
-     * @return \WP_Error|\WP_User
      */
-    public function lockIpIfUsernameOnBlacklist($user, string $username)
+    public function lockIpIfUsernameOnBlacklist(WP_Error|WP_User $user, string $username): WP_Error|WP_User
     {
         // When a non-existing username (or email)...
         if (is_wp_error($user) && ($user->get_error_code() === 'invalid_username' || $user->get_error_code() === 'invalid_email')) {
@@ -165,12 +162,8 @@ class Gatekeeper implements Initializable, Loadable
      * Return null instead of WP_Error when authentication fails because of
      * invalid username, email or password forcing WP to display generic error
      * message.
-     *
-     * @param \WP_Error|\WP_User $user
-     *
-     * @return \WP_Error|\WP_User|null
      */
-    public function muteStandardErrorMessages($user)
+    public function muteStandardErrorMessages(WP_Error|WP_User $user): WP_Error|WP_User|null
     {
         if (is_wp_error($user)) {
             switch ($user->get_error_code()) {

@@ -7,6 +7,8 @@ use BlueChip\Security\Modules\ExternalBlocklist\Source;
 use BlueChip\Security\Modules\Initializable;
 use BlueChip\Security\Modules\Loadable;
 use BlueChip\Security\Modules\Login\Hooks as LoginHooks;
+use WP;
+use WP_Error;
 
 class EventsMonitor implements Initializable, Loadable
 {
@@ -72,10 +74,8 @@ class EventsMonitor implements Initializable, Loadable
      * Note: `parse_query` action cannot be used for 404 detection, because 404 state can be set as late as in WP::main().
      *
      * @see WP::main()
-     *
-     * @param \WP $wp
      */
-    public function log404Queries(\WP $wp): void
+    public function log404Queries(WP $wp): void
     {
         /** @var \WP_Query $wp_query */
         global $wp_query;
@@ -99,11 +99,8 @@ class EventsMonitor implements Initializable, Loadable
 
     /**
      * Log failed login.
-     *
-     * @param string $username
-     * @param \WP_Error $error
      */
-    public function logFailedLogin(string $username, \WP_Error $error): void
+    public function logFailedLogin(string $username, WP_Error $error): void
     {
         do_action(Action::EVENT, (new Events\LoginFailure())->setUsername($username)->setError($error));
     }
@@ -111,8 +108,6 @@ class EventsMonitor implements Initializable, Loadable
 
     /**
      * Log successful login.
-     *
-     * @param string $username
      */
     public function logSuccessfulLogin(string $username): void
     {
@@ -122,10 +117,6 @@ class EventsMonitor implements Initializable, Loadable
 
     /**
      * Log lockout event.
-     *
-     * @param string $remote_address
-     * @param string $username
-     * @param int $duration
      */
     public function logLockoutEvent(string $remote_address, string $username, int $duration): void
     {

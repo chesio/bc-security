@@ -2,6 +2,8 @@
 
 namespace BlueChip\Security\Helpers;
 
+use WP_User;
+
 /**
  * Various is::xxx() helpers.
  */
@@ -9,12 +11,8 @@ abstract class Is
 {
     /**
      * Return true if current user is an admin.
-     *
-     * @param \WP_User $user
-     *
-     * @return bool
      */
-    public static function admin(\WP_User $user): bool
+    public static function admin(WP_User $user): bool
     {
         return apply_filters(
             Hooks::IS_ADMIN,

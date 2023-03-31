@@ -9,6 +9,7 @@ use BlueChip\Security\Modules;
 use BlueChip\Security\Modules\Log\Logger;
 use BlueChip\Security\Modules\Checklist;
 use BlueChip\Security\Modules\Login;
+use WP_User;
 
 class Watchman implements Modules\Initializable, Modules\Activable
 {
@@ -306,11 +307,8 @@ class Watchman implements Modules\Initializable, Modules\Activable
 
     /**
      * Send notification if user with admin privileges logged in.
-     *
-     * @param string $username
-     * @param \WP_User $user
      */
-    public function watchWpLogin(string $username, \WP_User $user): void
+    public function watchWpLogin(string $username, WP_User $user): void
     {
         if (Is::admin($user)) {
             $subject = __('Admin user login', 'bc-security');
@@ -327,9 +325,6 @@ class Watchman implements Modules\Initializable, Modules\Activable
 
     /**
      * Send notification about single check that failed during checklist monitoring.
-     *
-     * @param \BlueChip\Security\Modules\Checklist\Check $check
-     * @param \BlueChip\Security\Modules\Checklist\CheckResult $result
      */
     public function watchChecklistSingleCheckAlert(Checklist\Check $check, Checklist\CheckResult $result): void
     {
