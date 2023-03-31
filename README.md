@@ -146,6 +146,12 @@ BC Security maintains a list of IP addresses with limited access to the website.
 
 Out-dated records are automatically removed from the list by WP-Cron job scheduled to run every night. The job can be deactivated in backend, if desired.
 
+### External blocklist
+
+In addition to [internal blocklist](#internal-blocklist), BC Security can be configured to fetch list of IP addresses to block from external sources. Currently only [Amazon AWS IP ranges](https://ip-ranges.amazonaws.com/ip-ranges.json) can be used this way.
+
+As with internal blocklist, external blocklist can be used to limit access to entire website or login process only.
+
 ### Notifications
 
 BC Security allows to send automatic email notification to configured recipients on following occasions:
@@ -164,7 +170,12 @@ You can mute all email notifications by setting constant `BC_SECURITY_MUTE_NOTIF
 
 ### Events logging
 
-BC Security logs both short and long lockout events (see [Login Security](#login-security) feature). Also, the following events triggered by WordPress core are logged:
+Following events triggered by BC Security are logged:
+
+1. Short and long lockout events (see [Login Security](#login-security) feature)
+2. Requests blocked by [external](#external-blocklist) or [internal](#internal-blocklist) blocklist
+
+Following events triggered by WordPress core are logged:
 
 1. Attempts to authenticate with bad cookie
 2. Failed and successful login attempts
@@ -187,7 +198,7 @@ Some of the modules listed above come with settings panel. Further customization
 * `bc-security/filter:show-pwned-password-warning` - filters whether the ["pwned password" warning](#passwords-check) should be displayed for current user on current screen.
 * `bc-security/filter:internal-blocklist-default-manual-lock-duration` - filters number of seconds that is used as default value in lock duration field of manual internal blocklisting form. By default, the value is equal to one month in seconds.
 * `bc-security/filter:is-ip-address-locked` - filters boolean value that determines whether given IP address is currently on internal blocklist (within given scope).
-* `bc-security/filter:is-ip-address-blocked` - filters boolean value that determines whether given IP address is currently blocked either by external or internal blocklist.
+* `bc-security/filter:is-ip-address-blocked` - filters boolean value that determines whether given IP address is currently blocked either by external or internal blocklist (within given scope).
 * `bc-security/filter:log-404-event` - filters boolean value that determines whether current HTTP request that resulted in [404 response](https://en.wikipedia.org/wiki/HTTP_404) should be logged or not. To completely disable logging of 404 events, you can attach [`__return_false`](https://developer.wordpress.org/reference/functions/__return_false/) function to the filter.
 * `bc-security/filter:events-with-hostname-resolution` - filters array of IDs of events for which hostname of involved IP address should be resolved via reverse DNS lookup. By default the following events are registered: attempts to authenticate with bad cookie, failed and successful login attempts and lockout events. Note that this functionality only relates to event logs report in backend - in case email notification is sent, hostname of reported IP address (if any) is always resolved separately.
 * `bc-security/filter:username-blacklist` - filters array of blacklisted usernames. Blacklisted usernames cannot be registered when opening new account and any login attempt using non-existing blacklisted username triggers long lockout. There are no default values, but the filter operates on usernames set via module settings, so it can be used to enforce blacklisting of particular usernames.

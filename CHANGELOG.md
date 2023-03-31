@@ -2,17 +2,20 @@
 
 ## Upcoming version 0.20.0 (????-??-??)
 
-This version introduces some breaking changes. It is recommended to:
-1. Deactivate the plugin.
+This release brings a new feature: __external blocklist__. This feature has its own module named _External Blocklist_. To keep the naming consistent, _IP Blacklist_ module has been renamed to _Internal Blocklist_.
+
+These adjustments led to some breaking changes, therefore during update it is recommended to:
+1. Deactivate the plugin first.
 2. Rename the database table `bc_security_ip_blacklist` to `bc_security_internal_blocklist`.
-3. Update the plugin.
-4. Reactivate the plugin.
+3. Update and reactivate the plugin.
 
 ### Added
 
 * PHP 8.2 is supported [#130](https://github.com/chesio/bc-security/issues/130).
 * WordPress 6.1 and 6.2 is supported ([#129](https://github.com/chesio/bc-security/issues/129) and [#136](https://github.com/chesio/bc-security/issues/136)).
 * Improve detection of plugins hosted in Plugins Directory: also include plugins that have `readme.md` instead of `readme.txt` file [#128](https://github.com/chesio/bc-security/issues/128).
+* An option to block request coming from Amazon AWS network: either all requests or login requests only coming from AWS network can be blocked [#120](https://github.com/chesio/bc-security/issues/120).
+* Requests blocked by external or internal blocklist are now logged.
 
 ### Changed
 
