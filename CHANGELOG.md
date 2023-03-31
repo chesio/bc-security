@@ -2,6 +2,8 @@
 
 ## Upcoming version 0.21.0 (????-??-??)
 
+WordPress 6.0 or newer is now required.
+
 ## Version 0.20.0 (2023-03-31)
 
 This release brings a new feature: __external blocklist__. This feature has its own module named _External Blocklist_. To keep the naming consistent, _IP Blacklist_ module has been renamed to _Internal Blocklist_.
