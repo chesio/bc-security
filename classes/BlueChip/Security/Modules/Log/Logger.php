@@ -4,10 +4,12 @@ namespace BlueChip\Security\Modules\Log;
 
 use BlueChip\Security\Helpers\MySQLDateTime;
 use BlueChip\Security\Modules;
+use BlueChip\Security\Modules\Cron\Jobs as CronJobs;
 use BlueChip\Security\Modules\Services\ReverseDnsLookup\Resolver;
 use BlueChip\Security\Modules\Services\ReverseDnsLookup\Response;
 use Psr\Log\AbstractLogger;
 use Psr\Log\LoggerInterface;
+use Psr\Log\LogLevel;
 use wpdb;
 
 /**
@@ -102,8 +104,8 @@ class Logger extends AbstractLogger implements LoggerInterface, Modules\Countabl
     public function init(): void
     {
         // Hook into cron job execution.
-        add_action(Modules\Cron\Jobs::LOGS_CLEAN_UP_BY_AGE, [$this, 'pruneByAgeInCron'], 10, 0);
-        add_action(Modules\Cron\Jobs::LOGS_CLEAN_UP_BY_SIZE, [$this, 'pruneBySizeInCron'], 10, 0);
+        add_action(CronJobs::LOGS_CLEAN_UP_BY_AGE, [$this, 'pruneByAgeInCron'], 10, 0);
+        add_action(CronJobs::LOGS_CLEAN_UP_BY_SIZE, [$this, 'pruneBySizeInCron'], 10, 0);
         // Hook into reverse DNS lookup.
         add_action(Hooks::HOSTNAME_RESOLVED, [$this, 'processReverseDnsLookupResponse'], 10, 1);
     }
@@ -184,21 +186,21 @@ class Logger extends AbstractLogger implements LoggerInterface, Modules\Countabl
     public function translateLogLevel(string $level): ?int
     {
         switch ($level) {
-            case Log\LogLevel::EMERGENCY:
+            case LogLevel::EMERGENCY:
                 return 0;
-            case Log\LogLevel::ALERT:
+            case LogLevel::ALERT:
                 return 1;
-            case Log\LogLevel::CRITICAL:
+            case LogLevel::CRITICAL:
                 return 2;
-            case Log\LogLevel::ERROR:
+            case LogLevel::ERROR:
                 return 3;
-            case Log\LogLevel::WARNING:
+            case LogLevel::WARNING:
                 return 4;
-            case Log\LogLevel::NOTICE:
+            case LogLevel::NOTICE:
                 return 5;
-            case Log\LogLevel::INFO:
+            case LogLevel::INFO:
                 return 6;
-            case Log\LogLevel::DEBUG:
+            case LogLevel::DEBUG:
                 return 7;
             default:
                 _doing_it_wrong(__METHOD__, \sprintf('Unknown log level: %s', $level), '0.2.0');
