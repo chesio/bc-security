@@ -143,7 +143,7 @@ class Gatekeeper implements Initializable, Loadable
      *
      * Filter is called from wp_authenticate().
      */
-    public function lockIpIfUsernameOnBlacklist(WP_Error|WP_User $user, string $username): WP_Error|WP_User
+    public function lockIpIfUsernameOnBlacklist(WP_Error|WP_User|null $user, string $username): WP_Error|WP_User|null
     {
         // When a non-existing username (or email)...
         if (is_wp_error($user) && ($user->get_error_code() === 'invalid_username' || $user->get_error_code() === 'invalid_email')) {
@@ -163,7 +163,7 @@ class Gatekeeper implements Initializable, Loadable
      * invalid username, email or password forcing WP to display generic error
      * message.
      */
-    public function muteStandardErrorMessages(WP_Error|WP_User $user): WP_Error|WP_User|null
+    public function muteStandardErrorMessages(WP_Error|WP_User|null $user): WP_Error|WP_User|null
     {
         if (is_wp_error($user)) {
             switch ($user->get_error_code()) {

@@ -94,7 +94,7 @@ class Bouncer implements Initializable, Loadable
     /**
      * Check if access to login is allowed from given remote address.
      */
-    public function checkLoginAttempt(WP_Error|WP_User $user): WP_Error|WP_User
+    public function checkLoginAttempt(WP_Error|WP_User|null $user): WP_Error|WP_User|null
     {
         if ($this->isBlocked(Scope::ADMIN)) {
             Utils::blockAccessTemporarily($this->remote_address);
