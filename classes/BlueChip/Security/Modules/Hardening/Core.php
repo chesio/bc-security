@@ -131,13 +131,13 @@ class Core implements \BlueChip\Security\Modules\Initializable
     /**
      * @filter https://developer.wordpress.org/reference/hooks/rest_request_before_callbacks/
      *
-     * @param WP_Error|WP_HTTP_Response $response
+     * @param WP_REST_Response|WP_HTTP_Response|WP_Error|mixed $response
      * @param mixed[] $handler
      * @param WP_REST_Request $request
      *
      * @return WP_Error|WP_HTTP_Response
      */
-    public function filterJsonAPIAuthor(WP_Error|WP_HTTP_Response $response, array $handler, WP_REST_Request $request): WP_Error|WP_HTTP_Response
+    public function filterJsonAPIAuthor(mixed $response, array $handler, WP_REST_Request $request): WP_Error|WP_HTTP_Response
     {
         $route = $request->get_route();
 
