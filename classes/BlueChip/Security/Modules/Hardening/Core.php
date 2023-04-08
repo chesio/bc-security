@@ -135,7 +135,7 @@ class Core implements \BlueChip\Security\Modules\Initializable
      * @param mixed[] $handler
      * @param WP_REST_Request $request
      *
-     * @return WP_Error|WP_HTTP_Response
+     * @return WP_REST_Response|WP_HTTP_Response|WP_Error|mixed
      */
     public function filterJsonAPIAuthor(mixed $response, array $handler, WP_REST_Request $request): mixed
     {
