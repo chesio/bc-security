@@ -137,7 +137,7 @@ class Core implements \BlueChip\Security\Modules\Initializable
      *
      * @return WP_Error|WP_HTTP_Response
      */
-    public function filterJsonAPIAuthor(mixed $response, array $handler, WP_REST_Request $request): WP_Error|WP_HTTP_Response
+    public function filterJsonAPIAuthor(mixed $response, array $handler, WP_REST_Request $request): mixed
     {
         $route = $request->get_route();
 
