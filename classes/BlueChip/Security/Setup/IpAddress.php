@@ -95,6 +95,9 @@ abstract class IpAddress
     }
 
 
+    /**
+     * Attempt to get a valid IP address from potentially insecure (user-provided) data.
+     */
     private static function parseFrom(string $maybe_list_of_ip_addresses): string
     {
         return self::validate(self::getFirst($maybe_list_of_ip_addresses)) ?? '';
@@ -103,10 +106,6 @@ abstract class IpAddress
 
     /**
      * Get the first from possibly multiple $ip_addresses.
-     *
-     * @param string $ip_addresses
-     *
-     * @return string
      */
     private static function getFirst(string $ip_addresses): string
     {
@@ -117,7 +116,7 @@ abstract class IpAddress
 
 
     /**
-     * Validate given $ip_address, return null if invalid.
+     * Validate given $ip_address - return null if invalid.
      */
     private static function validate(string $ip_address): ?string
     {
