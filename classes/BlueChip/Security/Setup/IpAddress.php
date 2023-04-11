@@ -53,7 +53,7 @@ abstract class IpAddress
         }
 
         if (isset($_SERVER[$type])) {
-            return self::getFirst($_SERVER[$type]);
+            return self::parseFrom($_SERVER[$type]);
         }
 
         // Not found: try to fall back to direct address if proxy has been requested.
@@ -64,7 +64,7 @@ abstract class IpAddress
             //
             // Client can itself send HTTP_X_FORWARDED_FOR header fooling us
             // regarding which IP should be banned.
-            return self::getFirst($_SERVER[self::REMOTE_ADDR]);
+            return self::parseFrom($_SERVER[self::REMOTE_ADDR]);
         }
 
         return '';
@@ -91,7 +91,13 @@ abstract class IpAddress
      */
     public static function getServer(): string
     {
-        return isset($_SERVER['SERVER_ADDR']) ? self::getFirst($_SERVER['SERVER_ADDR']) : '';
+        return array_key_exists('SERVER_ADDR', $_SERVER) ? self::parseFrom($_SERVER['SERVER_ADDR']) : '';
+    }
+
+
+    private static function parseFrom(string $maybe_list_of_ip_addresses): string
+    {
+        return self::validate(self::getFirst($maybe_list_of_ip_addresses)) ?? '';
     }
 
 
@@ -107,5 +113,14 @@ abstract class IpAddress
         // Note: explode always return an array with at least one item.
         $ips = \array_map('trim', \explode(',', $ip_addresses));
         return $ips[0];
+    }
+
+
+    /**
+     * Validate given $ip_address, return null if invalid.
+     */
+    private static function validate(string $ip_address): ?string
+    {
+        return \filter_var($ip_address, FILTER_VALIDATE_IP, FILTER_NULL_ON_FAILURE);
     }
 }

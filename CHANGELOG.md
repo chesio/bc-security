@@ -2,6 +2,8 @@
 
 ## Version 0.20.1 (????-??-??)
 
+* Validate IP addresses to avoid potential security issues [#138](https://github.com/chesio/bc-security/issues/138).
+
 ## Version 0.20.0 (2023-03-31)
 
 This release brings a new feature: __external blocklist__. This feature has its own module named _External Blocklist_. To keep the naming consistent, _IP Blacklist_ module has been renamed to _Internal Blocklist_.
