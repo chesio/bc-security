@@ -1,6 +1,6 @@
 # BC Security Changelog
 
-## Version 0.20.1 (????-??-??)
+## Version 0.20.1 (2023-04-11)
 
 * Validate IP addresses to avoid potential security issues [#138](https://github.com/chesio/bc-security/issues/138).
 * List of supported PHP versions for PHP version check has been updated to include PHP 8.2 and exclude PHP 7.4 [#137](https://github.com/chesio/bc-security/issues/137).
