@@ -2,7 +2,11 @@
 
 ## Upcoming version 0.21.0 (????-??-??)
 
-PHP 8.0 or newer and WordPress 6.0 or newer are now required.
+PHP 8.0 or newer and WordPress 6.0 or newer are now required. Plugin has been tested with WordPress 6.3.
+
+### Added
+
+* WordPress 6.3 is supported [#141](https://github.com/chesio/bc-security/issues/141).
 
 ### Changed
 
