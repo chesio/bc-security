@@ -2,10 +2,11 @@
 
 namespace BlueChip\Security\Modules\Login;
 
+use BlueChip\Security\Core\Admin\AbstractPage;
 use BlueChip\Security\Core\Admin\SettingsPage;
 use BlueChip\Security\Helpers\FormHelper;
 
-class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
+class AdminPage extends AbstractPage
 {
     /** Page has settings section */
     use SettingsPage;

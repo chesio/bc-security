@@ -2,10 +2,12 @@
 
 namespace BlueChip\Security\Setup;
 
+use BlueChip\Security\Core\Settings as CoreSettings;
+
 /**
  * Basic settings (plugin setup)
  */
-class Settings extends \BlueChip\Security\Core\Settings
+class Settings extends CoreSettings
 {
     /**
      * @var string What is server connection type? [string:REMOTE_ADDR]

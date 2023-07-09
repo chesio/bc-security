@@ -2,10 +2,12 @@
 
 namespace BlueChip\Security\Modules\Log;
 
+use BlueChip\Security\Core\Settings as CoreSettings;
+
 /**
  * Log module settings
  */
-class Settings extends \BlueChip\Security\Core\Settings
+class Settings extends CoreSettings
 {
     /**
      * @var string Maximum size of log table in thousands of records [int:20]

@@ -2,6 +2,7 @@
 
 namespace BlueChip\Security\Modules\Checklist;
 
+use BlueChip\Security\Core\Admin\AbstractPage;
 use BlueChip\Security\Core\Admin\PageWithAssets;
 use BlueChip\Security\Core\Admin\SettingsPage;
 use BlueChip\Security\Core\AssetsManager;
@@ -9,7 +10,7 @@ use BlueChip\Security\Helpers\AjaxHelper;
 use BlueChip\Security\Helpers\FormHelper;
 use BlueChip\Security\Modules\Hardening;
 
-class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
+class AdminPage extends AbstractPage
 {
     /** Page has assets */
     use PageWithAssets;

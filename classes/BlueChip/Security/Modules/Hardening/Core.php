@@ -4,6 +4,7 @@ namespace BlueChip\Security\Modules\Hardening;
 
 use BlueChip\Security\Helpers\AdminNotices;
 use BlueChip\Security\Helpers\HaveIBeenPwned;
+use BlueChip\Security\Modules\Initializable;
 use WP_Error;
 use WP_HTTP_Response;
 use WP_REST_Request;
@@ -13,7 +14,7 @@ use WP_User;
 /**
  * Make WordPress harder to break into.
  */
-class Core implements \BlueChip\Security\Modules\Initializable
+class Core implements Initializable
 {
     /**
      * @var string

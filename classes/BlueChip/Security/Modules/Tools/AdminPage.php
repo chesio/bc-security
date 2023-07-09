@@ -2,11 +2,12 @@
 
 namespace BlueChip\Security\Modules\Tools;
 
+use BlueChip\Security\Core\Admin\AbstractPage;
 use BlueChip\Security\Helpers\AdminNotices;
 use BlueChip\Security\Settings;
 use BlueChip\Security\Setup;
 
-class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
+class AdminPage extends AbstractPage
 {
     /**
      * @var string Page slug

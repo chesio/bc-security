@@ -2,13 +2,14 @@
 
 namespace BlueChip\Security\Modules\Log;
 
+use BlueChip\Security\Core\ListTable as CoreListTable;
 use BlueChip\Security\Modules\Access\Scope;
 use BlueChip\Security\Modules\InternalBlocklist\AdminPage as InternalBlocklistAdminPage;
 
 /**
  * Logs table
  */
-class ListTable extends \BlueChip\Security\Core\ListTable
+class ListTable extends CoreListTable
 {
     /**
      * @var string Name of blocklist action query argument

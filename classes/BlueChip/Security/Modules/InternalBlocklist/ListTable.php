@@ -2,13 +2,14 @@
 
 namespace BlueChip\Security\Modules\InternalBlocklist;
 
+use BlueChip\Security\Core\ListTable as CoreListTable;
 use BlueChip\Security\Helpers\MySQLDateTime;
 use BlueChip\Security\Modules\Access\Scope;
 
 /**
  * Internal blocklist table
  */
-class ListTable extends \BlueChip\Security\Core\ListTable
+class ListTable extends CoreListTable
 {
     /**
      * @var string Name of remove action query argument

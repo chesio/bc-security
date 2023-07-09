@@ -3,12 +3,13 @@
 namespace BlueChip\Security\Modules\Login;
 
 use BlueChip\Security\Helpers\MySQLDateTime;
+use BlueChip\Security\Modules\Installable;
 use wpdb;
 
 /**
  * Storage and retrieval of lockout book-keeping data
  */
-class Bookkeeper implements \BlueChip\Security\Modules\Installable
+class Bookkeeper implements Installable
 {
     /**
      * @var string Name of DB table where failed logins are stored

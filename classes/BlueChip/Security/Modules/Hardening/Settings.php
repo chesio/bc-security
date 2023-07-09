@@ -2,7 +2,9 @@
 
 namespace BlueChip\Security\Modules\Hardening;
 
-class Settings extends \BlueChip\Security\Core\Settings
+use BlueChip\Security\Core\Settings as CoreSettings;
+
+class Settings extends CoreSettings
 {
     /**
      * @var string Disable pingbacks? [bool:no]
