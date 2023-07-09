@@ -83,6 +83,7 @@ class Plugin
         $hardening                  = new Modules\Hardening\Core($settings->forHardening());
         $internal_blocklist_manager = new Modules\InternalBlocklist\Manager($wpdb);
         $external_blocklist_manager = new Modules\ExternalBlocklist\Manager($settings->forExternalBlocklist(), $cron_job_manager);
+        $scanner_blocker            = new Modules\ScannerBlocker\Core($remote_address, $server_address, $settings->forScannerBlocker(), $internal_blocklist_manager);
         $access_bouncer             = new Modules\Access\Bouncer($remote_address, $internal_blocklist_manager, $external_blocklist_manager);
         $bookkeeper                 = new Modules\Login\Bookkeeper($settings->forLogin(), $wpdb);
         $gatekeeper                 = new Modules\Login\Gatekeeper($settings->forLogin(), $remote_address, $bookkeeper, $internal_blocklist_manager, $access_bouncer);
@@ -97,6 +98,7 @@ class Plugin
             'hardening-core'                => $hardening,
             'internal-blocklist-manager'    => $internal_blocklist_manager,
             'external-blocklist-manager'    => $external_blocklist_manager,
+            'scanner-blocker'               => $scanner_blocker,
             'access-bouncer'                => $access_bouncer,
             'login-bookkeeper'              => $bookkeeper,
             'login-gatekeeper'              => $gatekeeper,
@@ -168,6 +170,9 @@ class Plugin
                 ))
                 ->addPage(new Modules\Login\AdminPage(
                     $this->settings->forLogin()
+                ))
+                ->addPage(new Modules\ScannerBlocker\AdminPage(
+                    $this->settings->forScannerBlocker()
                 ))
                 ->addPage(new Modules\InternalBlocklist\AdminPage(
                     $this->modules['internal-blocklist-manager'],
