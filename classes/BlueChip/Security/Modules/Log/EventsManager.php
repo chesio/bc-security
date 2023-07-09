@@ -53,9 +53,7 @@ abstract class EventsManager
     public static function getInstances(): array
     {
         return \array_map(
-            function (string $classname): Event {
-                return new $classname();
-            },
+            fn (string $classname): Event => new $classname(),
             self::$mapping
         );
     }

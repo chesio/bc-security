@@ -164,9 +164,7 @@ abstract class Plugin
 
         $wordpress_org_plugins = \array_filter(
             get_plugins(),
-            function (array $plugin_data, string $plugin_basename): bool {
-                return Plugin::hasWordPressOrgUpdateUri($plugin_basename, $plugin_data);
-            },
+            fn (array $plugin_data, string $plugin_basename): bool => Plugin::hasWordPressOrgUpdateUri($plugin_basename, $plugin_data),
             ARRAY_FILTER_USE_BOTH
         );
 

@@ -121,24 +121,18 @@ class Manager implements Modules\Initializable
 
         if (isset($filters['meaningful'])) {
             $is_meaningful = $filters['meaningful'];
-            $checks = \array_filter($checks, function (Check $check) use ($is_meaningful): bool {
-                return $is_meaningful ? $check->isMeaningful() : !$check->isMeaningful();
-            });
+            $checks = \array_filter($checks, fn (Check $check): bool => $is_meaningful ? $check->isMeaningful() : !$check->isMeaningful());
         }
 
         if (isset($filters['monitored'])) {
             $monitored = $filters['monitored'];
             $settings = $this->settings;
-            $checks = \array_filter($checks, function (string $check_id) use ($monitored, $settings): bool {
-                return $monitored ? $settings[$check_id] : !$settings[$check_id];
-            }, ARRAY_FILTER_USE_KEY);
+            $checks = \array_filter($checks, fn (string $check_id): bool => $monitored ? $settings[$check_id] : !$settings[$check_id], ARRAY_FILTER_USE_KEY);
         }
 
         if (isset($filters['status'])) {
             $status = $filters['status'];
-            $checks = \array_filter($checks, function (Check $check) use ($status): bool {
-                return $check->getResult()->getStatus() === $status;
-            });
+            $checks = \array_filter($checks, fn (Check $check): bool => $check->getResult()->getStatus() === $status);
         }
 
         return $checks;
@@ -157,9 +151,7 @@ class Manager implements Modules\Initializable
             $filters['meaningful'] = true;
         }
 
-        return \array_filter($this->getChecks($filters), function (Check $check): bool {
-            return $check instanceof AdvancedCheck;
-        });
+        return \array_filter($this->getChecks($filters), fn (Check $check): bool => $check instanceof AdvancedCheck);
     }
 
 
@@ -175,9 +167,7 @@ class Manager implements Modules\Initializable
             $filters['meaningful'] = true;
         }
 
-        return \array_filter($this->getChecks($filters), function (Check $check): bool {
-            return $check instanceof BasicCheck;
-        });
+        return \array_filter($this->getChecks($filters), fn (Check $check): bool => $check instanceof BasicCheck);
     }
 
 

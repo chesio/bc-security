@@ -323,9 +323,7 @@ class Manager implements Modules\Countable, Modules\Installable, Modules\Initial
         // Prepare query.
         $query = \sprintf(
             "DELETE FROM {$this->blocklist_table} WHERE %s",
-            \implode(' OR ', \array_map(function ($id) {
-                return \sprintf('id = %d', $id);
-            }, $ids))
+            \implode(' OR ', \array_map(fn (int $id): string => \sprintf('id = %d', $id), $ids))
         );
         // Execute query.
         $result = $this->wpdb->query($query);
@@ -376,9 +374,7 @@ class Manager implements Modules\Countable, Modules\Installable, Modules\Initial
         $query = \sprintf(
             "UDPATE {$this->blocklist_table} SET release_time = '%s' WHERE %s",
             MySQLDateTime::formatDateTime(\time()),
-            \implode(' OR ', \array_map(function ($id) {
-                return \sprintf('id = %d', $id);
-            }, $ids))
+            \implode(' OR ', \array_map(fn (int $id): string => \sprintf('id = %d', $id), $ids))
         );
         // Execute query.
         $result = $this->wpdb->query($query);

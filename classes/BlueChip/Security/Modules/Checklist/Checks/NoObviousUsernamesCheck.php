@@ -24,9 +24,7 @@ class NoObviousUsernamesCheck extends Checklist\BasicCheck
         // Get (filtered) list of obvious usernames to test.
         $obvious = apply_filters(Checklist\Hooks::OBVIOUS_USERNAMES, ['admin', 'administrator']);
         // Check for existing usernames.
-        $existing = \array_filter($obvious, function ($username) {
-            return get_user_by('login', $username);
-        });
+        $existing = \array_filter($obvious, fn (string $username): bool => get_user_by('login', $username) instanceof \WP_User);
 
         return empty($existing)
             ? new Checklist\CheckResult(true, esc_html__('None of the following usernames exists on the system:', 'bc-security') . ' <em>' . \implode(', ', $obvious) . '</em>')

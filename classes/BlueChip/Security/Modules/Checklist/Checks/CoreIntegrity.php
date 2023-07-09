@@ -134,9 +134,7 @@ class CoreIntegrity extends Checklist\AdvancedCheck
         // Ignore any modified files in wp-content directory.
         return \array_filter(
             $modified_files,
-            function ($filename) {
-                return !\str_starts_with($filename, 'wp-content/');
-            }
+            fn (string $filename): bool => !\str_starts_with($filename, 'wp-content/')
         );
     }
 
@@ -174,9 +172,7 @@ class CoreIntegrity extends Checklist\AdvancedCheck
                 // Scan wp-include directory recursively.
                 Checklist\Helper::scanDirectoryForUnknownFiles(ABSPATH . WPINC, ABSPATH, $checksums, true)
             ),
-            function (string $filename) use ($ignored_files): bool {
-                return !\in_array($filename, $ignored_files, true);
-            }
+            fn (string $filename): bool => !\in_array($filename, $ignored_files, true)
         );
     }
 }

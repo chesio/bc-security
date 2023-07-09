@@ -21,9 +21,7 @@ trait ListingPage
     {
         $this->per_page_option_name = $option_name;
 
-        add_filter('set-screen-option', function ($status, $option, $value) use ($option_name) {
-            return ($option === $option_name) ? (int) $value : $status;
-        }, 10, 3);
+        add_filter('set-screen-option', fn (mixed $screen_option, string $option, int $value): mixed => ($option === $option_name) ? $value : $screen_option, 10, 3);
     }
 
 
