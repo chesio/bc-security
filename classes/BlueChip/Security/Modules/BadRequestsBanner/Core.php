@@ -82,7 +82,7 @@ class Core implements Initializable
             $this->settings->getBanDuration(),
             Scope::WEBSITE,
             BanReason::BAD_REQUEST_BAN,
-            sprintf(__('Banned for accessing: %s', 'bc-security'), $request),
+            sprintf(__('Banned due to bad request: %s', 'bc-security'), $request),
         );
     }
 }
