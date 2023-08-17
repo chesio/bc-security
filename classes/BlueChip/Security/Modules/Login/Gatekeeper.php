@@ -203,11 +203,11 @@ class Gatekeeper implements Initializable, Loadable
      */
     protected function lockOut(string $username, int $duration, int $reason): void
     {
-        // Trigger lockout action
-        do_action(Hooks::LOCKOUT_EVENT, $this->remote_address, $username, $duration, $reason);
-
         // Lock IP address
-        $this->ib_manager->lock($this->remote_address, $duration, Scope::ADMIN, $reason);
+        if ($this->ib_manager->lock($this->remote_address, $duration, Scope::ADMIN, $reason)) {
+            // Trigger lockout action
+            do_action(Hooks::LOCKOUT_EVENT, $this->remote_address, $username, $duration, $reason);
+        }
 
         // Block access
         Utils::blockAccessTemporarily($this->remote_address);
