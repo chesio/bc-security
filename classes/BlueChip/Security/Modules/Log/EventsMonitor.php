@@ -8,6 +8,7 @@ use BlueChip\Security\Modules\ScannerBlocker\Hooks as ScannerBlockerHooks;
 use BlueChip\Security\Modules\Initializable;
 use BlueChip\Security\Modules\Loadable;
 use BlueChip\Security\Modules\Login\Hooks as LoginHooks;
+use BlueChip\Security\Modules\ScannerBlocker\BanRule;
 use WP;
 use WP_Error;
 
@@ -130,8 +131,8 @@ class EventsMonitor implements Initializable, Loadable
     /**
      * Log bad request event.
      */
-    public function logBadRequestEvent(string $remote_address, string $request, string $pattern): void
+    public function logBadRequestEvent(string $remote_address, string $request, BanRule $ban_rule): void
     {
-        do_action(Action::EVENT, (new Events\BadRequestBan())->setIpAddress($remote_address)->setPattern($pattern)->setRequestUri($request));
+        do_action(Action::EVENT, (new Events\BadRequestBan())->setBanRuleName($ban_rule->getName())->setIpAddress($remote_address)->setRequestUri($request));
     }
 }

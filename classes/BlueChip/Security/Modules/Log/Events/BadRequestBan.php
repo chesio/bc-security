@@ -17,11 +17,11 @@ class BadRequestBan extends Event
     protected const LOG_LEVEL = \Psr\Log\LogLevel::WARNING;
 
     /**
-     * __('Pattern')
+     * __('Ban rule')
      *
-     * @var string Bad request pattern that matched request URI.
+     * @var string Ban rule name that matched request URI.
      */
-    protected string $pattern = '';
+    protected string $ban_rule_name = '';
 
     /**
      * __('Request URI')
@@ -46,7 +46,7 @@ class BadRequestBan extends Event
 
     public function getMessage(): string
     {
-        return __('Request {request_uri} from {ip_address} resulted in 404 error and matched bad request pattern {pattern}.', 'bc-security');
+        return __('Request {request_uri} from {ip_address} resulted in 404 error and matched bad request rule {ban_rule_name}.', 'bc-security');
     }
 
 
@@ -57,9 +57,9 @@ class BadRequestBan extends Event
     }
 
 
-    public function setPattern(string $pattern): self
+    public function setBanRuleName(string $ban_rule_name): self
     {
-        $this->pattern = $pattern;
+        $this->ban_rule_name = $ban_rule_name;
         return $this;
     }
 

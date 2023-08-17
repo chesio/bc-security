@@ -50,21 +50,21 @@ class Core implements Initializable
 
         $request = $wp->request;
 
-        if (($pattern = $this->isBadRequest($request)) && $this->banRemoteAddress($request)) {
+        if (($ban_rule = $this->isBadRequest($request)) && $this->banRemoteAddress($request)) {
             // If ban succeeded, trigger related event.
-            do_action(Hooks::BAD_REQUEST_EVENT, $this->remote_address, $request, $pattern);
+            do_action(Hooks::BAD_REQUEST_EVENT, $this->remote_address, $request, $ban_rule);
         }
     }
 
 
     /**
-     * @return string|null Bad request pattern that matched $request or null if no such pattern exists.
+     * @return BanRule|null Ban rule that matched $uri or null if no such rule has been found.
      */
-    private function isBadRequest(string $request): ?string
+    private function isBadRequest(string $uri): ?BanRule
     {
-        foreach ($this->settings->getBadRequestPatterns() as $pattern) {
-            if (preg_match("/" . $pattern . "/i", $request)) {
-                return $pattern;
+        foreach ($this->settings->getActiveBanRules() as $ban_rule) {
+            if ($ban_rule->matches($uri)) {
+                return $ban_rule;
             }
         }
 
