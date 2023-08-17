@@ -81,7 +81,8 @@ class Plugin
         $monitor                    = new Modules\Log\EventsMonitor($remote_address, $server_address);
         $notifier                   = new Modules\Notifications\Watchman($settings->forNotifications(), $remote_address, $logger);
         $hardening                  = new Modules\Hardening\Core($settings->forHardening());
-        $internal_blocklist_manager = new Modules\InternalBlocklist\Manager($wpdb);
+        $htaccess_synchronizer      = new Modules\InternalBlocklist\HtaccessSynchronizer();
+        $internal_blocklist_manager = new Modules\InternalBlocklist\Manager($wpdb, $htaccess_synchronizer);
         $external_blocklist_manager = new Modules\ExternalBlocklist\Manager($settings->forExternalBlocklist(), $cron_job_manager);
         $access_bouncer             = new Modules\Access\Bouncer($remote_address, $internal_blocklist_manager, $external_blocklist_manager);
         $bookkeeper                 = new Modules\Login\Bookkeeper($settings->forLogin(), $wpdb);
@@ -95,6 +96,7 @@ class Plugin
             'events-monitor'                => $monitor,
             'notifier'                      => $notifier,
             'hardening-core'                => $hardening,
+            'htaccess-synchronizer'         => $htaccess_synchronizer,
             'internal-blocklist-manager'    => $internal_blocklist_manager,
             'external-blocklist-manager'    => $external_blocklist_manager,
             'access-bouncer'                => $access_bouncer,
@@ -171,6 +173,7 @@ class Plugin
                 ))
                 ->addPage(new Modules\InternalBlocklist\AdminPage(
                     $this->modules['internal-blocklist-manager'],
+                    $this->modules['htaccess-synchronizer'],
                     $this->modules['cron-job-manager']
                 ))
                 ->addPage(new Modules\ExternalBlocklist\AdminPage(

@@ -7,6 +7,7 @@ PHP 8.0 or newer and WordPress 6.0 or newer are now required. Plugin has been te
 ### Added
 
 * WordPress 6.3 is supported [#141](https://github.com/chesio/bc-security/issues/141).
+* Block rules with "website" access scope in internal blocklist can now be synced with `.htaccess` file [#142](https://github.com/chesio/bc-security/issues/142).
 
 ### Changed
 

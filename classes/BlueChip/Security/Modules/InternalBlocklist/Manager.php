@@ -22,12 +22,18 @@ use wpdb;
  * release date that is the most future one) if single IP is blocked multiple
  * times in the same scope.
  */
-class Manager implements Modules\Countable, Modules\Installable, Modules\Initializable, \Countable
+class Manager implements Modules\Activable, Modules\Countable, Modules\Installable, Modules\Initializable, \Countable
 {
     /**
      * @var string Name of DB table where internal blocklist is stored
      */
     private const BLOCKLIST_TABLE = 'bc_security_internal_blocklist';
+
+
+    /**
+     * @var string Name of cron job action used for background .htaccess file synchronization.
+     */
+    private const HTACCESS_SYNCHRONIZATION = 'bc-security/synchronize-internal-blocklist-with-htaccess-file';
 
 
     /**
@@ -44,7 +50,7 @@ class Manager implements Modules\Countable, Modules\Installable, Modules\Initial
     /**
      * @param wpdb $wpdb WordPress database access abstraction object
      */
-    public function __construct(private wpdb $wpdb)
+    public function __construct(private wpdb $wpdb, private HtaccessSynchronizer $htaccess_synchronizer)
     {
         $this->blocklist_table = $wpdb->prefix . self::BLOCKLIST_TABLE;
         $this->columns = [
@@ -85,10 +91,24 @@ class Manager implements Modules\Countable, Modules\Installable, Modules\Initial
     }
 
 
+    public function activate(): void
+    {
+        // Do nothing.
+    }
+
+
+    public function deactivate(): void
+    {
+        // Unschedule all cron jobs consumed by this module.
+        wp_unschedule_hook(self::HTACCESS_SYNCHRONIZATION);
+    }
+
+
     public function init(): void
     {
         // Hook into cron job execution.
         add_action(Modules\Cron\Jobs::INTERNAL_BLOCKLIST_CLEAN_UP, [$this, 'pruneInCron'], 10, 0);
+        add_action(self::HTACCESS_SYNCHRONIZATION, [$this, 'runSynchronizationWithHtaccessFile'], 10, 0);
     }
 
 
@@ -188,6 +208,33 @@ class Manager implements Modules\Countable, Modules\Installable, Modules\Initial
 
 
     /**
+     * @return string[] List of IP addresses that are currently blocked in website scope.
+     */
+    public function fetchIpAddressesForHtaccess(): array
+    {
+        // Prepare query
+        $query = sprintf("SELECT ip_address, release_time FROM {$this->blocklist_table} WHERE scope = %d", Scope::WEBSITE);
+
+        // Get results.
+        $results = $this->wpdb->get_results($query, ARRAY_A);
+
+        $ip_addresses = [];
+
+        foreach ($results as ['ip_address' => $ip_address, 'release_time' => $release_time]) {
+            // Filter out-dated records.
+            $blocked = \is_string($release_time) && (\time() < MySQLDateTime::parseTimestamp($release_time));
+
+            if ($blocked) {
+                $ip_addresses[] = $ip_address;
+            }
+        }
+
+        // Single IP address may be blocked in the same scope for different reasons, so make sure it is returned only once.
+        return \array_unique($ip_addresses);
+    }
+
+
+    /**
      * Is $ip_address on blocklist with given $scope?
      *
      * @hook \BlueChip\Security\Modules\InternalBlocklist\Hooks::IS_IP_ADDRESS_LOCKED
@@ -256,6 +303,13 @@ class Manager implements Modules\Countable, Modules\Installable, Modules\Initial
             $result = $this->wpdb->insert($this->blocklist_table, \array_merge($data, $where), \array_merge($format, $where_format));
         }
 
+        if ($result && ($scope === Scope::WEBSITE)) {
+            // Trigger immediate synchronization of block rules in .htaccess file...
+            $this->synchronizeWithHtaccessFile();
+            // ... and schedule synchronization at the release time.
+            wp_schedule_single_event($now + $duration, self::HTACCESS_SYNCHRONIZATION);
+        }
+
         return $result !== false;
     }
 
@@ -303,6 +357,10 @@ class Manager implements Modules\Countable, Modules\Installable, Modules\Initial
     {
         // Execute query.
         $result = $this->wpdb->delete($this->blocklist_table, ['id' => $id], ['%d']);
+        // Trigger synchronization of block rules in .htaccess file.
+        if ($result) {
+            $this->synchronizeWithHtaccessFile();
+        }
         // Return status.
         return $result !== false;
     }
@@ -327,6 +385,10 @@ class Manager implements Modules\Countable, Modules\Installable, Modules\Initial
         );
         // Execute query.
         $result = $this->wpdb->query($query);
+        // Trigger synchronization of block rules in .htaccess file.
+        if ($result) {
+            $this->synchronizeWithHtaccessFile();
+        }
         // Return number of affected (unlocked) rows.
         return $result ?: 0;
     }
@@ -351,6 +413,10 @@ class Manager implements Modules\Countable, Modules\Installable, Modules\Initial
             ['%s'],
             ['%d']
         );
+        // Trigger synchronization of block rules in .htaccess file.
+        if ($result) {
+            $this->synchronizeWithHtaccessFile();
+        }
         // Return status.
         return $result !== false;
     }
@@ -378,6 +444,10 @@ class Manager implements Modules\Countable, Modules\Installable, Modules\Initial
         );
         // Execute query.
         $result = $this->wpdb->query($query);
+        // Trigger synchronization of block rules in .htaccess file.
+        if ($result) {
+            $this->synchronizeWithHtaccessFile();
+        }
         // Return number of affected (unlocked) rows.
         return $result ?: 0;
     }
@@ -407,5 +477,45 @@ class Manager implements Modules\Countable, Modules\Installable, Modules\Initial
         $result = $this->wpdb->get_var($query);
         // Return result.
         return null === $result ? $result : (int) $result;
+    }
+
+
+    public function isHtaccessFileInSync(): bool
+    {
+        $ip_addresses_to_block = $this->fetchIpAddressesForHtaccess();
+        $blocked_ip_addresses = $this->htaccess_synchronizer->extract();
+
+        // Both lists must have the same size...
+        if (\count($ip_addresses_to_block) !== \count($blocked_ip_addresses)) {
+            return false;
+        }
+
+        // ...and the same contents.
+        return \array_diff($ip_addresses_to_block, $blocked_ip_addresses) === [];
+    }
+
+
+    /**
+     * Synchronize contents of internal blocklist with .htaccess file,
+     *
+     * @internal This is alias of synchronizeWithHtaccessFile() method that just ignores its return value.
+     */
+    public function runSynchronizationWithHtaccessFile(): void
+    {
+        $this->synchronizeWithHtaccessFile();
+    }
+
+
+    /**
+     * Synchronize contents of internal blocklist with .htaccess file.
+     *
+     * @return bool True on success, false on failure.
+     */
+    public function synchronizeWithHtaccessFile(): bool
+    {
+        return $this->htaccess_synchronizer->isAvailable()
+            ? $this->htaccess_synchronizer->insert($this->fetchIpAddressesForHtaccess())
+            : false
+        ;
     }
 }

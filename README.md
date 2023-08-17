@@ -146,6 +146,18 @@ BC Security maintains a list of IP addresses with limited access to the website.
 
 Out-dated records are automatically removed from the list by WP-Cron job scheduled to run every night. The job can be deactivated in backend, if desired.
 
+#### Synchronization with .htaccess file
+
+On Apache webserver, block rules with "website" access scope can be automatically synchronized with `.htaccess` file. This makes access blocking much more powerful as all requests to the webserver are blocked this way and not only the ones handled by WordPress.
+
+This feature must be however set up manually - following two lines have to be added at the top of root `.htaccess` file in order for it to work:
+```.apacheconf
+# BEGIN BC Security
+# END BC Security
+```
+
+After you have completed the setup, either wait for automatic synchronisation to kick in on next *locking* event or run manual synchronisation from the administration page.
+
 ### External blocklist
 
 In addition to [internal blocklist](#internal-blocklist), BC Security can be configured to fetch list of IP addresses to block from external sources. Currently only [Amazon AWS IP ranges](https://ip-ranges.amazonaws.com/ip-ranges.json) can be used this way.

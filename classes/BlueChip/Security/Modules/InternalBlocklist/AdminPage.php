@@ -30,19 +30,24 @@ class AdminPage extends AbstractPage
     private const ADD_TO_BLOCKLIST_ACTION = 'add-to-internal-blocklist';
 
     /**
+     * @var string Name for synchronize .htaccess file action (used for both nonce action and submit name)
+     */
+    private const HTACCESS_SYNC_ACTION = 'synchronize-htaccess-file';
+
+    /**
      * @var string Name for prune action (used for both nonce action and submit name)
      */
     private const PRUNE_ACTION = 'prune-internal-blocklist';
 
     /**
-     * @var string Name for cron activation action (used for both nonce action and submit name)
+     * @var string Name for action to activate cron job for automatic pruning (used for both nonce action and submit name)
      */
-    private const CRON_ACTION_ON = 'auto-internal-blocklist-pruning-on';
+    private const CRON_PRUNE_ACTION_ON = 'auto-internal-blocklist-pruning-on';
 
     /**
-     * @var string Name for cron deactivation action (used for both nonce action and submit name)
+     * @var string Name for action to deactivate cron job for automatic pruning (used for both nonce action and submit name)
      */
-    private const CRON_ACTION_OFF = 'auto-internal-blocklist-pruning-off';
+    private const CRON_PRUNE_ACTION_OFF = 'auto-internal-blocklist-pruning-off';
 
     /**
      * @var string Name for query argument that prefills IP address in the form
@@ -55,8 +60,11 @@ class AdminPage extends AbstractPage
     public const DEFAULT_SCOPE = 'default-scope';
 
 
-    public function __construct(private Manager $ib_manager, private CronManager $cron_manager)
-    {
+    public function __construct(
+        private Manager $ib_manager,
+        private HtaccessSynchronizer $htaccess_synchronizer,
+        private CronManager $cron_manager
+    ) {
         $this->page_title = _x('Internal Blocklist', 'Dashboard page title', 'bc-security');
         $this->menu_title = _x('Internal Blocklist', 'Dashboard menu item name', 'bc-security');
 
@@ -92,6 +100,8 @@ class AdminPage extends AbstractPage
         echo '</form>';
         // Table pruning actions
         $this->printPruningActions();
+        // Table syncing actions
+        $this->printSyncingActions();
         echo '</div>';
     }
 
@@ -192,15 +202,41 @@ class AdminPage extends AbstractPage
 
         echo '<form method="post">';
         if ($this->cron_manager->getJob(Cron\Jobs::INTERNAL_BLOCKLIST_CLEAN_UP)->isScheduled()) {
-            wp_nonce_field(self::CRON_ACTION_OFF, self::NONCE_NAME);
+            wp_nonce_field(self::CRON_PRUNE_ACTION_OFF, self::NONCE_NAME);
             echo '<p>' . esc_html__('Automatic clean up of out-dated records is active.', 'bc-security') . '</p>';
-            submit_button(__('Deactivate auto-pruning', 'bc-security'), 'delete', self::CRON_ACTION_OFF, false);
+            submit_button(__('Deactivate auto-pruning', 'bc-security'), 'delete', self::CRON_PRUNE_ACTION_OFF, false);
         } else {
-            wp_nonce_field(self::CRON_ACTION_ON, self::NONCE_NAME);
+            wp_nonce_field(self::CRON_PRUNE_ACTION_ON, self::NONCE_NAME);
             echo '<p>' . esc_html__('You can activate automatic clean up of out-dated records via WP-Cron:', 'bc-security') . '</p>';
-            submit_button(__('Activate auto-pruning', 'bc-security'), 'primary', self::CRON_ACTION_ON, false);
+            submit_button(__('Activate auto-pruning', 'bc-security'), 'primary', self::CRON_PRUNE_ACTION_ON, false);
         }
         echo '</form>';
+    }
+
+
+    private function printSyncingActions(): void
+    {
+        echo '<h2>' . esc_html__('Blocklist syncing', 'bc-security') . '</h2>';
+        if ($this->htaccess_synchronizer->isAvailable()) {
+            if ($this->ib_manager->isHtaccessFileInSync()) {
+                echo '<p>' . esc_html__('Everything works fine, the rules in .htaccess file are synchronized automatically.', 'bc-security') . '</p>';
+            } else {
+                echo '<form method="post">';
+                wp_nonce_field(self::HTACCESS_SYNC_ACTION, self::NONCE_NAME);
+                echo '<p>' . esc_html__('The rules in .htaccess file are out of sync - you should synchronize the internal blocklist with .htaccess file manually:', 'bc-security') . '</p>';
+                submit_button(__('Synchronize blocklist with .htaccess file', 'bc-security'), 'primary', self::HTACCESS_SYNC_ACTION, false);
+                echo '</form>';
+            }
+        } else {
+            echo '<p>' . sprintf(
+                esc_html__('To use this feature, you have to first put following two lines at the top of root %1$s file:', 'bc-security'),
+                '<em>.htaccess</em>'
+            ) . '</p>';
+            echo '<pre>';
+            echo $this->htaccess_synchronizer::HEADER_LINE . PHP_EOL;
+            echo $this->htaccess_synchronizer::FOOTER_LINE . PHP_EOL;
+            echo '</pre>';
+        }
     }
 
 
@@ -232,19 +268,24 @@ class AdminPage extends AbstractPage
             $this->processBlocklistAction();
         }
 
+        if (isset($_POST[self::HTACCESS_SYNC_ACTION]) && wp_verify_nonce($nonce, self::HTACCESS_SYNC_ACTION)) {
+            // Synchronize .htaccess file.
+            $this->processHtaccessSyncAction();
+        }
+
         if (isset($_POST[self::PRUNE_ACTION]) && wp_verify_nonce($nonce, self::PRUNE_ACTION)) {
             // Prune internal blocklist.
             $this->processPruneAction();
         }
 
-        if (isset($_POST[self::CRON_ACTION_OFF]) && wp_verify_nonce($nonce, self::CRON_ACTION_OFF)) {
+        if (isset($_POST[self::CRON_PRUNE_ACTION_OFF]) && wp_verify_nonce($nonce, self::CRON_PRUNE_ACTION_OFF)) {
             // Deactivate automatic pruning.
-            $this->processCronOffAction();
+            $this->processCronPruneActionDeactivation();
         }
 
-        if (isset($_POST[self::CRON_ACTION_ON]) && wp_verify_nonce($nonce, self::CRON_ACTION_ON)) {
+        if (isset($_POST[self::CRON_PRUNE_ACTION_ON]) && wp_verify_nonce($nonce, self::CRON_PRUNE_ACTION_ON)) {
             // Activate automatic pruning.
-            $this->processCronOnAction();
+            $this->processCronPruneActionActivation();
         }
     }
 
@@ -285,6 +326,21 @@ class AdminPage extends AbstractPage
         }
     }
 
+    private function processHtaccessSyncAction(): void
+    {
+        if ($this->ib_manager->synchronizeWithHtaccessFile()) {
+            AdminNotices::add(
+                __('Rules in .htaccess file has been synchronized with the internal blocklist.', 'bc-security'),
+                AdminNotices::SUCCESS
+            );
+        } else {
+            AdminNotices::add(
+                __('Failed to synchronize rules in .htaccess file with the internal blocklist.', 'bc-security'),
+                AdminNotices::ERROR
+            );
+        }
+    }
+
     /**
      * Attempt to prune internal blocklist table. Display notice about action outcome.
      */
@@ -307,7 +363,7 @@ class AdminPage extends AbstractPage
     /**
      * Deactivate cron job for blocklist table pruning. Display notice about action outcome.
      */
-    private function processCronOffAction(): void
+    private function processCronPruneActionDeactivation(): void
     {
         $this->cron_manager->deactivateJob(Cron\Jobs::INTERNAL_BLOCKLIST_CLEAN_UP);
         AdminNotices::add(
@@ -320,7 +376,7 @@ class AdminPage extends AbstractPage
     /**
      * Activate cron job for blocklist table pruning. Display notice about action outcome.
      */
-    private function processCronOnAction(): void
+    private function processCronPruneActionActivation(): void
     {
         if ($this->cron_manager->activateJob(Cron\Jobs::INTERNAL_BLOCKLIST_CLEAN_UP)) {
             AdminNotices::add(
