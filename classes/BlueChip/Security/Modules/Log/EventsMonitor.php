@@ -4,11 +4,11 @@ namespace BlueChip\Security\Modules\Log;
 
 use BlueChip\Security\Modules\Access\Hooks as AccessHooks;
 use BlueChip\Security\Modules\ExternalBlocklist\Source;
-use BlueChip\Security\Modules\ScannerBlocker\Hooks as ScannerBlockerHooks;
+use BlueChip\Security\Modules\BadRequestsBanner\Hooks as BadRequestsBannerHooks;
 use BlueChip\Security\Modules\Initializable;
 use BlueChip\Security\Modules\Loadable;
 use BlueChip\Security\Modules\Login\Hooks as LoginHooks;
-use BlueChip\Security\Modules\ScannerBlocker\BanRule;
+use BlueChip\Security\Modules\BadRequestsBanner\BanRule;
 use WP;
 use WP_Error;
 
@@ -50,7 +50,7 @@ class EventsMonitor implements Initializable, Loadable
         // - lockout event
         add_action(LoginHooks::LOCKOUT_EVENT, [$this, 'logLockoutEvent'], 10, 3);
         // - bad request event
-        add_action(ScannerBlockerHooks::BAD_REQUEST_EVENT, [$this, 'logBadRequestEvent'], 10, 3);
+        add_action(BadRequestsBannerHooks::BAD_REQUEST_EVENT, [$this, 'logBadRequestEvent'], 10, 3);
     }
 
 

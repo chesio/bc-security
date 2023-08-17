@@ -1,6 +1,6 @@
 <?php
 
-namespace BlueChip\Security\Modules\ScannerBlocker;
+namespace BlueChip\Security\Modules\BadRequestsBanner;
 
 class BanRule
 {

@@ -9,7 +9,7 @@ use BlueChip\Security\Modules\Hardening\Settings as HardeningSettings;
 use BlueChip\Security\Modules\Log\Settings as LogSettings;
 use BlueChip\Security\Modules\Login\Settings as LoginSettings;
 use BlueChip\Security\Modules\Notifications\Settings as NotificationsSettings;
-use BlueChip\Security\Modules\ScannerBlocker\Settings as ScannerBlockerSettings;
+use BlueChip\Security\Modules\BadRequestsBanner\Settings as BadRequestsBannerSettings;
 use BlueChip\Security\Setup\Settings as SetupSettings;
 
 /**
@@ -31,7 +31,7 @@ class Settings implements \IteratorAggregate
 
     private NotificationsSettings $notifications;
 
-    private ScannerBlockerSettings $scannerBlocker;
+    private BadRequestsBannerSettings $scannerBlocker;
 
     private SetupSettings $setup;
 
@@ -45,7 +45,7 @@ class Settings implements \IteratorAggregate
         $this->log                  = new LogSettings('bc-security-log');
         $this->login                = new LoginSettings('bc-security-login');
         $this->notifications        = new NotificationsSettings('bc-security-notifications');
-        $this->scannerBlocker       = new ScannerBlockerSettings('bc-security-scanner-blocker');
+        $this->scannerBlocker       = new BadRequestsBannerSettings('bc-security-scanner-blocker');
         $this->setup                = new SetupSettings('bc-security-setup');
     }
 
@@ -89,7 +89,7 @@ class Settings implements \IteratorAggregate
         return $this->notifications;
     }
 
-    public function forScannerBlocker(): ScannerBlockerSettings
+    public function forBadRequestsBanner(): BadRequestsBannerSettings
     {
         return $this->scannerBlocker;
     }

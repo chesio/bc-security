@@ -1,8 +1,8 @@
 <?php
 
-namespace BlueChip\Security\Tests\Unit\Cases\Modules\ScannerBlocker;
+namespace BlueChip\Security\Tests\Unit\Cases\Modules\BadRequestsBanner;
 
-use BlueChip\Security\Modules\ScannerBlocker\BuiltInRules;
+use BlueChip\Security\Modules\BadRequestsBanner\BuiltInRules;
 
 class BuiltInRulesTest extends \BlueChip\Security\Tests\Unit\TestCase
 {
@@ -10,7 +10,7 @@ class BuiltInRulesTest extends \BlueChip\Security\Tests\Unit\TestCase
     {
         return [
             'PHP file' => ['wp-config.php', false],
-            'PNG file' => ['dummy.png', false],
+            'Image file' => ['dummy.png', false],
             'Backup file' => ['website-backup.zip', true],
             'Backup (back) file' => ['wp-config.php.back', true],
             'Backup (old) file' => ['script.php.old', true],
@@ -22,7 +22,7 @@ class BuiltInRulesTest extends \BlueChip\Security\Tests\Unit\TestCase
     {
         return [
             'PHP file' => ['wp-config.php', true],
-            'PNG file' => ['dummy.png', false],
+            'Image file' => ['dummy.png', false],
             'Backup file' => ['website-backup.zip', false],
             'Backup (back) file' => ['wp-config.php.back', false],
             'Backup (old) file' => ['script.php.old', false],

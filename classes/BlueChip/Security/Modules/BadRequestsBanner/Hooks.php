@@ -1,6 +1,6 @@
 <?php
 
-namespace BlueChip\Security\Modules\ScannerBlocker;
+namespace BlueChip\Security\Modules\BadRequestsBanner;
 
 /**
  * Hooks available in Scanner Blocker security module

@@ -1,6 +1,6 @@
 <?php
 
-namespace BlueChip\Security\Modules\ScannerBlocker;
+namespace BlueChip\Security\Modules\BadRequestsBanner;
 
 use BlueChip\Security\Core\Admin\AbstractPage;
 use BlueChip\Security\Core\Admin\SettingsPage;
@@ -18,8 +18,8 @@ class AdminPage extends AbstractPage
 
     public function __construct(Settings $settings)
     {
-        $this->page_title = _x('Scanner Blocker', 'Dashboard page title', 'bc-security');
-        $this->menu_title = _x('Scanner Blocker', 'Dashboard menu item name', 'bc-security');
+        $this->page_title = _x('Ban bad requests', 'Dashboard page title', 'bc-security');
+        $this->menu_title = _x('Bad Requests Banner', 'Dashboard menu item name', 'bc-security');
 
         $this->useSettings($settings);
     }
@@ -38,8 +38,8 @@ class AdminPage extends AbstractPage
     {
         echo '<div class="wrap">';
         echo '<h1>' . esc_html($this->page_title) . '</h1>';
-        echo '<p>' . esc_html__('Scanner Blocker enables you to automatically block remote IP addresses that are scanning your website for weaknesses. A weakness can be known vulnerable plugin file, forgotten backup file or PHP script used for administrative purposes.', 'bc-security') . '</p>';
-        echo '<p>' . sprintf(esc_html__('%s: Scanner Blocker does not prevent attackers from accessing such files if they really exist on your webspace! As the blocking happens on application level, only requests that are served by WordPress can be blocked.', 'bc-security'), '<strong>' . esc_html__('Important', 'bc-security') . '</strong>') . '</p>';
+        echo '<p>' . esc_html__('This module enables you to automatically block remote IP addresses that are scanning your website for weaknesses or trying various automated attacks. A weakness can be known vulnerable plugin file, forgotten backup file or PHP script used for administrative purposes.', 'bc-security') . '</p>';
+        echo '<p>' . esc_html__('Below you can activate some pre-configured rules or you can add your own rules. The rules are checked whenever a request to the website results in 404 error. If any rule matches the request URI, remote IP address is locked from accessing the website for configured amount of time.', 'bc-security') . '</p>';
         // Settings form
         $this->printSettingsForm();
         echo '</div>';
@@ -74,7 +74,7 @@ class AdminPage extends AbstractPage
             'builtin-rules',
             _x('Built-in rules', 'Settings section title', 'bc-security'),
             function () {
-                echo '<p>' . esc_html__('Built-in rules cover most common scanning scenarios.', 'bc-security') . '</p>';
+                echo '<p>' . esc_html__('Built-in rules target most common indicators that request to non-existent file is in fact a scan attempt.', 'bc-security') . '</p>';
             }
         );
 
@@ -96,7 +96,7 @@ class AdminPage extends AbstractPage
             function () {
                 echo '<p>' . \sprintf(
                     /* translators: 1: link to regex101.com */
-                    esc_html__('Using the field below you may add your own rules in form of regular expression. %1$s before use!', 'bc-security'),
+                    esc_html__('Using the field below you may add your own rules in form of regular expression. All patterns are automatically handled in case-insensitive manner. %1$s before use!', 'bc-security'),
                     '<a href="https://regex101.com/" rel="noreferrer">' . esc_html__('Test the expressions', 'bc-security') . '</a>'
                 ) . '</p>';
             }
@@ -108,7 +108,7 @@ class AdminPage extends AbstractPage
             [FormHelper::class, 'printTextArea'],
             [
                 'append' => sprintf(
-                    __('Enter one pattern per line. Any line starting with %s will be treated as comment. All patterns are automatically handled in case-insensitive manner.', 'bc-security'),
+                    __('Enter one pattern per line. Any line starting with %s will be treated as comment.', 'bc-security'),
                     Settings::BAD_REQUEST_PATTERN_COMMENT_PREFIX
                 ),
                 'cols' => 60,

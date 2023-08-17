@@ -1,6 +1,6 @@
 <?php
 
-namespace BlueChip\Security\Modules\ScannerBlocker;
+namespace BlueChip\Security\Modules\BadRequestsBanner;
 
 use BlueChip\Security\Core\Settings as CoreSettings;
 
@@ -67,7 +67,7 @@ class Settings extends CoreSettings
 
         // Fill custom rules second.
         foreach ($this->getBadRequestPatterns() as $pattern) {
-            $ban_rules[] = new BanRule(sprintf('Custom rule: %s', $pattern), $pattern);
+            $ban_rules[] = new BanRule(sprintf(__('Custom rule: %s', 'bc-security'), $pattern), $pattern);
         }
 
         return $ban_rules;

@@ -1,6 +1,6 @@
 <?php
 
-namespace BlueChip\Security\Modules\ScannerBlocker;
+namespace BlueChip\Security\Modules\BadRequestsBanner;
 
 use BlueChip\Security\Modules\Access\Scope;
 use BlueChip\Security\Modules\Initializable;
