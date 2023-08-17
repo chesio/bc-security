@@ -216,7 +216,7 @@ class AdminPage extends AbstractPage
 
     private function printSyncingActions(): void
     {
-        echo '<h2>' . esc_html__('Blocklist syncing', 'bc-security') . '</h2>';
+        echo '<h2 id="blocklist-synchronization">' . esc_html__('Blocklist synchronization', 'bc-security') . '</h2>';
         if ($this->htaccess_synchronizer->isAvailable()) {
             if ($this->ib_manager->isHtaccessFileInSync()) {
                 echo '<p>' . esc_html__('Everything works fine, the rules in .htaccess file are synchronized automatically.', 'bc-security') . '</p>';

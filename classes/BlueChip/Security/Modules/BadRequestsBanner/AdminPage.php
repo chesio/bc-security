@@ -5,6 +5,8 @@ namespace BlueChip\Security\Modules\BadRequestsBanner;
 use BlueChip\Security\Core\Admin\AbstractPage;
 use BlueChip\Security\Core\Admin\SettingsPage;
 use BlueChip\Security\Helpers\FormHelper;
+use BlueChip\Security\Modules\InternalBlocklist\AdminPage as InternalBlocklistAdminPage;
+use BlueChip\Security\Modules\InternalBlocklist\HtaccessSynchronizer;
 
 class AdminPage extends AbstractPage
 {
@@ -13,15 +15,20 @@ class AdminPage extends AbstractPage
     /**
      * @var string Page slug
      */
-    public const SLUG = 'bc-security-scanner-blocker';
+    public const SLUG = 'bc-security-bad-requests-banner';
 
 
-    public function __construct(Settings $settings)
+    private HtaccessSynchronizer $htaccess_synchronizer;
+
+
+    public function __construct(Settings $settings, HtaccessSynchronizer $htaccess_synchronizer)
     {
         $this->page_title = _x('Ban bad requests', 'Dashboard page title', 'bc-security');
         $this->menu_title = _x('Bad Requests Banner', 'Dashboard menu item name', 'bc-security');
 
         $this->useSettings($settings);
+
+        $this->htaccess_synchronizer = $htaccess_synchronizer;
     }
 
 
@@ -38,8 +45,17 @@ class AdminPage extends AbstractPage
     {
         echo '<div class="wrap">';
         echo '<h1>' . esc_html($this->page_title) . '</h1>';
-        echo '<p>' . esc_html__('This module enables you to automatically block remote IP addresses that are scanning your website for weaknesses or trying various automated attacks. A weakness can be known vulnerable plugin file, forgotten backup file or PHP script used for administrative purposes.', 'bc-security') . '</p>';
+        echo '<p>' . esc_html__('This module enables you to automatically block remote IP addresses that are scanning your website for weaknesses. A weakness can be known vulnerable plugin file, forgotten backup file or PHP script used for administrative purposes.', 'bc-security') . '</p>';
         echo '<p>' . esc_html__('Below you can activate some pre-configured rules or you can add your own rules. The rules are checked whenever a request to the website results in 404 error. If any rule matches the request URI, remote IP address is locked from accessing the website for configured amount of time.', 'bc-security') . '</p>';
+        //
+        if (!$this->htaccess_synchronizer->isAvailable()) {
+            echo '<p>' . sprintf(
+                /* translators: 1: bold indicator, 2: link to internal blocklist admin page */
+                esc_html__('%1$s: It is strongly recommended that you enable %2$s of internal blocklist and .htaccess file in order to prevent locked bots from accessing existing files on your webserver!', 'bc-security'),
+                '<strong>' . esc_html__('Important', 'bc-security') . '</strong>',
+                '<a href="' . InternalBlocklistAdminPage::getPageUrl() . '#blocklist-synchronization">' . esc_html__('synchronization') . '</a>'
+            ) . '</p>';
+        }
         // Settings form
         $this->printSettingsForm();
         echo '</div>';
@@ -58,7 +74,7 @@ class AdminPage extends AbstractPage
 
         // Section: Ban settings
         $this->addSettingsSection(
-            'scanner-blocker-settings',
+            'bad-requests-banner-settings',
             _x('Settings', 'Settings section title', 'bc-security')
         );
 
@@ -71,7 +87,7 @@ class AdminPage extends AbstractPage
 
         // Section: Built-in rules
         $this->addSettingsSection(
-            'builtin-rules',
+            'bad-requests-banner-builtin-rules',
             _x('Built-in rules', 'Settings section title', 'bc-security'),
             function () {
                 echo '<p>' . esc_html__('Built-in rules target most common indicators that request to non-existent file is in fact a scan attempt.', 'bc-security') . '</p>';
@@ -91,7 +107,7 @@ class AdminPage extends AbstractPage
 
         // Section: Custom rules
         $this->addSettingsSection(
-            'custom-scanner-blocker-rules',
+            'bad-requests-banner-custom-rules',
             _x('Custom rules', 'Settings section title', 'bc-security'),
             function () {
                 echo '<p>' . \sprintf(
@@ -111,7 +127,8 @@ class AdminPage extends AbstractPage
                     __('Enter one pattern per line. Any line starting with %s will be treated as comment.', 'bc-security'),
                     Settings::BAD_REQUEST_PATTERN_COMMENT_PREFIX
                 ),
-                'cols' => 60,
+                'cols' => 64,
+                'rows' => 8,
             ]
         );
     }

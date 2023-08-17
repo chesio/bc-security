@@ -31,7 +31,7 @@ class Settings implements \IteratorAggregate
 
     private NotificationsSettings $notifications;
 
-    private BadRequestsBannerSettings $scannerBlocker;
+    private BadRequestsBannerSettings $bad_requests_banner;
 
     private SetupSettings $setup;
 
@@ -45,7 +45,7 @@ class Settings implements \IteratorAggregate
         $this->log                  = new LogSettings('bc-security-log');
         $this->login                = new LoginSettings('bc-security-login');
         $this->notifications        = new NotificationsSettings('bc-security-notifications');
-        $this->scannerBlocker       = new BadRequestsBannerSettings('bc-security-scanner-blocker');
+        $this->bad_requests_banner  = new BadRequestsBannerSettings('bc-security-bad-requests-banner');
         $this->setup                = new SetupSettings('bc-security-setup');
     }
 
@@ -91,7 +91,7 @@ class Settings implements \IteratorAggregate
 
     public function forBadRequestsBanner(): BadRequestsBannerSettings
     {
-        return $this->scannerBlocker;
+        return $this->bad_requests_banner;
     }
 
     public function forSetup(): SetupSettings

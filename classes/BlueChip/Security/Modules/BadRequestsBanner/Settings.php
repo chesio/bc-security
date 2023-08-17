@@ -7,12 +7,12 @@ use BlueChip\Security\Core\Settings as CoreSettings;
 class Settings extends CoreSettings
 {
     /**
-     * @var string Is built-in rule "Backup files" active? [bool:yes]
+     * @var string Is built-in rule "Backup files" active? [bool:no]
      */
     public const BUILT_IN_RULE_BACKUP_FILES = BuiltInRules::BACKUP_FILES;
 
     /**
-     * @var string Is built-in rule "PHP files" active? [bool:yes]
+     * @var string Is built-in rule "PHP files" active? [bool:no]
      */
     public const BUILT_IN_RULE_PHP_FILES = BuiltInRules::PHP_FILES;
 
@@ -37,8 +37,8 @@ class Settings extends CoreSettings
      * @var array<string,mixed> Default values for all settings.
      */
     protected const DEFAULTS = [
-        self::BUILT_IN_RULE_BACKUP_FILES => true,
-        self::BUILT_IN_RULE_PHP_FILES => true,
+        self::BUILT_IN_RULE_BACKUP_FILES => false,
+        self::BUILT_IN_RULE_PHP_FILES => false,
         self::BAD_REQUEST_PATTERNS => [],
         self::BAN_DURATION => 60,
     ];

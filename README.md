@@ -140,15 +140,19 @@ Passwords are validated on user creation, password change or password reset. If 
 1. BC Security allows you to limit number of login attempts from single IP address. Implementation of this feature is heavily inspired by popular [Limit Login Attempts](https://wordpress.org/plugins/limit-login-attempts/) plugin with an extra feature of immediate blocking of specific usernames (like _admin_ or _administrator_).
 2. BC Security offers an option to only display generic error message as a result of failed login attempt when wrong username, email or password is provided.
 
-### Scanner blocking
+### Bad requests banner
 
-Scanner blocking enables you to automatically block remote IP addresses that are scanning your website for weaknesses. A weakness can be known vulnerable plugin file, forgotten backup file or PHP script used for administrative purposes. A scanner can be usually quite easily detected because while scanning a website it triggers a lot of 404 errors and URLs it tries to access differ from "valid" 404 errors.
+Remote IP addresses that are scanning your website for weaknesses can be automatically [locked from access](#internal-blocklist) for configured amount of time. Such scanners can be usually quite easily detected because while scanning a website they trigger a lot of 404 errors and URLs they try to access differ from "valid" 404 errors: usually they try to find a known vulnerable plugin file, forgotten backup file or PHP script used for administrative purposes.
 
-**TODO**
+There are two built-in rules available (they are not active by default):
+1. ban when non-existent PHP file is requested (any URL ending with `.php`)
+2. ban when backup file is requested (any URL targeting file with `backup` in basename or with `.back`, `.old` or `.tmp` extension)
+
+You may define custom rules as well (in form of regular expression).
 
 ### Internal blocklist
 
-BC Security maintains a list of IP addresses with limited access to the website. This list is automatically populated by [Login Security](#login-security) module, but manual addition of IP addresses is also possible.
+BC Security maintains a list of IP addresses with limited access to the website. This list is automatically populated by [Login security](#login-security) and [Bad requests banner](#bad-requests-banner) modules, but manual addition of IP addresses is also possible.
 
 Out-dated records are automatically removed from the list by WP-Cron job scheduled to run every night. The job can be deactivated in backend, if desired.
 
@@ -162,7 +166,7 @@ This feature must be however set up manually - following two lines have to be ad
 # END BC Security
 ```
 
-After you have completed the setup, either wait for automatic synchronisation to kick in on next *locking* event or run manual synchronisation from the administration page.
+After you have completed the setup, either wait for automatic synchronization to kick in on next *locking* event or run manual synchronization from the administration page.
 
 ### External blocklist
 

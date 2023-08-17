@@ -319,7 +319,7 @@ class ListTable extends CoreListTable
     {
         switch ($banReason) {
             case BanReason::BAD_REQUEST_BAN:
-                return _x('Banned by scanner blocker', 'Ban reason', 'bc-security');
+                return _x('Bad request', 'Ban reason', 'bc-security');
             case BanReason::LOGIN_LOCKOUT_SHORT:
             case BanReason::LOGIN_LOCKOUT_LONG:
                 return _x('Too many failed login attempts', 'Ban reason', 'bc-security');

@@ -84,7 +84,7 @@ class Plugin
         $htaccess_synchronizer      = new Modules\InternalBlocklist\HtaccessSynchronizer();
         $internal_blocklist_manager = new Modules\InternalBlocklist\Manager($wpdb, $htaccess_synchronizer);
         $external_blocklist_manager = new Modules\ExternalBlocklist\Manager($settings->forExternalBlocklist(), $cron_job_manager);
-        $scanner_blocker            = new Modules\BadRequestsBanner\Core($remote_address, $server_address, $settings->forBadRequestsBanner(), $internal_blocklist_manager);
+        $bad_requests_banner        = new Modules\BadRequestsBanner\Core($remote_address, $server_address, $settings->forBadRequestsBanner(), $internal_blocklist_manager);
         $access_bouncer             = new Modules\Access\Bouncer($remote_address, $internal_blocklist_manager, $external_blocklist_manager);
         $bookkeeper                 = new Modules\Login\Bookkeeper($settings->forLogin(), $wpdb);
         $gatekeeper                 = new Modules\Login\Gatekeeper($settings->forLogin(), $remote_address, $bookkeeper, $internal_blocklist_manager, $access_bouncer);
@@ -100,7 +100,7 @@ class Plugin
             'htaccess-synchronizer'         => $htaccess_synchronizer,
             'internal-blocklist-manager'    => $internal_blocklist_manager,
             'external-blocklist-manager'    => $external_blocklist_manager,
-            'scanner-blocker'               => $scanner_blocker,
+            'bad-requests-banner'           => $bad_requests_banner,
             'access-bouncer'                => $access_bouncer,
             'login-bookkeeper'              => $bookkeeper,
             'login-gatekeeper'              => $gatekeeper,
@@ -174,7 +174,8 @@ class Plugin
                     $this->settings->forLogin()
                 ))
                 ->addPage(new Modules\BadRequestsBanner\AdminPage(
-                    $this->settings->forBadRequestsBanner()
+                    $this->settings->forBadRequestsBanner(),
+                    $this->modules['htaccess-synchronizer']
                 ))
                 ->addPage(new Modules\InternalBlocklist\AdminPage(
                     $this->modules['internal-blocklist-manager'],
