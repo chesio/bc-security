@@ -118,8 +118,6 @@ class HtaccessSynchronizer
     /**
      * @link https://help.ovhcloud.com/csm/en-web-hosting-htaccess-ip-restriction?id=kb_article_view&sysparm_article=KB0052844
      *
-     * @todo Allow to only output rules for either modern or legacy Apache to limit number if lines written to .htaccess file.
-     *
      * @param string[] $blocked_ip_addresses
      *
      * @return string[]
@@ -128,7 +126,6 @@ class HtaccessSynchronizer
     {
         $rules = [];
 
-        // Modern Apache (2.3 or newer)
         $rules[] = '<IfModule mod_authz_core.c>';
         $rules[] = '<RequireAll>';
         $rules[] = 'Require all granted';
@@ -136,15 +133,6 @@ class HtaccessSynchronizer
             $rules[] = sprintf("Require not ip %s", $blocked_ip_address);
         }
         $rules[] = '</RequireAll>';
-        $rules[] = '</IfModule>';
-
-        // Legacy Apache (2.2 or older)
-        $rules[] = '<IfModule !mod_authz_core.c>';
-        $rules[] = 'Order allow,deny';
-        $rules[] = 'Allow from all';
-        foreach ($blocked_ip_addresses as $blocked_ip_address) {
-            $rules[] = sprintf("Deny from %s", $blocked_ip_address);
-        }
         $rules[] = '</IfModule>';
 
         return $rules;

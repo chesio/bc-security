@@ -148,7 +148,7 @@ Out-dated records are automatically removed from the list by WP-Cron job schedul
 
 #### Synchronization with .htaccess file
 
-On Apache webserver, block rules with "website" access scope can be automatically synchronized with `.htaccess` file. This makes access blocking much more powerful as all requests to the webserver are blocked this way and not only the ones handled by WordPress.
+**On Apache webserver in version 2.3 or newer**, block rules with "website" access scope can be automatically synchronized with `.htaccess` file. This makes access blocking much more powerful as all requests to the webserver are blocked this way and not only the ones handled by WordPress.
 
 This feature must be however set up manually - following two lines have to be added at the top of root `.htaccess` file in order for it to work:
 ```.apacheconf
