@@ -4,9 +4,11 @@ namespace BlueChip\Security\Modules\Log;
 
 use BlueChip\Security\Modules\Access\Hooks as AccessHooks;
 use BlueChip\Security\Modules\ExternalBlocklist\Source;
+use BlueChip\Security\Modules\BadRequestsBanner\Hooks as BadRequestsBannerHooks;
 use BlueChip\Security\Modules\Initializable;
 use BlueChip\Security\Modules\Loadable;
 use BlueChip\Security\Modules\Login\Hooks as LoginHooks;
+use BlueChip\Security\Modules\BadRequestsBanner\BanRule;
 use WP;
 use WP_Error;
 
@@ -47,6 +49,8 @@ class EventsMonitor implements Initializable, Loadable
         // Log the following BC Security events:
         // - lockout event
         add_action(LoginHooks::LOCKOUT_EVENT, [$this, 'logLockoutEvent'], 10, 3);
+        // - bad request event
+        add_action(BadRequestsBannerHooks::BAD_REQUEST_EVENT, [$this, 'logBadRequestEvent'], 10, 3);
     }
 
 
@@ -121,5 +125,14 @@ class EventsMonitor implements Initializable, Loadable
     public function logLockoutEvent(string $remote_address, string $username, int $duration): void
     {
         do_action(Action::EVENT, (new Events\LoginLockout())->setDuration($duration)->setIpAddress($remote_address)->setUsername($username));
+    }
+
+
+    /**
+     * Log bad request event.
+     */
+    public function logBadRequestEvent(string $remote_address, string $request, BanRule $ban_rule): void
+    {
+        do_action(Action::EVENT, (new Events\BadRequestBan())->setBanRuleName($ban_rule->getName())->setIpAddress($remote_address)->setRequestUri($request));
     }
 }

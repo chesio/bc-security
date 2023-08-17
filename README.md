@@ -140,6 +140,12 @@ Passwords are validated on user creation, password change or password reset. If 
 1. BC Security allows you to limit number of login attempts from single IP address. Implementation of this feature is heavily inspired by popular [Limit Login Attempts](https://wordpress.org/plugins/limit-login-attempts/) plugin with an extra feature of immediate blocking of specific usernames (like _admin_ or _administrator_).
 2. BC Security offers an option to only display generic error message as a result of failed login attempt when wrong username, email or password is provided.
 
+### Scanner blocking
+
+Scanner blocking enables you to automatically block remote IP addresses that are scanning your website for weaknesses. A weakness can be known vulnerable plugin file, forgotten backup file or PHP script used for administrative purposes. A scanner can be usually quite easily detected because while scanning a website it triggers a lot of 404 errors and URLs it tries to access differ from "valid" 404 errors.
+
+**TODO**
+
 ### Internal blocklist
 
 BC Security maintains a list of IP addresses with limited access to the website. This list is automatically populated by [Login Security](#login-security) module, but manual addition of IP addresses is also possible.

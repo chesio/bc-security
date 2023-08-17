@@ -12,6 +12,7 @@ abstract class EventsManager
      */
     private static $mapping = [
         Events\AuthBadCookie::ID => Events\AuthBadCookie::class,
+        Events\BadRequestBan::ID => Events\BadRequestBan::class,
         Events\BlocklistHit::ID => Events\BlocklistHit::class,
         Events\LoginFailure::ID => Events\LoginFailure::class,
         Events\LoginLockout::ID => Events\LoginLockout::class,

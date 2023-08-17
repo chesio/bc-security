@@ -11,4 +11,5 @@ interface BanReason
     public const LOGIN_LOCKOUT_LONG = 2;
     public const USERNAME_BLACKLIST = 3;
     public const MANUALLY_BLOCKED = 4;
+    public const BAD_REQUEST_BAN = 5;
 }
