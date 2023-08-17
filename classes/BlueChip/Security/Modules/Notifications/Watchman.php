@@ -5,28 +5,19 @@ namespace BlueChip\Security\Modules\Notifications;
 use BlueChip\Security\Helpers\Is;
 use BlueChip\Security\Helpers\Plugin;
 use BlueChip\Security\Helpers\Transients;
-use BlueChip\Security\Modules;
+use BlueChip\Security\Modules\Activable;
+use BlueChip\Security\Modules\BadRequestsBanner\BanRule;
+use BlueChip\Security\Modules\BadRequestsBanner\Hooks as BadRequestBannerHooks;
+use BlueChip\Security\Modules\Checklist\Check;
+use BlueChip\Security\Modules\Checklist\CheckResult;
+use BlueChip\Security\Modules\Checklist\Hooks as ChecklistHooks;
+use BlueChip\Security\Modules\Initializable;
 use BlueChip\Security\Modules\Log\Logger;
-use BlueChip\Security\Modules\Checklist;
-use BlueChip\Security\Modules\Login;
+use BlueChip\Security\Modules\Login\Hooks as LoginHooks;
+use WP_User;
 
-class Watchman implements Modules\Initializable, Modules\Activable
+class Watchman implements Activable, Initializable
 {
-    /**
-     * @var string Remote IP address
-     */
-    private $remote_address;
-
-    /**
-     * @var \BlueChip\Security\Modules\Notifications\Settings
-     */
-    private $settings;
-
-    /**
-     * @var \BlueChip\Security\Modules\Log\Logger
-     */
-    private $logger;
-
     /**
      * @var string[] List of notifications recipients
      */
@@ -34,16 +25,12 @@ class Watchman implements Modules\Initializable, Modules\Activable
 
 
     /**
-     * @param \BlueChip\Security\Modules\Notifications\Settings $settings
+     * @param Settings $settings
      * @param string $remote_address Remote IP address.
-     * @param \BlueChip\Security\Modules\Log\Logger $logger
+     * @param Logger $logger
      */
-    public function __construct(Settings $settings, string $remote_address, Logger $logger)
+    public function __construct(private Settings $settings, private string $remote_address, private Logger $logger)
     {
-        $this->remote_address = $remote_address;
-        $this->settings = $settings;
-        $this->logger = $logger;
-
         // Get recipients.
         $this->recipients = $settings[Settings::NOTIFICATION_RECIPIENTS];
         // If site admin should be notified to, include him as well.
@@ -58,7 +45,7 @@ class Watchman implements Modules\Initializable, Modules\Activable
      */
     public static function isMuted(): bool
     {
-        return \defined('BC_SECURITY_MUTE_NOTIFICATIONS') && BC_SECURITY_MUTE_NOTIFICATIONS;
+        return \defined('BC_SECURITY_MUTE_NOTIFICATIONS') && \constant('BC_SECURITY_MUTE_NOTIFICATIONS');
     }
 
 
@@ -103,11 +90,12 @@ class Watchman implements Modules\Initializable, Modules\Activable
             add_action('wp_login', [$this, 'watchWpLogin'], 10, 2);
         }
         if ($this->settings[Settings::KNOWN_IP_LOCKOUT]) {
-            add_action(Login\Hooks::LOCKOUT_EVENT, [$this, 'watchLockoutEvents'], 10, 3);
+            add_action(BadRequestBannerHooks::BAD_REQUEST_EVENT, [$this, 'watchBadRequestBanEvents'], 10, 3);
+            add_action(LoginHooks::LOCKOUT_EVENT, [$this, 'watchLockoutEvents'], 10, 3);
         }
         if ($this->settings[Settings::CHECKLIST_ALERT]) {
-            add_action(Checklist\Hooks::ADVANCED_CHECK_ALERT, [$this, 'watchChecklistSingleCheckAlert'], 10, 2);
-            add_action(Checklist\Hooks::BASIC_CHECKS_ALERT, [$this, 'watchChecklistMultipleChecksAlert'], 10, 1);
+            add_action(ChecklistHooks::ADVANCED_CHECK_ALERT, [$this, 'watchChecklistSingleCheckAlert'], 10, 2);
+            add_action(ChecklistHooks::BASIC_CHECKS_ALERT, [$this, 'watchChecklistMultipleChecksAlert'], 10, 1);
         }
     }
 
@@ -301,11 +289,26 @@ class Watchman implements Modules\Initializable, Modules\Activable
 
 
     /**
-     * Send notification if known IP has been locked out.
-     *
-     * @param string $remote_address
-     * @param string $username
-     * @param int $duration
+     * Send notification if known IP has been locked out as result of bad request.
+     */
+    public function watchBadRequestBanEvents(string $remote_address, string $uri, BanRule $ban_rule): void
+    {
+        if (\in_array($remote_address, $this->logger->getKnownIps(), true)) {
+            $subject = __('Known IP locked out', 'bc-security');
+            $message = \sprintf(
+                __('A known IP address %1$s has been locked out due to bad request rule "%2$s" after someone tried to access following URL: %3$s', 'bc-security'),
+                self::formatRemoteAddress($remote_address),
+                $ban_rule->getName(),
+                $uri
+            );
+
+            $this->notify($subject, $message);
+        }
+    }
+
+
+    /**
+     * Send notification if known IP has been locked out as result of failed login.
      */
     public function watchLockoutEvents(string $remote_address, string $username, int $duration): void
     {
@@ -325,11 +328,8 @@ class Watchman implements Modules\Initializable, Modules\Activable
 
     /**
      * Send notification if user with admin privileges logged in.
-     *
-     * @param string $username
-     * @param \WP_User $user
      */
-    public function watchWpLogin(string $username, \WP_User $user): void
+    public function watchWpLogin(string $username, WP_User $user): void
     {
         if (Is::admin($user)) {
             $subject = __('Admin user login', 'bc-security');
@@ -346,11 +346,8 @@ class Watchman implements Modules\Initializable, Modules\Activable
 
     /**
      * Send notification about single check that failed during checklist monitoring.
-     *
-     * @param \BlueChip\Security\Modules\Checklist\Check $check
-     * @param \BlueChip\Security\Modules\Checklist\CheckResult $result
      */
-    public function watchChecklistSingleCheckAlert(Checklist\Check $check, Checklist\CheckResult $result): void
+    public function watchChecklistSingleCheckAlert(Check $check, CheckResult $result): void
     {
         $subject = __('Checklist monitoring alert', 'bc-security');
         $preamble = [
@@ -365,7 +362,7 @@ class Watchman implements Modules\Initializable, Modules\Activable
     /**
      * Send notification about multiple checks that failed during checklist monitoring.
      *
-     * @param array{check:Checklist\Check,result:Checklist\CheckResult} $issues Issues which triggered the alert.
+     * @param array{check:Check,result:CheckResult} $issues Issues which triggered the alert.
      */
     public function watchChecklistMultipleChecksAlert(array $issues): void
     {

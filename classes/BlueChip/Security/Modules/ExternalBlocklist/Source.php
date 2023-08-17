@@ -12,7 +12,7 @@ abstract class Source implements \Countable
     /**
      * @var string[] List of IP prefixes for this source.
      */
-    protected $ip_prefixes;
+    protected array $ip_prefixes;
 
     /**
      * @return int Count of IP prefixes for this source.

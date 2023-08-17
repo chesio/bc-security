@@ -2,16 +2,18 @@
 
 namespace BlueChip\Security\Modules\Hardening;
 
+use BlueChip\Security\Core\Admin\AbstractPage;
+use BlueChip\Security\Core\Admin\SettingsPage;
 use BlueChip\Security\Helpers\AdminNotices;
 use BlueChip\Security\Helpers\FormHelper;
 use BlueChip\Security\Helpers\HaveIBeenPwned;
 use BlueChip\Security\Modules\Log\AdminPage as LogAdminPage;
 use BlueChip\Security\Modules\Log\Events\LoginFailure;
 
-class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
+class AdminPage extends AbstractPage
 {
     /** Page has settings section */
-    use \BlueChip\Security\Core\Admin\SettingsPage;
+    use SettingsPage;
 
 
     /**
@@ -21,7 +23,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
 
 
     /**
-     * @param \BlueChip\Security\Modules\Hardening\Settings $settings Hardening settings
+     * @param Settings $settings Hardening settings
      */
     public function __construct(Settings $settings)
     {

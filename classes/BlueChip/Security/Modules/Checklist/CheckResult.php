@@ -4,22 +4,19 @@ namespace BlueChip\Security\Modules\Checklist;
 
 class CheckResult
 {
-    /**
-     * @var bool|null
-     */
-    private $status;
+    private ?bool $status;
 
     /**
      * @var string[] Human readable message explaining the result as list of (hyper)text lines.
      */
-    private $message;
+    private array $message;
 
 
     /**
      * @param bool|null $status Check result status: false if check failed; true if check passed; null for undetermined status.
      * @param string|string[] $message Human readable message explaining the result - inline HTML tags are allowed/expected.
      */
-    public function __construct(?bool $status, $message)
+    public function __construct(?bool $status, array|string $message)
     {
         $this->status = $status;
         $this->message = \is_array($message) ? $message : [$message];

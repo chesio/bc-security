@@ -4,31 +4,22 @@ namespace BlueChip\Security\Modules\Log;
 
 use BlueChip\Security\Modules\Access\Hooks as AccessHooks;
 use BlueChip\Security\Modules\ExternalBlocklist\Source;
+use BlueChip\Security\Modules\BadRequestsBanner\Hooks as BadRequestsBannerHooks;
 use BlueChip\Security\Modules\Initializable;
 use BlueChip\Security\Modules\Loadable;
 use BlueChip\Security\Modules\Login\Hooks as LoginHooks;
+use BlueChip\Security\Modules\BadRequestsBanner\BanRule;
+use WP;
+use WP_Error;
 
 class EventsMonitor implements Initializable, Loadable
 {
     /**
-     * @var string Remote IP address
-     */
-    private $remote_address;
-
-    /**
-     * @var string Server IP address
-     */
-    private $server_address;
-
-
-    /**
      * @param string $remote_address Remote IP address.
      * @param string $server_address Server IP address.
      */
-    public function __construct(string $remote_address, string $server_address)
+    public function __construct(private string $remote_address, private string $server_address)
     {
-        $this->remote_address = $remote_address;
-        $this->server_address = $server_address;
     }
 
 
@@ -58,6 +49,8 @@ class EventsMonitor implements Initializable, Loadable
         // Log the following BC Security events:
         // - lockout event
         add_action(LoginHooks::LOCKOUT_EVENT, [$this, 'logLockoutEvent'], 10, 3);
+        // - bad request event
+        add_action(BadRequestsBannerHooks::BAD_REQUEST_EVENT, [$this, 'logBadRequestEvent'], 10, 3);
     }
 
 
@@ -85,10 +78,8 @@ class EventsMonitor implements Initializable, Loadable
      * Note: `parse_query` action cannot be used for 404 detection, because 404 state can be set as late as in WP::main().
      *
      * @see WP::main()
-     *
-     * @param \WP $wp
      */
-    public function log404Queries(\WP $wp): void
+    public function log404Queries(WP $wp): void
     {
         /** @var \WP_Query $wp_query */
         global $wp_query;
@@ -112,11 +103,8 @@ class EventsMonitor implements Initializable, Loadable
 
     /**
      * Log failed login.
-     *
-     * @param string $username
-     * @param \WP_Error $error
      */
-    public function logFailedLogin(string $username, \WP_Error $error): void
+    public function logFailedLogin(string $username, WP_Error $error): void
     {
         do_action(Action::EVENT, (new Events\LoginFailure())->setUsername($username)->setError($error));
     }
@@ -124,8 +112,6 @@ class EventsMonitor implements Initializable, Loadable
 
     /**
      * Log successful login.
-     *
-     * @param string $username
      */
     public function logSuccessfulLogin(string $username): void
     {
@@ -135,13 +121,18 @@ class EventsMonitor implements Initializable, Loadable
 
     /**
      * Log lockout event.
-     *
-     * @param string $remote_address
-     * @param string $username
-     * @param int $duration
      */
     public function logLockoutEvent(string $remote_address, string $username, int $duration): void
     {
         do_action(Action::EVENT, (new Events\LoginLockout())->setDuration($duration)->setIpAddress($remote_address)->setUsername($username));
+    }
+
+
+    /**
+     * Log bad request event.
+     */
+    public function logBadRequestEvent(string $remote_address, string $request, BanRule $ban_rule): void
+    {
+        do_action(Action::EVENT, (new Events\BadRequestBan())->setBanRuleName($ban_rule->getName())->setIpAddress($remote_address)->setRequestUri($request));
     }
 }

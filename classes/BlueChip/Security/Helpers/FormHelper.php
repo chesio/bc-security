@@ -192,20 +192,12 @@ abstract class FormHelper
         $filtered = \array_filter(
             $properties,
             // Remove any false-like values (empty strings and false booleans) except for integers and floats.
-            function ($value) {
-                return \is_int($value)
-                    || \is_float($value)
-                    || (\is_string($value) && $value !== '')
-                    || (\is_bool($value) && $value)
-                ;
-            }
+            fn (mixed $value): bool => \is_int($value) || \is_float($value) || (\is_string($value) && $value !== '') || (\is_bool($value) && $value)
         );
         // Map keys and values together as key=value
         $mapped = \array_map(
-            function (string $key, $value) {
-                // Boolean values are replaced with key name: checked => true ---> checked="checked"
-                return \sprintf('%s="%s"', $key, esc_attr(\is_bool($value) ? $key : (string) $value));
-            },
+            // Boolean values are replaced with key name: checked => true ---> checked="checked"
+            fn (string $key, mixed $value) => \sprintf('%s="%s"', $key, esc_attr(\is_bool($value) ? $key : (string) $value)),
             \array_keys($filtered),
             \array_values($filtered)
         );

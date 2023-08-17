@@ -2,21 +2,25 @@
 
 namespace BlueChip\Security\Modules\Log;
 
+use BlueChip\Security\Core\Admin\AbstractPage;
+use BlueChip\Security\Core\Admin\CountablePage;
+use BlueChip\Security\Core\Admin\ListingPage;
+use BlueChip\Security\Core\Admin\SettingsPage;
 use BlueChip\Security\Helpers\FormHelper;
 
 /**
  * Admin page that displays log records.
  */
-class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
+class AdminPage extends AbstractPage
 {
     /** Page has counter indicator */
-    use \BlueChip\Security\Core\Admin\CountablePage;
+    use CountablePage;
 
     /** Page has settings section */
-    use \BlueChip\Security\Core\Admin\SettingsPage;
+    use SettingsPage;
 
     /** Page has list table */
-    use \BlueChip\Security\Core\Admin\ListingPage;
+    use ListingPage;
 
 
     /**
@@ -25,16 +29,9 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
     public const SLUG = 'bc-security-logs';
 
 
-    /**
-     * @var \BlueChip\Security\Modules\Log\Logger
-     */
-    private $logger;
+    private Logger $logger;
 
 
-    /**
-     * @param \BlueChip\Security\Modules\Log\Settings $settings
-     * @param \BlueChip\Security\Modules\Log\Logger $logger
-     */
     public function __construct(Settings $settings, Logger $logger)
     {
         $this->page_title = _x('Log records', 'Dashboard page title', 'bc-security');

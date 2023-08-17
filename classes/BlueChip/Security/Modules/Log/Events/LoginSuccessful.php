@@ -21,7 +21,7 @@ class LoginSuccessful extends Event
      *
      * @var string Username of user who logged in.
      */
-    protected $username = '';
+    protected string $username = '';
 
 
     public function getName(): string

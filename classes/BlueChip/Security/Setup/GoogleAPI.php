@@ -7,11 +7,11 @@ class GoogleAPI
     /**
      * @var string Google API key
      */
-    private $key = '';
+    private string $key = '';
 
 
     /**
-     * @param \BlueChip\Security\Setup\Settings $settings
+     * @param Settings $settings
      */
     public function __construct(Settings $settings)
     {

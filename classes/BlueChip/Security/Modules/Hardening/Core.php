@@ -4,11 +4,17 @@ namespace BlueChip\Security\Modules\Hardening;
 
 use BlueChip\Security\Helpers\AdminNotices;
 use BlueChip\Security\Helpers\HaveIBeenPwned;
+use BlueChip\Security\Modules\Initializable;
+use WP_Error;
+use WP_HTTP_Response;
+use WP_REST_Request;
+use WP_REST_Users_Controller;
+use WP_User;
 
 /**
  * Make WordPress harder to break into.
  */
-class Core implements \BlueChip\Security\Modules\Initializable
+class Core implements Initializable
 {
     /**
      * @var string
@@ -20,21 +26,12 @@ class Core implements \BlueChip\Security\Modules\Initializable
      */
     private const PWNED_PASSWORD_META_KEY = 'bc-security/pwned-password';
 
-    /**
-     * @var bool
-     */
-    private $rest_api_supressed;
 
-    /**
-     * @var Settings
-     */
-    private $settings;
+    private bool $rest_api_supressed = false;
 
 
-    public function __construct(Settings $settings)
+    public function __construct(private Settings $settings)
     {
-        $this->settings = $settings;
-        $this->rest_api_supressed = false;
     }
 
 
@@ -135,20 +132,20 @@ class Core implements \BlueChip\Security\Modules\Initializable
     /**
      * @filter https://developer.wordpress.org/reference/hooks/rest_request_before_callbacks/
      *
-     * @param \WP_HTTP_Response|\WP_Error $response
+     * @param WP_REST_Response|WP_HTTP_Response|WP_Error|mixed $response
      * @param mixed[] $handler
-     * @param \WP_REST_Request $request
+     * @param WP_REST_Request $request
      *
-     * @return \WP_HTTP_Response|\WP_Error
+     * @return WP_REST_Response|WP_HTTP_Response|WP_Error|mixed
      */
-    public function filterJsonAPIAuthor($response, array $handler, \WP_REST_Request $request)
+    public function filterJsonAPIAuthor(mixed $response, array $handler, WP_REST_Request $request): mixed
     {
         $route = $request->get_route();
 
         if (!current_user_can('list_users')) {
             // I <3 PHP 7!
             $url_base = (
-                new class extends \WP_REST_Users_Controller {
+                new class extends WP_REST_Users_Controller {
                     public function getUrlBase(): string
                     {
                         return \rtrim($this->namespace . '/' . $this->rest_base, '/');
@@ -158,7 +155,7 @@ class Core implements \BlueChip\Security\Modules\Initializable
 
             if (\preg_match('#' . \preg_quote($url_base, '#') . '/*$#i', $route)) {
                 $this->rest_api_supressed = true;
-                return rest_ensure_response(new \WP_Error(
+                return rest_ensure_response(new WP_Error(
                     'rest_user_cannot_view',
                     __('Sorry, you are not allowed to list users.'), // WP core message
                     ['status' => rest_authorization_required_code()]
@@ -169,7 +166,7 @@ class Core implements \BlueChip\Security\Modules\Initializable
             if (\preg_match('#' . \preg_quote($url_base, '#') . '/+(\d+)/*$#i', $route, $matches)) {
                 if (get_current_user_id() !== (int) $matches[1]) {
                     $this->rest_api_supressed = true;
-                    return rest_ensure_response(new \WP_Error(
+                    return rest_ensure_response(new WP_Error(
                         'rest_user_invalid_id',
                         __('Invalid user ID.'), // WP core message.
                         ['status' => 404]
@@ -274,11 +271,8 @@ class Core implements \BlueChip\Security\Modules\Initializable
      * Check user password against Pwned Passwords database after successful login.
      *
      * @action https://developer.wordpress.org/reference/hooks/wp_login/
-     *
-     * @param string $username
-     * @param \WP_User $user
      */
-    public function checkUserPassword(string $username, \WP_User $user): void
+    public function checkUserPassword(string $username, WP_User $user): void
     {
         if (empty($password = \filter_input(INPUT_POST, 'pwd'))) {
             // Non-interactive sign on (probably).
@@ -333,11 +327,11 @@ class Core implements \BlueChip\Security\Modules\Initializable
     /**
      * @action https://developer.wordpress.org/reference/hooks/user_profile_update_errors/
      *
-     * @param \WP_Error $errors WP_Error object (passed by reference).
+     * @param WP_Error $errors WP_Error object (passed by reference).
      * @param bool $update Whether this is a user update.
      * @param object $user User object (passed by reference).
      */
-    public function validatePasswordUpdate(\WP_Error &$errors, bool $update, object &$user): void
+    public function validatePasswordUpdate(WP_Error &$errors, bool $update, object &$user): void
     {
         if ($errors->get_error_code()) {
             // There is an error reported already, skip the check.
@@ -358,10 +352,10 @@ class Core implements \BlueChip\Security\Modules\Initializable
      *
      * @action https://developer.wordpress.org/reference/hooks/validate_password_reset/
      *
-     * @param \WP_Error $errors
-     * @param \WP_User|\WP_Error $user WP_User object if the login and reset key match. WP_Error object otherwise.
+     * @param WP_Error $errors
+     * @param WP_User|WP_Error $user WP_User object if the login and reset key match. WP_Error object otherwise.
      */
-    public function validatePasswordReset(\WP_Error $errors, object $user): void
+    public function validatePasswordReset(WP_Error $errors, WP_Error|WP_User $user): void
     {
         if ($errors->get_error_code()) {
             // There is an error reported already, skip the check.
@@ -381,9 +375,9 @@ class Core implements \BlueChip\Security\Modules\Initializable
      * Check, whether $password has been pwned and if so, add error message to $errors.
      *
      * @param string $password
-     * @param \WP_Error $errors WP_Error object (passed by reference).
+     * @param WP_Error $errors WP_Error object (passed by reference).
      */
-    protected static function checkIfPasswordHasBeenPwned(string $password, \WP_Error &$errors): void
+    protected static function checkIfPasswordHasBeenPwned(string $password, WP_Error &$errors): void
     {
         if (HaveIBeenPwned::hasPasswordBeenPwned($password)) {
             $message = \sprintf(

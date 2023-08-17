@@ -37,9 +37,7 @@ class PluginsIntegrity extends Checklist\AdvancedCheck
         );
 
         // Do not check plugins that are under version control.
-        $plugins = \array_filter($plugins, function (string $plugin_basename): bool {
-            return !Helpers\Plugin::isVersionControlled($plugin_basename);
-        }, ARRAY_FILTER_USE_KEY);
+        $plugins = \array_filter($plugins, fn (string $plugin_basename): bool => !Helpers\Plugin::isVersionControlled($plugin_basename), ARRAY_FILTER_USE_KEY);
 
         // Plugins for which checksums retrieval failed.
         $checksums_retrieval_failed = [];

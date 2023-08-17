@@ -20,12 +20,12 @@ abstract class AbstractPage
     /**
      * @var string Page title for menu
      */
-    protected $menu_title;
+    protected string $menu_title;
 
     /**
      * @var string Page title for browser window
      */
-    protected $page_title;
+    protected string $page_title;
 
 
     /**

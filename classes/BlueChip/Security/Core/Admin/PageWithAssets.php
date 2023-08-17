@@ -6,15 +6,9 @@ use BlueChip\Security\Core\AssetsManager;
 
 trait PageWithAssets
 {
-    /**
-     * @var \BlueChip\Security\Core\AssetsManager
-     */
-    private $assets_manager;
+    private AssetsManager $assets_manager;
 
 
-    /**
-     * @param \BlueChip\Security\Core\AssetsManager $assets_manager
-     */
     protected function useAssetsManager(AssetsManager $assets_manager): void
     {
         $this->assets_manager = $assets_manager;

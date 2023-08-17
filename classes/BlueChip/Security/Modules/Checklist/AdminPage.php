@@ -2,18 +2,21 @@
 
 namespace BlueChip\Security\Modules\Checklist;
 
+use BlueChip\Security\Core\Admin\AbstractPage;
+use BlueChip\Security\Core\Admin\PageWithAssets;
+use BlueChip\Security\Core\Admin\SettingsPage;
 use BlueChip\Security\Core\AssetsManager;
 use BlueChip\Security\Helpers\AjaxHelper;
 use BlueChip\Security\Helpers\FormHelper;
 use BlueChip\Security\Modules\Hardening;
 
-class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
+class AdminPage extends AbstractPage
 {
     /** Page has assets */
-    use \BlueChip\Security\Core\Admin\PageWithAssets;
+    use PageWithAssets;
 
     /** Page has settings section */
-    use \BlueChip\Security\Core\Admin\SettingsPage;
+    use SettingsPage;
 
 
     /**
@@ -22,24 +25,15 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
     public const SLUG = 'bc-security-checklist';
 
 
-    /**
-     * @var \BlueChip\Security\Modules\Checklist\Manager
-     */
-    private $checklist_manager;
+    private Manager $checklist_manager;
 
 
-    /**
-     * @param \BlueChip\Security\Modules\Checklist\Manager $checklist_manager
-     * @param \BlueChip\Security\Modules\Checklist\AutorunSettings $settings
-     * @param \BlueChip\Security\Core\AssetsManager $assets_manager
-     */
     public function __construct(Manager $checklist_manager, AutorunSettings $settings, AssetsManager $assets_manager)
     {
         $this->page_title = _x('Security Checklist', 'Dashboard page title', 'bc-security');
         $this->menu_title = _x('Checklist', 'Dashboard menu item name', 'bc-security');
 
         $this->checklist_manager = $checklist_manager;
-
         $this->useAssetsManager($assets_manager);
         $this->useSettings($settings);
     }

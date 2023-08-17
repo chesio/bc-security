@@ -2,11 +2,12 @@
 
 namespace BlueChip\Security\Modules\Tools;
 
+use BlueChip\Security\Core\Admin\AbstractPage;
 use BlueChip\Security\Helpers\AdminNotices;
 use BlueChip\Security\Settings;
 use BlueChip\Security\Setup;
 
-class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
+class AdminPage extends AbstractPage
 {
     /**
      * @var string Page slug
@@ -30,20 +31,12 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
 
 
     /**
-     * @var \BlueChip\Security\Settings Plugin settings object
+     * @param Settings $settings Plugin settings object
      */
-    private $settings;
-
-
-    /**
-     * @param \BlueChip\Security\Settings $settings Plugin settings object
-     */
-    public function __construct(Settings $settings)
+    public function __construct(private Settings $settings)
     {
         $this->page_title = _x('Tools', 'Dashboard page title', 'bc-security');
         $this->menu_title = _x('Tools', 'Dashboard menu item name', 'bc-security');
-
-        $this->settings = $settings;
     }
 
 

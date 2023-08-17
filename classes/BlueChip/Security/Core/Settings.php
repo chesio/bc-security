@@ -23,22 +23,16 @@ abstract class Settings implements \ArrayAccess, \IteratorAggregate
 
 
     /**
-     * @var string Option name under which settings are stored.
-     */
-    private $option_name;
-
-    /**
      * @var array<string,mixed> Settings data (kind of cache for get_option() result).
      */
-    protected $data;
+    protected array $data;
 
 
     /**
      * @param string $option_name Option name under which to store the settings.
      */
-    public function __construct(string $option_name)
+    public function __construct(private string $option_name)
     {
-        $this->option_name = $option_name;
         // Read settings from `wp_options` table and sanitize them right away using default values.
         $this->data = $this->sanitize(get_option($option_name, []), static::DEFAULTS);
     }
@@ -51,7 +45,7 @@ abstract class Settings implements \ArrayAccess, \IteratorAggregate
      *
      * @return mixed A null value is returned if $name is not a valid key.
      */
-    public function __get(string $name)
+    public function __get(string $name): mixed
     {
         if (isset($this->data[$name])) {
             return $this->data[$name];
@@ -68,7 +62,7 @@ abstract class Settings implements \ArrayAccess, \IteratorAggregate
      * @param string $name
      * @param mixed $value
      */
-    public function __set(string $name, $value): void
+    public function __set(string $name, mixed $value): void
     {
         if (isset($this->data[$name])) {
             $this->update($name, $value);
@@ -84,13 +78,8 @@ abstract class Settings implements \ArrayAccess, \IteratorAggregate
      * Return true if there is any setting available under key $offset.
      *
      * @internal Implements ArrayAccess interface.
-     *
-     * @param string $offset
-     *
-     * @return bool
      */
-    #[\ReturnTypeWillChange]
-    public function offsetExists($offset): bool
+    public function offsetExists(mixed $offset): bool
     {
         return isset($this->data[$offset]);
     }
@@ -105,8 +94,7 @@ abstract class Settings implements \ArrayAccess, \IteratorAggregate
      *
      * @return mixed A null value is returned if $offset is not a valid key.
      */
-    #[\ReturnTypeWillChange]
-    public function offsetGet($offset)
+    public function offsetGet(mixed $offset): mixed
     {
         return isset($this->data[$offset]) ? $this->data[$offset] : null;
     }
@@ -116,11 +104,8 @@ abstract class Settings implements \ArrayAccess, \IteratorAggregate
      * Update setting under key $offset with $value.
      *
      * @internal Implements ArrayAccess interface.
-     *
-     * @param string $offset
-     * @param mixed $value
      */
-    public function offsetSet($offset, $value): void
+    public function offsetSet(mixed $offset, mixed $value): void
     {
         $this->update($offset, $value);
     }
@@ -130,10 +115,8 @@ abstract class Settings implements \ArrayAccess, \IteratorAggregate
      * Reset setting under key $offset to its default value.
      *
      * @internal Implements ArrayAccess interface.
-     *
-     * @param string $offset
      */
-    public function offsetUnset($offset): void
+    public function offsetUnset(mixed $offset): void
     {
         $this->update($offset, null);
     }
@@ -256,13 +239,8 @@ abstract class Settings implements \ArrayAccess, \IteratorAggregate
 
     /**
      * Sanitize the $value according to type of $default value.
-     *
-     * @param mixed $value
-     * @param mixed $default
-     *
-     * @return mixed
      */
-    protected static function sanitizeByType($value, $default)
+    protected static function sanitizeByType(mixed $value, mixed $default): mixed
     {
         if (\is_bool($default)) {
             return (bool) $value;
@@ -285,7 +263,7 @@ abstract class Settings implements \ArrayAccess, \IteratorAggregate
      *
      * @return string[]
      */
-    protected static function parseList($list): array
+    protected static function parseList(array|string $list): array
     {
         return \is_array($list) ? $list : \array_filter(\array_map('trim', \explode(PHP_EOL, $list)));
     }
@@ -299,7 +277,7 @@ abstract class Settings implements \ArrayAccess, \IteratorAggregate
      *
      * @return bool
      */
-    public function update(string $name, $value): bool
+    public function update(string $name, mixed $value): bool
     {
         if (!isset($this->data[$name])) {
             // Cannot update, invalid setting name.

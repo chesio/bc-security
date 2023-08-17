@@ -14,7 +14,7 @@ abstract class WpRemote
      *
      * @return mixed
      */
-    public static function getJson(string $url)
+    public static function getJson(string $url): mixed
     {
         // Make request to URL.
         $response = wp_remote_get($url);
@@ -40,7 +40,7 @@ abstract class WpRemote
      *
      * @return mixed
      */
-    public static function postJson(string $url, $body)
+    public static function postJson(string $url, mixed $body): mixed
     {
         // Make POST request to remote $url.
         $response = wp_remote_post(

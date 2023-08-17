@@ -7,7 +7,7 @@ class Blocklist
     /**
      * @var Source[] List of sources on this blacklist.
      */
-    private $sources = [];
+    private array $sources = [];
 
     /**
      * Add source to blocklist.

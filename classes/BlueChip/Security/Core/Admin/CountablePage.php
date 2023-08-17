@@ -2,23 +2,25 @@
 
 namespace BlueChip\Security\Core\Admin;
 
+use BlueChip\Security\Modules\Countable;
+
 /**
  * Provide information for counter displayed along page menu item.
  */
 trait CountablePage
 {
     /**
-     * @var \BlueChip\Security\Modules\Countable An object that provides the actual counter value to be displayed.
+     * @var Countable An object that provides the actual counter value to be displayed.
      */
-    protected $counter;
+    protected Countable $counter;
 
 
     /**
      * Set counter that provides count to be displayed along main menu item for this page.
      *
-     * @param \BlueChip\Security\Modules\Countable $counter
+     * @param Countable $counter
      */
-    protected function setCounter(\BlueChip\Security\Modules\Countable $counter): void
+    protected function setCounter(Countable $counter): void
     {
         $this->counter = $counter;
     }

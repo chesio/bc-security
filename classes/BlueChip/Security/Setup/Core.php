@@ -7,11 +7,11 @@ class Core
     /**
      * @var string Connection type (see \BlueChip\Security\Setup\IpAddress)
      */
-    private $connection_type = IpAddress::REMOTE_ADDR;
+    private string $connection_type = IpAddress::REMOTE_ADDR;
 
 
     /**
-     * @param \BlueChip\Security\Setup\Settings $settings
+     * @param Settings $settings
      */
     public function __construct(Settings $settings)
     {

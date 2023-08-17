@@ -2,13 +2,14 @@
 
 namespace BlueChip\Security\Modules\InternalBlocklist;
 
+use BlueChip\Security\Core\ListTable as CoreListTable;
 use BlueChip\Security\Helpers\MySQLDateTime;
 use BlueChip\Security\Modules\Access\Scope;
 
 /**
  * Internal blocklist table
  */
-class ListTable extends \BlueChip\Security\Core\ListTable
+class ListTable extends CoreListTable
 {
     /**
      * @var string Name of remove action query argument
@@ -46,22 +47,11 @@ class ListTable extends \BlueChip\Security\Core\ListTable
     private const VIEW_SCOPE = 'scope';
 
 
-    /**
-     * @var Manager
-     */
-    private $ib_manager;
+    private Manager $ib_manager;
 
-    /**
-     * @var int
-     */
-    private $scope;
+    private int $scope;
 
 
-    /**
-     * @param string $url
-     * @param string $per_page_option_name
-     * @param Manager $ib_manager
-     */
     public function __construct(string $url, string $per_page_option_name, Manager $ib_manager)
     {
         parent::__construct($url, $per_page_option_name);
@@ -328,6 +318,8 @@ class ListTable extends \BlueChip\Security\Core\ListTable
     private function explainBanReason(int $banReason): string
     {
         switch ($banReason) {
+            case BanReason::BAD_REQUEST_BAN:
+                return _x('Bad request', 'Ban reason', 'bc-security');
             case BanReason::LOGIN_LOCKOUT_SHORT:
             case BanReason::LOGIN_LOCKOUT_LONG:
                 return _x('Too many failed login attempts', 'Ban reason', 'bc-security');

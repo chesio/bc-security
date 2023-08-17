@@ -19,31 +19,12 @@ class Job
 
 
     /**
-     * @var string Action hook to execute when cron job is run.
+     * @param string $hook Action hook to execute when cron job is run.
+     * @param int|string $time Unix timestamp or time string indicating when to run the cron job.
+     * @param string $recurrence How often the cron job should recur.
      */
-    private $hook;
-
-    /**
-     * @var string How often the cron job should recur.
-     */
-    private $recurrence;
-
-    /**
-     * @var int|string Unix timestamp or time string indicating when to run the cron job.
-     */
-    private $time;
-
-
-    /**
-     * @param string $hook
-     * @param int|string $time
-     * @param string $recurrence
-     */
-    public function __construct(string $hook, $time, string $recurrence)
+    public function __construct(private string $hook, private int|string $time, private string $recurrence)
     {
-        $this->hook = $hook;
-        $this->recurrence = $recurrence;
-        $this->time = $time;
     }
 
 

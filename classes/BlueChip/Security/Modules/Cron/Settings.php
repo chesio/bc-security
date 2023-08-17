@@ -2,10 +2,12 @@
 
 namespace BlueChip\Security\Modules\Cron;
 
+use BlueChip\Security\Core\Settings as CoreSettings;
+
 /**
  * Settings indicate whether particular cron job is active. Only active jobs are scheduled on plugin activation.
  */
-class Settings extends \BlueChip\Security\Core\Settings
+class Settings extends CoreSettings
 {
     /**
      * @var array<string,bool> Default values for all settings.

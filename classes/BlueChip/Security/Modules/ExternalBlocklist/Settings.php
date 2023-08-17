@@ -2,10 +2,11 @@
 
 namespace BlueChip\Security\Modules\ExternalBlocklist;
 
+use BlueChip\Security\Core\Settings as CoreSettings;
 use BlueChip\Security\Modules\Access\Scope;
 use BlueChip\Security\Modules\ExternalBlocklist\Sources\AmazonWebServices;
 
-class Settings extends \BlueChip\Security\Core\Settings
+class Settings extends CoreSettings
 {
     /**
      * @var array<string,int> Default values for all settings.

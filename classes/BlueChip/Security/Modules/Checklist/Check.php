@@ -17,38 +17,21 @@ abstract class Check
     private const RESULT_TRANSIENT_ID = 'check-result';
 
     /**
-     * @var string
-     */
-    private $name;
-
-    /**
-     * @var string
-     */
-    private $description;
-
-    /**
      * @var int|null Timestamp of last run if lazy-loaded already, null otherwise.
      */
-    private $last_run;
+    private ?int $last_run = null;
 
     /**
-     * @var \BlueChip\Security\Modules\Checklist\CheckResult|null Result of last run if lazy-loaded already, null otherwise.
+     * @var CheckResult|null Result of last run if lazy-loaded already, null otherwise.
      */
-    private $result;
+    private ?CheckResult $result = null;
 
 
     /**
      * Construct the check.
-     *
-     * @param string $name
-     * @param string $description
      */
-    protected function __construct(string $name, string $description)
+    protected function __construct(private string $name, private string $description)
     {
-        $this->name = $name;
-        $this->description = $description;
-        $this->last_run = null; // Is lazy-loaded.
-        $this->result = null; // Is lazy-loaded.
     }
 
 

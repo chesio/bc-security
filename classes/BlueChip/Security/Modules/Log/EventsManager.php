@@ -12,6 +12,7 @@ abstract class EventsManager
      */
     private static $mapping = [
         Events\AuthBadCookie::ID => Events\AuthBadCookie::class,
+        Events\BadRequestBan::ID => Events\BadRequestBan::class,
         Events\BlocklistHit::ID => Events\BlocklistHit::class,
         Events\LoginFailure::ID => Events\LoginFailure::class,
         Events\LoginLockout::ID => Events\LoginLockout::class,
@@ -53,9 +54,7 @@ abstract class EventsManager
     public static function getInstances(): array
     {
         return \array_map(
-            function (string $classname): Event {
-                return new $classname();
-            },
+            fn (string $classname): Event => new $classname(),
             self::$mapping
         );
     }

@@ -2,10 +2,12 @@
 
 namespace BlueChip\Security\Modules\Login;
 
+use BlueChip\Security\Core\Settings as CoreSettings;
+
 /**
  * Login security settings
  */
-class Settings extends \BlueChip\Security\Core\Settings
+class Settings extends CoreSettings
 {
     /**
      * @var string Lock out for a short time after every N tries [int:5]

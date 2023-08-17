@@ -2,10 +2,12 @@
 
 namespace BlueChip\Security\Modules\Checklist;
 
+use BlueChip\Security\Core\Settings;
+
 /**
  * Every setting has a boolean value: true = monitor given check, false = do not monitor given check.
  */
-class AutorunSettings extends \BlueChip\Security\Core\Settings
+class AutorunSettings extends Settings
 {
     /**
      * @var array<string,bool> Default values for all settings. By default, no checks are monitored.

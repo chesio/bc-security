@@ -23,22 +23,22 @@ abstract class ListTable extends \WP_List_Table
     /**
      * @var string URL of admin page where the list table is displayed
      */
-    protected $url;
+    protected string $url;
 
     /**
      * @var string Sorting direction (asc or desc)
      */
-    protected $order = 'desc';
+    protected string $order = 'desc';
 
     /**
      * @var string Sorting column
      */
-    protected $order_by = 'id';
+    protected string $order_by = 'id';
 
     /**
      * @var int Number of items per page.
      */
-    protected $items_per_page;
+    protected int $items_per_page;
 
 
     /**

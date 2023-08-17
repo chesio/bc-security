@@ -7,6 +7,8 @@ use BlueChip\Security\Modules\InternalBlocklist\Manager as InternalBlocklistMana
 use BlueChip\Security\Modules\Loadable;
 use BlueChip\Security\Helpers\Utils;
 use BlueChip\Security\Modules\ExternalBlocklist\Manager as ExternalBlocklistManager;
+use WP_Error;
+use WP_User;
 
 /**
  * Bouncer takes care of bouncing uninvited guests by:
@@ -16,31 +18,15 @@ use BlueChip\Security\Modules\ExternalBlocklist\Manager as ExternalBlocklistMana
 class Bouncer implements Initializable, Loadable
 {
     /**
-     * @var InternalBlocklistManager
-     */
-    private $ib_manager;
-
-    /**
-     * @var ExternalBlocklistManager
-     */
-    private $eb_manager;
-
-    /**
-     * @var string Remote IP address
-     */
-    private $remote_address;
-
-
-    /**
      * @param string $remote_address Remote IP address.
      * @param InternalBlocklistManager $ib_manager
      * @param ExternalBlocklistManager $eb_manager
      */
-    public function __construct(string $remote_address, InternalBlocklistManager $ib_manager, ExternalBlocklistManager $eb_manager)
-    {
-        $this->ib_manager = $ib_manager;
-        $this->eb_manager = $eb_manager;
-        $this->remote_address = $remote_address;
+    public function __construct(
+        private string $remote_address,
+        private InternalBlocklistManager $ib_manager,
+        private ExternalBlocklistManager $eb_manager
+    ) {
     }
 
 
@@ -107,12 +93,8 @@ class Bouncer implements Initializable, Loadable
 
     /**
      * Check if access to login is allowed from given remote address.
-     *
-     * @param \WP_Error|\WP_User $user
-     *
-     * @return \WP_Error|\WP_User
      */
-    public function checkLoginAttempt($user)
+    public function checkLoginAttempt(WP_Error|WP_User|null $user): WP_Error|WP_User|null
     {
         if ($this->isBlocked(Scope::ADMIN)) {
             Utils::blockAccessTemporarily($this->remote_address);

@@ -2,10 +2,12 @@
 
 namespace BlueChip\Security\Modules\Notifications;
 
+use BlueChip\Security\Core\Settings as CoreSettings;
+
 /**
  * Notifications settings
  */
-class Settings extends \BlueChip\Security\Core\Settings
+class Settings extends CoreSettings
 {
     /**
      * @var string Notify when user with admin privileges logs in [bool:yes]

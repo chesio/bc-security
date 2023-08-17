@@ -2,6 +2,8 @@
 
 namespace BlueChip\Security;
 
+use wpdb;
+
 /**
  * Main plugin class
  */
@@ -10,36 +12,36 @@ class Plugin
     /**
      * @var array<string,object> Plugin module objects
      */
-    private $modules;
+    private array $modules;
 
     /**
      * @var Settings Plugin settings object
      */
-    private $settings;
+    private Settings $settings;
 
     /**
      * @var string Plugin filename
      */
-    private $plugin_filename;
+    private string $plugin_filename;
 
     /**
      * @var string Remote address
      */
-    private $remote_address;
+    private string $remote_address;
 
     /**
-     * @var \wpdb WordPress database access abstraction object
+     * @var wpdb WordPress database access abstraction object
      */
-    private $wpdb;
+    private wpdb $wpdb;
 
 
     /**
      * Construct the plugin instance.
      *
      * @param string $plugin_filename Plugin filename
-     * @param \wpdb $wpdb WordPress database access abstraction object
+     * @param wpdb $wpdb WordPress database access abstraction object
      */
-    public function __construct(string $plugin_filename, \wpdb $wpdb)
+    public function __construct(string $plugin_filename, wpdb $wpdb)
     {
         $this->plugin_filename = $plugin_filename;
         $this->wpdb = $wpdb;
@@ -68,7 +70,7 @@ class Plugin
      *
      * @return array<string,object>
      */
-    private static function constructModules(\wpdb $wpdb, string $remote_address, string $server_address, Settings $settings): array
+    private static function constructModules(wpdb $wpdb, string $remote_address, string $server_address, Settings $settings): array
     {
         $google_api = new Setup\GoogleAPI($settings->forSetup());
 
@@ -79,8 +81,10 @@ class Plugin
         $monitor                    = new Modules\Log\EventsMonitor($remote_address, $server_address);
         $notifier                   = new Modules\Notifications\Watchman($settings->forNotifications(), $remote_address, $logger);
         $hardening                  = new Modules\Hardening\Core($settings->forHardening());
-        $internal_blocklist_manager = new Modules\InternalBlocklist\Manager($wpdb);
+        $htaccess_synchronizer      = new Modules\InternalBlocklist\HtaccessSynchronizer();
+        $internal_blocklist_manager = new Modules\InternalBlocklist\Manager($wpdb, $htaccess_synchronizer);
         $external_blocklist_manager = new Modules\ExternalBlocklist\Manager($settings->forExternalBlocklist(), $cron_job_manager);
+        $bad_requests_banner        = new Modules\BadRequestsBanner\Core($remote_address, $server_address, $settings->forBadRequestsBanner(), $internal_blocklist_manager);
         $access_bouncer             = new Modules\Access\Bouncer($remote_address, $internal_blocklist_manager, $external_blocklist_manager);
         $bookkeeper                 = new Modules\Login\Bookkeeper($settings->forLogin(), $wpdb);
         $gatekeeper                 = new Modules\Login\Gatekeeper($settings->forLogin(), $remote_address, $bookkeeper, $internal_blocklist_manager, $access_bouncer);
@@ -93,8 +97,10 @@ class Plugin
             'events-monitor'                => $monitor,
             'notifier'                      => $notifier,
             'hardening-core'                => $hardening,
+            'htaccess-synchronizer'         => $htaccess_synchronizer,
             'internal-blocklist-manager'    => $internal_blocklist_manager,
             'external-blocklist-manager'    => $external_blocklist_manager,
+            'bad-requests-banner'           => $bad_requests_banner,
             'access-bouncer'                => $access_bouncer,
             'login-bookkeeper'              => $bookkeeper,
             'login-gatekeeper'              => $gatekeeper,
@@ -167,8 +173,13 @@ class Plugin
                 ->addPage(new Modules\Login\AdminPage(
                     $this->settings->forLogin()
                 ))
+                ->addPage(new Modules\BadRequestsBanner\AdminPage(
+                    $this->settings->forBadRequestsBanner(),
+                    $this->modules['htaccess-synchronizer']
+                ))
                 ->addPage(new Modules\InternalBlocklist\AdminPage(
                     $this->modules['internal-blocklist-manager'],
+                    $this->modules['htaccess-synchronizer'],
                     $this->modules['cron-job-manager']
                 ))
                 ->addPage(new Modules\ExternalBlocklist\AdminPage(

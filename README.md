@@ -9,8 +9,8 @@ A WordPress plugin that helps keeping WordPress websites secure.
 
 ## Requirements
 
-* [PHP](https://www.php.net/) 7.3 or newer
-* [WordPress](https://wordpress.org/) 5.9 or newer
+* [PHP](https://www.php.net/) 8.0 or newer
+* [WordPress](https://wordpress.org/) 6.0 or newer
 
 ## Limitations
 
@@ -140,11 +140,33 @@ Passwords are validated on user creation, password change or password reset. If 
 1. BC Security allows you to limit number of login attempts from single IP address. Implementation of this feature is heavily inspired by popular [Limit Login Attempts](https://wordpress.org/plugins/limit-login-attempts/) plugin with an extra feature of immediate blocking of specific usernames (like _admin_ or _administrator_).
 2. BC Security offers an option to only display generic error message as a result of failed login attempt when wrong username, email or password is provided.
 
+### Bad requests banner
+
+Remote IP addresses that are scanning your website for weaknesses can be automatically [locked from access](#internal-blocklist) for configured amount of time. Such scanners can be usually quite easily detected because while scanning a website they trigger a lot of 404 errors and URLs they try to access differ from "valid" 404 errors: usually they try to find a known vulnerable plugin file, forgotten backup file or PHP script used for administrative purposes.
+
+There are two built-in rules available (they are not active by default):
+1. ban when non-existent PHP file is requested (any URL ending with `.php`)
+2. ban when backup file is requested (any URL targeting file with `backup` in basename or with `.back`, `.old` or `.tmp` extension)
+
+You may define custom rules as well (in form of regular expression).
+
 ### Internal blocklist
 
-BC Security maintains a list of IP addresses with limited access to the website. This list is automatically populated by [Login Security](#login-security) module, but manual addition of IP addresses is also possible.
+BC Security maintains a list of IP addresses with limited access to the website. This list is automatically populated by [Login security](#login-security) and [Bad requests banner](#bad-requests-banner) modules, but manual addition of IP addresses is also possible.
 
 Out-dated records are automatically removed from the list by WP-Cron job scheduled to run every night. The job can be deactivated in backend, if desired.
+
+#### Synchronization with .htaccess file
+
+**On Apache webserver in version 2.3 or newer**, block rules with "website" access scope can be automatically synchronized with `.htaccess` file. This makes access blocking much more powerful as all requests to the webserver are blocked this way and not only the ones handled by WordPress.
+
+This feature must be however set up manually - following two lines have to be added at the top of root `.htaccess` file in order for it to work:
+```.apacheconf
+# BEGIN BC Security
+# END BC Security
+```
+
+After you have completed the setup, either wait for automatic synchronization to kick in on next *locking* event or run manual synchronization from the administration page.
 
 ### External blocklist
 

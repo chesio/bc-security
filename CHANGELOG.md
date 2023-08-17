@@ -1,6 +1,22 @@
 # BC Security Changelog
 
+## Upcoming version 0.21.0 (2023-08-17)
+
+PHP 8.0 or newer and WordPress 6.0 or newer are now required!
+
+### Added
+
+* WordPress 6.3 is supported [#141](https://github.com/chesio/bc-security/issues/141).
+* Block rules with "website" access scope in internal blocklist can now be synced with `.htaccess` file [#142](https://github.com/chesio/bc-security/issues/142).
+* Remote IP addresses that are scanning your website for weaknesses can be automatically for configured amount of time [#132](https://github.com/chesio/bc-security/issues/132).
+
+### Changed
+
+* PHP 8.0 is required and the policy to run on supported PHP versions only has been restored [#117](https://github.com/chesio/bc-security/issues/117).
+
 ## Version 0.20.1 (2023-04-11)
+
+### Fixed
 
 * Validate IP addresses to avoid potential security issues [#138](https://github.com/chesio/bc-security/issues/138).
 * List of supported PHP versions for PHP version check has been updated to include PHP 8.2 and exclude PHP 7.4 [#137](https://github.com/chesio/bc-security/issues/137).

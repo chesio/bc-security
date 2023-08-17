@@ -4,7 +4,9 @@ namespace BlueChip\Security\Modules\Checklist;
 
 use BlueChip\Security\Helpers\AjaxHelper;
 use BlueChip\Security\Modules;
-use BlueChip\Security\Modules\Cron;
+use BlueChip\Security\Modules\Cron\Jobs as CronJobs;
+use BlueChip\Security\Modules\Cron\Manager as CronManager;
+use wpdb;
 
 class Manager implements Modules\Initializable
 {
@@ -14,28 +16,22 @@ class Manager implements Modules\Initializable
     public const ASYNC_CHECK_ACTION = 'bc_security_run_check';
 
     /**
-     * @var \BlueChip\Security\Modules\Checklist\Check[]
+     * @var Check[]
      */
-    private $checks;
+    private array $checks;
 
-    /**
-     * @var \BlueChip\Security\Modules\Checklist\AutorunSettings
-     */
-    private $settings;
+    private AutorunSettings $settings;
 
-    /**
-     * @var \BlueChip\Security\Modules\Cron\Manager
-     */
-    private $cron_manager;
+    private CronManager $cron_manager;
 
 
     /**
-     * @param \BlueChip\Security\Modules\Checklist\AutorunSettings $settings
-     * @param \BlueChip\Security\Modules\Cron\Manager $cron_manager
-     * @param \wpdb $wpdb WordPress database access abstraction object
+     * @param AutorunSettings $settings
+     * @param CronManager $cron_manager
+     * @param wpdb $wpdb WordPress database access abstraction object
      * @param string $google_api_key
      */
-    public function __construct(AutorunSettings $settings, Cron\Manager $cron_manager, \wpdb $wpdb, string $google_api_key)
+    public function __construct(AutorunSettings $settings, CronManager $cron_manager, wpdb $wpdb, string $google_api_key)
     {
         $this->checks = $this->constructChecks($wpdb, $google_api_key);
         $this->settings = $settings;
@@ -48,7 +44,7 @@ class Manager implements Modules\Initializable
         // When settings are updated, ensure that cron jobs for advanced checks are properly (de)activated.
         $this->settings->addUpdateHook([$this, 'updateCronJobs']);
         // Hook into cron job execution.
-        add_action(Modules\Cron\Jobs::CHECKLIST_CHECK, [$this, 'runBasicChecks'], 10, 0);
+        add_action(CronJobs::CHECKLIST_CHECK, [$this, 'runBasicChecks'], 10, 0);
         foreach ($this->getAdvancedChecks() as $advanced_check) {
             add_action($advanced_check->getCronJobHook(), [$advanced_check, 'runInCron'], 10, 0);
         }
@@ -60,12 +56,12 @@ class Manager implements Modules\Initializable
     /**
      * Construct all checks.
      *
-     * @param \wpdb $wpdb WordPress database access abstraction object
+     * @param wpdb $wpdb WordPress database access abstraction object
      * @param string $google_api_key Google API key for project with Safe Browsing API enabled.
      *
      * @return array<string,Check>
      */
-    public function constructChecks(\wpdb $wpdb, string $google_api_key): array
+    public function constructChecks(wpdb $wpdb, string $google_api_key): array
     {
         return [
             // PHP files editation should be off.
@@ -107,11 +103,6 @@ class Manager implements Modules\Initializable
     }
 
 
-    /**
-     * @param string $id
-     *
-     * @return \BlueChip\Security\Modules\Checklist\Check|null
-     */
     public function getCheck(string $id): ?Check
     {
         return $this->checks[$id] ?? null;
@@ -130,24 +121,18 @@ class Manager implements Modules\Initializable
 
         if (isset($filters['meaningful'])) {
             $is_meaningful = $filters['meaningful'];
-            $checks = \array_filter($checks, function (Check $check) use ($is_meaningful): bool {
-                return $is_meaningful ? $check->isMeaningful() : !$check->isMeaningful();
-            });
+            $checks = \array_filter($checks, fn (Check $check): bool => $is_meaningful ? $check->isMeaningful() : !$check->isMeaningful());
         }
 
         if (isset($filters['monitored'])) {
             $monitored = $filters['monitored'];
             $settings = $this->settings;
-            $checks = \array_filter($checks, function (string $check_id) use ($monitored, $settings): bool {
-                return $monitored ? $settings[$check_id] : !$settings[$check_id];
-            }, ARRAY_FILTER_USE_KEY);
+            $checks = \array_filter($checks, fn (string $check_id): bool => $monitored ? $settings[$check_id] : !$settings[$check_id], ARRAY_FILTER_USE_KEY);
         }
 
         if (isset($filters['status'])) {
             $status = $filters['status'];
-            $checks = \array_filter($checks, function (Check $check) use ($status): bool {
-                return $check->getResult()->getStatus() === $status;
-            });
+            $checks = \array_filter($checks, fn (Check $check): bool => $check->getResult()->getStatus() === $status);
         }
 
         return $checks;
@@ -157,7 +142,7 @@ class Manager implements Modules\Initializable
     /**
      * @param bool $only_meaningful If true (default), return only meaningful checks, otherwise return all checks.
      *
-     * @return \BlueChip\Security\Modules\Checklist\AdvancedCheck[]
+     * @return AdvancedCheck[]
      */
     public function getAdvancedChecks(bool $only_meaningful = true): array
     {
@@ -166,16 +151,14 @@ class Manager implements Modules\Initializable
             $filters['meaningful'] = true;
         }
 
-        return \array_filter($this->getChecks($filters), function (Check $check): bool {
-            return $check instanceof AdvancedCheck;
-        });
+        return \array_filter($this->getChecks($filters), fn (Check $check): bool => $check instanceof AdvancedCheck);
     }
 
 
     /**
      * @param bool $only_meaningful If true (default), return only meaningful checks, otherwise return all checks.
      *
-     * @return \BlueChip\Security\Modules\Checklist\BasicCheck[]
+     * @return BasicCheck[]
      */
     public function getBasicChecks(bool $only_meaningful = true): array
     {
@@ -184,9 +167,7 @@ class Manager implements Modules\Initializable
             $filters['meaningful'] = true;
         }
 
-        return \array_filter($this->getChecks($filters), function (Check $check): bool {
-            return $check instanceof BasicCheck;
-        });
+        return \array_filter($this->getChecks($filters), fn (Check $check): bool => $check instanceof BasicCheck);
     }
 
 

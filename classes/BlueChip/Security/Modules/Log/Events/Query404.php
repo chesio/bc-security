@@ -21,7 +21,7 @@ class Query404 extends Event
      *
      * @var string Request URI that returned 404 error.
      */
-    protected $request_uri = '';
+    protected string $request_uri = '';
 
 
     public function getName(): string

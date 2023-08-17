@@ -21,7 +21,7 @@ class AuthBadCookie extends Event
      *
      * @var string Username used in authentication with a bad cookie.
      */
-    protected $username = '';
+    protected string $username = '';
 
 
     public function getName(): string

@@ -2,13 +2,15 @@
 
 namespace BlueChip\Security\Setup;
 
+use BlueChip\Security\Core\Admin\AbstractPage;
+use BlueChip\Security\Core\Admin\SettingsPage;
 use BlueChip\Security\Helpers\AdminNotices;
 use BlueChip\Security\Helpers\FormHelper;
 
-class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
+class AdminPage extends AbstractPage
 {
     /** Page has settings section */
-    use \BlueChip\Security\Core\Admin\SettingsPage;
+    use SettingsPage;
 
 
     /**
@@ -18,7 +20,7 @@ class AdminPage extends \BlueChip\Security\Core\Admin\AbstractPage
 
 
     /**
-     * @param \BlueChip\Security\Setup\Settings $settings Basic settings
+     * @param Settings $settings Basic settings
      */
     public function __construct(Settings $settings)
     {
