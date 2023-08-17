@@ -1,6 +1,10 @@
 # BC Security Changelog
 
-## Upcoming version 0.21.0 (2023-08-17)
+## Upcoming version 0.22.0 (????-??-??)
+
+...
+
+## Version 0.21.0 (2023-08-17)
 
 PHP 8.0 or newer and WordPress 6.0 or newer are now required!
 
