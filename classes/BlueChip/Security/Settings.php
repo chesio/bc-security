@@ -2,6 +2,8 @@
 
 namespace BlueChip\Security;
 
+use ArrayIterator;
+use BlueChip\Security\Core\Settings as CoreSettings;
 use BlueChip\Security\Modules\Checklist\AutorunSettings as ChecklistAutorunSettings;
 use BlueChip\Security\Modules\Cron\Settings as CronSettings;
 use BlueChip\Security\Modules\ExternalBlocklist\Settings as ExternalBlocklistSettings;
@@ -11,11 +13,15 @@ use BlueChip\Security\Modules\Login\Settings as LoginSettings;
 use BlueChip\Security\Modules\Notifications\Settings as NotificationsSettings;
 use BlueChip\Security\Modules\BadRequestsBanner\Settings as BadRequestsBannerSettings;
 use BlueChip\Security\Setup\Settings as SetupSettings;
+use IteratorAggregate;
+use Traversable;
 
 /**
  * Object that provides access to all plugin settings
+ *
+ * @implements IteratorAggregate<int, CoreSettings>
  */
-class Settings implements \IteratorAggregate
+class Settings implements IteratorAggregate
 {
     private ChecklistAutorunSettings $checklist_autorun;
 
@@ -49,9 +55,11 @@ class Settings implements \IteratorAggregate
         $this->setup                = new SetupSettings('bc-security-setup');
     }
 
-    public function getIterator(): \Traversable
+    public function getIterator(): Traversable
     {
-        return new \ArrayIterator((array) $this);
+        foreach ((array) $this as $settings) {
+            yield $settings;
+        }
     }
 
     public function forChecklistAutorun(): ChecklistAutorunSettings
