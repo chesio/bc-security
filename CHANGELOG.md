@@ -2,7 +2,9 @@
 
 ## Upcoming version 0.22.0 (????-??-??)
 
-...
+### Changed
+
+* PHP 8.1 is required [#143](https://github.com/chesio/bc-security/issues/143).
 
 ## Version 0.21.0 (2023-08-17)
 
