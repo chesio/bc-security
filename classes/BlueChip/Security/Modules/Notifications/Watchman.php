@@ -362,7 +362,7 @@ class Watchman implements Activable, Initializable
     /**
      * Send notification about multiple checks that failed during checklist monitoring.
      *
-     * @param array{check:Check,result:CheckResult} $issues Issues which triggered the alert.
+     * @param array<int,array{check:Check,result:CheckResult}> $issues Issues which triggered the alert.
      */
     public function watchChecklistMultipleChecksAlert(array $issues): void
     {

@@ -275,7 +275,7 @@ class ListTable extends CoreListTable
             }
 
             $nonce = \filter_input(INPUT_GET, self::NONCE_NAME);
-            if (!wp_verify_nonce($nonce, \sprintf('%s:%s', $action, $id))) {
+            if (!\is_string($nonce) || !wp_verify_nonce($nonce, \sprintf('%s:%s', $action, $id))) {
                 // Nonce check failed
                 return;
             }

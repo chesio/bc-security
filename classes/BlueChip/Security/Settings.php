@@ -2,7 +2,6 @@
 
 namespace BlueChip\Security;
 
-use ArrayIterator;
 use BlueChip\Security\Core\Settings as CoreSettings;
 use BlueChip\Security\Modules\Checklist\AutorunSettings as ChecklistAutorunSettings;
 use BlueChip\Security\Modules\Cron\Settings as CronSettings;

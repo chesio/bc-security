@@ -60,7 +60,7 @@ abstract class ListTable extends \WP_List_Table
         $this->items_per_page = $this->get_items_per_page($per_page_option_name);
 
         $order_by = \filter_input(INPUT_GET, 'orderby');
-        if (\in_array($order_by, $this->get_sortable_columns(), true)) {
+        if (\is_string($order_by) && \in_array($order_by, $this->get_sortable_columns(), true)) {
             $this->order_by = $order_by;
             $this->url = add_query_arg('orderby', $order_by, $this->url);
         }

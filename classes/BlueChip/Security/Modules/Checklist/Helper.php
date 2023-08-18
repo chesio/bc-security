@@ -84,7 +84,7 @@ abstract class Helper
         $modified_files = [];
 
         // Loop through all files in list.
-        foreach ($checksums as $filename => $checksum) {
+        foreach ((array) $checksums as $filename => $checksum) {
             // Skip any ignored files.
             if (\in_array($filename, $ignored_files, true)) {
                 continue;
