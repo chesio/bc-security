@@ -22,7 +22,7 @@ interface Hooks
      *
      * add_filter(
      *     \BlueChip\Security\Modules\InternalBlocklist\Hooks::IS_IP_ADDRESS_LOCKED,
-     *     function (bool $result, string $ip_address, int $scope) {
+     *     function (bool $result, string $ip_address, Scope $access_scope) {
      *         // Block any IP address that starts with "1"
      *         return str_starts_with($ip_address, '1');
      *     },

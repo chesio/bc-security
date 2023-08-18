@@ -91,7 +91,7 @@ class AdminPage extends AbstractPage
             AmazonWebServices::class,
             __('Block requests from AWS', 'bc-security'),
             [FormHelper::class, 'printSelect'],
-            ['options' => Scope::enlist(true)]
+            ['options' => Scope::explain()]
         );
     }
 }

@@ -24,7 +24,7 @@ class ManagerTest extends TestCase
         $_SERVER[IpAddress::REMOTE_ADDR] = Constants::AMAZON_WEB_SERVICE_IP_ADDRESS;
 
         // Activate AWS blocklist for backend login.
-        (new Settings())->forExternalBlocklist()->update(AmazonWebServices::class, Scope::ADMIN);
+        (new Settings())->forExternalBlocklist()->update(AmazonWebServices::class, Scope::ADMIN->value);
     }
 
 
