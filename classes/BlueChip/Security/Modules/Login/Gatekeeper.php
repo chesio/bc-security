@@ -199,14 +199,14 @@ class Gatekeeper implements Initializable, Loadable
      *
      * @param string $username Username that triggered the lockout
      * @param int $duration Duration (in secs) of lockout
-     * @param int $reason Lockout reason
+     * @param BanReason $ban_reason Lockout reason
      */
-    protected function lockOut(string $username, int $duration, int $reason): void
+    protected function lockOut(string $username, int $duration, BanReason $ban_reason): void
     {
         // Lock IP address
-        if ($this->ib_manager->lock($this->remote_address, $duration, Scope::ADMIN, $reason)) {
+        if ($this->ib_manager->lock($this->remote_address, $duration, Scope::ADMIN, $ban_reason)) {
             // Trigger lockout action
-            do_action(Hooks::LOCKOUT_EVENT, $this->remote_address, $username, $duration, $reason);
+            do_action(Hooks::LOCKOUT_EVENT, $this->remote_address, $username, $duration, $ban_reason);
         }
 
         // Block access

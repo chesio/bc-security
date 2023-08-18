@@ -5,11 +5,11 @@ namespace BlueChip\Security\Modules\InternalBlocklist;
 /**
  * List of different reasons for an IP address to find itself onto internal blocklist
  */
-interface BanReason
+enum BanReason: int
 {
-    public const LOGIN_LOCKOUT_SHORT = 1;
-    public const LOGIN_LOCKOUT_LONG = 2;
-    public const USERNAME_BLACKLIST = 3;
-    public const MANUALLY_BLOCKED = 4;
-    public const BAD_REQUEST_BAN = 5;
+    case LOGIN_LOCKOUT_SHORT = 1;
+    case LOGIN_LOCKOUT_LONG = 2;
+    case USERNAME_BLACKLIST = 3;
+    case MANUALLY_BLOCKED = 4;
+    case BAD_REQUEST_BAN = 5;
 }

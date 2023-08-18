@@ -312,25 +312,27 @@ class ListTable extends CoreListTable
     /**
      * Translate integer code for ban reason into something human can read.
      *
-     * @param int $banReason
+     * @param int $ban_reason_value
      *
      * @return string
      */
-    private function explainBanReason(int $banReason): string
+    private function explainBanReason(int $ban_reason_value): string
     {
-        switch ($banReason) {
-            case BanReason::BAD_REQUEST_BAN:
-                return _x('Bad request', 'Ban reason', 'bc-security');
-            case BanReason::LOGIN_LOCKOUT_SHORT:
-            case BanReason::LOGIN_LOCKOUT_LONG:
-                return _x('Too many failed login attempts', 'Ban reason', 'bc-security');
-            case BanReason::USERNAME_BLACKLIST:
-                return _x('Login attempt using blacklisted username', 'Ban reason', 'bc-security');
-            case BanReason::MANUALLY_BLOCKED:
-                return _x('Manually blocked', 'Ban reason', 'bc-security');
-            default:
-                return _x('Unknown', 'Ban reason', 'bc-security');
-        }
+        $ban_reason = BanReason::tryFrom($ban_reason_value);
+
+        return match ($ban_reason) {
+            BanReason::BAD_REQUEST_BAN
+                => _x('Bad request', 'Ban reason', 'bc-security'),
+            BanReason::LOGIN_LOCKOUT_SHORT,
+            BanReason::LOGIN_LOCKOUT_LONG
+                => _x('Too many failed login attempts', 'Ban reason', 'bc-security'),
+            BanReason::USERNAME_BLACKLIST
+                => _x('Login attempt using blacklisted username', 'Ban reason', 'bc-security'),
+            BanReason::MANUALLY_BLOCKED
+                => _x('Manually blocked', 'Ban reason', 'bc-security'),
+            default
+                => _x('Unknown', 'Ban reason', 'bc-security')
+        };
     }
 
 

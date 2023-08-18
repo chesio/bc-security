@@ -269,12 +269,12 @@ class Manager implements Modules\Activable, Modules\Countable, Modules\Installab
      * @param string $ip_address IP address to lock.
      * @param int $duration
      * @param Scope $access_scope
-     * @param int $reason
+     * @param BanReason $ban_reason
      * @param string $comment [optional]
      *
      * @return bool True if IP address has been locked, false otherwise.
      */
-    public function lock(string $ip_address, int $duration, Scope $access_scope, int $reason, string $comment = ''): bool
+    public function lock(string $ip_address, int $duration, Scope $access_scope, BanReason $ban_reason, string $comment = ''): bool
     {
         $now = \time();
 
@@ -289,13 +289,13 @@ class Manager implements Modules\Activable, Modules\Countable, Modules\Installab
         $where = [
             'scope'         => $access_scope->value,
             'ip_address'    => $ip_address,
-            'reason'        => $reason,
+            'reason'        => $ban_reason->value,
         ];
 
         $where_format = ['%d', '%s', '%d'];
 
         // Determine, whether IP needs to be inserted or updated.
-        if ($this->getId($ip_address, $access_scope, $reason)) {
+        if ($this->getId($ip_address, $access_scope, $ban_reason)) {
             // Update
             $result = $this->wpdb->update($this->blocklist_table, $data, $where, $format, $where_format);
         } else {
@@ -459,11 +459,11 @@ class Manager implements Modules\Activable, Modules\Countable, Modules\Installab
      *
      * @param string $ip_address IP address to check.
      * @param Scope $access_scope
-     * @param int $reason
+     * @param BanReason $ban_reason
      *
      * @return int|null Record ID or null if no record with given $ip_address, $access_scope and ban $reason exists.
      */
-    protected function getId(string $ip_address, Scope $access_scope, int $reason): ?int
+    protected function getId(string $ip_address, Scope $access_scope, BanReason $ban_reason): ?int
     {
         // Prepare query.
         /** @var string $query */
@@ -471,7 +471,7 @@ class Manager implements Modules\Activable, Modules\Countable, Modules\Installab
             "SELECT id FROM {$this->blocklist_table} WHERE scope = %d AND ip_address = %s AND reason = %d",
             $access_scope->value,
             $ip_address,
-            $reason
+            $ban_reason->value
         );
         // Execute query.
         $result = $this->wpdb->get_var($query);
