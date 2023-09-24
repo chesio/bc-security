@@ -2,6 +2,8 @@
 
 ## Upcoming version 0.22.0 (????-??-??)
 
+PHP 8.1 or newer and WordPress 6.2 or newer are now required!
+
 ### Added
 
 * New built-in rule to bad request banner module that triggers when non-existing `readme.txt` file is accessed [#149](https://github.com/chesio/bc-security/issues/149).
@@ -12,6 +14,7 @@
   1. `bc-security/action:external-blocklist-hit`
   2. `bc-security/action:internal-blocklist-hit`
   3. `bc-security/filter:is-ip-address-blocked`
+* WordPress 6.2 is required [#147](https://github.com/chesio/bc-security/issues/147).
 
 ## Version 0.21.0 (2023-08-17)
 
