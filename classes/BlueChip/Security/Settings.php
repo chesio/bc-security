@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BlueChip\Security;
 
 use BlueChip\Security\Core\Settings as CoreSettings;

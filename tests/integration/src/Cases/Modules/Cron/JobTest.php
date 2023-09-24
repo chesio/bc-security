@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BlueChip\Security\Tests\Integration\Cases\Modules\Cron;
 
 use BlueChip\Security\Modules\Cron;

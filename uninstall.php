@@ -2,9 +2,9 @@
 
 /**
  * Perform plugin uninstall.
- *
- * @package BC_Security
  */
+
+declare(strict_types=1);
 
 // If file is not invoked by WordPress, exit.
 if (!defined('WP_UNINSTALL_PLUGIN')) {

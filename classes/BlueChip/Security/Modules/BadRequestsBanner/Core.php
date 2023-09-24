@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BlueChip\Security\Modules\BadRequestsBanner;
 
 use BlueChip\Security\Modules\Access\Scope;

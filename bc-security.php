@@ -15,6 +15,8 @@
  * Update URI: https://github.com/chesio/bc-security
  */
 
+declare(strict_types=1);
+
 if (version_compare(PHP_VERSION, '8.1', '<')) {
     // Warn user that his/her PHP version is too low for this plugin to function.
     add_action('admin_notices', function () {

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BlueChip\Security\Modules\Notifications;
 
 use BlueChip\Security\Modules\Notifications\AdminPage;

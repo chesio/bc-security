@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BlueChip\Security\Tests\Integration\Cases\Modules\Login;
 
 use BlueChip\Security\Modules\Login;

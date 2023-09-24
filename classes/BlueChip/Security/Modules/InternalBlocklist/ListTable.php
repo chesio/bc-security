@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BlueChip\Security\Modules\InternalBlocklist;
 
 use BlueChip\Security\Core\ListTable as CoreListTable;

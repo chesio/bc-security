@@ -2,9 +2,9 @@
 
 /**
  * Register autoloader for classes shipped with the plugin.
- *
- * @package BC_Security
  */
+
+declare(strict_types=1);
 
 // Register autoload function
 \spl_autoload_register(function (string $class) {
