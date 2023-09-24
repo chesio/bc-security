@@ -115,6 +115,7 @@ class BlocklistHit extends Event
             Scope::ADMIN => 'login request',
             Scope::COMMENTS => 'comment request',
             Scope::WEBSITE => 'website request',
+            Scope::ANY => 'unspecific request', // This explanation is for static analysis only, it should not appear anywhere.
         };
     }
 }
