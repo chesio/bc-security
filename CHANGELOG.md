@@ -4,7 +4,10 @@
 
 ### Changed
 
-* PHP 8.1 is required [#143](https://github.com/chesio/bc-security/issues/143).
+* PHP 8.1 is required [#143](https://github.com/chesio/bc-security/issues/143). As part of an effort to use modern PHP features whenever useful, _access scope_ values are now passed as [backed enum](https://stitcher.io/blog/php-enums) instances instead of plain `int`. This is a **breaking change** for actions and filters that have _access scope_ value as their argument:
+  1. `bc-security/action:external-blocklist-hit`
+  2. `bc-security/action:internal-blocklist-hit`
+  3. `bc-security/filter:is-ip-address-blocked`
 
 ## Version 0.21.0 (2023-08-17)
 
