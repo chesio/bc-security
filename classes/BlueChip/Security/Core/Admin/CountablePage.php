@@ -48,9 +48,9 @@ trait CountablePage
     {
         $user = wp_get_current_user();
 
-        $last_visit_timestamp = get_user_meta($user->ID, $this->getCounterUserMetaKey(), true);
+        $last_visit_timestamp = absint(get_user_meta($user->ID, $this->getCounterUserMetaKey(), true));
 
-        return empty($last_visit_timestamp) ? $this->counter->countAll() : $this->counter->countFrom($last_visit_timestamp);
+        return $last_visit_timestamp ? $this->counter->countFrom($last_visit_timestamp) : $this->counter->countAll();
     }
 
 
