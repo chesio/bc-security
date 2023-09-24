@@ -19,6 +19,11 @@ class Settings extends CoreSettings
     public const BUILT_IN_RULE_PHP_FILES = BuiltInRules::PHP_FILES;
 
     /**
+     * @var string Is built-in rule "Readme files" active? [bool:no]
+     */
+    public const BUILT_IN_RULE_README_FILES = BuiltInRules::README_FILES;
+
+    /**
      * @var string List of custom rules (bad request patterns) that trigger ban [array:empty]
      */
     public const BAD_REQUEST_PATTERNS = 'bad_request_patterns';
@@ -41,6 +46,7 @@ class Settings extends CoreSettings
     protected const DEFAULTS = [
         self::BUILT_IN_RULE_BACKUP_FILES => false,
         self::BUILT_IN_RULE_PHP_FILES => false,
+        self::BUILT_IN_RULE_README_FILES => false,
         self::BAD_REQUEST_PATTERNS => [],
         self::BAN_DURATION => 60,
     ];

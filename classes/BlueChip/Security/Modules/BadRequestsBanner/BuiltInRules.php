@@ -14,6 +14,10 @@ abstract class BuiltInRules
 
     private const PHP_FILES_PATTERN = '\.php$';
 
+    public const README_FILES = 'readme-txt-files';
+
+    private const README_FILES_PATTERN = '\/readme\.txt$';
+
     /**
      * @return array<string,BanRule>
      */
@@ -24,6 +28,11 @@ abstract class BuiltInRules
                 __('Non-existent PHP files', 'bc-security'),
                 self::PHP_FILES_PATTERN,
                 __('(any URI targeting file with .php extension)', 'bc-security')
+            ),
+            self::README_FILES => new BanRule(
+                __('Non-existent readme.txt files', 'bc-security'),
+                self::README_FILES_PATTERN,
+                __('(any URI targeting /readme.txt file)', 'bc-security')
             ),
             self::BACKUP_FILES => new BanRule(
                 __('Non-existent backup files', 'bc-security'),

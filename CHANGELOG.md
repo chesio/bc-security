@@ -2,6 +2,10 @@
 
 ## Upcoming version 0.22.0 (????-??-??)
 
+### Added
+
+* New built-in rule to bad request banner module that triggers when non-existing `readme.txt` file is accessed [#149](https://github.com/chesio/bc-security/issues/149).
+
 ### Changed
 
 * PHP 8.1 is required [#143](https://github.com/chesio/bc-security/issues/143). As part of an effort to use modern PHP features whenever useful, _access scope_ values are now passed as [backed enum](https://stitcher.io/blog/php-enums) instances instead of plain `int`. This is a **breaking change** for actions and filters that have _access scope_ value as their argument:
