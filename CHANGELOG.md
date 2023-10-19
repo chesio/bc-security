@@ -7,6 +7,7 @@ PHP 8.1 or newer and WordPress 6.2 or newer are now required!
 ### Added
 
 * New built-in rule to bad request banner module that triggers when non-existing `readme.txt` file is accessed [#149](https://github.com/chesio/bc-security/issues/149).
+* Plugin has been tested with WordPress 6.4 [#144](https://github.com/chesio/bc-security/issues/144).
 
 ### Changed
 
