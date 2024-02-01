@@ -1,5 +1,9 @@
 # BC Security Changelog
 
+## Upcoming version 0.23.0 (????-??-??)
+
+...
+
 ## Version 0.22.0 (2024-02-01)
 
 This release has been tested with PHP 8.3 and WordPress 6.4. PHP 8.1 or newer and WordPress 6.2 or newer are now required!
