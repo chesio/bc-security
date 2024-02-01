@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BlueChip\Security\Modules\Login;
 
 use BlueChip\Security\Helpers\MySQLDateTime;

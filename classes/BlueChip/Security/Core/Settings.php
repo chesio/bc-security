@@ -1,6 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BlueChip\Security\Core;
+
+use ArrayAccess;
+use ArrayIterator;
+use IteratorAggregate;
+use Traversable;
 
 /**
  * Basis (abstract) class for setting objects.
@@ -8,8 +15,11 @@ namespace BlueChip\Security\Core;
  * Every setting object's data are internally stored as single option in `wp_options` table using Settings API.
  *
  * @link https://developer.wordpress.org/plugins/settings/settings-api/
+ *
+ * @phpstan-implements ArrayAccess<string,mixed>
+ * @phpstan-implements IteratorAggregate<string,mixed>
  */
-abstract class Settings implements \ArrayAccess, \IteratorAggregate
+abstract class Settings implements ArrayAccess, IteratorAggregate
 {
     /**
      * @var array<string,mixed> Default values for all settings. Descendant classes should override it.
@@ -124,9 +134,9 @@ abstract class Settings implements \ArrayAccess, \IteratorAggregate
 
     //// IteratorAggregate API /////////////////////////////////////////////////
 
-    public function getIterator(): \Traversable
+    public function getIterator(): Traversable
     {
-        return new \ArrayIterator($this->data);
+        return new ArrayIterator($this->data);
     }
 
 

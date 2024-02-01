@@ -16,4 +16,13 @@
         <exclude name="Generic.Files.LineLength"/>
     </rule>
 
+    <!-- Use selected rules from Slevomat Coding Standard -->
+    <rule ref="SlevomatCodingStandard.Arrays.TrailingArrayComma" />
+    <rule ref="SlevomatCodingStandard.TypeHints.DeclareStrictTypes">
+        <properties>
+            <property name="spacesCountAroundEqualsSign" value="0"></property>
+        </properties>
+    </rule>
+    <rule ref="SlevomatCodingStandard.TypeHints.NullableTypeForNullDefaultValue" />
+
 </ruleset>

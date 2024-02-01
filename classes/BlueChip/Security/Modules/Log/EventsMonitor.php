@@ -1,8 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BlueChip\Security\Modules\Log;
 
 use BlueChip\Security\Modules\Access\Hooks as AccessHooks;
+use BlueChip\Security\Modules\Access\Scope;
 use BlueChip\Security\Modules\ExternalBlocklist\Source;
 use BlueChip\Security\Modules\BadRequestsBanner\Hooks as BadRequestsBannerHooks;
 use BlueChip\Security\Modules\Initializable;
@@ -57,7 +60,7 @@ class EventsMonitor implements Initializable, Loadable
     /**
      * Log external blocklist hit.
      */
-    public function logExternalBlocklistHit(string $remote_address, int $access_scope, Source $source): void
+    public function logExternalBlocklistHit(string $remote_address, Scope $access_scope, Source $source): void
     {
         do_action(Action::EVENT, (new Events\BlocklistHit())->setIpAddress($remote_address)->setRequestType($access_scope)->setSource($source));
     }
@@ -66,7 +69,7 @@ class EventsMonitor implements Initializable, Loadable
     /**
      * Log internal blocklist hit.
      */
-    public function logInternalBlocklistHit(string $remote_address, int $access_scope): void
+    public function logInternalBlocklistHit(string $remote_address, Scope $access_scope): void
     {
         do_action(Action::EVENT, (new Events\BlocklistHit())->setIpAddress($remote_address)->setRequestType($access_scope));
     }

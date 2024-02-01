@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BlueChip\Security\Modules\Log\Events;
 
 use BlueChip\Security\Modules\Access\Scope;
@@ -77,12 +79,8 @@ class BlocklistHit extends Event
 
     /**
      * Set request type based on given blocklist access scope.
-     *
-     * @param int $access_scope
-     *
-     * @return self
      */
-    public function setRequestType(int $access_scope): self
+    public function setRequestType(Scope $access_scope): self
     {
         $this->request_type = ucfirst($this->explainAccessScope($access_scope));
         return $this;
@@ -91,10 +89,6 @@ class BlocklistHit extends Event
 
     /**
      * Set IP address the blocked request originated at.
-     *
-     * @param string $ip_address
-     *
-     * @return self
      */
     public function setIpAddress(string $ip_address): self
     {
@@ -105,10 +99,6 @@ class BlocklistHit extends Event
 
     /**
      * Set source behind blocklist entry that resulted in blocklist hit. Also mark hit as originating from external blocklist.
-     *
-     * @param Source $source
-     *
-     * @return self
      */
     public function setSource(Source $source): self
     {
@@ -121,17 +111,13 @@ class BlocklistHit extends Event
     /**
      * Translate $access_scope value into human-readable request type.
      */
-    private function explainAccessScope(int $access_scope): string
+    private function explainAccessScope(Scope $access_scope): string
     {
-        switch ($access_scope) {
-            case Scope::ADMIN:
-                return 'login request';
-            case Scope::COMMENTS:
-                return 'comment request';
-            case Scope::WEBSITE:
-                return 'website request';
-            default:
-                return 'unknown request';
-        }
+        return match ($access_scope) {
+            Scope::ADMIN => 'login request',
+            Scope::COMMENTS => 'comment request',
+            Scope::WEBSITE => 'website request',
+            Scope::ANY => 'unspecific request', // This explanation is for static analysis only, it should not appear anywhere.
+        };
     }
 }

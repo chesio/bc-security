@@ -1,6 +1,24 @@
 # BC Security Changelog
 
-## Upcoming version 0.21.0 (2023-08-17)
+## Version 0.22.0 (2024-02-01)
+
+This release has been tested with PHP 8.3 and WordPress 6.4. PHP 8.1 or newer and WordPress 6.2 or newer are now required!
+
+### Added
+
+* New built-in rule to bad request banner module that triggers when non-existing `readme.txt` file is accessed [#149](https://github.com/chesio/bc-security/issues/149).
+* Plugin has been tested with PHP 8.3 [#145](https://github.com/chesio/bc-security/issues/145).
+* Plugin has been tested with WordPress 6.4 [#144](https://github.com/chesio/bc-security/issues/144).
+
+### Changed
+
+* PHP 8.1 is required [#143](https://github.com/chesio/bc-security/issues/143). As part of an effort to use modern PHP features whenever useful, _access scope_ values are now passed as [backed enum](https://stitcher.io/blog/php-enums) instances instead of plain `int`. This is a **breaking change** for actions and filters that have _access scope_ value as their argument:
+  1. `bc-security/action:external-blocklist-hit`
+  2. `bc-security/action:internal-blocklist-hit`
+  3. `bc-security/filter:is-ip-address-blocked`
+* WordPress 6.2 is required [#147](https://github.com/chesio/bc-security/issues/147).
+
+## Version 0.21.0 (2023-08-17)
 
 PHP 8.0 or newer and WordPress 6.0 or newer are now required!
 

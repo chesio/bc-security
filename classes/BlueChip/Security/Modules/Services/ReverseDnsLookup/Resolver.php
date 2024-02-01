@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BlueChip\Security\Modules\Services\ReverseDnsLookup;
 
 use BlueChip\Security\Helpers\Transients;

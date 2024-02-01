@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BlueChip\Security\Tests\Unit\Cases\Modules\Log;
 
 use Brain\Monkey\Actions;

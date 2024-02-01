@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BlueChip\Security\Modules\ExternalBlocklist\Sources;
 
 use BlueChip\Security\Helpers\IpAddress;

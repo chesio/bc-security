@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BlueChip\Security\Tests\Unit\Cases\Modules\ExternalBlocklist;
 
 use BlueChip\Security\Modules\Access\Scope;
@@ -24,7 +26,7 @@ class ManagerTest extends TestCase
         $_SERVER[IpAddress::REMOTE_ADDR] = Constants::AMAZON_WEB_SERVICE_IP_ADDRESS;
 
         // Activate AWS blocklist for backend login.
-        (new Settings())->forExternalBlocklist()->update(AmazonWebServices::class, Scope::ADMIN);
+        (new Settings())->forExternalBlocklist()->update(AmazonWebServices::class, Scope::ADMIN->value);
     }
 
 

@@ -9,8 +9,8 @@ A WordPress plugin that helps keeping WordPress websites secure.
 
 ## Requirements
 
-* [PHP](https://www.php.net/) 8.0 or newer
-* [WordPress](https://wordpress.org/) 6.0 or newer
+* [PHP](https://www.php.net/) 8.1 or newer
+* [WordPress](https://wordpress.org/) 6.2 or newer
 
 ## Limitations
 
@@ -142,13 +142,16 @@ Passwords are validated on user creation, password change or password reset. If 
 
 ### Bad requests banner
 
-Remote IP addresses that are scanning your website for weaknesses can be automatically [locked from access](#internal-blocklist) for configured amount of time. Such scanners can be usually quite easily detected because while scanning a website they trigger a lot of 404 errors and URLs they try to access differ from "valid" 404 errors: usually they try to find a known vulnerable plugin file, forgotten backup file or PHP script used for administrative purposes.
+Remote IP addresses that are scanning your website for weaknesses can be automatically [blocked](#internal-blocklist) for configured amount of time. Such scanners can be usually quite easily detected because while scanning a website they trigger a lot of 404 errors and URLs they try to access differ from "valid" 404 errors: usually they try to find a known vulnerable plugin, forgotten backup file or PHP script used for administrative purposes.
 
-There are two built-in rules available (they are not active by default):
+There are three built-in rules available (they are not active by default):
 1. ban when non-existent PHP file is requested (any URL ending with `.php`)
-2. ban when backup file is requested (any URL targeting file with `backup` in basename or with `.back`, `.old` or `.tmp` extension)
+2. ban when non-existent backup file is requested (any URL targeting file with `backup` in basename or with `.back`, `.old` or `.tmp` extension)
+3. ban when non-existent `readme.txt` file is accessed
 
 You may define custom rules as well (in form of regular expression).
+
+Important: When using this feature it is strongly recommended to activate [synchronization](#synchronization-with-htaccess-file) of internal blocklist with `.htaccess` file!
 
 ### Internal blocklist
 

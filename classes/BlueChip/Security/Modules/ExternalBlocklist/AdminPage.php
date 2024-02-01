@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BlueChip\Security\Modules\ExternalBlocklist;
 
 use BlueChip\Security\Core\Admin\AbstractPage;
@@ -91,7 +93,7 @@ class AdminPage extends AbstractPage
             AmazonWebServices::class,
             __('Block requests from AWS', 'bc-security'),
             [FormHelper::class, 'printSelect'],
-            ['options' => Scope::enlist(true)]
+            ['options' => Scope::explain()]
         );
     }
 }

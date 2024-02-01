@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BlueChip\Security\Modules\InternalBlocklist;
 
 use BlueChip\Security\Core\ListTable as CoreListTable;
@@ -49,7 +51,7 @@ class ListTable extends CoreListTable
 
     private Manager $ib_manager;
 
-    private int $scope;
+    private Scope $access_scope;
 
 
     public function __construct(string $url, string $per_page_option_name, Manager $ib_manager)
@@ -58,9 +60,10 @@ class ListTable extends CoreListTable
 
         $this->ib_manager = $ib_manager;
 
-        $this->scope = \filter_input(INPUT_GET, self::VIEW_SCOPE, FILTER_VALIDATE_INT, ['options' => ['default' => Scope::ANY]]);
-        if ($this->scope !== Scope::ANY) {
-            $this->url = add_query_arg(self::VIEW_SCOPE, $this->scope, $this->url);
+        $this->access_scope = Scope::from(\filter_input(INPUT_GET, self::VIEW_SCOPE, FILTER_VALIDATE_INT, ['options' => ['default' => Scope::ANY->value]]));
+
+        if ($this->access_scope !== Scope::ANY) {
+            $this->url = add_query_arg(self::VIEW_SCOPE, $this->access_scope->value, $this->url);
         }
     }
 
@@ -208,28 +211,28 @@ class ListTable extends CoreListTable
             'any' => \sprintf(
                 '<a href="%s" class="%s">%s</a> (%d)',
                 remove_query_arg([self::VIEW_SCOPE], $this->url),
-                $this->scope === Scope::ANY ? 'current' : '',
+                $this->access_scope === Scope::ANY ? 'current' : '',
                 esc_html__('Any', 'bc-security'),
                 $this->ib_manager->countAll()
             ),
             'admin' => \sprintf(
                 '<a href="%s" class="%s">%s</a> (%d)',
                 add_query_arg([self::VIEW_SCOPE => Scope::ADMIN], $this->url),
-                $this->scope === Scope::ADMIN ? 'current' : '',
+                $this->access_scope === Scope::ADMIN ? 'current' : '',
                 esc_html__('Admin', 'bc-security'),
                 $this->ib_manager->countAll(Scope::ADMIN)
             ),
             'comments' => \sprintf(
                 '<a href="%s" class="%s">%s</a> (%d)',
                 add_query_arg([self::VIEW_SCOPE => Scope::COMMENTS], $this->url),
-                $this->scope === Scope::COMMENTS ? 'current' : '',
+                $this->access_scope === Scope::COMMENTS ? 'current' : '',
                 esc_html__('Comments', 'bc-security'),
                 $this->ib_manager->countAll(Scope::COMMENTS)
             ),
             'website' => \sprintf(
                 '<a href="%s" class="%s">%s</a> (%d)',
                 add_query_arg([self::VIEW_SCOPE => Scope::WEBSITE], $this->url),
-                $this->scope === Scope::WEBSITE ? 'current' : '',
+                $this->access_scope === Scope::WEBSITE ? 'current' : '',
                 esc_html__('Website', 'bc-security'),
                 $this->ib_manager->countAll(Scope::WEBSITE)
             ),
@@ -247,14 +250,14 @@ class ListTable extends CoreListTable
         $current_page = $this->get_pagenum();
         $per_page = $this->items_per_page;
 
-        $total_items = $this->ib_manager->countAll($this->scope);
+        $total_items = $this->ib_manager->countAll($this->access_scope);
 
         $this->set_pagination_args([
             'total_items' => $total_items,
             'per_page' => $per_page,
         ]);
 
-        $this->items = $this->ib_manager->fetch($this->scope, ($current_page - 1) * $per_page, $per_page, $this->order_by, $this->order);
+        $this->items = $this->ib_manager->fetch($this->access_scope, ($current_page - 1) * $per_page, $per_page, $this->order_by, $this->order);
     }
 
 
@@ -274,7 +277,7 @@ class ListTable extends CoreListTable
             }
 
             $nonce = \filter_input(INPUT_GET, self::NONCE_NAME);
-            if (!wp_verify_nonce($nonce, \sprintf('%s:%s', $action, $id))) {
+            if (!\is_string($nonce) || !wp_verify_nonce($nonce, \sprintf('%s:%s', $action, $id))) {
                 // Nonce check failed
                 return;
             }
@@ -311,25 +314,27 @@ class ListTable extends CoreListTable
     /**
      * Translate integer code for ban reason into something human can read.
      *
-     * @param int $banReason
+     * @param int $ban_reason_value
      *
      * @return string
      */
-    private function explainBanReason(int $banReason): string
+    private function explainBanReason(int $ban_reason_value): string
     {
-        switch ($banReason) {
-            case BanReason::BAD_REQUEST_BAN:
-                return _x('Bad request', 'Ban reason', 'bc-security');
-            case BanReason::LOGIN_LOCKOUT_SHORT:
-            case BanReason::LOGIN_LOCKOUT_LONG:
-                return _x('Too many failed login attempts', 'Ban reason', 'bc-security');
-            case BanReason::USERNAME_BLACKLIST:
-                return _x('Login attempt using blacklisted username', 'Ban reason', 'bc-security');
-            case BanReason::MANUALLY_BLOCKED:
-                return _x('Manually blocked', 'Ban reason', 'bc-security');
-            default:
-                return _x('Unknown', 'Ban reason', 'bc-security');
-        }
+        $ban_reason = BanReason::tryFrom($ban_reason_value);
+
+        return match ($ban_reason) {
+            BanReason::BAD_REQUEST_BAN
+                => _x('Bad request', 'Ban reason', 'bc-security'),
+            BanReason::LOGIN_LOCKOUT_SHORT,
+            BanReason::LOGIN_LOCKOUT_LONG
+                => _x('Too many failed login attempts', 'Ban reason', 'bc-security'),
+            BanReason::USERNAME_BLACKLIST
+                => _x('Login attempt using blacklisted username', 'Ban reason', 'bc-security'),
+            BanReason::MANUALLY_BLOCKED
+                => _x('Manually blocked', 'Ban reason', 'bc-security'),
+            default
+                => _x('Unknown', 'Ban reason', 'bc-security')
+        };
     }
 
 

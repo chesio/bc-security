@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BlueChip\Security\Modules\Access;
 
 use BlueChip\Security\Modules\Initializable;
@@ -53,28 +55,28 @@ class Bouncer implements Initializable, Loadable
 
 
     /**
-     * Should the request from current remote address be blocked for given access $scope?
+     * Should the request from current remote address be blocked for given access $access_scope?
      *
-     * @param int $scope
+     * @param Scope $access_scope
      *
      * @return bool
      */
-    public function isBlocked(int $scope): bool
+    public function isBlocked(Scope $access_scope): bool
     {
         // Check external blocklist.
-        $source = $this->eb_manager->getBlocklist($scope)->getSource($this->remote_address);
+        $source = $this->eb_manager->getBlocklist($access_scope)->getSource($this->remote_address);
         $eb_result = $source !== null;
-        $ib_result = $this->ib_manager->isLocked($this->remote_address, $scope);
+        $ib_result = $this->ib_manager->isLocked($this->remote_address, $access_scope);
 
         if ($eb_result) {
-            do_action(Hooks::EXTERNAL_BLOCKLIST_HIT_EVENT, $this->remote_address, $scope, $source);
+            do_action(Hooks::EXTERNAL_BLOCKLIST_HIT_EVENT, $this->remote_address, $access_scope, $source);
         }
 
         if ($ib_result) {
-            do_action(Hooks::INTERNAL_BLOCKLIST_HIT_EVENT, $this->remote_address, $scope);
+            do_action(Hooks::INTERNAL_BLOCKLIST_HIT_EVENT, $this->remote_address, $access_scope);
         }
 
-        return apply_filters(Hooks::IS_IP_ADDRESS_BLOCKED, $eb_result || $ib_result, $this->remote_address, $scope);
+        return apply_filters(Hooks::IS_IP_ADDRESS_BLOCKED, $eb_result || $ib_result, $this->remote_address, $access_scope);
     }
 
 

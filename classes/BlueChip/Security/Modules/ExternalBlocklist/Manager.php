@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BlueChip\Security\Modules\ExternalBlocklist;
 
 use BlueChip\Security\Helpers\Is;
@@ -38,9 +40,9 @@ class Manager implements Initializable
 
     public function __construct(private Settings $settings, private CronManager $cron_manager)
     {
-        foreach (Scope::enlist() as $access_scope) {
+        foreach (Scope::cases() as $access_scope) {
             if ($access_scope !== Scope::ANY) {
-                $this->blocklists[$access_scope] = null;
+                $this->blocklists[$access_scope->value] = null;
             }
         }
 
@@ -65,7 +67,7 @@ class Manager implements Initializable
      *
      * @internal Lazy-loads blocklists and IP ranges for sources assigned to the blocklists.
      */
-    public function getBlocklist(int $access_scope): Blocklist
+    public function getBlocklist(Scope $access_scope): Blocklist
     {
         // Blocklist for non-scope should not be requested.
         if ($access_scope === Scope::ANY) {
@@ -73,11 +75,11 @@ class Manager implements Initializable
         }
 
         // Lazy load the blocklist for given access scope if necessary.
-        if ($this->blocklists[$access_scope] === null) {
+        if ($this->blocklists[$access_scope->value] === null) {
             $blocklist = new Blocklist();
 
             foreach ($this->sources as $class => $source) {
-                if ($this->settings[$class] === $access_scope) {
+                if ($this->settings->getAccessScope($class) === $access_scope) {
                     // Read IP ranges from local cache.
                     $this->populate($source);
                     // Add source to blacklist.
@@ -85,10 +87,10 @@ class Manager implements Initializable
                 }
             }
 
-            $this->blocklists[$access_scope] = $blocklist;
+            $this->blocklists[$access_scope->value] = $blocklist;
         }
 
-        return $this->blocklists[$access_scope];
+        return $this->blocklists[$access_scope->value];
     }
 
 
@@ -109,11 +111,11 @@ class Manager implements Initializable
      * Is $ip_address on any external blocklist with given $access_scope?
      *
      * @param string $ip_address IP address to check.
-     * @param int $access_scope Access scope to check.
+     * @param Scope $access_scope Access scope to check.
      *
      * @return bool True if IP address is on blocklist with given access scope, false otherwise.
      */
-    public function isBlocked(string $ip_address, int $access_scope): bool
+    public function isBlocked(string $ip_address, Scope $access_scope): bool
     {
         return $this->getBlocklist($access_scope)->getSource($ip_address) !== null;
     }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BlueChip\Security\Modules\Access;
 
 /**
@@ -22,7 +24,7 @@ interface Hooks
      *
      * add_filter(
      *     \BlueChip\Security\Modules\Access\Hooks::IS_IP_ADDRESS_BLOCKED,
-     *     function (bool $result, string $ip_address, int $scope) {
+     *     function (bool $result, string $ip_address, \BlueChip\Security\Modules\Access\Scope $access_scope) {
      *         // Block any IP address that starts with "1"
      *         return str_starts_with($ip_address, '1');
      *     },

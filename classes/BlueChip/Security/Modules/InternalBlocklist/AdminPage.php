@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BlueChip\Security\Modules\InternalBlocklist;
 
 use BlueChip\Security\Core\Admin\AbstractPage;
@@ -115,7 +117,7 @@ class AdminPage extends AbstractPage
     {
         // IP address and lock scope can be "pre-filled".
         $ip_address = \filter_input(INPUT_GET, self::DEFAULT_IP_ADDRESS, FILTER_VALIDATE_IP);
-        $scope = \filter_input(INPUT_GET, self::DEFAULT_SCOPE, FILTER_VALIDATE_INT);
+        $scope_value = \filter_input(INPUT_GET, self::DEFAULT_SCOPE, FILTER_VALIDATE_INT);
 
         // Default lock duration is 1 month, unless different value is provided by filter.
         $duration = apply_filters(Hooks::DEFAULT_MANUAL_LOCK_DURATION, MONTH_IN_SECONDS);
@@ -165,9 +167,9 @@ class AdminPage extends AbstractPage
         echo '<span class="bc-security">';
         echo '<label for="internal-blocklist-scope">' . esc_html__('Lock scope', 'bc-security') . '</label>';
         echo '<select id="internal-blocklist-scope" name="scope">';
-        echo '<option value="' . Scope::ADMIN . '"' . selected(Scope::ADMIN, $scope, false) . '>' . esc_html__('Admin', 'bc-security') . '</option>';
-        echo '<option value="' . Scope::COMMENTS . '"' . selected(Scope::COMMENTS, $scope, false) . '>' . esc_html__('Comments', 'bc-security') . '</option>';
-        echo '<option value="' . Scope::WEBSITE . '"' . selected(Scope::WEBSITE, $scope, false) . '>' . esc_html__('Website', 'bc-security') . '</option>';
+        echo '<option value="' . Scope::ADMIN->value . '"' . selected(Scope::ADMIN->value, $scope_value, false) . '>' . esc_html__('Admin', 'bc-security') . '</option>';
+        echo '<option value="' . Scope::COMMENTS->value . '"' . selected(Scope::COMMENTS->value, $scope_value, false) . '>' . esc_html__('Comments', 'bc-security') . '</option>';
+        echo '<option value="' . Scope::WEBSITE->value . '"' . selected(Scope::WEBSITE->value, $scope_value, false) . '>' . esc_html__('Website', 'bc-security') . '</option>';
         echo '</select>';
         echo '</span>';
 
@@ -298,22 +300,22 @@ class AdminPage extends AbstractPage
         $ip_address = \filter_input(INPUT_POST, 'ip-address', FILTER_VALIDATE_IP);
         $duration_length = \filter_input(INPUT_POST, 'duration-length', FILTER_VALIDATE_INT);
         $duration_unit = \filter_input(INPUT_POST, 'duration-unit', FILTER_VALIDATE_INT);
-        $scope = \filter_input(INPUT_POST, 'scope', FILTER_VALIDATE_INT);
+        $scope_value = \filter_input(INPUT_POST, 'scope', FILTER_VALIDATE_INT);
         $comment = \strip_tags(\filter_input(INPUT_POST, 'comment'));
 
         // Check whether input is formally valid.
-        if (empty($ip_address) || empty($duration_length) || empty($duration_unit) || empty($scope)) {
+        if (empty($ip_address) || empty($duration_length) || empty($duration_unit) || empty($scope_value)) {
             return;
         }
 
         $duration = $duration_length * $duration_unit;
 
         // Check whether input is semantically valid.
-        if (($duration <= 0) || !\in_array($scope, Scope::enlist(), true)) {
+        if (($duration <= 0) || (($access_scope = Scope::tryFrom($scope_value)) === null)) {
             return;
         }
 
-        if ($this->ib_manager->lock($ip_address, $duration, $scope, BanReason::MANUALLY_BLOCKED, $comment)) {
+        if ($this->ib_manager->lock($ip_address, $duration, $access_scope, BanReason::MANUALLY_BLOCKED, $comment)) {
             AdminNotices::add(
                 \sprintf(__('IP address %s has been added to internal blocklist.', 'bc-security'), $ip_address),
                 AdminNotices::SUCCESS

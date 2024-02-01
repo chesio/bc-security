@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BlueChip\Security\Helpers;
 
 /**
@@ -47,7 +49,7 @@ abstract class WpRemote
             $url,
             [
                 'headers' => ['content-type' => 'application/json'],
-                'body' => \json_encode($body),
+                'body' => \json_encode($body) ?: '',
             ]
         );
 

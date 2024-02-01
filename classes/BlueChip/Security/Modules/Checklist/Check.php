@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BlueChip\Security\Modules\Checklist;
 
 use BlueChip\Security\Helpers\Transients;
@@ -68,7 +70,7 @@ abstract class Check
     public function getTimeOfLastRun(): int
     {
         if ($this->last_run === null) {
-            $this->last_run = Transients::getForSite(self::LAST_RUN_TRANSIENT_ID, self::getId()) ?: 0;
+            $this->last_run = (int) (Transients::getForSite(self::LAST_RUN_TRANSIENT_ID, self::getId()) ?: 0);
         }
 
         return $this->last_run;

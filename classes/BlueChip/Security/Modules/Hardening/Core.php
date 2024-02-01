@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BlueChip\Security\Modules\Hardening;
 
 use BlueChip\Security\Helpers\AdminNotices;
@@ -131,6 +133,8 @@ class Core implements Initializable
 
     /**
      * @filter https://developer.wordpress.org/reference/hooks/rest_request_before_callbacks/
+     *
+     * @phpstan-param WP_REST_Request<array<string,mixed>> $request
      *
      * @param WP_REST_Response|WP_HTTP_Response|WP_Error|mixed $response
      * @param mixed[] $handler

@@ -49,12 +49,12 @@ jobs:
       - name: "Set up PHP"
         uses: "shivammathur/setup-php@v2"
         with:
-          php-version: "8.0"
+          php-version: "8.1"
           extensions: "mbstring"
           coverage: "none"
 
       - name: "Checkout code"
-        uses: "actions/checkout@v3"
+        uses: "actions/checkout@v4"
 
       - name: "Install dependencies"
         uses: "ramsey/composer-install@v2"
@@ -72,9 +72,9 @@ jobs:
     strategy:
       matrix:
         php-version:
+          - "8.3"
           - "8.2"
           - "8.1"
-          - "8.0"
         dependencies:
           - "lowest"
           - "locked"
@@ -125,7 +125,7 @@ jobs:
       - name: "Set up PHP"
         uses: "shivammathur/setup-php@v2"
         with:
-          php-version: "8.0"
+          php-version: "8.1"
           extensions: "mbstring"
           coverage: "none"
 
@@ -156,7 +156,7 @@ jobs:
       - name: "Set up PHP"
         uses: "shivammathur/setup-php@v2"
         with:
-          php-version: "8.0"
+          php-version: "8.1"
           extensions: "mbstring"
           coverage: "none"
 

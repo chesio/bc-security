@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BlueChip\Security\Core\Admin;
 
 use BlueChip\Security\Core\Settings;
@@ -95,7 +97,7 @@ trait SettingsPage
      * @param string $key
      * @param mixed $value [optional] Value to use instead of current value of setting with $key.
      *
-     * @return array<string,mixed>
+     * @return array{label_for:string,key:string,name:string,value:mixed}
      */
     protected function getFieldBaseProperties(string $key, $value = null): array
     {

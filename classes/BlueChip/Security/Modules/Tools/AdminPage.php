@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BlueChip\Security\Modules\Tools;
 
 use BlueChip\Security\Core\Admin\AbstractPage;

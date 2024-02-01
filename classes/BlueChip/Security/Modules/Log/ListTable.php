@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BlueChip\Security\Modules\Log;
 
 use BlueChip\Security\Core\ListTable as CoreListTable;
@@ -244,7 +246,7 @@ class ListTable extends CoreListTable
      */
     private function getRowActions(array $item): array
     {
-        if (($scope = $this->getLockScopeFromEvent($item['event'])) === Scope::ANY) {
+        if (($access_scope = $this->getLockScopeFromEvent($item['event'])) === Scope::ANY) {
             // No specific scope, no action.
             return [];
         }
@@ -255,7 +257,7 @@ class ListTable extends CoreListTable
                 add_query_arg(
                     [
                         InternalBlocklistAdminPage::DEFAULT_IP_ADDRESS => $item['ip_address'],
-                        InternalBlocklistAdminPage::DEFAULT_SCOPE => $scope,
+                        InternalBlocklistAdminPage::DEFAULT_SCOPE => $access_scope->value,
                     ],
                     InternalBlocklistAdminPage::getPageUrl()
                 ),
@@ -272,9 +274,9 @@ class ListTable extends CoreListTable
      *
      * @param string $event_id One from event IDs defined in \BlueChip\Security\Modules\Log\Event.
      *
-     * @return int Lock scope code. Scope::ANY indicates that given event does not warrant blocklisting.
+     * @return Scope Lock access scope - Scope::ANY indicates that given event does not warrant blocklisting.
      */
-    private function getLockScopeFromEvent(string $event_id): int
+    private function getLockScopeFromEvent(string $event_id): Scope
     {
         switch ($event_id) {
             case Events\Query404::ID:

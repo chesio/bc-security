@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BlueChip\Security\Modules\ExternalBlocklist;
 
 use BlueChip\Security\Core\Settings as CoreSettings;
@@ -12,7 +14,7 @@ class Settings extends CoreSettings
      * @var array<string,int> Default values for all settings.
      */
     protected const DEFAULTS = [
-        AmazonWebServices::class => Scope::ANY,
+        AmazonWebServices::class => 0, // Unfortunately Scope::ANY->value is not constant expression.
     ];
 
     /**
@@ -32,7 +34,7 @@ class Settings extends CoreSettings
      */
     public static function sanitizeAccessScope(int $value, int $default): int
     {
-        return \in_array($value, Scope::enlist(), true) ? $value : $default;
+        return Scope::tryFrom($value) ? $value : $default;
     }
 
     /**
@@ -42,6 +44,14 @@ class Settings extends CoreSettings
      */
     public function isEnabled(string $class): bool
     {
-        return $this->data[$class] !== Scope::ANY;
+        $access_scope = $this->getAccessScope($class);
+
+        return ($access_scope instanceof Scope) && ($access_scope !== Scope::ANY);
+    }
+
+    public function getAccessScope(string $class): ?Scope
+    {
+        $value = $this->data[$class] ?? null;
+        return \is_int($value) ? Scope::tryFrom($value) : null;
     }
 }

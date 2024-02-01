@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BlueChip\Security\Modules\InternalBlocklist;
 
 use BlueChip\Security\Helpers\MySQLDateTime;
@@ -128,16 +130,16 @@ class Manager implements Modules\Activable, Modules\Countable, Modules\Installab
      *
      * @internal Implements \BlueChip\Security\Modules\Countable interface.
      *
-     * @param int $scope
+     * @param Scope $access_scope
      *
      * @return int
      */
-    public function countAll(int $scope = Scope::ANY): int
+    public function countAll(Scope $access_scope = Scope::ANY): int
     {
         $query = "SELECT COUNT(id) AS total FROM {$this->blocklist_table}";
 
-        if ($scope !== Scope::ANY) {
-            $query .= $this->wpdb->prepare(" WHERE scope = %d", $scope);
+        if ($access_scope !== Scope::ANY) {
+            $query .= $this->wpdb->prepare(" WHERE scope = %d", $access_scope->value);
         }
 
         return (int) $this->wpdb->get_var($query);
@@ -168,7 +170,7 @@ class Manager implements Modules\Activable, Modules\Countable, Modules\Installab
     /**
      * Fetch all items on blocklist that match provided arguments.
      *
-     * @param int $scope
+     * @param Scope $access_scope
      * @param int $from
      * @param int $limit
      * @param string $order_by
@@ -176,14 +178,14 @@ class Manager implements Modules\Activable, Modules\Countable, Modules\Installab
      *
      * @return array<int,array<string,string>>
      */
-    public function fetch(int $scope = Scope::ANY, int $from = 0, int $limit = 20, string $order_by = '', string $order = ''): array
+    public function fetch(Scope $access_scope = Scope::ANY, int $from = 0, int $limit = 20, string $order_by = '', string $order = ''): array
     {
         // Prepare query
         $query = "SELECT * FROM {$this->blocklist_table}";
 
         // Apply scope if given
-        if ($scope !== Scope::ANY) {
-            $query .= \sprintf(" WHERE scope = %d", $scope);
+        if ($access_scope !== Scope::ANY) {
+            $query .= \sprintf(" WHERE scope = %d", $access_scope->value);
         }
 
         // Apply order by column if column name is valid
@@ -213,7 +215,7 @@ class Manager implements Modules\Activable, Modules\Countable, Modules\Installab
     public function fetchIpAddressesForHtaccess(): array
     {
         // Prepare query
-        $query = sprintf("SELECT ip_address, release_time FROM {$this->blocklist_table} WHERE scope = %d", Scope::WEBSITE);
+        $query = sprintf("SELECT ip_address, release_time FROM {$this->blocklist_table} WHERE scope = %d", Scope::WEBSITE->value);
 
         // Get results.
         $results = $this->wpdb->get_results($query, ARRAY_A);
@@ -235,23 +237,23 @@ class Manager implements Modules\Activable, Modules\Countable, Modules\Installab
 
 
     /**
-     * Is $ip_address on blocklist with given $scope?
+     * Is $ip_address on blocklist with given $access_scope?
      *
      * @hook \BlueChip\Security\Modules\InternalBlocklist\Hooks::IS_IP_ADDRESS_LOCKED
      *
      * @param string $ip_address IP address to check.
-     * @param int $scope Access scope.
+     * @param Scope $access_scope Access scope.
      *
      * @return bool True if IP address is on blocklist with given access scope.
      */
-    public function isLocked(string $ip_address, int $scope): bool
+    public function isLocked(string $ip_address, Scope $access_scope): bool
     {
         // Prepare query. Because of different ban reasons, multiple records may
         // match the where condition, so pick up the most future release time.
         /** @var string $query */
         $query = $this->wpdb->prepare(
             "SELECT MAX(release_time) FROM {$this->blocklist_table} WHERE scope = %d AND ip_address = %s",
-            $scope,
+            $access_scope->value,
             $ip_address
         );
         // Execute query
@@ -259,22 +261,22 @@ class Manager implements Modules\Activable, Modules\Countable, Modules\Installab
         // Evaluate release time
         $result = \is_string($release_time) && (\time() < MySQLDateTime::parseTimestamp($release_time));
         // Allow the result to be filtered
-        return apply_filters(Hooks::IS_IP_ADDRESS_LOCKED, $result, $ip_address, $scope);
+        return apply_filters(Hooks::IS_IP_ADDRESS_LOCKED, $result, $ip_address, $access_scope);
     }
 
 
     /**
-     * Lock access from $ip_address to $scope for $duration seconds because of $reason.
+     * Lock access from $ip_address to $access_scope for $duration seconds because of $reason.
      *
      * @param string $ip_address IP address to lock.
      * @param int $duration
-     * @param int $scope
-     * @param int $reason
+     * @param Scope $access_scope
+     * @param BanReason $ban_reason
      * @param string $comment [optional]
      *
      * @return bool True if IP address has been locked, false otherwise.
      */
-    public function lock(string $ip_address, int $duration, int $scope, int $reason, string $comment = ''): bool
+    public function lock(string $ip_address, int $duration, Scope $access_scope, BanReason $ban_reason, string $comment = ''): bool
     {
         $now = \time();
 
@@ -287,15 +289,15 @@ class Manager implements Modules\Activable, Modules\Countable, Modules\Installab
         $format = ['%s', '%s', '%s'];
 
         $where = [
-            'scope'         => $scope,
+            'scope'         => $access_scope->value,
             'ip_address'    => $ip_address,
-            'reason'        => $reason,
+            'reason'        => $ban_reason->value,
         ];
 
         $where_format = ['%d', '%s', '%d'];
 
         // Determine, whether IP needs to be inserted or updated.
-        if ($this->getId($ip_address, $scope, $reason)) {
+        if ($this->getId($ip_address, $access_scope, $ban_reason)) {
             // Update
             $result = $this->wpdb->update($this->blocklist_table, $data, $where, $format, $where_format);
         } else {
@@ -303,7 +305,7 @@ class Manager implements Modules\Activable, Modules\Countable, Modules\Installab
             $result = $this->wpdb->insert($this->blocklist_table, \array_merge($data, $where), \array_merge($format, $where_format));
         }
 
-        if ($result && ($scope === Scope::WEBSITE)) {
+        if ($result && ($access_scope === Scope::WEBSITE)) {
             // Trigger immediate synchronization of block rules in .htaccess file...
             $this->synchronizeWithHtaccessFile();
             // ... and schedule synchronization at the release time.
@@ -454,24 +456,24 @@ class Manager implements Modules\Activable, Modules\Countable, Modules\Installab
 
 
     /**
-     * Get primary key (id) for record with given $ip_address, $scope and ban $reason.
+     * Get primary key (id) for record with given $ip_address, $access_scope and ban $reason.
      * Because of UNIQUE database key restriction, there should be either one or none matching key.
      *
      * @param string $ip_address IP address to check.
-     * @param int $scope
-     * @param int $reason
+     * @param Scope $access_scope
+     * @param BanReason $ban_reason
      *
-     * @return int|null Record ID or null if no record with given $ip_address, $scope and ban $reason exists.
+     * @return int|null Record ID or null if no record with given $ip_address, $access_scope and ban $reason exists.
      */
-    protected function getId(string $ip_address, int $scope, int $reason): ?int
+    protected function getId(string $ip_address, Scope $access_scope, BanReason $ban_reason): ?int
     {
         // Prepare query.
         /** @var string $query */
         $query = $this->wpdb->prepare(
             "SELECT id FROM {$this->blocklist_table} WHERE scope = %d AND ip_address = %s AND reason = %d",
-            $scope,
+            $access_scope->value,
             $ip_address,
-            $reason
+            $ban_reason->value
         );
         // Execute query.
         $result = $this->wpdb->get_var($query);
