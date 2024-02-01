@@ -176,7 +176,7 @@ class Manager implements Modules\Activable, Modules\Countable, Modules\Installab
      * @param string $order_by
      * @param string $order
      *
-     * @return array<int,array<string,string>>
+     * @return array<string,mixed>
      */
     public function fetch(Scope $access_scope = Scope::ANY, int $from = 0, int $limit = 20, string $order_by = '', string $order = ''): array
     {

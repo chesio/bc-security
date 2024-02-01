@@ -291,7 +291,7 @@ class Logger extends AbstractLogger implements LoggerInterface, Modules\Countabl
      * @param string $order_by [optional] Column name to order the records by.
      * @param string $order [optional] Order direction, either "asc" or "desc".
      *
-     * @return array<int,array<string,mixed>>
+     * @return array<string,mixed>
      */
     public function fetch(?string $event = null, int $from = 0, int $limit = 20, string $order_by = '', string $order = ''): array
     {
