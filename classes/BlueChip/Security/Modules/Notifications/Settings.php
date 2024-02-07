@@ -86,7 +86,7 @@ class Settings extends CoreSettings
      *
      * @return string[]
      */
-    public static function sanitizeNotificationRecipient($value): array
+    public static function sanitizeNotificationRecipient(array|string $value): array
     {
         return \array_filter(self::parseList($value), '\is_email');
     }

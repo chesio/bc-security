@@ -75,7 +75,7 @@ class Settings extends CoreSettings
      *
      * @return string[]
      */
-    public static function sanitizeUsernameBlacklist($value): array
+    public static function sanitizeUsernameBlacklist(array|string $value): array
     {
         return \array_filter(self::parseList($value), '\validate_username');
     }
