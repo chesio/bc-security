@@ -6,6 +6,12 @@
 
 * List of supported PHP versions for PHP version check has been updated to include PHP 8.3 [#151](https://github.com/chesio/bc-security/issues/151).
 
+## Version 0.22.1 (2024-02-07)
+
+### Fixed
+
+* Fix `Uncaught TypeError` when saving external blocklist settings [#153](https://github.com/chesio/bc-security/issues/153).
+
 ## Version 0.22.0 (2024-02-01)
 
 This release has been tested with PHP 8.3 and WordPress 6.4. PHP 8.1 or newer and WordPress 6.2 or newer are now required!
