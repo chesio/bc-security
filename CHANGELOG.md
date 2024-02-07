@@ -1,8 +1,10 @@
 # BC Security Changelog
 
-## Upcoming version 0.22.1 (????-??-??)
+## Version 0.22.1 (2024-02-07)
 
-...
+### Fixed
+
+* Fix `Uncaught TypeError` when saving external blocklist settings [#153](https://github.com/chesio/bc-security/issues/153).
 
 ## Version 0.22.0 (2024-02-01)
 
