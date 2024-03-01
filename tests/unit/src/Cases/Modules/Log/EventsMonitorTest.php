@@ -6,8 +6,9 @@ namespace BlueChip\Security\Tests\Unit\Cases\Modules\Log;
 
 use Brain\Monkey\Actions;
 use BlueChip\Security\Modules\Log;
+use BlueChip\Security\Tests\Unit\TestCase;
 
-class EventsMonitorTest extends \BlueChip\Security\Tests\Unit\TestCase
+final class EventsMonitorTest extends TestCase
 {
     /**
      * @var \BlueChip\Security\Modules\Log\EventsMonitor

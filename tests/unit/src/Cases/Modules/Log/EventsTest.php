@@ -5,8 +5,9 @@ declare(strict_types=1);
 namespace BlueChip\Security\Tests\Unit\Cases\Modules\Log;
 
 use BlueChip\Security\Modules\Log;
+use BlueChip\Security\Tests\Unit\TestCase;
 
-class EventsTest extends \BlueChip\Security\Tests\Unit\TestCase
+final class EventsTest extends TestCase
 {
     /**
      * Ensure that every event type (class) has the necessary constants: ID and LEVEL.

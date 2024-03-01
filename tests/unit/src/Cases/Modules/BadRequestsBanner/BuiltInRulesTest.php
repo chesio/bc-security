@@ -5,10 +5,12 @@ declare(strict_types=1);
 namespace BlueChip\Security\Tests\Unit\Cases\Modules\BadRequestsBanner;
 
 use BlueChip\Security\Modules\BadRequestsBanner\BuiltInRules;
+use BlueChip\Security\Tests\Unit\TestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 
-class BuiltInRulesTest extends \BlueChip\Security\Tests\Unit\TestCase
+final class BuiltInRulesTest extends TestCase
 {
-    public function provideUrisForBackupFilesRule(): array
+    public static function provideUrisForBackupFilesRule(): array
     {
         return [
             'Backup file' => ['website-backup.zip', true],
@@ -21,7 +23,7 @@ class BuiltInRulesTest extends \BlueChip\Security\Tests\Unit\TestCase
         ];
     }
 
-    public function provideUrisForPhpFilesRule(): array
+    public static function provideUrisForPhpFilesRule(): array
     {
         return [
             'Backup file' => ['website-backup.zip', false],
@@ -34,7 +36,7 @@ class BuiltInRulesTest extends \BlueChip\Security\Tests\Unit\TestCase
         ];
     }
 
-    public function provideUrisForReadmeTxtFilesRule(): array
+    public static function provideUrisForReadmeTxtFilesRule(): array
     {
         return [
             'Backup file' => ['website-backup.zip', false],
@@ -47,9 +49,7 @@ class BuiltInRulesTest extends \BlueChip\Security\Tests\Unit\TestCase
         ];
     }
 
-    /**
-     * @dataProvider provideUrisForBackupFilesRule
-     */
+    #[DataProvider('provideUrisForBackupFilesRule')]
     public function testBackupFilesRule(string $uri, bool $result): void
     {
         $ban_rule = BuiltInRules::get(BuiltInRules::BACKUP_FILES);
@@ -57,9 +57,7 @@ class BuiltInRulesTest extends \BlueChip\Security\Tests\Unit\TestCase
         $this->assertSame($ban_rule->matches($uri), $result);
     }
 
-    /**
-     * @dataProvider provideUrisForPhpFilesRule
-     */
+    #[DataProvider('provideUrisForPhpFilesRule')]
     public function testPhpFilesRule(string $uri, bool $result): void
     {
         $ban_rule = BuiltInRules::get(BuiltInRules::PHP_FILES);
@@ -67,9 +65,7 @@ class BuiltInRulesTest extends \BlueChip\Security\Tests\Unit\TestCase
         $this->assertSame($ban_rule->matches($uri), $result);
     }
 
-    /**
-     * @dataProvider provideUrisForReadmeTxtFilesRule
-     */
+    #[DataProvider('provideUrisForReadmeTxtFilesRule')]
     public function testReadmeTxtFilesRule(string $uri, bool $result): void
     {
         $ban_rule = BuiltInRules::get(BuiltInRules::README_FILES);
