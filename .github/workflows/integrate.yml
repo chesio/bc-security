@@ -32,7 +32,7 @@ jobs:
     runs-on: "ubuntu-latest"
     steps:
       - name: "Checkout code"
-        uses: "actions/checkout@v3"
+        uses: "actions/checkout@v4"
 
       - name: "Check file permissions"
         run: |
@@ -88,7 +88,7 @@ jobs:
           extensions: "mbstring"
 
       - name: "Checkout code"
-        uses: "actions/checkout@v3"
+        uses: "actions/checkout@v4"
 
       - name: "Install dependencies"
         uses: "ramsey/composer-install@v2"
@@ -97,7 +97,7 @@ jobs:
 
       - name: "Raise constraint for antecedent/patchwork"
         if: "${{ matrix.dependencies == 'lowest' }}"
-        run: "composer require --dev --prefer-lowest --update-with-all-dependencies 'antecedent/patchwork:^2.0.8'"
+        run: "composer require --dev --prefer-lowest --update-with-all-dependencies 'antecedent/patchwork:^2.1.26'"
 
       - name: "Execute unit tests"
         if: "${{ ! (matrix.php-version == '8.1' && matrix.dependencies == 'highest') }}"
@@ -130,7 +130,7 @@ jobs:
           coverage: "none"
 
       - name: "Checkout code"
-        uses: "actions/checkout@v3"
+        uses: "actions/checkout@v4"
 
       - name: "Validate Composer configuration"
         run: "composer validate --strict"
@@ -161,7 +161,7 @@ jobs:
           coverage: "none"
 
       - name: "Checkout code"
-        uses: "actions/checkout@v3"
+        uses: "actions/checkout@v4"
 
       - name: "Check EditorConfig configuration"
         run: "test -f .editorconfig"
@@ -185,7 +185,7 @@ jobs:
     runs-on: "ubuntu-latest"
     steps:
       - name: "Checkout code"
-        uses: "actions/checkout@v3"
+        uses: "actions/checkout@v4"
 
       - name: "Check exported files"
         run: |
