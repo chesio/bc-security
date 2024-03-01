@@ -142,7 +142,7 @@ abstract class Mailman
         $links_index = \array_map(
             fn (int $index, string $url): string => \sprintf('[%d] %s', $index + 1, $url),
             \array_keys($urls),
-            \array_values($urls)
+            $urls
         );
 
         // ...and add it to the message.
