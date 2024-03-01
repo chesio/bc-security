@@ -7,7 +7,7 @@ namespace BlueChip\Security\Tests\Integration\Cases\Modules\Cron;
 use BlueChip\Security\Modules\Cron;
 use BlueChip\Security\Tests\Integration\TestCase;
 
-class JobTest extends TestCase
+final class JobTest extends TestCase
 {
     private const HOOK = 'test-job';
 
