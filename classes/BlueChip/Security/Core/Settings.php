@@ -233,13 +233,16 @@ abstract class Settings implements ArrayAccess, IteratorAggregate
         // Loop over default values instead of provided $settings - this way only known keys are preserved.
         foreach ($values as $key => $default_value) {
             if (isset($settings[$key])) {
-                // New value is provided, sanitize it either...
-                $values[$key] = isset(static::SANITIZERS[$key])
-                    // ...using provided callback...
-                    ? \call_user_func(static::SANITIZERS[$key], $settings[$key], $default_value)
-                    // ...or by type.
-                    : self::sanitizeByType($settings[$key], $default_value)
-                ;
+                // Sanitize the value by type first (= ensure the value has expected type).
+                $value = self::sanitizeByType($settings[$key], $default_value);
+
+                // If custom sanitizer for this setting key is provided...
+                if (isset(static::SANITIZERS[$key])) {
+                    // ...execute it on type-safe value.
+                    $value = \call_user_func(static::SANITIZERS[$key], $value, $default_value);
+                }
+
+                $values[$key] = $value;
             }
         }
 
@@ -249,8 +252,13 @@ abstract class Settings implements ArrayAccess, IteratorAggregate
 
     /**
      * Sanitize the $value according to type of $default value.
+     *
+     * @param mixed $value
+     * @param mixed[]|bool|float|int|string $default
+     *
+     * @return mixed[]|bool|float|int|string
      */
-    protected static function sanitizeByType(mixed $value, mixed $default): mixed
+    protected static function sanitizeByType(mixed $value, array|bool|float|int|string $default): array|bool|float|int|string
     {
         if (\is_bool($default)) {
             return (bool) $value;

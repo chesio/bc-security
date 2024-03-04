@@ -51,13 +51,6 @@ class Settings extends CoreSettings
         self::BAN_DURATION => 60,
     ];
 
-    /**
-     * @var array<string,callable> Custom sanitizers.
-     */
-    protected const SANITIZERS = [
-        self::BAD_REQUEST_PATTERNS => [self::class, 'parseList'],
-    ];
-
 
     /**
      * @return BanRule[] List of active ban rules.

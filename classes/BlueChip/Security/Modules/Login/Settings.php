@@ -71,13 +71,13 @@ class Settings extends CoreSettings
     /**
      * Sanitize "username blacklist" setting. Must be list of valid usernames.
      *
-     * @param string|string[] $value
+     * @param string[] $value
      *
      * @return string[]
      */
-    public static function sanitizeUsernameBlacklist(array|string $value): array
+    public static function sanitizeUsernameBlacklist(array $value): array
     {
-        return \array_filter(self::parseList($value), '\validate_username');
+        return \array_filter($value, '\validate_username');
     }
 
 
