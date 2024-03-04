@@ -44,6 +44,6 @@ abstract class TestCase extends \WP_UnitTestCase
      */
     protected function prepareTest(): void
     {
-        // Empty by default, can be overriden in descendants.
+        // Empty by default, can be overridden in descendants.
     }
 }
