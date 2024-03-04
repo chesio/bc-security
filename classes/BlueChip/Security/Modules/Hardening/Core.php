@@ -29,7 +29,7 @@ class Core implements Initializable
     private const PWNED_PASSWORD_META_KEY = 'bc-security/pwned-password';
 
 
-    private bool $rest_api_supressed = false;
+    private bool $rest_api_suppressed = false;
 
 
     public function __construct(private Settings $settings)
@@ -158,7 +158,7 @@ class Core implements Initializable
             )->getUrlBase();
 
             if (\preg_match('#' . \preg_quote($url_base, '#') . '/*$#i', $route)) {
-                $this->rest_api_supressed = true;
+                $this->rest_api_suppressed = true;
                 return rest_ensure_response(new WP_Error(
                     'rest_user_cannot_view',
                     __('Sorry, you are not allowed to list users.'), // WP core message
@@ -169,7 +169,7 @@ class Core implements Initializable
             $matches = [];
             if (\preg_match('#' . \preg_quote($url_base, '#') . '/+(\d+)/*$#i', $route, $matches)) {
                 if (get_current_user_id() !== (int) $matches[1]) {
-                    $this->rest_api_supressed = true;
+                    $this->rest_api_suppressed = true;
                     return rest_ensure_response(new WP_Error(
                         'rest_user_invalid_id',
                         __('Invalid user ID.'), // WP core message.
@@ -192,7 +192,7 @@ class Core implements Initializable
      */
     public function adjustJsonAPIHeaders(\WP_HTTP_Response $response): \WP_HTTP_Response
     {
-        if ($this->rest_api_supressed) {
+        if ($this->rest_api_suppressed) {
             $response->header('Allow', 'GET');
         }
 

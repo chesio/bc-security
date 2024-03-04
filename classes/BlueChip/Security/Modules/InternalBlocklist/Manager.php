@@ -440,7 +440,7 @@ class Manager implements Modules\Activable, Modules\Countable, Modules\Installab
         }
         // Prepare query.
         $query = \sprintf(
-            "UDPATE {$this->blocklist_table} SET release_time = '%s' WHERE %s",
+            "UPDATE {$this->blocklist_table} SET release_time = '%s' WHERE %s",
             MySQLDateTime::formatDateTime(\time()),
             \implode(' OR ', \array_map(fn (int $id): string => \sprintf('id = %d', $id), $ids))
         );

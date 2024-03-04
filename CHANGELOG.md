@@ -98,7 +98,7 @@ These adjustments led to some breaking changes, therefore during update it is re
 * PHP 8.0 is supported [#104](https://github.com/chesio/bc-security/issues/104).
 * Alert about "No removed plugins installed" has more information [#107](https://github.com/chesio/bc-security/issues/107).
 * Detection of plugins installed from WordPress Directory has been improved [#112](https://github.com/chesio/bc-security/issues/112).
-* On WordPress 5.8 and newer the plugin cannot be accidentally overriden from WordPress.org Plugins Directory [#111](https://github.com/chesio/bc-security/issues/111).
+* On WordPress 5.8 and newer the plugin cannot be accidentally overridden from WordPress.org Plugins Directory [#111](https://github.com/chesio/bc-security/issues/111).
 
 ## Older releases
 
