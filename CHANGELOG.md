@@ -2,6 +2,10 @@
 
 ## Upcoming version 0.23.0 (????-??-??)
 
+### Added
+
+* New built-in rule for bad request banner module that triggers when non-existing `.tgz` or `.zip` file is accessed [#155](https://github.com/chesio/bc-security/issues/155).
+
 ### Changed
 
 * List of supported PHP versions for PHP version check has been updated to include PHP 8.3 [#151](https://github.com/chesio/bc-security/issues/151).
@@ -22,7 +26,7 @@ This release has been tested with PHP 8.3 and WordPress 6.4. PHP 8.1 or newer an
 
 ### Added
 
-* New built-in rule to bad request banner module that triggers when non-existing `readme.txt` file is accessed [#149](https://github.com/chesio/bc-security/issues/149).
+* New built-in rule for bad request banner module that triggers when non-existing `readme.txt` file is accessed [#149](https://github.com/chesio/bc-security/issues/149).
 * Plugin has been tested with PHP 8.3 [#145](https://github.com/chesio/bc-security/issues/145).
 * Plugin has been tested with WordPress 6.4 [#144](https://github.com/chesio/bc-security/issues/144).
 

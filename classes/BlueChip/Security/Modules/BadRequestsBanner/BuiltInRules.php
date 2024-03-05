@@ -6,6 +6,10 @@ namespace BlueChip\Security\Modules\BadRequestsBanner;
 
 abstract class BuiltInRules
 {
+    public const ARCHIVE_FILES = 'archive-files';
+
+    private const ARCHIVE_FILES_PATTERN = '\.(tgz|zip)$';
+
     public const BACKUP_FILES = 'backup-files';
 
     private const BACKUP_FILES_PATTERN = 'backup|(\.(back|old|tmp)$)';
@@ -33,6 +37,11 @@ abstract class BuiltInRules
                 __('Non-existent readme.txt files', 'bc-security'),
                 self::README_FILES_PATTERN,
                 __('(any URI targeting /readme.txt file)', 'bc-security')
+            ),
+            self::ARCHIVE_FILES => new BanRule(
+                __('Non-existent archive files', 'bc-security'),
+                self::ARCHIVE_FILES_PATTERN,
+                __('(any URI targeting file with .tgz or .zip extension)', 'bc-security')
             ),
             self::BACKUP_FILES => new BanRule(
                 __('Non-existent backup files', 'bc-security'),
