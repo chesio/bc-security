@@ -6,6 +6,10 @@
 
 * List of supported PHP versions for PHP version check has been updated to include PHP 8.3 [#151](https://github.com/chesio/bc-security/issues/151).
 
+### Fixed
+
+* Fix SQL syntax error when bulk unlocking entries in internal blocklist [#154](https://github.com/chesio/bc-security/pull/154) - thanks to @szepeviktor.
+
 ## Version 0.22.1 (2024-02-07)
 
 ### Fixed
