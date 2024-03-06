@@ -5,6 +5,7 @@
 ### Added
 
 * New built-in rule for bad request banner module that triggers when non-existing `.tgz` or `.zip` file is accessed [#155](https://github.com/chesio/bc-security/issues/155).
+* Plugin has been tested with WordPress 6.5 [#152](https://github.com/chesio/bc-security/issues/152).
 
 ### Changed
 
