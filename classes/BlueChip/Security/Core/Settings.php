@@ -332,7 +332,7 @@ abstract class Settings implements ArrayAccess, IteratorAggregate
      */
     public function addUpdateHook(callable $callback): void
     {
-        add_action("update_option_{$this->option_name}", [$this, 'updateOption'], 10, 2);
+        add_action("update_option_{$this->option_name}", $this->updateOption(...), 10, 2);
         add_action("update_option_{$this->option_name}", $callback, 10, 3);
     }
 
@@ -343,7 +343,7 @@ abstract class Settings implements ArrayAccess, IteratorAggregate
      * @param array<string,mixed> $old_value
      * @param array<string,mixed> $new_value
      */
-    public function updateOption(array $old_value, array $new_value): void
+    private function updateOption(array $old_value, array $new_value): void
     {
         $this->data = $new_value;
     }

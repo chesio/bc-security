@@ -53,24 +53,22 @@ class Gatekeeper implements Initializable, Loadable
      */
     public function init(): void
     {
-        add_filter('illegal_user_logins', [$this, 'filterIllegalUserLogins'], 10, 1);
+        add_filter('illegal_user_logins', $this->filterIllegalUserLogins(...), 10, 1);
 
-        add_filter('authenticate', [$this, 'lockIpIfUsernameOnBlacklist'], 25, 2); // should run after default authentication filters
+        add_filter('authenticate', $this->lockIpIfUsernameOnBlacklist(...), 25, 2); // should run after default authentication filters
 
         if ($this->settings[Settings::GENERIC_LOGIN_ERROR_MESSAGE]) {
-            add_filter('authenticate', [$this, 'muteStandardErrorMessages'], 100, 1); // 100 ~ should run last
-            add_filter('shake_error_codes', [$this, 'filterShakeErrorCodes'], 10, 1);
+            add_filter('authenticate', $this->muteStandardErrorMessages(...), 100, 1); // 100 ~ should run last
+            add_filter('shake_error_codes', $this->filterShakeErrorCodes(...), 10, 1);
         }
 
-        add_action('wp_login_failed', [$this, 'handleFailedLogin'], 100, 1);
+        add_action('wp_login_failed', $this->handleFailedLogin(...), 100, 1);
 
         // Check authentication cookies:
-        add_action('auth_cookie_bad_username', [$this, 'handleBadCookie'], 10, 1);
-        add_action('auth_cookie_bad_hash', [$this, 'handleBadCookie'], 10, 1);
+        add_action('auth_cookie_bad_username', $this->handleBadCookie(...), 10, 1);
+        add_action('auth_cookie_bad_hash', $this->handleBadCookie(...), 10, 1);
     }
 
-
-    //// Hookers - public methods that should in fact be private
 
     /**
      * Filter the list of blacklisted usernames.
@@ -81,7 +79,7 @@ class Gatekeeper implements Initializable, Loadable
      *
      * @return string[]
      */
-    public function filterIllegalUserLogins(array $usernames): array
+    private function filterIllegalUserLogins(array $usernames): array
     {
         return \array_merge($usernames, $this->settings->getUsernameBlacklist());
     }
@@ -90,11 +88,13 @@ class Gatekeeper implements Initializable, Loadable
     /**
      * Let generic `authentication_failed` error shake the login form.
      *
+     * @filter https://developer.wordpress.org/reference/hooks/shake_error_codes/
+     *
      * @param string[] $error_codes
      *
      * @return string[]
      */
-    public function filterShakeErrorCodes(array $error_codes): array
+    private function filterShakeErrorCodes(array $error_codes): array
     {
         $error_codes[] = 'authentication_failed';
         return $error_codes;
@@ -106,7 +106,7 @@ class Gatekeeper implements Initializable, Loadable
      *
      * @param array<string,string> $cookie_elements
      */
-    public function handleBadCookie(array $cookie_elements): void
+    private function handleBadCookie(array $cookie_elements): void
     {
         // Clear authentication cookies completely
         $this->clearAuthCookie();
@@ -121,9 +121,11 @@ class Gatekeeper implements Initializable, Loadable
      * 2) Reset valid value.
      * 3) Perform lockout if number of retries is above threshold.
      *
+     * @action https://developer.wordpress.org/reference/hooks/wp_login_failed/
+     *
      * @param string $username
      */
-    public function handleFailedLogin(string $username): void
+    private function handleFailedLogin(string $username): void
     {
         // Record failed login attempt, get total number of retries for IP
         $retries = $this->bookkeeper->recordFailedLoginAttempt($this->remote_address, $username);
@@ -144,8 +146,10 @@ class Gatekeeper implements Initializable, Loadable
      * used to log in and is present on username blacklist.
      *
      * Filter is called from wp_authenticate().
+     *
+     * @filter https://developer.wordpress.org/reference/hooks/authenticate/
      */
-    public function lockIpIfUsernameOnBlacklist(WP_Error|WP_User|null $user, string $username): WP_Error|WP_User|null
+    private function lockIpIfUsernameOnBlacklist(WP_Error|WP_User|null $user, string $username): WP_Error|WP_User|null
     {
         // When a non-existing username (or email)...
         if (is_wp_error($user) && ($user->get_error_code() === 'invalid_username' || $user->get_error_code() === 'invalid_email')) {
@@ -164,8 +168,10 @@ class Gatekeeper implements Initializable, Loadable
      * Return null instead of WP_Error when authentication fails because of
      * invalid username, email or password forcing WP to display generic error
      * message.
+     *
+     * @filter https://developer.wordpress.org/reference/hooks/authenticate/
      */
-    public function muteStandardErrorMessages(WP_Error|WP_User|null $user): WP_Error|WP_User|null
+    private function muteStandardErrorMessages(WP_Error|WP_User|null $user): WP_Error|WP_User|null
     {
         if (is_wp_error($user)) {
             switch ($user->get_error_code()) {
@@ -179,12 +185,10 @@ class Gatekeeper implements Initializable, Loadable
     }
 
 
-    //// Private and protected methods
-
     /**
      * Clear all WordPress authentication cookies (also for current request).
      */
-    protected function clearAuthCookie(): void
+    private function clearAuthCookie(): void
     {
         wp_clear_auth_cookie();
 
@@ -203,7 +207,7 @@ class Gatekeeper implements Initializable, Loadable
      * @param int $duration Duration (in secs) of lockout
      * @param BanReason $ban_reason Lockout reason
      */
-    protected function lockOut(string $username, int $duration, BanReason $ban_reason): void
+    private function lockOut(string $username, int $duration, BanReason $ban_reason): void
     {
         // Lock IP address
         if ($this->ib_manager->lock($this->remote_address, $duration, Scope::ADMIN, $ban_reason)) {

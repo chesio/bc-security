@@ -47,7 +47,7 @@ class TestCase extends \PHPUnit\Framework\TestCase
     /**
      * Run private or protected $method from $object with given $args and pass its return value.
      */
-    protected function runUnaccessibleMethod(object $object, string $method, array $args)
+    protected function runUnaccessibleMethod(object $object, string $method, ...$args)
     {
         $method = (new \ReflectionClass(\get_class($object)))->getMethod($method);
         $method->setAccessible(true);

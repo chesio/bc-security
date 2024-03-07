@@ -29,8 +29,8 @@ class EventsMonitor implements Initializable, Loadable
     public function load(): void
     {
         // Depending on access scope, blocklist can be checked very early, so add these monitors early.
-        add_action(AccessHooks::EXTERNAL_BLOCKLIST_HIT_EVENT, [$this, 'logExternalBlocklistHit'], 10, 3);
-        add_action(AccessHooks::INTERNAL_BLOCKLIST_HIT_EVENT, [$this, 'logInternalBlocklistHit'], 10, 2);
+        add_action(AccessHooks::EXTERNAL_BLOCKLIST_HIT_EVENT, $this->logExternalBlocklistHit(...), 10, 3);
+        add_action(AccessHooks::INTERNAL_BLOCKLIST_HIT_EVENT, $this->logInternalBlocklistHit(...), 10, 2);
     }
 
 
@@ -38,29 +38,29 @@ class EventsMonitor implements Initializable, Loadable
     {
         // Log the following WordPress events:
         // - bad authentication cookie
-        add_action('auth_cookie_bad_username', [$this, 'logBadCookie'], 5, 1);
-        add_action('auth_cookie_bad_hash', [$this, 'logBadCookie'], 5, 1);
+        add_action('auth_cookie_bad_username', $this->logBadCookie(...), 5, 1);
+        add_action('auth_cookie_bad_hash', $this->logBadCookie(...), 5, 1);
         // - failed login
-        add_action('wp_login_failed', [$this, 'logFailedLogin'], 5, 2);
+        add_action('wp_login_failed', $this->logFailedLogin(...), 5, 2);
         // - successful login
-        add_action('wp_login', [$this, 'logSuccessfulLogin'], 5, 1);
+        add_action('wp_login', $this->logSuccessfulLogin(...), 5, 1);
         // - 404 query (only if request did not originate from the webserver itself)
         if ($this->remote_address !== $this->server_address) {
-            add_action('wp', [$this, 'log404Queries'], 20, 1);
+            add_action('wp', $this->log404Queries(...), 20, 1);
         }
 
         // Log the following BC Security events:
         // - lockout event
-        add_action(LoginHooks::LOCKOUT_EVENT, [$this, 'logLockoutEvent'], 10, 3);
+        add_action(LoginHooks::LOCKOUT_EVENT, $this->logLockoutEvent(...), 10, 3);
         // - bad request event
-        add_action(BadRequestsBannerHooks::BAD_REQUEST_EVENT, [$this, 'logBadRequestEvent'], 10, 3);
+        add_action(BadRequestsBannerHooks::BAD_REQUEST_EVENT, $this->logBadRequestEvent(...), 10, 3);
     }
 
 
     /**
      * Log external blocklist hit.
      */
-    public function logExternalBlocklistHit(string $remote_address, Scope $access_scope, Source $source): void
+    private function logExternalBlocklistHit(string $remote_address, Scope $access_scope, Source $source): void
     {
         do_action(Action::EVENT, (new Events\BlocklistHit())->setIpAddress($remote_address)->setRequestType($access_scope)->setSource($source));
     }
@@ -69,7 +69,7 @@ class EventsMonitor implements Initializable, Loadable
     /**
      * Log internal blocklist hit.
      */
-    public function logInternalBlocklistHit(string $remote_address, Scope $access_scope): void
+    private function logInternalBlocklistHit(string $remote_address, Scope $access_scope): void
     {
         do_action(Action::EVENT, (new Events\BlocklistHit())->setIpAddress($remote_address)->setRequestType($access_scope));
     }
@@ -82,7 +82,7 @@ class EventsMonitor implements Initializable, Loadable
      *
      * @see WP::main()
      */
-    public function log404Queries(WP $wp): void
+    private function log404Queries(WP $wp): void
     {
         /** @var \WP_Query $wp_query */
         global $wp_query;
@@ -98,7 +98,7 @@ class EventsMonitor implements Initializable, Loadable
      *
      * @param array<string,string> $cookie_elements
      */
-    public function logBadCookie(array $cookie_elements): void
+    private function logBadCookie(array $cookie_elements): void
     {
         do_action(Action::EVENT, (new Events\AuthBadCookie())->setUsername($cookie_elements['username']));
     }
@@ -107,7 +107,7 @@ class EventsMonitor implements Initializable, Loadable
     /**
      * Log failed login.
      */
-    public function logFailedLogin(string $username, WP_Error $error): void
+    private function logFailedLogin(string $username, WP_Error $error): void
     {
         do_action(Action::EVENT, (new Events\LoginFailure())->setUsername($username)->setError($error));
     }
@@ -116,7 +116,7 @@ class EventsMonitor implements Initializable, Loadable
     /**
      * Log successful login.
      */
-    public function logSuccessfulLogin(string $username): void
+    private function logSuccessfulLogin(string $username): void
     {
         do_action(Action::EVENT, (new Events\LoginSuccessful())->setUsername($username));
     }
@@ -125,7 +125,7 @@ class EventsMonitor implements Initializable, Loadable
     /**
      * Log lockout event.
      */
-    public function logLockoutEvent(string $remote_address, string $username, int $duration): void
+    private function logLockoutEvent(string $remote_address, string $username, int $duration): void
     {
         do_action(Action::EVENT, (new Events\LoginLockout())->setDuration($duration)->setIpAddress($remote_address)->setUsername($username));
     }
@@ -134,7 +134,7 @@ class EventsMonitor implements Initializable, Loadable
     /**
      * Log bad request event.
      */
-    public function logBadRequestEvent(string $remote_address, string $request, BanRule $ban_rule): void
+    private function logBadRequestEvent(string $remote_address, string $request, BanRule $ban_rule): void
     {
         do_action(Action::EVENT, (new Events\BadRequestBan())->setBanRuleName($ban_rule->getName())->setIpAddress($remote_address)->setRequestUri($request));
     }

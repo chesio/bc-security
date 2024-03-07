@@ -109,8 +109,8 @@ class Manager implements Modules\Activable, Modules\Countable, Modules\Installab
     public function init(): void
     {
         // Hook into cron job execution.
-        add_action(Modules\Cron\Jobs::INTERNAL_BLOCKLIST_CLEAN_UP, [$this, 'pruneInCron'], 10, 0);
-        add_action(self::HTACCESS_SYNCHRONIZATION, [$this, 'runSynchronizationWithHtaccessFile'], 10, 0);
+        add_action(Modules\Cron\Jobs::INTERNAL_BLOCKLIST_CLEAN_UP, $this->pruneInCron(...), 10, 0);
+        add_action(self::HTACCESS_SYNCHRONIZATION, $this->runSynchronizationWithHtaccessFile(...), 10, 0);
     }
 
 
@@ -342,7 +342,7 @@ class Manager implements Modules\Activable, Modules\Countable, Modules\Installab
      *
      * @internal Runs `prune` method and discards its return value.
      */
-    public function pruneInCron(): void
+    private function pruneInCron(): void
     {
         $this->prune();
     }
@@ -465,7 +465,7 @@ class Manager implements Modules\Activable, Modules\Countable, Modules\Installab
      *
      * @return int|null Record ID or null if no record with given $ip_address, $access_scope and ban $reason exists.
      */
-    protected function getId(string $ip_address, Scope $access_scope, BanReason $ban_reason): ?int
+    private function getId(string $ip_address, Scope $access_scope, BanReason $ban_reason): ?int
     {
         // Prepare query.
         /** @var string $query */
@@ -502,7 +502,7 @@ class Manager implements Modules\Activable, Modules\Countable, Modules\Installab
      *
      * @internal This is alias of synchronizeWithHtaccessFile() method that just ignores its return value.
      */
-    public function runSynchronizationWithHtaccessFile(): void
+    private function runSynchronizationWithHtaccessFile(): void
     {
         $this->synchronizeWithHtaccessFile();
     }

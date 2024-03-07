@@ -41,7 +41,7 @@ class Bouncer implements Initializable, Loadable
         // I have to balance two requirements here:
         // 1) Run the access check as early as possible (I consider `init` hook too late).
         // 2) Allow myself and others to hook stuff (ie. events logger) in a clean way before access check executes.
-        add_action('plugins_loaded', [$this, 'checkAccess'], 1, 0);
+        add_action('plugins_loaded', $this->checkAccess(...), 1, 0);
     }
 
 
@@ -50,7 +50,7 @@ class Bouncer implements Initializable, Loadable
      */
     public function init(): void
     {
-        add_filter('authenticate', [$this, 'checkLoginAttempt'], 1, 1); // Leave priority 0 for site maintainers.
+        add_filter('authenticate', $this->checkLoginAttempt(...), 1, 1); // Leave priority 0 for site maintainers.
     }
 
 
@@ -80,12 +80,12 @@ class Bouncer implements Initializable, Loadable
     }
 
 
-    //// Hookers - public methods that should in fact be private
-
     /**
      * Check if access to website is allowed from given remote address.
+     *
+     * @action https://developer.wordpress.org/reference/hooks/plugins_loaded/
      */
-    public function checkAccess(): void
+    private function checkAccess(): void
     {
         if ($this->isBlocked(Scope::WEBSITE)) {
             Utils::blockAccessTemporarily($this->remote_address);
@@ -95,8 +95,10 @@ class Bouncer implements Initializable, Loadable
 
     /**
      * Check if access to login is allowed from given remote address.
+     *
+     * @filter https://developer.wordpress.org/reference/hooks/authenticate/
      */
-    public function checkLoginAttempt(WP_Error|WP_User|null $user): WP_Error|WP_User|null
+    private function checkLoginAttempt(WP_Error|WP_User|null $user): WP_Error|WP_User|null
     {
         if ($this->isBlocked(Scope::ADMIN)) {
             Utils::blockAccessTemporarily($this->remote_address);

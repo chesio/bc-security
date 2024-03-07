@@ -33,7 +33,7 @@ class AdminPage extends AbstractPage
     }
 
 
-    public function loadPage(): void
+    protected function loadPage(): void
     {
         $this->displaySettingsErrors();
 
@@ -92,7 +92,7 @@ class AdminPage extends AbstractPage
         $this->addSettingsSection(
             'site-connection',
             _x('Site connection', 'Settings section title', 'bc-security'),
-            [$this, 'printSiteConnectionHint']
+            $this->printSiteConnectionHint(...)
         );
         $this->addSettingsField(
             Settings::CONNECTION_TYPE,
@@ -105,7 +105,7 @@ class AdminPage extends AbstractPage
         $this->addSettingsSection(
             'google-api',
             _x('Google API key', 'Settings section title', 'bc-security'),
-            [$this, 'printGoogleAPIHint']
+            $this->printGoogleAPIHint(...)
         );
         $this->addSettingsField(
             Settings::GOOGLE_API_KEY,
@@ -115,7 +115,7 @@ class AdminPage extends AbstractPage
     }
 
 
-    public function printGoogleAPIHint(): void
+    private function printGoogleAPIHint(): void
     {
         echo '<p>';
         echo sprintf(
@@ -128,7 +128,7 @@ class AdminPage extends AbstractPage
     }
 
 
-    public function printSiteConnectionHint(): void
+    private function printSiteConnectionHint(): void
     {
         echo '<p>';
         echo esc_html__('Your server provides following information about remote addresses:', 'bc-security');

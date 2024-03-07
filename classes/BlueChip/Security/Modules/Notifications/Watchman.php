@@ -80,24 +80,24 @@ class Watchman implements Activable, Initializable
         }
 
         if ($this->settings[Settings::CORE_UPDATE_AVAILABLE]) {
-            add_action('set_site_transient_update_core', [$this, 'watchCoreUpdateAvailable'], 10, 1);
+            add_action('set_site_transient_update_core', $this->watchCoreUpdateAvailable(...), 10, 1);
         }
         if ($this->settings[Settings::PLUGIN_UPDATE_AVAILABLE]) {
-            add_action('set_site_transient_update_plugins', [$this, 'watchPluginUpdatesAvailable'], 10, 1);
+            add_action('set_site_transient_update_plugins', $this->watchPluginUpdatesAvailable(...), 10, 1);
         }
         if ($this->settings[Settings::THEME_UPDATE_AVAILABLE]) {
-            add_action('set_site_transient_update_themes', [$this, 'watchThemeUpdatesAvailable'], 10, 1);
+            add_action('set_site_transient_update_themes', $this->watchThemeUpdatesAvailable(...), 10, 1);
         }
         if ($this->settings[Settings::ADMIN_USER_LOGIN]) {
-            add_action('wp_login', [$this, 'watchWpLogin'], 10, 2);
+            add_action('wp_login', $this->watchWpLogin(...), 10, 2);
         }
         if ($this->settings[Settings::KNOWN_IP_LOCKOUT]) {
-            add_action(BadRequestBannerHooks::BAD_REQUEST_EVENT, [$this, 'watchBadRequestBanEvents'], 10, 3);
-            add_action(LoginHooks::LOCKOUT_EVENT, [$this, 'watchLockoutEvents'], 10, 3);
+            add_action(BadRequestBannerHooks::BAD_REQUEST_EVENT, $this->watchBadRequestBanEvents(...), 10, 3);
+            add_action(LoginHooks::LOCKOUT_EVENT, $this->watchLockoutEvents(...), 10, 3);
         }
         if ($this->settings[Settings::CHECKLIST_ALERT]) {
-            add_action(ChecklistHooks::ADVANCED_CHECK_ALERT, [$this, 'watchChecklistSingleCheckAlert'], 10, 2);
-            add_action(ChecklistHooks::BASIC_CHECKS_ALERT, [$this, 'watchChecklistMultipleChecksAlert'], 10, 1);
+            add_action(ChecklistHooks::ADVANCED_CHECK_ALERT, $this->watchChecklistSingleCheckAlert(...), 10, 2);
+            add_action(ChecklistHooks::BASIC_CHECKS_ALERT, $this->watchChecklistMultipleChecksAlert(...), 10, 1);
         }
     }
 
@@ -147,7 +147,7 @@ class Watchman implements Activable, Initializable
      *
      * @param object $update_transient
      */
-    public function watchCoreUpdateAvailable($update_transient): void
+    private function watchCoreUpdateAvailable($update_transient): void
     {
         // Check if update transient has the data we are interested in.
         if (!isset($update_transient->updates) || !\is_array($update_transient->updates) || empty($update_transient->updates)) {
@@ -175,9 +175,6 @@ class Watchman implements Activable, Initializable
             $latest_version
         );
 
-        // Now it is time to make sure the method is not invoked anymore.
-        remove_action('set_site_transient_update_core', [$this, 'watchCoreUpdateAvailable'], 10);
-
         // Send notification.
         if ($this->notify($subject, $message) !== false) {
             // No further notifications for this update.
@@ -191,7 +188,7 @@ class Watchman implements Activable, Initializable
      *
      * @param object $update_transient
      */
-    public function watchPluginUpdatesAvailable($update_transient): void
+    private function watchPluginUpdatesAvailable($update_transient): void
     {
         // Check if update transient has the data we are interested in.
         if (!isset($update_transient->response) || !\is_array($update_transient->response)) {
@@ -230,9 +227,6 @@ class Watchman implements Activable, Initializable
             $message[] = $plugin_message;
         }
 
-        // Now it is time to make sure the method is not invoked anymore.
-        remove_action('set_site_transient_update_plugins', [$this, 'watchPluginUpdatesAvailable'], 10);
-
         // Send notification.
         if ($this->notify($subject, $message) !== false) {
             foreach ($plugin_updates as $plugin_file => $plugin_update_data) {
@@ -248,7 +242,7 @@ class Watchman implements Activable, Initializable
      *
      * @param object $update_transient
      */
-    public function watchThemeUpdatesAvailable($update_transient): void
+    private function watchThemeUpdatesAvailable($update_transient): void
     {
         // Check if update transient has the data we are interested in.
         if (!isset($update_transient->response) || !\is_array($update_transient->response)) {
@@ -277,9 +271,6 @@ class Watchman implements Activable, Initializable
             );
         }
 
-        // Now it is time to make sure the method is not invoked anymore.
-        remove_action('set_site_transient_update_themes', [$this, 'watchThemeUpdatesAvailable'], 10);
-
         // Send notification.
         if ($this->notify($subject, $message) !== false) {
             foreach ($theme_updates as $theme_slug => $theme_update_data) {
@@ -293,7 +284,7 @@ class Watchman implements Activable, Initializable
     /**
      * Send notification if known IP has been locked out as result of bad request.
      */
-    public function watchBadRequestBanEvents(string $remote_address, string $uri, BanRule $ban_rule): void
+    private function watchBadRequestBanEvents(string $remote_address, string $uri, BanRule $ban_rule): void
     {
         if (\in_array($remote_address, $this->logger->getKnownIps(), true)) {
             $subject = __('Known IP locked out', 'bc-security');
@@ -312,7 +303,7 @@ class Watchman implements Activable, Initializable
     /**
      * Send notification if known IP has been locked out as result of failed login.
      */
-    public function watchLockoutEvents(string $remote_address, string $username, int $duration): void
+    private function watchLockoutEvents(string $remote_address, string $username, int $duration): void
     {
         if (\in_array($remote_address, $this->logger->getKnownIps(), true)) {
             $subject = __('Known IP locked out', 'bc-security');
@@ -331,7 +322,7 @@ class Watchman implements Activable, Initializable
     /**
      * Send notification if user with admin privileges logged in.
      */
-    public function watchWpLogin(string $username, WP_User $user): void
+    private function watchWpLogin(string $username, WP_User $user): void
     {
         if (Is::admin($user)) {
             $subject = __('Admin user login', 'bc-security');
@@ -349,7 +340,7 @@ class Watchman implements Activable, Initializable
     /**
      * Send notification about single check that failed during checklist monitoring.
      */
-    public function watchChecklistSingleCheckAlert(Check $check, CheckResult $result): void
+    private function watchChecklistSingleCheckAlert(Check $check, CheckResult $result): void
     {
         $subject = __('Checklist monitoring alert', 'bc-security');
         $preamble = [
@@ -366,7 +357,7 @@ class Watchman implements Activable, Initializable
      *
      * @param array<int,array{check:Check,result:CheckResult}> $issues Issues which triggered the alert.
      */
-    public function watchChecklistMultipleChecksAlert(array $issues): void
+    private function watchChecklistMultipleChecksAlert(array $issues): void
     {
         $subject = __('Checklist monitoring alert', 'bc-security');
         $message = [

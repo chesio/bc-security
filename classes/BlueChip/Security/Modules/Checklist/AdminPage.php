@@ -54,7 +54,7 @@ class AdminPage extends AbstractPage
     }
 
 
-    public function loadPage(): void
+    protected function loadPage(): void
     {
         $this->enqueueCssAssets(['checklist' => 'checklist.css',]);
         $this->enqueueJsAssets(['checklist' => 'checklist.js',]);

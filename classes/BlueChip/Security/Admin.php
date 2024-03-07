@@ -35,9 +35,9 @@ class Admin
      */
     public function init(string $plugin_filename): self
     {
-        add_action('admin_menu', [$this, 'makeAdminMenu']);
-        add_action('admin_init', [$this, 'initAdminPages']);
-        add_filter('plugin_action_links_' . plugin_basename($plugin_filename), [$this, 'filterActionLinks']);
+        add_action('admin_menu', $this->makeAdminMenu(...));
+        add_action('admin_init', $this->initAdminPages(...));
+        add_filter('plugin_action_links_' . plugin_basename($plugin_filename), $this->filterActionLinks(...));
         return $this;
     }
 
@@ -59,7 +59,7 @@ class Admin
     /**
      * @action https://developer.wordpress.org/reference/hooks/admin_init/
      */
-    public function initAdminPages(): void
+    private function initAdminPages(): void
     {
         foreach ($this->pages as $page) {
             $page->initPage();
@@ -72,7 +72,7 @@ class Admin
      *
      * @action https://developer.wordpress.org/reference/hooks/admin_menu/
      */
-    public function makeAdminMenu(): void
+    private function makeAdminMenu(): void
     {
         if (empty($this->pages)) {
             // No pages registered = no pages (no menu) to show.
@@ -100,7 +100,7 @@ class Admin
                 $page->getMenuTitle() . $this->renderCounter($page),
                 self::CAPABILITY,
                 $page->getSlug(),
-                [$page, 'printContents']
+                $page->printContents(...),
             );
             if ($page_hook) {
                 $page->setPageHook($page_hook);
@@ -118,7 +118,7 @@ class Admin
      *
      * @return string[]
      */
-    public function filterActionLinks(array $links): array
+    private function filterActionLinks(array $links): array
     {
         if (current_user_can(self::CAPABILITY) && isset($this->pages['bc-security-setup'])) {
             $links[] = \sprintf(

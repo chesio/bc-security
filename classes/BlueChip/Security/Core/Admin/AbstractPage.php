@@ -91,7 +91,7 @@ abstract class AbstractPage
      */
     public function setPageHook(string $page_hook): void
     {
-        add_action('load-' . $page_hook, [$this, 'loadPage']);
+        add_action('load-' . $page_hook, $this->loadPage(...));
     }
 
 
@@ -109,7 +109,7 @@ abstract class AbstractPage
      *
      * @action https://developer.wordpress.org/reference/hooks/load-page_hook/
      */
-    public function loadPage(): void
+    protected function loadPage(): void
     {
         // By default do nothing.
     }
