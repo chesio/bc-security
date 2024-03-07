@@ -23,7 +23,13 @@ class Watchman implements Activable, Initializable
     /**
      * @var string[] List of notifications recipients
      */
-    private $recipients;
+    private array $recipients;
+
+
+    /**
+     * @var string[] List of sent notifications.
+     */
+    private array $sent_notifications = [];
 
 
     /**
@@ -124,14 +130,16 @@ class Watchman implements Activable, Initializable
             $user = wp_get_current_user();
             if ($user->ID) {
                 // Name the bastard that turned us off!
-                $message = \sprintf(
-                    __('User "%s" had just deactivated BC Security plugin on your website!', 'bc-security'),
-                    $user->user_login
+                $message = new Message(
+                    \sprintf(
+                        __('User "%s" had just deactivated BC Security plugin on your website!', 'bc-security'),
+                        $user->user_login
+                    )
                 );
             } else {
                 // No user means plugin has been probably deactivated via WP-CLI.
                 // See: https://github.com/chesio/bc-security/issues/16#issuecomment-321541102
-                $message = __('BC Security plugin on your website has been deactivated!', 'bc-security');
+                $message = new Message(__('BC Security plugin on your website has been deactivated!', 'bc-security'));
             }
 
             $this->notify($subject, $message);
@@ -170,9 +178,11 @@ class Watchman implements Activable, Initializable
         }
 
         $subject = __('WordPress update available', 'bc-security');
-        $message = \sprintf(
-            __('WordPress has an update to version %s available.', 'bc-security'),
-            $latest_version
+        $message = new Message(
+            \sprintf(
+                __('WordPress has an update to version %s available.', 'bc-security'),
+                $latest_version,
+            )
         );
 
         // Send notification.
@@ -206,7 +216,7 @@ class Watchman implements Activable, Initializable
         }
 
         $subject = __('Plugin updates available', 'bc-security');
-        $message = [];
+        $message = new Message();
 
         foreach ($plugin_updates as $plugin_file => $plugin_update_data) {
             $plugin_data = Plugin::getPluginData($plugin_file);
@@ -224,7 +234,7 @@ class Watchman implements Activable, Initializable
                 );
             }
 
-            $message[] = $plugin_message;
+            $message->addLine($plugin_message);
         }
 
         // Send notification.
@@ -260,14 +270,16 @@ class Watchman implements Activable, Initializable
         }
 
         $subject = __('Theme updates available', 'bc-security');
-        $message = [];
+        $message = new Message();
 
         foreach ($theme_updates as $theme_slug => $theme_update_data) {
             $theme = wp_get_theme($theme_slug);
-            $message[] = \sprintf(
-                __('Theme "%1$s" has an update to version %2$s available.', 'bc-security'),
-                $theme,
-                $theme_update_data['new_version']
+            $message->addLine(
+                \sprintf(
+                    __('Theme "%1$s" has an update to version %2$s available.', 'bc-security'),
+                    $theme,
+                    $theme_update_data['new_version'],
+                )
             );
         }
 
@@ -288,11 +300,13 @@ class Watchman implements Activable, Initializable
     {
         if (\in_array($remote_address, $this->logger->getKnownIps(), true)) {
             $subject = __('Known IP locked out', 'bc-security');
-            $message = \sprintf(
-                __('A known IP address %1$s has been locked out due to bad request rule "%2$s" after someone tried to access following URL: %3$s', 'bc-security'),
-                self::formatRemoteAddress($remote_address),
-                $ban_rule->getName(),
-                $uri
+            $message = new Message(
+                \sprintf(
+                    __('A known IP address %1$s has been locked out due to bad request rule "%2$s" after someone tried to access following URL: %3$s', 'bc-security'),
+                    self::formatRemoteAddress($remote_address),
+                    $ban_rule->getName(),
+                    $uri,
+                )
             );
 
             $this->notify($subject, $message);
@@ -307,11 +321,13 @@ class Watchman implements Activable, Initializable
     {
         if (\in_array($remote_address, $this->logger->getKnownIps(), true)) {
             $subject = __('Known IP locked out', 'bc-security');
-            $message = \sprintf(
-                __('A known IP address %1$s has been locked out for %2$d seconds after someone tried to log in with username "%3$s".', 'bc-security'),
-                self::formatRemoteAddress($remote_address),
-                $duration,
-                $username
+            $message = new Message(
+                \sprintf(
+                    __('A known IP address %1$s has been locked out for %2$d seconds after someone tried to log in with username "%3$s".', 'bc-security'),
+                    self::formatRemoteAddress($remote_address),
+                    $duration,
+                    $username,
+                )
             );
 
             $this->notify($subject, $message);
@@ -326,10 +342,12 @@ class Watchman implements Activable, Initializable
     {
         if (Is::admin($user)) {
             $subject = __('Admin user login', 'bc-security');
-            $message = \sprintf(
-                __('User "%1$s" with administrator privileges just logged in to your WordPress site from IP address %2$s.', 'bc-security'),
-                $username,
-                self::formatRemoteAddress($this->remote_address)
+            $message = new Message(
+                \sprintf(
+                    __('User "%1$s" with administrator privileges just logged in to your WordPress site from IP address %2$s.', 'bc-security'),
+                    $username,
+                    self::formatRemoteAddress($this->remote_address),
+                )
             );
 
             $this->notify($subject, $message);
@@ -343,12 +361,17 @@ class Watchman implements Activable, Initializable
     private function watchChecklistSingleCheckAlert(Check $check, CheckResult $result): void
     {
         $subject = __('Checklist monitoring alert', 'bc-security');
-        $preamble = [
-            \sprintf(__('An issue has been found during checklist monitoring of "%s" check:', 'bc-security'), $check->getName()),
-            '',
-        ];
+        $message = new Message(
+            \sprintf(
+                __('An issue has been found during checklist monitoring of "%s" check:', 'bc-security'),
+                $check->getName(),
+            )
+        );
 
-        $this->notify($subject, \array_merge($preamble, $result->getMessage()));
+        $message->addEmptyLine();
+        $message->addLines($result->getMessage());
+
+        $this->notify($subject, $message);
     }
 
 
@@ -360,13 +383,15 @@ class Watchman implements Activable, Initializable
     private function watchChecklistMultipleChecksAlert(array $issues): void
     {
         $subject = __('Checklist monitoring alert', 'bc-security');
-        $message = [
+        $message = new Message(
             __('Following checks had failed during checklist monitoring:', 'bc-security'),
-        ];
+        );
 
         foreach ($issues as $issue) {
-            $message[] = '';
-            $message[] = \sprintf("%s: %s", $issue['check']->getName(), $issue['result']->getMessageAsPlainText());
+            $message
+                ->addEmptyLine()
+                ->addLine(\sprintf("%s: %s", $issue['check']->getName(), $issue['result']->getMessageAsPlainText()))
+            ;
         }
 
         $this->notify($subject, $message);
@@ -377,12 +402,35 @@ class Watchman implements Activable, Initializable
      * Send email notification with given $subject and $message to recipients configured in plugin settings.
      *
      * @param string $subject
-     * @param string|string[] $message
+     * @param Message $message
      *
      * @return bool|null Null if there are no recipients configured. True if email has been sent, false otherwise.
      */
-    private function notify(string $subject, $message): ?bool
+    private function notify(string $subject, Message $message): ?bool
     {
-        return empty($this->recipients) ? null : Mailman::send($this->recipients, $subject, $message);
+        if ($this->hasMessageBeenSent($message)) {
+            // Given message has been sent already.
+            return true;
+        }
+
+        $status = empty($this->recipients) ? null : Mailman::send($this->recipients, $subject, $message);
+
+        if ($status) {
+            $this->markMessageAsSent($message);
+        }
+
+        return $status;
+    }
+
+
+    private function hasMessageBeenSent(Message $message): bool
+    {
+        return \in_array($message->getFingerprint(), $this->sent_notifications, true);
+    }
+
+
+    private function markMessageAsSent(Message $message): void
+    {
+        $this->sent_notifications[] = $message->getFingerprint();
     }
 }
