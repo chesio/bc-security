@@ -5,13 +5,15 @@ declare(strict_types=1);
 namespace BlueChip\Security\Modules\Login;
 
 use BlueChip\Security\Helpers\MySQLDateTime;
+use BlueChip\Security\Modules\Cron\Jobs;
+use BlueChip\Security\Modules\Initializable;
 use BlueChip\Security\Modules\Installable;
 use wpdb;
 
 /**
  * Storage and retrieval of lockout book-keeping data
  */
-class Bookkeeper implements Installable
+class Bookkeeper implements Initializable, Installable
 {
     /**
      * @var string Name of DB table where failed logins are stored
@@ -23,6 +25,7 @@ class Bookkeeper implements Installable
      * @var string Name of DB table where failed logins are stored (including table prefix)
      */
     private string $failed_logins_table;
+
 
     /**
      * @param Settings $settings
@@ -66,6 +69,13 @@ class Bookkeeper implements Installable
     }
 
 
+    public function init(): void
+    {
+        // Hook into cron job execution.
+        add_action(Jobs::FAILED_LOGINS_CLEAN_UP, $this->pruneInCron(...), 10, 0);
+    }
+
+
     /**
      * Add failed login attempt from $ip_address using $username.
      *
@@ -103,10 +113,8 @@ class Bookkeeper implements Installable
 
     /**
      * Remove all expired entries from table.
-     *
-     * @return mixed
      */
-    public function prune()
+    public function prune(): bool
     {
         // Remove all expired entries (older than threshold).
         $threshold = \time() - $this->settings->getResetTimeoutDuration();
@@ -117,7 +125,20 @@ class Bookkeeper implements Installable
             "DELETE FROM {$this->failed_logins_table} WHERE date_and_time <= %s",
             MySQLDateTime::formatDateTime($threshold)
         );
-        // Execute query.
-        return $this->wpdb->query($query);
+        // Execute query
+        $result = $this->wpdb->query($query);
+        // Return result
+        return $result !== false;
+    }
+
+
+    /**
+     * @hook \BlueChip\Security\Modules\Cron\Jobs::FAILED_LOGINS_CLEAN_UP
+     *
+     * @internal Runs `prune` method and discards its return value.
+     */
+    private function pruneInCron(): void
+    {
+        $this->prune();
     }
 }

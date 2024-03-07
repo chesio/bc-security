@@ -12,6 +12,9 @@ abstract class Jobs
     /** string: Hook name for "External blocklist refresh" cron job */
     public const EXTERNAL_BLOCKLIST_REFRESH = 'bc-security/external-blocklist-refresh';
 
+    /** string: Hook name for "Failed logins table clean up" cron job */
+    public const FAILED_LOGINS_CLEAN_UP = 'bc-security/failed-logins-clean-up';
+
     /** string: Hook name for "Automatic internal blocklist purging" cron job */
     public const INTERNAL_BLOCKLIST_CLEAN_UP = 'bc-security/internal-blocklist-clean-up';
 

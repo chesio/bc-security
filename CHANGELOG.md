@@ -2,6 +2,8 @@
 
 ## Upcoming version 0.23.0 (????-??-??)
 
+**Important**: either deactivate and reactivate plugin after update or install new cron job manually via WP-CLI: `wp cron event schedule bc-security/failed-logins-clean-up now daily`.
+
 ### Added
 
 * New built-in rule for bad request banner module that triggers when non-existing `.tgz` or `.zip` file is accessed [#155](https://github.com/chesio/bc-security/issues/155).
@@ -14,6 +16,7 @@
 ### Fixed
 
 * Fix SQL syntax error when bulk unlocking entries in internal blocklist [#154](https://github.com/chesio/bc-security/pull/154) - thanks to @szepeviktor.
+* Table storing failed logins data is now pruned automatically [#156](https://github.com/chesio/bc-security/issues/156).
 
 ## Version 0.22.1 (2024-02-07)
 

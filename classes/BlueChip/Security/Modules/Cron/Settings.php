@@ -17,6 +17,7 @@ class Settings extends CoreSettings
     protected const DEFAULTS = [
         Jobs::CHECKLIST_CHECK => true,
         Jobs::EXTERNAL_BLOCKLIST_REFRESH => false,
+        Jobs::FAILED_LOGINS_CLEAN_UP => true,
         Jobs::INTERNAL_BLOCKLIST_CLEAN_UP => true,
         Jobs::LOGS_CLEAN_UP_BY_AGE => true,
         Jobs::LOGS_CLEAN_UP_BY_SIZE => true,
