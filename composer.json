@@ -49,8 +49,9 @@
     "phpcs": "phpcs",
     "phpstan": "phpstan analyze",
     "full-integration-tests": "phpunit --configuration tests/integration/phpunit.xml",
-    "integration-tests": "phpunit --configuration tests/integration/phpunit.xml --exclude-group external",
-    "unit-tests": "phpunit --configuration tests/unit/phpunit.xml",
+    "integration-tests": "phpunit --configuration tests/integration/phpunit.xml --exclude-group external --no-coverage",
+    "unit-tests": "phpunit --configuration tests/unit/phpunit.xml --no-coverage",
+    "unit-tests-with-coverage": "phpunit --configuration tests/unit/phpunit.xml",
     "ci": [
       "@phpcs",
       "@phpstan",

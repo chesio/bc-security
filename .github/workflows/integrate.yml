@@ -101,11 +101,11 @@ jobs:
 
       - name: "Execute unit tests"
         if: "${{ ! (matrix.php-version == '8.1' && matrix.dependencies == 'highest') }}"
-        run: "composer run-script unit-tests -- --no-coverage"
+        run: "composer run-script unit-tests"
 
       - name: "Execute unit tests with coverage"
         if: "${{ matrix.php-version == '8.1' && matrix.dependencies == 'highest' }}"
-        run: "composer run-script unit-tests"
+        run: "composer run-script unit-tests-with-coverage"
 
       - name: "Send coverage to Coveralls"
         env:
