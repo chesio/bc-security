@@ -1,6 +1,6 @@
 # BC Security Changelog
 
-## Upcoming version 0.23.0 (????-??-??)
+## Version 0.23.0 (2024-04-04)
 
 **Important**: either deactivate and reactivate plugin after update or install new cron job manually via WP-CLI: `wp cron event schedule bc-security/failed-logins-clean-up now daily`.
 
