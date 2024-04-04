@@ -6,8 +6,9 @@ namespace BlueChip\Security\Tests\Unit\Cases\Setup;
 
 use BlueChip\Security\Setup\IpAddress;
 use BlueChip\Security\Tests\Unit\TestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 
-class IpAddressValidationTest extends TestCase
+final class IpAddressValidationTest extends TestCase
 {
     protected function setUp(): void
     {
@@ -32,7 +33,7 @@ class IpAddressValidationTest extends TestCase
     }
 
 
-    public function provideRemoteAddressGetterData(): array
+    public static function provideRemoteAddressGetterData(): array
     {
         return [
             'valid IP' => [IpAddress::REMOTE_ADDR, '23.23.23.23'],
@@ -42,9 +43,7 @@ class IpAddressValidationTest extends TestCase
     }
 
 
-    /**
-     * @dataProvider provideRemoteAddressGetterData
-     */
+    #[DataProvider('provideRemoteAddressGetterData')]
     public function testRemoteAddressGetter(string $connection_type, ?string $ip_address): void
     {
         $this->assertSame($ip_address, IpAddress::get($connection_type));

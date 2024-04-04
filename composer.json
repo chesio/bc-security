@@ -31,11 +31,11 @@
     "brain/monkey": "^2.3",
     "mockery/mockery": "^1.4",
     "php-parallel-lint/php-parallel-lint": "^1.3",
-    "phpunit/phpunit": "^9.5",
+    "phpunit/phpunit": "^10.5",
     "slevomat/coding-standard": "^8.0",
     "squizlabs/php_codesniffer": "^3.2",
     "szepeviktor/phpstan-wordpress": "^1.0",
-    "yoast/phpunit-polyfills": "^1.0"
+    "yoast/phpunit-polyfills": "^2.0"
   },
   "autoload-dev": {
     "psr-4": {
@@ -49,8 +49,9 @@
     "phpcs": "phpcs",
     "phpstan": "phpstan analyze",
     "full-integration-tests": "phpunit --configuration tests/integration/phpunit.xml",
-    "integration-tests": "phpunit --configuration tests/integration/phpunit.xml --exclude-group external",
-    "unit-tests": "phpunit --configuration tests/unit/phpunit.xml",
+    "integration-tests": "phpunit --configuration tests/integration/phpunit.xml --exclude-group external --no-coverage",
+    "unit-tests": "phpunit --configuration tests/unit/phpunit.xml --no-coverage",
+    "unit-tests-with-coverage": "phpunit --configuration tests/unit/phpunit.xml",
     "ci": [
       "@phpcs",
       "@phpstan",

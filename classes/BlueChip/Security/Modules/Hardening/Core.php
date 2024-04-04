@@ -29,7 +29,7 @@ class Core implements Initializable
     private const PWNED_PASSWORD_META_KEY = 'bc-security/pwned-password';
 
 
-    private bool $rest_api_supressed = false;
+    private bool $rest_api_suppressed = false;
 
 
     public function __construct(private Settings $settings)
@@ -44,7 +44,7 @@ class Core implements Initializable
     {
         if ($this->settings[Settings::DISABLE_PINGBACKS]) {
             // Disable pingbacks.
-            add_filter('xmlrpc_methods', [$this, 'disablePingbacks'], 10, 1);
+            add_filter('xmlrpc_methods', $this->disablePingbacks(...), 10, 1);
         }
         if ($this->settings[Settings::DISABLE_XML_RPC]) {
             // Disable all XML-RPC methods requiring authentication.
@@ -56,13 +56,13 @@ class Core implements Initializable
         }
         if ($this->settings[Settings::DISABLE_USERNAMES_DISCOVERY]) {
             // Alter REST API responses.
-            add_filter('oembed_response_data', [$this, 'filterAuthorInOembed'], 100, 1);
-            add_filter('rest_request_before_callbacks', [$this, 'filterJsonAPIAuthor'], 100, 3);
-            add_filter('rest_post_dispatch', [$this, 'adjustJsonAPIHeaders'], 100, 1);
+            add_filter('oembed_response_data', $this->filterAuthorInOembed(...), 100, 1);
+            add_filter('rest_request_before_callbacks', $this->filterJsonAPIAuthor(...), 100, 3);
+            add_filter('rest_post_dispatch', $this->adjustJsonAPIHeaders(...), 100, 1);
             if (!is_admin()) {
                 // Prevent usernames enumeration.
-                add_filter('request', [$this, 'filterAuthorQuery'], 5, 1);
-                add_action('parse_request', [$this, 'stopAuthorScan'], 10, 1);
+                add_filter('request', $this->filterAuthorQuery(...), 5, 1);
+                add_action('parse_request', $this->stopAuthorScan(...), 10, 1);
             }
         }
         if ($this->settings[Settings::DISABLE_LOGIN_WITH_EMAIL]) {
@@ -70,26 +70,26 @@ class Core implements Initializable
             // https://developer.wordpress.org/reference/hooks/authenticate/#more-information
             remove_filter('authenticate', 'wp_authenticate_email_password', 20);
             // Add a warning to the login screen.
-            add_filter('login_message', [$this, 'warnAboutDisabledLoginWithEmail'], 100, 0);
+            add_filter('login_message', $this->warnAboutDisabledLoginWithEmail(...), 100, 0);
         }
         if ($this->settings[Settings::DISABLE_LOGIN_WITH_USERNAME]) {
             // Remove the option to authenticate with username and password.
             // https://developer.wordpress.org/reference/hooks/authenticate/#more-information
             remove_filter('authenticate', 'wp_authenticate_username_password', 20);
             // Add a warning to the login screen.
-            add_filter('login_message', [$this, 'warnAboutDisabledLoginWithUsername'], 100, 0);
+            add_filter('login_message', $this->warnAboutDisabledLoginWithUsername(...), 100, 0);
         }
         if ($this->settings[Settings::CHECK_PASSWORDS]) {
             // Check user password on successful login.
-            add_action('wp_login', [$this, 'checkUserPassword'], 10, 2);
+            add_action('wp_login', $this->checkUserPassword(...), 10, 2);
             // Display warning notice if pwned password has been detected for current user.
-            add_action('current_screen', [$this, 'displayPasswordPwnedNotice'], 10, 1);
+            add_action('current_screen', $this->displayPasswordPwnedNotice(...), 10, 1);
         }
         if ($this->settings[Settings::VALIDATE_PASSWORDS]) {
             // Validate password on user creation or profile update.
-            add_action('user_profile_update_errors', [$this, 'validatePasswordUpdate'], 10, 3);
+            add_action('user_profile_update_errors', $this->validatePasswordUpdate(...), 10, 3);
             // Validate password on password reset.
-            add_action('validate_password_reset', [$this, 'validatePasswordReset'], 10, 2);
+            add_action('validate_password_reset', $this->validatePasswordReset(...), 10, 2);
         }
     }
 
@@ -103,7 +103,7 @@ class Core implements Initializable
      *
      * @return array<string,mixed>
      */
-    public function disablePingbacks(array $methods): array
+    private function disablePingbacks(array $methods): array
     {
         unset($methods['pingback.ping']);
         return $methods;
@@ -119,7 +119,7 @@ class Core implements Initializable
      *
      * @return array<string,mixed>
      */
-    public function filterAuthorInOembed(array $data): array
+    private function filterAuthorInOembed(array $data): array
     {
         if (isset($data['author_name'])) {
             unset($data['author_name']);
@@ -142,7 +142,7 @@ class Core implements Initializable
      *
      * @return WP_REST_Response|WP_HTTP_Response|WP_Error|mixed
      */
-    public function filterJsonAPIAuthor(mixed $response, array $handler, WP_REST_Request $request): mixed
+    private function filterJsonAPIAuthor(mixed $response, array $handler, WP_REST_Request $request): mixed
     {
         $route = $request->get_route();
 
@@ -158,7 +158,7 @@ class Core implements Initializable
             )->getUrlBase();
 
             if (\preg_match('#' . \preg_quote($url_base, '#') . '/*$#i', $route)) {
-                $this->rest_api_supressed = true;
+                $this->rest_api_suppressed = true;
                 return rest_ensure_response(new WP_Error(
                     'rest_user_cannot_view',
                     __('Sorry, you are not allowed to list users.'), // WP core message
@@ -169,7 +169,7 @@ class Core implements Initializable
             $matches = [];
             if (\preg_match('#' . \preg_quote($url_base, '#') . '/+(\d+)/*$#i', $route, $matches)) {
                 if (get_current_user_id() !== (int) $matches[1]) {
-                    $this->rest_api_supressed = true;
+                    $this->rest_api_suppressed = true;
                     return rest_ensure_response(new WP_Error(
                         'rest_user_invalid_id',
                         __('Invalid user ID.'), // WP core message.
@@ -190,9 +190,9 @@ class Core implements Initializable
      *
      * @return \WP_HTTP_Response
      */
-    public function adjustJsonAPIHeaders(\WP_HTTP_Response $response): \WP_HTTP_Response
+    private function adjustJsonAPIHeaders(\WP_HTTP_Response $response): \WP_HTTP_Response
     {
-        if ($this->rest_api_supressed) {
+        if ($this->rest_api_suppressed) {
             $response->header('Allow', 'GET');
         }
 
@@ -207,7 +207,7 @@ class Core implements Initializable
      *
      * @return array<string,mixed>
      */
-    public function filterAuthorQuery(array $query_vars): array
+    private function filterAuthorQuery(array $query_vars): array
     {
         if (self::smellsLikeAuthorScan($query_vars) && (self::smellsLikeAuthorScan($_GET) || self::smellsLikeAuthorScan($_POST))) {
             // I smell author scanning!
@@ -227,7 +227,7 @@ class Core implements Initializable
      *
      * @return bool True if `author` key is present and its value is either an array or can be seen as numeric.
      */
-    protected static function smellsLikeAuthorScan(array $query_vars): bool
+    private static function smellsLikeAuthorScan(array $query_vars): bool
     {
         return !empty($query_vars['author']) && (\is_array($query_vars['author']) || \is_numeric(\preg_replace('/[^0-9]/', '', $query_vars['author'])));
     }
@@ -238,7 +238,7 @@ class Core implements Initializable
      *
      * @param \WP $wp
      */
-    public function stopAuthorScan(\WP $wp): void
+    private function stopAuthorScan(\WP $wp): void
     {
         if ($wp->query_vars[self::AUTHOR_SCAN_QUERY_VAR] ?? false) {
             status_header(404);
@@ -256,7 +256,7 @@ class Core implements Initializable
     /**
      * @return string HTML string with warning about login with email being disabled.
      */
-    public function warnAboutDisabledLoginWithEmail(): string
+    private function warnAboutDisabledLoginWithEmail(): string
     {
         return '<p class="message">' . sprintf(esc_html__('%s: Login with email is disabled on this website!', 'bc-security'), '<strong>' . esc_html__('Important', 'bc-security') . '</strong>') . '</p>';
     }
@@ -265,7 +265,7 @@ class Core implements Initializable
     /**
      * @return string HTML string with warning about login with username being disabled.
      */
-    public function warnAboutDisabledLoginWithUsername(): string
+    private function warnAboutDisabledLoginWithUsername(): string
     {
         return '<p class="message">' . sprintf(esc_html__('%s: Login with username is disabled on this website!', 'bc-security'), '<strong>' . esc_html__('Important', 'bc-security') . '</strong>') . '</p>';
     }
@@ -276,7 +276,7 @@ class Core implements Initializable
      *
      * @action https://developer.wordpress.org/reference/hooks/wp_login/
      */
-    public function checkUserPassword(string $username, WP_User $user): void
+    private function checkUserPassword(string $username, WP_User $user): void
     {
         if (empty($password = \filter_input(INPUT_POST, 'pwd'))) {
             // Non-interactive sign on (probably).
@@ -300,7 +300,7 @@ class Core implements Initializable
      *
      * @param \WP_Screen $screen
      */
-    public function displayPasswordPwnedNotice(\WP_Screen $screen): void
+    private function displayPasswordPwnedNotice(\WP_Screen $screen): void
     {
         $user = wp_get_current_user();
 
@@ -335,7 +335,7 @@ class Core implements Initializable
      * @param bool $update Whether this is a user update.
      * @param object $user User object (passed by reference).
      */
-    public function validatePasswordUpdate(WP_Error &$errors, bool $update, object &$user): void
+    private function validatePasswordUpdate(WP_Error &$errors, bool $update, object &$user): void
     {
         if ($errors->get_error_code()) {
             // There is an error reported already, skip the check.
@@ -359,7 +359,7 @@ class Core implements Initializable
      * @param WP_Error $errors
      * @param WP_User|WP_Error $user WP_User object if the login and reset key match. WP_Error object otherwise.
      */
-    public function validatePasswordReset(WP_Error $errors, WP_Error|WP_User $user): void
+    private function validatePasswordReset(WP_Error $errors, WP_Error|WP_User $user): void
     {
         if ($errors->get_error_code()) {
             // There is an error reported already, skip the check.
@@ -381,7 +381,7 @@ class Core implements Initializable
      * @param string $password
      * @param WP_Error $errors WP_Error object (passed by reference).
      */
-    protected static function checkIfPasswordHasBeenPwned(string $password, WP_Error &$errors): void
+    private static function checkIfPasswordHasBeenPwned(string $password, WP_Error &$errors): void
     {
         if (HaveIBeenPwned::hasPasswordBeenPwned($password)) {
             $message = \sprintf(

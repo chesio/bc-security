@@ -5,8 +5,9 @@ declare(strict_types=1);
 namespace BlueChip\Security\Tests\Unit\Cases\Modules\Log;
 
 use BlueChip\Security\Modules\Log;
+use BlueChip\Security\Tests\Unit\TestCase;
 
-class EventsManagerTest extends \BlueChip\Security\Tests\Unit\TestCase
+final class EventsManagerTest extends TestCase
 {
     /**
      * Ensure that mapping from event ID to event class is sane.

@@ -5,10 +5,12 @@ declare(strict_types=1);
 namespace BlueChip\Security\Tests\Unit\Cases\Helpers;
 
 use BlueChip\Security\Helpers\Plugin;
+use BlueChip\Security\Tests\Unit\TestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 
-class PluginTest extends \BlueChip\Security\Tests\Unit\TestCase
+final class PluginTest extends TestCase
 {
-    public function provideWordPressOrgUriData(): array
+    public static function provideWordPressOrgUriData(): array
     {
         return [
             // WordPress 5.7 and older does not support UpdateURI header.
@@ -31,9 +33,8 @@ class PluginTest extends \BlueChip\Security\Tests\Unit\TestCase
 
     /**
      * Check Plugin::hasWordPressOrgUpdateUri() method.
-     *
-     * @dataProvider provideWordPressOrgUriData
      */
+    #[DataProvider('provideWordPressOrgUriData')]
     public function testHasWordPressOrgUpdateUri(bool $value, string $plugin_basename, array $plugin_data): void
     {
         $this->assertSame($value, Plugin::hasWordPressOrgUpdateUri($plugin_basename, $plugin_data));

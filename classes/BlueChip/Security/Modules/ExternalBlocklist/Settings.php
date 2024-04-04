@@ -26,15 +26,8 @@ class Settings extends CoreSettings
 
     /**
      * Sanitize lock scope values. Allow only expected values.
-     *
-     * @internal Form data are submitted as string, so always accept string type for $value.
-     *
-     * @param int|string $value
-     * @param int $default
-     *
-     * @return int
      */
-    public static function sanitizeAccessScope(int|string $value, int $default): int
+    public static function sanitizeAccessScope(int $value, int $default): int
     {
         return Scope::tryFrom((int) $value) ? ((int) $value) : $default;
     }

@@ -5,10 +5,12 @@ declare(strict_types=1);
 namespace BlueChip\Security\Tests\Unit\Cases\Helpers;
 
 use BlueChip\Security\Helpers\IpAddress;
+use BlueChip\Security\Tests\Unit\TestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 
-class IpAddressTest extends \BlueChip\Security\Tests\Unit\TestCase
+final class IpAddressTest extends TestCase
 {
-    public function providePrefixMatchData(): array
+    public static function providePrefixMatchData(): array
     {
         return [
             ['192.168.0.0/32', '192.168.0.0', true],
@@ -26,9 +28,7 @@ class IpAddressTest extends \BlueChip\Security\Tests\Unit\TestCase
         ];
     }
 
-    /**
-     * @dataProvider providePrefixMatchData
-     */
+    #[DataProvider('providePrefixMatchData')]
     public function testIpPrefixMatch(string $cidr_range, string $ip_address, bool $result): void
     {
         $this->assertSame($result, IpAddress::matchesPrefix($ip_address, $cidr_range));

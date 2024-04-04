@@ -31,7 +31,7 @@ abstract class FormHelper
      * name and empty (false-like) value is printed before checkbox - this way,
      * POST data contains value for checkbox even if it is left unchecked.
      * Note that this approach works thanks to the fact that PHP retains value
-     * of the last key occurence in POST data when there are multiple occurences
+     * of the last key occurrence in POST data when there are multiple occurrences
      * of the same key (name); when checkbox is checked (and included in POST),
      * its value overwrites hidden field value.
      * See: http://stackoverflow.com/a/1992745

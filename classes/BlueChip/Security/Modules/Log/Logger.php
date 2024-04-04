@@ -90,26 +90,26 @@ class Logger extends AbstractLogger implements LoggerInterface, Modules\Countabl
     {
         // Expose log methods via do_action() - inspired by Wonolog:
         // https://github.com/inpsyde/Wonolog/blob/master/docs/02-basic-wonolog-concepts.md#level-rich-log-hooks
-        add_action(Action::EMERGENCY, [$this, 'emergency'], 10, 2);
-        add_action(Action::ALERT, [$this, 'alert'], 10, 2);
-        add_action(Action::CRITICAL, [$this, 'critical'], 10, 2);
-        add_action(Action::ERROR, [$this, 'error'], 10, 2);
-        add_action(Action::WARNING, [$this, 'warning'], 10, 2);
-        add_action(Action::NOTICE, [$this, 'notice'], 10, 2);
-        add_action(Action::INFO, [$this, 'info'], 10, 2);
-        add_action(Action::DEBUG, [$this, 'debug'], 10, 2);
-        add_action(Action::LOG, [$this, 'log'], 10, 3);
-        add_action(Action::EVENT, [$this, 'logEvent'], 10, 1);
+        add_action(Action::EMERGENCY, $this->emergency(...), 10, 2);
+        add_action(Action::ALERT, $this->alert(...), 10, 2);
+        add_action(Action::CRITICAL, $this->critical(...), 10, 2);
+        add_action(Action::ERROR, $this->error(...), 10, 2);
+        add_action(Action::WARNING, $this->warning(...), 10, 2);
+        add_action(Action::NOTICE, $this->notice(...), 10, 2);
+        add_action(Action::INFO, $this->info(...), 10, 2);
+        add_action(Action::DEBUG, $this->debug(...), 10, 2);
+        add_action(Action::LOG, $this->log(...), 10, 3);
+        add_action(Action::EVENT, $this->logEvent(...), 10, 1);
     }
 
 
     public function init(): void
     {
         // Hook into cron job execution.
-        add_action(CronJobs::LOGS_CLEAN_UP_BY_AGE, [$this, 'pruneByAgeInCron'], 10, 0);
-        add_action(CronJobs::LOGS_CLEAN_UP_BY_SIZE, [$this, 'pruneBySizeInCron'], 10, 0);
+        add_action(CronJobs::LOGS_CLEAN_UP_BY_AGE, $this->pruneByAgeInCron(...), 10, 0);
+        add_action(CronJobs::LOGS_CLEAN_UP_BY_SIZE, $this->pruneBySizeInCron(...), 10, 0);
         // Hook into reverse DNS lookup.
-        add_action(Hooks::HOSTNAME_RESOLVED, [$this, 'processReverseDnsLookupResponse'], 10, 1);
+        add_action(Hooks::HOSTNAME_RESOLVED, $this->processReverseDnsLookupResponse(...), 10, 1);
     }
 
 
@@ -216,7 +216,7 @@ class Logger extends AbstractLogger implements LoggerInterface, Modules\Countabl
      *
      * @param Response $response
      */
-    public function processReverseDnsLookupResponse(Response $response): void
+    private function processReverseDnsLookupResponse(Response $response): void
     {
         $this->wpdb->update(
             $this->log_table,
@@ -376,7 +376,7 @@ class Logger extends AbstractLogger implements LoggerInterface, Modules\Countabl
      *
      * @internal Runs `pruneByAge` method and discards its return value.
      */
-    public function pruneByAgeInCron(): void
+    private function pruneByAgeInCron(): void
     {
         $this->pruneByAge();
     }
@@ -416,7 +416,7 @@ class Logger extends AbstractLogger implements LoggerInterface, Modules\Countabl
      *
      * @internal Runs `pruneBySize` method and discards its return value.
      */
-    public function pruneBySizeInCron(): void
+    private function pruneBySizeInCron(): void
     {
         $this->pruneBySize();
     }

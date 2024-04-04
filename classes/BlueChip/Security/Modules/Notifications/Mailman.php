@@ -28,28 +28,24 @@ abstract class Mailman
      *
      * @param string|string[] $to Email address(es) of notification recipient(s).
      * @param string $subject Subject of notification.
-     * @param string|string[] $message Body of notification.
+     * @param Message $message Body of notification.
      *
      * @return bool True if notification has been sent successfully, false otherwise.
      */
-    public static function send($to, string $subject, $message): bool
+    public static function send(array|string $to, string $subject, Message $message): bool
     {
-        return \wp_mail(
+        return wp_mail(
             $to,
             self::formatSubject($subject),
-            self::formatMessage(\is_array($message) ? $message : [$message])
+            self::formatMessage($message)
         );
     }
 
 
     /**
      * Strip any HTML tags from $message and add plugin boilerplate to it.
-     *
-     * @param string[] $message Message body as list of lines.
-     *
-     * @return string
      */
-    private static function formatMessage(array $message): string
+    private static function formatMessage(Message $message): string
     {
         $boilerplate_intro = [
             \sprintf(
@@ -71,7 +67,7 @@ abstract class Mailman
             ),
         ];
 
-        return \implode(self::EOL, \array_merge($boilerplate_intro, self::stripTags($message), $boilerplate_outro));
+        return \implode(self::EOL, \array_merge($boilerplate_intro, self::stripTags($message->getRaw()), $boilerplate_outro));
     }
 
 
@@ -142,7 +138,7 @@ abstract class Mailman
         $links_index = \array_map(
             fn (int $index, string $url): string => \sprintf('[%d] %s', $index + 1, $url),
             \array_keys($urls),
-            \array_values($urls)
+            $urls
         );
 
         // ...and add it to the message.

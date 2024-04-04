@@ -8,8 +8,9 @@ use Brain\Monkey\Filters;
 use Brain\Monkey\Functions;
 use BlueChip\Security\Helpers\Hooks;
 use BlueChip\Security\Helpers\Is;
+use BlueChip\Security\Tests\Unit\TestCase;
 
-class IsTest extends \BlueChip\Security\Tests\Unit\TestCase
+final class IsTest extends TestCase
 {
     /**
      * Ensure that `bc-security/filter:is-admin` fires when Is::admin() method is invoked.

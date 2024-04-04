@@ -75,7 +75,7 @@ class AdminPage extends AbstractPage
     }
 
 
-    public function loadPage(): void
+    protected function loadPage(): void
     {
         $this->resetCount();
         $this->processActions();

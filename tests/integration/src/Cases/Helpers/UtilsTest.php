@@ -7,7 +7,7 @@ namespace BlueChip\Security\Tests\Integration\Cases\Helpers;
 use BlueChip\Security\Helpers\Utils;
 use BlueChip\Security\Tests\Integration\TestCase;
 
-class UtilsTest extends TestCase
+final class UtilsTest extends TestCase
 {
     /**
      * Ensure that blocking access results in wp_die() being called with proper response code.

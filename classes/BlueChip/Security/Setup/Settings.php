@@ -40,11 +40,6 @@ class Settings extends CoreSettings
 
     /**
      * Sanitize connection type. Allow only expected values.
-     *
-     * @param string $value
-     * @param string $default
-     *
-     * @return string
      */
     public static function sanitizeConnectionType(string $value, string $default): string
     {

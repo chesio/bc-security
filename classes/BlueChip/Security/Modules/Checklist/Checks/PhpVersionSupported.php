@@ -14,9 +14,9 @@ class PhpVersionSupported extends Checklist\BasicCheck
      * @link https://www.php.net/supported-versions.php
      */
     private const SUPPORTED_VERSIONS = [
-        '8.0' => '2023-11-26',
         '8.1' => '2024-11-25',
         '8.2' => '2025-12-08',
+        '8.3' => '2026-11-23',
     ];
 
 

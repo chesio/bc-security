@@ -44,14 +44,14 @@ class Manager implements Modules\Initializable
     public function init(): void
     {
         // When settings are updated, ensure that cron jobs for advanced checks are properly (de)activated.
-        $this->settings->addUpdateHook([$this, 'updateCronJobs']);
+        $this->settings->addUpdateHook($this->updateCronJobs(...));
         // Hook into cron job execution.
-        add_action(CronJobs::CHECKLIST_CHECK, [$this, 'runBasicChecks'], 10, 0);
+        add_action(CronJobs::CHECKLIST_CHECK, $this->runBasicChecks(...), 10, 0);
         foreach ($this->getAdvancedChecks() as $advanced_check) {
-            add_action($advanced_check->getCronJobHook(), [$advanced_check, 'runInCron'], 10, 0);
+            add_action($advanced_check->getCronJobHook(), $advanced_check->runInCron(...), 10, 0);
         }
         // Register AJAX handler.
-        AjaxHelper::addHandler(self::ASYNC_CHECK_ACTION, [$this, 'runCheck']);
+        AjaxHelper::addHandler(self::ASYNC_CHECK_ACTION, $this->runCheck(...));
     }
 
 
@@ -175,10 +175,8 @@ class Manager implements Modules\Initializable
 
     /**
      * Run all basic checks that are meaningful and are set to be monitored in non-interactive mode.
-     *
-     * @internal Method is intended to be run from within cron request.
      */
-    public function runBasicChecks(): void
+    private function runBasicChecks(): void
     {
         $checks = $this->getBasicChecks();
         $issues = [];
@@ -209,10 +207,8 @@ class Manager implements Modules\Initializable
 
     /**
      * Run check (asynchronously).
-     *
-     * @internal Method is intended to be run from within AJAX requests.
      */
-    public function runCheck(): void
+    private function runCheck(): void
     {
         if (empty($check_id = \filter_input(INPUT_POST, 'check_id'))) {
             wp_send_json_error([
@@ -240,7 +236,7 @@ class Manager implements Modules\Initializable
     /**
      * Activate or deactivate cron jobs for advanced checks according to settings.
      */
-    public function updateCronJobs(): void
+    private function updateCronJobs(): void
     {
         foreach ($this->getAdvancedChecks(false) as $check_id => $advanced_check) {
             if ($this->settings[$check_id]) {

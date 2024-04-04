@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace BlueChip\Security\Tests\Unit\Cases\Setup;
 
 use BlueChip\Security\Setup\IpAddress;
+use BlueChip\Security\Tests\Unit\TestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 
-class IpAddressTest extends \BlueChip\Security\Tests\Unit\TestCase
+final class IpAddressTest extends TestCase
 {
     protected function setUp(): void
     {
@@ -30,7 +32,7 @@ class IpAddressTest extends \BlueChip\Security\Tests\Unit\TestCase
     }
 
 
-    public function provideRemoteAddressGetterData(): array
+    public static function provideRemoteAddressGetterData(): array
     {
         return [
             'no setting' => ['', '1.1.1.1'],
@@ -42,16 +44,14 @@ class IpAddressTest extends \BlueChip\Security\Tests\Unit\TestCase
     }
 
 
-    /**
-     * @dataProvider provideRemoteAddressGetterData
-     */
+    #[DataProvider('provideRemoteAddressGetterData')]
     public function testRemoteAddressGetter(string $connection_type, string $ip_address): void
     {
         $this->assertSame($ip_address, IpAddress::get($connection_type));
     }
 
 
-    public function provideRemoteAddressGetterFallbackData(): array
+    public static function provideRemoteAddressGetterFallbackData(): array
     {
         return [
             'forwarded for' => [IpAddress::HTTP_X_FORWARDED_FOR, '1.1.1.1'],
@@ -63,8 +63,8 @@ class IpAddressTest extends \BlueChip\Security\Tests\Unit\TestCase
 
     /**
      * Test the case when connection type is set to proxy, but there is actually no proxy info.
-     * @dataProvider provideRemoteAddressGetterFallbackData
      */
+    #[DataProvider('provideRemoteAddressGetterFallbackData')]
     public function testRemoteAddressGetterFallback(string $connection_type, string $ip_address): void
     {
         // Make sure the requested connection info is empty.
@@ -74,7 +74,7 @@ class IpAddressTest extends \BlueChip\Security\Tests\Unit\TestCase
     }
 
 
-    public function provideRawRemoteAddressGetterData(): array
+    public static function provideRawRemoteAddressGetterData(): array
     {
         return [
             'no setting' => ['', ''],
@@ -86,9 +86,7 @@ class IpAddressTest extends \BlueChip\Security\Tests\Unit\TestCase
     }
 
 
-    /**
-     * @dataProvider provideRawRemoteAddressGetterData
-     */
+    #[DataProvider('provideRawRemoteAddressGetterData')]
     public function testRemoteRawAddressGetter(string $connection_type, string $ip_address): void
     {
         $this->assertSame($ip_address, IpAddress::getRaw($connection_type));

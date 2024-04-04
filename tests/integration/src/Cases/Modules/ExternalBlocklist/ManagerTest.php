@@ -12,13 +12,14 @@ use BlueChip\Security\Settings;
 use BlueChip\Security\Setup\IpAddress;
 use BlueChip\Security\Tests\Integration\Constants;
 use BlueChip\Security\Tests\Integration\TestCase;
+use PHPUnit\Framework\Attributes\Group;
 
 /**
  * Test integration of external blocklists.
  *
  * @internal These tests result in external requests!
  */
-class ManagerTest extends TestCase
+final class ManagerTest extends TestCase
 {
     protected function prepareTest(): void
     {
@@ -32,9 +33,8 @@ class ManagerTest extends TestCase
 
     /**
      * Test external blocklist populated with IP prefixes for Amazon Web Services.
-     *
-     * @group external
      */
+    #[Group('external')]
     public function testAmazonWebServicesBlocklist()
     {
         // Refresh external blocklist.

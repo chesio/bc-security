@@ -1,5 +1,23 @@
 # BC Security Changelog
 
+## Version 0.23.0 (2024-04-04)
+
+**Important**: either deactivate and reactivate plugin after update or install new cron job manually via WP-CLI: `wp cron event schedule bc-security/failed-logins-clean-up now daily`.
+
+### Added
+
+* New built-in rule for bad request banner module that triggers when non-existing `.tgz` or `.zip` file is accessed [#155](https://github.com/chesio/bc-security/issues/155).
+* Plugin has been tested with WordPress 6.5 [#152](https://github.com/chesio/bc-security/issues/152).
+
+### Changed
+
+* List of supported PHP versions for PHP version check has been updated to include PHP 8.3 [#151](https://github.com/chesio/bc-security/issues/151).
+
+### Fixed
+
+* Fix SQL syntax error when bulk unlocking entries in internal blocklist [#154](https://github.com/chesio/bc-security/pull/154) - thanks to @szepeviktor.
+* Table storing failed logins data is now pruned automatically [#156](https://github.com/chesio/bc-security/issues/156).
+
 ## Version 0.22.1 (2024-02-07)
 
 ### Fixed
@@ -12,7 +30,7 @@ This release has been tested with PHP 8.3 and WordPress 6.4. PHP 8.1 or newer an
 
 ### Added
 
-* New built-in rule to bad request banner module that triggers when non-existing `readme.txt` file is accessed [#149](https://github.com/chesio/bc-security/issues/149).
+* New built-in rule for bad request banner module that triggers when non-existing `readme.txt` file is accessed [#149](https://github.com/chesio/bc-security/issues/149).
 * Plugin has been tested with PHP 8.3 [#145](https://github.com/chesio/bc-security/issues/145).
 * Plugin has been tested with WordPress 6.4 [#144](https://github.com/chesio/bc-security/issues/144).
 
@@ -92,7 +110,7 @@ These adjustments led to some breaking changes, therefore during update it is re
 * PHP 8.0 is supported [#104](https://github.com/chesio/bc-security/issues/104).
 * Alert about "No removed plugins installed" has more information [#107](https://github.com/chesio/bc-security/issues/107).
 * Detection of plugins installed from WordPress Directory has been improved [#112](https://github.com/chesio/bc-security/issues/112).
-* On WordPress 5.8 and newer the plugin cannot be accidentally overriden from WordPress.org Plugins Directory [#111](https://github.com/chesio/bc-security/issues/111).
+* On WordPress 5.8 and newer the plugin cannot be accidentally overridden from WordPress.org Plugins Directory [#111](https://github.com/chesio/bc-security/issues/111).
 
 ## Older releases
 

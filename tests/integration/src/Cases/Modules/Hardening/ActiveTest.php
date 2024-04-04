@@ -5,11 +5,12 @@ declare(strict_types=1);
 namespace BlueChip\Security\Tests\Integration\Cases\Modules\Hardening;
 
 use BlueChip\Security\Tests\Integration\Constants;
+use PHPUnit\Framework\Attributes\Group;
 
 /**
  * Test hardening with all options on.
  */
-class ActiveTest extends TestCase
+final class ActiveTest extends TestCase
 {
     protected function prepareTest(): void
     {
@@ -40,9 +41,8 @@ class ActiveTest extends TestCase
 
     /**
      * Test user editation with password change.
-     *
-     * @group external
      */
+    #[Group('external')]
     public function testPasswordChange(): void
     {
         // Test strong password - should pass.

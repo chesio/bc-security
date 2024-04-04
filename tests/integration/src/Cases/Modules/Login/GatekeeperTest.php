@@ -9,7 +9,7 @@ use BlueChip\Security\Settings;
 use BlueChip\Security\Tests\Integration\Constants;
 use BlueChip\Security\Tests\Integration\TestCase;
 
-class GatekeeperTest extends TestCase
+final class GatekeeperTest extends TestCase
 {
     /**
      * @internal WP test suite already includes user with username `admin`, so there is no need to explicitly create it.

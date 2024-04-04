@@ -28,7 +28,7 @@ class Core implements Initializable
     {
         // Run only if request did not originate from the webserver itself.
         if ($this->remote_address !== $this->server_address) {
-            add_action('wp', [$this, 'check404Queries'], 100, 1); // Run late, allow others to interfere (do their stuff).
+            add_action('wp', $this->check404Queries(...), 100, 1); // Run late, allow others to interfere (do their stuff).
         }
     }
 
@@ -40,7 +40,7 @@ class Core implements Initializable
      *
      * @see WP::main()
      */
-    public function check404Queries(WP $wp): void
+    private function check404Queries(WP $wp): void
     {
         /** @var \WP_Query $wp_query */
         global $wp_query;

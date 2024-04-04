@@ -109,8 +109,8 @@ class Manager implements Modules\Activable, Modules\Countable, Modules\Installab
     public function init(): void
     {
         // Hook into cron job execution.
-        add_action(Modules\Cron\Jobs::INTERNAL_BLOCKLIST_CLEAN_UP, [$this, 'pruneInCron'], 10, 0);
-        add_action(self::HTACCESS_SYNCHRONIZATION, [$this, 'runSynchronizationWithHtaccessFile'], 10, 0);
+        add_action(Modules\Cron\Jobs::INTERNAL_BLOCKLIST_CLEAN_UP, $this->pruneInCron(...), 10, 0);
+        add_action(self::HTACCESS_SYNCHRONIZATION, $this->runSynchronizationWithHtaccessFile(...), 10, 0);
     }
 
 
@@ -176,7 +176,7 @@ class Manager implements Modules\Activable, Modules\Countable, Modules\Installab
      * @param string $order_by
      * @param string $order
      *
-     * @return array<int,array<string,string>>
+     * @return array<int,array<string,mixed>>
      */
     public function fetch(Scope $access_scope = Scope::ANY, int $from = 0, int $limit = 20, string $order_by = '', string $order = ''): array
     {
@@ -342,7 +342,7 @@ class Manager implements Modules\Activable, Modules\Countable, Modules\Installab
      *
      * @internal Runs `prune` method and discards its return value.
      */
-    public function pruneInCron(): void
+    private function pruneInCron(): void
     {
         $this->prune();
     }
@@ -440,7 +440,7 @@ class Manager implements Modules\Activable, Modules\Countable, Modules\Installab
         }
         // Prepare query.
         $query = \sprintf(
-            "UDPATE {$this->blocklist_table} SET release_time = '%s' WHERE %s",
+            "UPDATE {$this->blocklist_table} SET release_time = '%s' WHERE %s",
             MySQLDateTime::formatDateTime(\time()),
             \implode(' OR ', \array_map(fn (int $id): string => \sprintf('id = %d', $id), $ids))
         );
@@ -465,7 +465,7 @@ class Manager implements Modules\Activable, Modules\Countable, Modules\Installab
      *
      * @return int|null Record ID or null if no record with given $ip_address, $access_scope and ban $reason exists.
      */
-    protected function getId(string $ip_address, Scope $access_scope, BanReason $ban_reason): ?int
+    private function getId(string $ip_address, Scope $access_scope, BanReason $ban_reason): ?int
     {
         // Prepare query.
         /** @var string $query */
@@ -502,7 +502,7 @@ class Manager implements Modules\Activable, Modules\Countable, Modules\Installab
      *
      * @internal This is alias of synchronizeWithHtaccessFile() method that just ignores its return value.
      */
-    public function runSynchronizationWithHtaccessFile(): void
+    private function runSynchronizationWithHtaccessFile(): void
     {
         $this->synchronizeWithHtaccessFile();
     }

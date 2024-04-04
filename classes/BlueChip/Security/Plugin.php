@@ -86,7 +86,7 @@ class Plugin
         if (did_action('init')) {
             $this->init();
         } else {
-            add_action('init', [$this, 'init'], 10, 0);
+            add_action('init', $this->init(...), 10, 0);
         }
     }
 
@@ -97,7 +97,7 @@ class Plugin
      *
      * @action https://developer.wordpress.org/reference/hooks/init/
      */
-    public function init(): void
+    private function init(): void
     {
         // Initialize all modules that require initialization.
         foreach ($this->modules as $module) {

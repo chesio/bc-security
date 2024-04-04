@@ -55,10 +55,10 @@ class Manager implements Initializable
     public function init(): void
     {
         // Whenever list of enabled sources changes, update local cache and enable or disable related cron job.
-        $this->settings->addUpdateHook([$this, 'updateLocalCacheState']);
+        $this->settings->addUpdateHook($this->updateLocalCacheState(...));
 
         // Hook to action triggered by cron job (and integration tests).
-        add_action(Jobs::EXTERNAL_BLOCKLIST_REFRESH, [$this, 'refreshSources'], 10, 0);
+        add_action(Jobs::EXTERNAL_BLOCKLIST_REFRESH, $this->refreshSources(...), 10, 0);
     }
 
 
@@ -124,10 +124,8 @@ class Manager implements Initializable
     /**
      * Warm up or tear down blocklist sources depending on their activation status.
      * Also activate or deactivate cron job for blocklist refresh.
-     *
-     * @internal Not part of public API.
      */
-    public function updateLocalCacheState(): void
+    private function updateLocalCacheState(): void
     {
         $cron_job_required = false;
 
@@ -150,10 +148,8 @@ class Manager implements Initializable
 
     /**
      * Warm up all enabled sources.
-     *
-     * @internal Not part of public API.
      */
-    public function refreshSources(): void
+    private function refreshSources(): void
     {
         foreach ($this->sources as $class => $source) {
             if ($this->settings->isEnabled($class)) {

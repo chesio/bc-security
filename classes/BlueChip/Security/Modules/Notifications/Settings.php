@@ -82,12 +82,12 @@ class Settings extends CoreSettings
     /**
      * Sanitize "notification recipients" setting. Must be list of emails.
      *
-     * @param string|string[] $value
+     * @param string[] $value
      *
      * @return string[]
      */
-    public static function sanitizeNotificationRecipient($value): array
+    public static function sanitizeNotificationRecipient(array $value): array
     {
-        return \array_filter(self::parseList($value), '\is_email');
+        return \array_filter($value, '\is_email');
     }
 }
