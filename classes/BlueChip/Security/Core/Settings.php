@@ -189,6 +189,15 @@ abstract class Settings implements ArrayAccess, IteratorAggregate
 
 
     /**
+     * Set $autoload value of option.
+     */
+    public function setAutoload(bool $autoload): bool
+    {
+        return wp_set_option_autoload($this->option_name, $autoload);
+    }
+
+
+    /**
      * Remove the data from database (= hard reset).
      *
      * @return bool True if settings have been deleted, false otherwise.

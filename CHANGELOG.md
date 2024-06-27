@@ -4,6 +4,10 @@
 
 WordPress 6.4 or newer is now required!
 
+### Added
+
+* Disable autoloading of plugin options when plugin is deactivated [#160](https://github.com/chesio/bc-security/issues/160).
+
 ### Changed
 
 * WordPress 6.4 is required [#159](https://github.com/chesio/bc-security/issues/159).
