@@ -2,7 +2,11 @@
 
 ## Upcoming version 0.24.0 (????-??-??)
 
-...
+WordPress 6.4 or newer is now required!
+
+### Changed
+
+* WordPress 6.4 is required [#159](https://github.com/chesio/bc-security/issues/159).
 
 ## Version 0.23.0 (2024-04-04)
 
