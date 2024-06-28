@@ -117,7 +117,7 @@ abstract class Settings implements ArrayAccess
 
 
     /**
-     * Set $data as option data.
+     * Sanitize $data and set them as option data.
      *
      * @param array<string,mixed> $data
      *
@@ -125,20 +125,18 @@ abstract class Settings implements ArrayAccess
      */
     public function set(array $data): bool
     {
-        $this->data = $this->sanitize($data);
-        return $this->persist();
+        return $this->persist($this->sanitize($data));
     }
 
 
     /**
-     * Reset option data.
+     * Reset option data to default values.
      *
      * @return bool
      */
     public function reset(): bool
     {
-        $this->data = static::DEFAULTS;
-        return $this->persist();
+        return $this->persist(static::DEFAULTS);
     }
 
 
@@ -163,12 +161,18 @@ abstract class Settings implements ArrayAccess
 
 
     /**
-     * Persist the value of data into database.
+     * Set the value of $data into local cache and also persist it in database.
+     *
+     * @param array<string,mixed> $data The data to be persisted.
      *
      * @return bool True if settings have been updated (= changed), false otherwise.
      */
-    public function persist(): bool
+    private function persist(array $data): bool
     {
+        // Update local cache.
+        $this->data = $data;
+
+        // Persist new data.
         return update_option($this->option_name, $this->data);
     }
 
@@ -251,21 +255,21 @@ abstract class Settings implements ArrayAccess
 
 
     /**
-     * Update setting under $name with $value. Store update values in DB.
+     * Update setting under $name with $value and make the changes permanent.
      *
      * @param string $name
      * @param mixed $value
      *
      * @return bool
      */
-    public function update(string $name, mixed $value): bool
+    private function update(string $name, mixed $value): bool
     {
-        if (!isset($this->data[$name])) {
+        $data = $this->get();
+
+        if (!isset($data[$name])) {
             // Cannot update, invalid setting name.
             return false;
         }
-
-        $data = $this->data;
 
         if (null === $value) {
             // Null value unsets (resets) setting to default state
@@ -275,10 +279,7 @@ abstract class Settings implements ArrayAccess
             $data[$name] = $value;
         }
 
-        // Sanitize new value and update cache.
-        $this->data = $this->sanitize($data);
-        // Make changes permanent.
-        return $this->persist();
+        return $this->set($data);
     }
 
 
