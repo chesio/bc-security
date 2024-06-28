@@ -67,7 +67,7 @@ class Settings extends CoreSettings
 
         // Fill built in rules first.
         foreach (BuiltInRules::enlist() as $identifier => $ban_rule) {
-            if ($this->data[$identifier]) {
+            if ($this[$identifier]) {
                 $ban_rules[] = $ban_rule;
             }
         }
@@ -86,7 +86,7 @@ class Settings extends CoreSettings
      */
     public function getBanDuration(): int
     {
-        return $this->data[self::BAN_DURATION] * MINUTE_IN_SECONDS;
+        return $this[self::BAN_DURATION] * MINUTE_IN_SECONDS;
     }
 
 
@@ -97,7 +97,7 @@ class Settings extends CoreSettings
     {
         return apply_filters(
             Hooks::BAD_REQUEST_CUSTOM_PATTERNS,
-            $this->removeComments($this->data[self::BAD_REQUEST_PATTERNS])
+            $this->removeComments($this[self::BAD_REQUEST_PATTERNS])
         );
     }
 

@@ -35,7 +35,7 @@ abstract class Settings implements ArrayAccess, IteratorAggregate
     /**
      * @var array<string,mixed> Settings data (kind of cache for get_option() result).
      */
-    protected array $data;
+    private array $data;
 
 
     /**
