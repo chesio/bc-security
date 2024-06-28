@@ -113,6 +113,17 @@ abstract class Settings implements ArrayAccess
     //// Public API ////////////////////////////////////////////////////////////
 
     /**
+     * Get default value for settings.
+     *
+     * @return array<string,mixed>
+     */
+    public function getDefaultValue(): array
+    {
+        return static::DEFAULTS;
+    }
+
+
+    /**
      * Get option name.
      *
      * @return string
