@@ -177,6 +177,8 @@ abstract class Settings implements ArrayAccess
     }
 
 
+    //// Sanitization //////////////////////////////////////////////////////////
+
     /**
      * Sanitize $settings array: only keep known keys, provide default values for missing keys.
      *
@@ -195,7 +197,7 @@ abstract class Settings implements ArrayAccess
     public function sanitize(array $settings, array $defaults = []): array
     {
         // If no default values are provided, use data from internal cache as default values.
-        $values = ($defaults === []) ? $this->data : $defaults;
+        $values = ($defaults === []) ? $this->get() : $defaults;
 
         // Loop over default values instead of provided $settings - this way only known keys are preserved.
         foreach ($values as $key => $default_value) {
@@ -225,7 +227,7 @@ abstract class Settings implements ArrayAccess
      *
      * @return mixed[]|bool|float|int|string
      */
-    protected static function sanitizeByType(mixed $value, array|bool|float|int|string $default): array|bool|float|int|string
+    private static function sanitizeByType(mixed $value, array|bool|float|int|string $default): array|bool|float|int|string
     {
         if (\is_bool($default)) {
             return (bool) $value;
@@ -248,7 +250,7 @@ abstract class Settings implements ArrayAccess
      *
      * @return string[]
      */
-    protected static function parseList(array|string $list): array
+    private static function parseList(array|string $list): array
     {
         return \is_array($list) ? $list : \array_filter(\array_map('trim', \explode(PHP_EOL, $list)));
     }
