@@ -79,7 +79,23 @@ abstract class Settings implements ArrayAccess
      */
     public function offsetSet(mixed $offset, mixed $value): void
     {
-        $this->update($offset, $value);
+        $data = $this->get();
+
+        if (!isset($data[$offset])) {
+            // Cannot update, invalid setting name.
+            return;
+        }
+
+        if (null === $value) {
+            // Null value unsets (resets) setting to default state
+            unset($data[$offset]);
+        } else {
+            // Any other value updates it
+            $data[$offset] = $value;
+        }
+
+        // Use set() here to have the data sanitized properly.
+        $this->set($data);
     }
 
 
@@ -90,7 +106,7 @@ abstract class Settings implements ArrayAccess
      */
     public function offsetUnset(mixed $offset): void
     {
-        $this->update($offset, null);
+        $this->offsetSet($offset, null);
     }
 
 
@@ -253,35 +269,6 @@ abstract class Settings implements ArrayAccess
     private static function parseList(array|string $list): array
     {
         return \is_array($list) ? $list : \array_filter(\array_map('trim', \explode(PHP_EOL, $list)));
-    }
-
-
-    /**
-     * Update setting under $name with $value and make the changes permanent.
-     *
-     * @param string $name
-     * @param mixed $value
-     *
-     * @return bool
-     */
-    private function update(string $name, mixed $value): bool
-    {
-        $data = $this->get();
-
-        if (!isset($data[$name])) {
-            // Cannot update, invalid setting name.
-            return false;
-        }
-
-        if (null === $value) {
-            // Null value unsets (resets) setting to default state
-            unset($data[$name]);
-        } else {
-            // Any other value updates it
-            $data[$name] = $value;
-        }
-
-        return $this->set($data);
     }
 
 
