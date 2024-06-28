@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace BlueChip\Security\Tests\Unit\Cases\Helpers;
+namespace BlueChip\Security\Tests\Integration\Cases\Helpers;
 
 use BlueChip\Security\Helpers\HaveIBeenPwned;
 use BlueChip\Security\Tests\Integration\Constants;
