@@ -48,40 +48,6 @@ abstract class Settings implements ArrayAccess, IteratorAggregate
     }
 
 
-    /**
-     * Get value of setting under key $name.
-     *
-     * @param string $name
-     *
-     * @return mixed A null value is returned if $name is not a valid key.
-     */
-    public function __get(string $name): mixed
-    {
-        if (isset($this->data[$name])) {
-            return $this->data[$name];
-        } else {
-            _doing_it_wrong(__METHOD__, \sprintf('Unknown settings key "%s"', $name), '0.1.0');
-            return null;
-        }
-    }
-
-
-    /**
-     * Set value of setting under key $name to $value.
-     *
-     * @param string $name
-     * @param mixed $value
-     */
-    public function __set(string $name, mixed $value): void
-    {
-        if (isset($this->data[$name])) {
-            $this->update($name, $value);
-        } else {
-            _doing_it_wrong(__METHOD__, \sprintf('Unknown settings key "%s"', $name), '0.1.0');
-        }
-    }
-
-
     //// ArrayAccess API ///////////////////////////////////////////////////////
 
     /**
