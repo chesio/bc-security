@@ -110,6 +110,8 @@ abstract class Settings implements ArrayAccess
     }
 
 
+    //// Public API ////////////////////////////////////////////////////////////
+
     /**
      * Get option name.
      *
@@ -133,7 +135,7 @@ abstract class Settings implements ArrayAccess
 
 
     /**
-     * Sanitize $data and set them as option data.
+     * Sanitize $data and set them as option value.
      *
      * @param array<string,mixed> $data
      *
@@ -157,7 +159,7 @@ abstract class Settings implements ArrayAccess
 
 
     /**
-     * Set $autoload value of option.
+     * Set autoload value of underlying option to $autoload.
      */
     public function setAutoload(bool $autoload): bool
     {
@@ -179,7 +181,9 @@ abstract class Settings implements ArrayAccess
     /**
      * Set the value of $data into local cache and also persist it in database.
      *
-     * @param array<string,mixed> $data The data to be persisted.
+     * @internal This function does no sanitization and thus is private - use set() or reset() in external code.
+     *
+     * @param array<string,mixed> $data Sanitized (!) data to persist.
      *
      * @return bool True if settings have been updated (= changed), false otherwise.
      */
@@ -271,6 +275,8 @@ abstract class Settings implements ArrayAccess
         return \is_array($list) ? $list : \array_filter(\array_map('trim', \explode(PHP_EOL, $list)));
     }
 
+
+    //// Update hook callback //////////////////////////////////////////////////
 
     /**
      * Execute provided $callback as soon as settings are updated and persisted.
