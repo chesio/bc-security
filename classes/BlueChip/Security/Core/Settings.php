@@ -53,7 +53,7 @@ abstract class Settings implements ArrayAccess
      */
     public function offsetExists(mixed $offset): bool
     {
-        return isset($this->data[$offset]);
+        return $this->offsetGet($offset) !== null;
     }
 
 
@@ -68,7 +68,7 @@ abstract class Settings implements ArrayAccess
      */
     public function offsetGet(mixed $offset): mixed
     {
-        return isset($this->data[$offset]) ? $this->data[$offset] : null;
+        return $this->data[$offset] ?? null;
     }
 
 
