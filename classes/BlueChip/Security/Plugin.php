@@ -106,7 +106,7 @@ class Plugin
             }
         }
 
-        if (is_admin()) {
+        if (is_admin() && !wp_doing_ajax()) {
             $assets_manager = new Core\AssetsManager($this->plugin_filename);
 
             // Initialize admin interface (set necessary hooks).
