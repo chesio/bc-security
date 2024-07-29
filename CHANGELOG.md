@@ -7,6 +7,7 @@ WordPress 6.4 or newer is now required!
 ### Added
 
 * Disable autoloading of plugin options when plugin is deactivated [#160](https://github.com/chesio/bc-security/issues/160).
+* New built-in rule for bad request banner module that triggers when non-existing `.asp` or `.aspx` file is accessed [#161](https://github.com/chesio/bc-security/issues/161).
 * Plugin has been tested with WordPress 6.6 [#157](https://github.com/chesio/bc-security/issues/157).
 
 ### Changed

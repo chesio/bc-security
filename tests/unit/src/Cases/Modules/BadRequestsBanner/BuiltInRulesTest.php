@@ -17,6 +17,7 @@ final class BuiltInRulesTest extends TestCase
                 'data.tgz',
                 [
                     BuiltInRules::ARCHIVE_FILES => true,
+                    BuiltInRules::ASP_FILES => false,
                     BuiltInRules::BACKUP_FILES => false,
                     BuiltInRules::PHP_FILES => false,
                     BuiltInRules::README_FILES => false,
@@ -26,6 +27,7 @@ final class BuiltInRulesTest extends TestCase
                 'website-backup.zip',
                 [
                     BuiltInRules::ARCHIVE_FILES => true,
+                    BuiltInRules::ASP_FILES => false,
                     BuiltInRules::BACKUP_FILES => true,
                     BuiltInRules::PHP_FILES => false,
                     BuiltInRules::README_FILES => false,
@@ -35,6 +37,7 @@ final class BuiltInRulesTest extends TestCase
                 'wp-config.php.back',
                 [
                     BuiltInRules::ARCHIVE_FILES => false,
+                    BuiltInRules::ASP_FILES => false,
                     BuiltInRules::BACKUP_FILES => true,
                     BuiltInRules::PHP_FILES => false,
                     BuiltInRules::README_FILES => false,
@@ -44,6 +47,7 @@ final class BuiltInRulesTest extends TestCase
                 'script.php.old',
                 [
                     BuiltInRules::ARCHIVE_FILES => false,
+                    BuiltInRules::ASP_FILES => false,
                     BuiltInRules::BACKUP_FILES => true,
                     BuiltInRules::PHP_FILES => false,
                     BuiltInRules::README_FILES => false,
@@ -53,6 +57,7 @@ final class BuiltInRulesTest extends TestCase
                 'some/important/file.tmp',
                 [
                     BuiltInRules::ARCHIVE_FILES => false,
+                    BuiltInRules::ASP_FILES => false,
                     BuiltInRules::BACKUP_FILES => true,
                     BuiltInRules::PHP_FILES => false,
                     BuiltInRules::README_FILES => false,
@@ -62,6 +67,7 @@ final class BuiltInRulesTest extends TestCase
                 'wp-content/theme/dummy/styles.css',
                 [
                     BuiltInRules::ARCHIVE_FILES => false,
+                    BuiltInRules::ASP_FILES => false,
                     BuiltInRules::BACKUP_FILES => false,
                     BuiltInRules::PHP_FILES => false,
                     BuiltInRules::README_FILES => false,
@@ -71,6 +77,7 @@ final class BuiltInRulesTest extends TestCase
                 'plugin/non-existent/image.png',
                 [
                     BuiltInRules::ARCHIVE_FILES => false,
+                    BuiltInRules::ASP_FILES => false,
                     BuiltInRules::BACKUP_FILES => false,
                     BuiltInRules::PHP_FILES => false,
                     BuiltInRules::README_FILES => false,
@@ -80,6 +87,27 @@ final class BuiltInRulesTest extends TestCase
                 'wp-content/themes/dummy/script.js',
                 [
                     BuiltInRules::ARCHIVE_FILES => false,
+                    BuiltInRules::ASP_FILES => false,
+                    BuiltInRules::BACKUP_FILES => false,
+                    BuiltInRules::PHP_FILES => false,
+                    BuiltInRules::README_FILES => false,
+                ],
+            ],
+            'ASP file' => [
+                'backend.asp',
+                [
+                    BuiltInRules::ARCHIVE_FILES => false,
+                    BuiltInRules::ASP_FILES => true,
+                    BuiltInRules::BACKUP_FILES => false,
+                    BuiltInRules::PHP_FILES => false,
+                    BuiltInRules::README_FILES => false,
+                ],
+            ],
+            'ASPx file' => [
+                'login.aspx',
+                [
+                    BuiltInRules::ARCHIVE_FILES => false,
+                    BuiltInRules::ASP_FILES => true,
                     BuiltInRules::BACKUP_FILES => false,
                     BuiltInRules::PHP_FILES => false,
                     BuiltInRules::README_FILES => false,
@@ -89,6 +117,7 @@ final class BuiltInRulesTest extends TestCase
                 '_wp-config.php',
                 [
                     BuiltInRules::ARCHIVE_FILES => false,
+                    BuiltInRules::ASP_FILES => false,
                     BuiltInRules::BACKUP_FILES => false,
                     BuiltInRules::PHP_FILES => true,
                     BuiltInRules::README_FILES => false,
@@ -98,6 +127,7 @@ final class BuiltInRulesTest extends TestCase
                 'humans.txt',
                 [
                     BuiltInRules::ARCHIVE_FILES => false,
+                    BuiltInRules::ASP_FILES => false,
                     BuiltInRules::BACKUP_FILES => false,
                     BuiltInRules::PHP_FILES => false,
                     BuiltInRules::README_FILES => false,
@@ -107,6 +137,7 @@ final class BuiltInRulesTest extends TestCase
                 'wp-content/plugins/some-plugin/readme.txt',
                 [
                     BuiltInRules::ARCHIVE_FILES => false,
+                    BuiltInRules::ASP_FILES => false,
                     BuiltInRules::BACKUP_FILES => false,
                     BuiltInRules::PHP_FILES => false,
                     BuiltInRules::README_FILES => true,
