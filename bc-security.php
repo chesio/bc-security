@@ -9,7 +9,7 @@
  * Author URI: https://www.chesio.com
  * Requires PHP: 8.1
  * Requires at least: 6.4
- * Tested up to: 6.5
+ * Tested up to: 6.6
  * Text Domain: bc-security
  * GitHub Plugin URI: https://github.com/chesio/bc-security
  * Update URI: https://github.com/chesio/bc-security
