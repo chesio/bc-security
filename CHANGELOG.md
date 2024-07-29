@@ -1,6 +1,6 @@
 # BC Security Changelog
 
-## Upcoming version 0.24.0 (????-??-??)
+## Version 0.24.0 (2024-07-29)
 
 WordPress 6.4 or newer is now required!
 
