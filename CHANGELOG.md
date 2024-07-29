@@ -1,5 +1,19 @@
 # BC Security Changelog
 
+## Version 0.24.0 (2024-07-29)
+
+WordPress 6.4 or newer is now required!
+
+### Added
+
+* Disable autoloading of plugin options when plugin is deactivated [#160](https://github.com/chesio/bc-security/issues/160).
+* New built-in rule for bad request banner module that triggers when non-existing `.asp` or `.aspx` file is accessed [#161](https://github.com/chesio/bc-security/issues/161).
+* Plugin has been tested with WordPress 6.6 [#157](https://github.com/chesio/bc-security/issues/157).
+
+### Changed
+
+* WordPress 6.4 is required [#159](https://github.com/chesio/bc-security/issues/159).
+
 ## Version 0.23.0 (2024-04-04)
 
 **Important**: either deactivate and reactivate plugin after update or install new cron job manually via WP-CLI: `wp cron event schedule bc-security/failed-logins-clean-up now daily`.

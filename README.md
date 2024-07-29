@@ -10,7 +10,7 @@ A WordPress plugin that helps keeping WordPress websites secure.
 ## Requirements
 
 * [PHP](https://www.php.net/) 8.1 or newer
-* [WordPress](https://wordpress.org/) 6.2 or newer
+* [WordPress](https://wordpress.org/) 6.4 or newer
 
 ## Limitations
 
@@ -144,11 +144,12 @@ Passwords are validated on user creation, password change or password reset. If 
 
 Remote IP addresses that are scanning your website for weaknesses can be automatically [blocked](#internal-blocklist) for configured amount of time. Such scanners can be usually quite easily detected because while scanning a website they trigger a lot of 404 errors and URLs they try to access differ from "valid" 404 errors: usually they try to find a known vulnerable plugin, forgotten backup file or PHP script used for administrative purposes.
 
-There are four built-in rules available (they are not active by default):
-1. ban when non-existent PHP file is requested (any URL ending with `.php`)
-2. ban when non-existent archive file is requested (any URL ending with `.tgz` or `.zip`)
-3. ban when non-existent backup file is requested (any URL targeting file with `backup` in basename or with `.back`, `.old` or `.tmp` extension)
-4. ban when non-existent `readme.txt` file is accessed
+There are five built-in rules available (they are not active by default):
+1. ban when non-existent APS file is requested (any URL ending with `.asp` or `.aspx`)
+2. ban when non-existent PHP file is requested (any URL ending with `.php`)
+3. ban when non-existent archive file is requested (any URL ending with `.tgz` or `.zip`)
+4. ban when non-existent backup file is requested (any URL targeting file with `backup` in basename or with `.back`, `.old` or `.tmp` extension)
+5. ban when non-existent `readme.txt` file is accessed
 
 You may define custom rules as well (in form of regular expression).
 

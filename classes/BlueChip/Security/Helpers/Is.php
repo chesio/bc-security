@@ -65,7 +65,7 @@ abstract class Is
             case 'frontend':
                 return (!is_admin() || wp_doing_ajax()) && !wp_doing_cron();
             case 'wp-cli':
-                return \defined('WP_CLI') && WP_CLI;
+                return \defined('WP_CLI') && \constant('WP_CLI');
             default:
                 _doing_it_wrong(__METHOD__, \sprintf('Unknown request type: %s', $type), '0.1.0');
                 return false;

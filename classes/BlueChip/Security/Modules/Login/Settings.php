@@ -86,7 +86,7 @@ class Settings extends CoreSettings
      */
     public function getLongLockoutDuration(): int
     {
-        return $this->data[self::LONG_LOCKOUT_DURATION] * HOUR_IN_SECONDS;
+        return $this[self::LONG_LOCKOUT_DURATION] * HOUR_IN_SECONDS;
     }
 
 
@@ -95,7 +95,7 @@ class Settings extends CoreSettings
      */
     public function getResetTimeoutDuration(): int
     {
-        return $this->data[self::RESET_TIMEOUT] * DAY_IN_SECONDS;
+        return $this[self::RESET_TIMEOUT] * DAY_IN_SECONDS;
     }
 
 
@@ -104,7 +104,7 @@ class Settings extends CoreSettings
      */
     public function getShortLockoutDuration(): int
     {
-        return $this->data[self::SHORT_LOCKOUT_DURATION] * MINUTE_IN_SECONDS;
+        return $this[self::SHORT_LOCKOUT_DURATION] * MINUTE_IN_SECONDS;
     }
 
 
@@ -117,6 +117,6 @@ class Settings extends CoreSettings
      */
     public function getUsernameBlacklist(): array
     {
-        return apply_filters(Hooks::USERNAME_BLACKLIST, $this->data[self::USERNAME_BLACKLIST]);
+        return apply_filters(Hooks::USERNAME_BLACKLIST, $this[self::USERNAME_BLACKLIST]);
     }
 }

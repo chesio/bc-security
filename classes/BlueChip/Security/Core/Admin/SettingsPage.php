@@ -63,7 +63,15 @@ trait SettingsPage
      */
     public function registerSettings(): void
     {
-        register_setting($this->option_group, $this->option_name, [$this->settings, 'sanitize']);
+        register_setting(
+            $this->option_group,
+            $this->option_name,
+            [
+                'type' => 'array',
+                'sanitize_callback' => $this->settings->sanitize(...),
+                'default' => $this->settings->getDefaultValue(),
+            ]
+        );
     }
 
 
@@ -105,7 +113,7 @@ trait SettingsPage
             'label_for' => \sprintf('%s-%s', $this->option_name, $key), // "label_for" is WP reserved name
             'key' => $key,
             'name' => \sprintf('%s[%s]', $this->option_name, $key),
-            'value' => null === $value ? $this->settings[$key] : $value,
+            'value' => $value ?? $this->settings[$key],
         ];
     }
 

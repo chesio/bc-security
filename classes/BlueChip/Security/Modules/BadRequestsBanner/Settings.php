@@ -14,6 +14,11 @@ class Settings extends CoreSettings
     public const BUILT_IN_RULE_ARCHIVE_FILES = BuiltInRules::ARCHIVE_FILES;
 
     /**
+     * @var string Is built-in rule "ASP files" active? [bool:no]
+     */
+    public const BUILT_IN_RULE_ASP_FILES = BuiltInRules::ASP_FILES;
+
+    /**
      * @var string Is built-in rule "Backup files" active? [bool:no]
      */
     public const BUILT_IN_RULE_BACKUP_FILES = BuiltInRules::BACKUP_FILES;
@@ -50,6 +55,7 @@ class Settings extends CoreSettings
      */
     protected const DEFAULTS = [
         self::BUILT_IN_RULE_ARCHIVE_FILES => false,
+        self::BUILT_IN_RULE_ASP_FILES => false,
         self::BUILT_IN_RULE_BACKUP_FILES => false,
         self::BUILT_IN_RULE_PHP_FILES => false,
         self::BUILT_IN_RULE_README_FILES => false,
@@ -67,7 +73,7 @@ class Settings extends CoreSettings
 
         // Fill built in rules first.
         foreach (BuiltInRules::enlist() as $identifier => $ban_rule) {
-            if ($this->data[$identifier]) {
+            if ($this[$identifier]) {
                 $ban_rules[] = $ban_rule;
             }
         }
@@ -86,7 +92,7 @@ class Settings extends CoreSettings
      */
     public function getBanDuration(): int
     {
-        return $this->data[self::BAN_DURATION] * MINUTE_IN_SECONDS;
+        return $this[self::BAN_DURATION] * MINUTE_IN_SECONDS;
     }
 
 
@@ -97,7 +103,7 @@ class Settings extends CoreSettings
     {
         return apply_filters(
             Hooks::BAD_REQUEST_CUSTOM_PATTERNS,
-            $this->removeComments($this->data[self::BAD_REQUEST_PATTERNS])
+            $this->removeComments($this[self::BAD_REQUEST_PATTERNS])
         );
     }
 

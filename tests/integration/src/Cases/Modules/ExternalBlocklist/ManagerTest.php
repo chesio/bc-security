@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace BlueChip\Security\Tests\Unit\Cases\Modules\ExternalBlocklist;
+namespace BlueChip\Security\Tests\Integration\Cases\Modules\ExternalBlocklist;
 
 use BlueChip\Security\Modules\Access\Scope;
 use BlueChip\Security\Modules\Cron\Jobs;

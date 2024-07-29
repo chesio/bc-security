@@ -36,7 +36,7 @@ class Settings extends CoreSettings
      */
     public function getMaxAge(): int
     {
-        return $this->data[self::LOG_MAX_AGE] * DAY_IN_SECONDS;
+        return $this[self::LOG_MAX_AGE] * DAY_IN_SECONDS;
     }
 
 
@@ -45,6 +45,6 @@ class Settings extends CoreSettings
      */
     public function getMaxSize(): int
     {
-        return $this->data[self::LOG_MAX_SIZE] * 1000;
+        return $this[self::LOG_MAX_SIZE] * 1000;
     }
 }

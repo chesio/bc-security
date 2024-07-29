@@ -5,9 +5,6 @@ declare(strict_types=1);
 namespace BlueChip\Security\Core;
 
 use ArrayAccess;
-use ArrayIterator;
-use IteratorAggregate;
-use Traversable;
 
 /**
  * Basis (abstract) class for setting objects.
@@ -17,9 +14,8 @@ use Traversable;
  * @link https://developer.wordpress.org/plugins/settings/settings-api/
  *
  * @phpstan-implements ArrayAccess<string,mixed>
- * @phpstan-implements IteratorAggregate<string,mixed>
  */
-abstract class Settings implements ArrayAccess, IteratorAggregate
+abstract class Settings implements ArrayAccess
 {
     /**
      * @var array<string,mixed> Default values for all settings. Descendant classes should override it.
@@ -35,7 +31,7 @@ abstract class Settings implements ArrayAccess, IteratorAggregate
     /**
      * @var array<string,mixed> Settings data (kind of cache for get_option() result).
      */
-    protected array $data;
+    private array $data;
 
 
     /**
@@ -48,40 +44,6 @@ abstract class Settings implements ArrayAccess, IteratorAggregate
     }
 
 
-    /**
-     * Get value of setting under key $name.
-     *
-     * @param string $name
-     *
-     * @return mixed A null value is returned if $name is not a valid key.
-     */
-    public function __get(string $name): mixed
-    {
-        if (isset($this->data[$name])) {
-            return $this->data[$name];
-        } else {
-            _doing_it_wrong(__METHOD__, \sprintf('Unknown settings key "%s"', $name), '0.1.0');
-            return null;
-        }
-    }
-
-
-    /**
-     * Set value of setting under key $name to $value.
-     *
-     * @param string $name
-     * @param mixed $value
-     */
-    public function __set(string $name, mixed $value): void
-    {
-        if (isset($this->data[$name])) {
-            $this->update($name, $value);
-        } else {
-            _doing_it_wrong(__METHOD__, \sprintf('Unknown settings key "%s"', $name), '0.1.0');
-        }
-    }
-
-
     //// ArrayAccess API ///////////////////////////////////////////////////////
 
     /**
@@ -91,7 +53,7 @@ abstract class Settings implements ArrayAccess, IteratorAggregate
      */
     public function offsetExists(mixed $offset): bool
     {
-        return isset($this->data[$offset]);
+        return $this->offsetGet($offset) !== null;
     }
 
 
@@ -106,7 +68,7 @@ abstract class Settings implements ArrayAccess, IteratorAggregate
      */
     public function offsetGet(mixed $offset): mixed
     {
-        return isset($this->data[$offset]) ? $this->data[$offset] : null;
+        return $this->data[$offset] ?? null;
     }
 
 
@@ -117,7 +79,23 @@ abstract class Settings implements ArrayAccess, IteratorAggregate
      */
     public function offsetSet(mixed $offset, mixed $value): void
     {
-        $this->update($offset, $value);
+        $data = $this->get();
+
+        if (!isset($data[$offset])) {
+            // Cannot update, invalid setting name.
+            return;
+        }
+
+        if (null === $value) {
+            // Null value unsets (resets) setting to default state
+            unset($data[$offset]);
+        } else {
+            // Any other value updates it
+            $data[$offset] = $value;
+        }
+
+        // Use set() here to have the data sanitized properly.
+        $this->set($data);
     }
 
 
@@ -128,15 +106,20 @@ abstract class Settings implements ArrayAccess, IteratorAggregate
      */
     public function offsetUnset(mixed $offset): void
     {
-        $this->update($offset, null);
+        $this->offsetSet($offset, null);
     }
 
 
-    //// IteratorAggregate API /////////////////////////////////////////////////
+    //// Public API ////////////////////////////////////////////////////////////
 
-    public function getIterator(): Traversable
+    /**
+     * Get default value for settings.
+     *
+     * @return array<string,mixed>
+     */
+    public function getDefaultValue(): array
     {
-        return new ArrayIterator($this->data);
+        return static::DEFAULTS;
     }
 
 
@@ -163,7 +146,7 @@ abstract class Settings implements ArrayAccess, IteratorAggregate
 
 
     /**
-     * Set $data as option data.
+     * Sanitize $data and set them as option value.
      *
      * @param array<string,mixed> $data
      *
@@ -171,20 +154,27 @@ abstract class Settings implements ArrayAccess, IteratorAggregate
      */
     public function set(array $data): bool
     {
-        $this->data = $this->sanitize($data);
-        return $this->persist();
+        return $this->persist($this->sanitize($data));
     }
 
 
     /**
-     * Reset option data.
+     * Reset option data to default values.
      *
      * @return bool
      */
     public function reset(): bool
     {
-        $this->data = static::DEFAULTS;
-        return $this->persist();
+        return $this->persist(static::DEFAULTS);
+    }
+
+
+    /**
+     * Set autoload value of underlying option to $autoload.
+     */
+    public function setAutoload(bool $autoload): bool
+    {
+        return wp_set_option_autoload($this->option_name, $autoload);
     }
 
 
@@ -200,15 +190,25 @@ abstract class Settings implements ArrayAccess, IteratorAggregate
 
 
     /**
-     * Persist the value of data into database.
+     * Set the value of $data into local cache and also persist it in database.
+     *
+     * @internal This function does no sanitization and thus is private - use set() or reset() in external code.
+     *
+     * @param array<string,mixed> $data Sanitized (!) data to persist.
      *
      * @return bool True if settings have been updated (= changed), false otherwise.
      */
-    public function persist(): bool
+    private function persist(array $data): bool
     {
+        // Update local cache.
+        $this->data = $data;
+
+        // Persist new data.
         return update_option($this->option_name, $this->data);
     }
 
+
+    //// Sanitization //////////////////////////////////////////////////////////
 
     /**
      * Sanitize $settings array: only keep known keys, provide default values for missing keys.
@@ -228,7 +228,7 @@ abstract class Settings implements ArrayAccess, IteratorAggregate
     public function sanitize(array $settings, array $defaults = []): array
     {
         // If no default values are provided, use data from internal cache as default values.
-        $values = ($defaults === []) ? $this->data : $defaults;
+        $values = ($defaults === []) ? $this->get() : $defaults;
 
         // Loop over default values instead of provided $settings - this way only known keys are preserved.
         foreach ($values as $key => $default_value) {
@@ -258,7 +258,7 @@ abstract class Settings implements ArrayAccess, IteratorAggregate
      *
      * @return mixed[]|bool|float|int|string
      */
-    protected static function sanitizeByType(mixed $value, array|bool|float|int|string $default): array|bool|float|int|string
+    private static function sanitizeByType(mixed $value, array|bool|float|int|string $default): array|bool|float|int|string
     {
         if (\is_bool($default)) {
             return (bool) $value;
@@ -281,43 +281,13 @@ abstract class Settings implements ArrayAccess, IteratorAggregate
      *
      * @return string[]
      */
-    protected static function parseList(array|string $list): array
+    private static function parseList(array|string $list): array
     {
         return \is_array($list) ? $list : \array_filter(\array_map('trim', \explode(PHP_EOL, $list)));
     }
 
 
-    /**
-     * Update setting under $name with $value. Store update values in DB.
-     *
-     * @param string $name
-     * @param mixed $value
-     *
-     * @return bool
-     */
-    public function update(string $name, mixed $value): bool
-    {
-        if (!isset($this->data[$name])) {
-            // Cannot update, invalid setting name.
-            return false;
-        }
-
-        $data = $this->data;
-
-        if (null === $value) {
-            // Null value unsets (resets) setting to default state
-            unset($data[$name]);
-        } else {
-            // Any other value updates it
-            $data[$name] = $value;
-        }
-
-        // Sanitize new value and update cache.
-        $this->data = $this->sanitize($data);
-        // Make changes permanent.
-        return $this->persist();
-    }
-
+    //// Update hook callback //////////////////////////////////////////////////
 
     /**
      * Execute provided $callback as soon as settings are updated and persisted.

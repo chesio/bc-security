@@ -46,7 +46,7 @@ class Settings extends CoreSettings
 
     public function getAccessScope(string $class): ?Scope
     {
-        $value = $this->data[$class] ?? null;
+        $value = $this[$class];
         return \is_int($value) ? Scope::tryFrom($value) : null;
     }
 }

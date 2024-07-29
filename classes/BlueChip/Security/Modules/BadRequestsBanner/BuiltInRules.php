@@ -10,6 +10,10 @@ abstract class BuiltInRules
 
     private const ARCHIVE_FILES_PATTERN = '\.(tgz|zip)$';
 
+    public const ASP_FILES = 'asp-files';
+
+    private const ASP_FILES_PATTERN = '\.aspx?$';
+
     public const BACKUP_FILES = 'backup-files';
 
     private const BACKUP_FILES_PATTERN = 'backup|(\.(back|old|tmp)$)';
@@ -28,6 +32,11 @@ abstract class BuiltInRules
     public static function enlist(): array
     {
         return [
+            self::ASP_FILES => new BanRule(
+                __('Non-existent ASP files', 'bc-security'),
+                self::ASP_FILES_PATTERN,
+                __('(any URI targeting file with .asp or .aspx extension)', 'bc-security')
+            ),
             self::PHP_FILES => new BanRule(
                 __('Non-existent PHP files', 'bc-security'),
                 self::PHP_FILES_PATTERN,

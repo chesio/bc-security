@@ -106,7 +106,7 @@ class Plugin
             }
         }
 
-        if (is_admin()) {
+        if (is_admin() && !wp_doing_ajax()) {
             $assets_manager = new Core\AssetsManager($this->plugin_filename);
 
             // Initialize admin interface (set necessary hooks).
@@ -161,9 +161,9 @@ class Plugin
      */
     public function activate(): void
     {
-        // Explicitly persist every setting object, so related option is autoloaded.
+        // Make sure plugin related options are autoloaded when plugin is active.
         foreach ($this->settings as $settings) {
-            $settings->persist();
+            $settings->setAutoload(true);
         }
 
         // Install every module that requires it.
@@ -195,6 +195,11 @@ class Plugin
             if ($module instanceof Modules\Activable) {
                 $module->deactivate();
             }
+        }
+
+        // Make sure plugin related options are *not* autoloaded when plugin is inactive.
+        foreach ($this->settings as $settings) {
+            $settings->setAutoload(false);
         }
     }
 
