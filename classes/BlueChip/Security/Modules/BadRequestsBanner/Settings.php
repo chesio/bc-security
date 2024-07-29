@@ -14,6 +14,11 @@ class Settings extends CoreSettings
     public const BUILT_IN_RULE_ARCHIVE_FILES = BuiltInRules::ARCHIVE_FILES;
 
     /**
+     * @var string Is built-in rule "ASP files" active? [bool:no]
+     */
+    public const BUILT_IN_RULE_ASP_FILES = BuiltInRules::ASP_FILES;
+
+    /**
      * @var string Is built-in rule "Backup files" active? [bool:no]
      */
     public const BUILT_IN_RULE_BACKUP_FILES = BuiltInRules::BACKUP_FILES;
@@ -50,6 +55,7 @@ class Settings extends CoreSettings
      */
     protected const DEFAULTS = [
         self::BUILT_IN_RULE_ARCHIVE_FILES => false,
+        self::BUILT_IN_RULE_ASP_FILES => false,
         self::BUILT_IN_RULE_BACKUP_FILES => false,
         self::BUILT_IN_RULE_PHP_FILES => false,
         self::BUILT_IN_RULE_README_FILES => false,
