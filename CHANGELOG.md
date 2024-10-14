@@ -2,7 +2,9 @@
 
 ## Upcoming version 0.25.0 (????-??-??)
 
-...
+### Changed
+
+* End-of-life dates for supported PHP versions have been updated [#164](https://github.com/chesio/bc-security/issues/164).
 
 ## Version 0.24.0 (2024-07-29)
 
