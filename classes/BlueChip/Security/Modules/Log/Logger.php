@@ -59,7 +59,7 @@ class Logger extends AbstractLogger implements LoggerInterface, Modules\Countabl
     public function install(): void
     {
         // To have dbDelta()
-        require_once ABSPATH . 'wp-admin/includes/upgrade.php';
+        require_once ABSPATH . 'wp-admin/includes/upgrade.php'; // @phpstan-ignore-line
 
         $charset_collate = $this->wpdb->get_charset_collate();
 

@@ -161,7 +161,7 @@ abstract class Plugin
     {
         // We're using some wp-admin stuff here, so make sure it's available.
         if (!\function_exists('get_plugins')) {
-            require_once ABSPATH . 'wp-admin/includes/plugin.php';
+            require_once ABSPATH . 'wp-admin/includes/plugin.php'; // @phpstan-ignore-line
         }
 
         $wordpress_org_plugins = \array_filter(
