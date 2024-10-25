@@ -7,6 +7,7 @@ This release has been tested with PHP 8.4.
 ### Added
 
 * Plugin has been tested with PHP 8.4 [#163](https://github.com/chesio/bc-security/issues/163).
+* Plugin has been tested with WordPress 6.7 [#162](https://github.com/chesio/bc-security/issues/162).
 
 ### Changed
 
