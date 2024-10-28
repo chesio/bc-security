@@ -123,7 +123,7 @@ BC Security allows you to:
 1. Disable pingbacks
 2. Disable XML RPC methods that require authentication
 3. Disable application passwords
-4. Prevent usernames discovery via [REST API requests](https://developer.wordpress.org/rest-api/reference/users/) and [username eumeration](https://hackertarget.com/wordpress-user-enumeration/)
+4. Prevent usernames discovery via [REST API requests](https://developer.wordpress.org/rest-api/reference/users/) and [username enumeration](https://hackertarget.com/wordpress-user-enumeration/)
 5. Disable login with email or login with username to reduce risk from brute-force or [credential stuffing attacks](https://owasp.org/www-community/attacks/Credential_stuffing).
 6. Check and/or validate user passwords using [Pwned Passwords](https://haveibeenpwned.com/Passwords) database and [API](https://haveibeenpwned.com/API/v2#PwnedPasswords)
 

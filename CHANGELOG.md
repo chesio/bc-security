@@ -1,5 +1,18 @@
 # BC Security Changelog
 
+## Version 0.25.0 (2024-10-28)
+
+This release has been tested with PHP 8.4.
+
+### Added
+
+* Plugin has been tested with PHP 8.4 [#163](https://github.com/chesio/bc-security/issues/163).
+* Plugin has been tested with WordPress 6.7 [#162](https://github.com/chesio/bc-security/issues/162).
+
+### Changed
+
+* End-of-life dates for supported PHP versions have been updated [#164](https://github.com/chesio/bc-security/issues/164).
+
 ## Version 0.24.0 (2024-07-29)
 
 WordPress 6.4 or newer is now required!
