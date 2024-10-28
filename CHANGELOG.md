@@ -1,5 +1,9 @@
 # BC Security Changelog
 
+## Upcoming version 0.26.0 (????-??-??)
+
+...
+
 ## Version 0.25.0 (2024-10-28)
 
 This release has been tested with PHP 8.4.
