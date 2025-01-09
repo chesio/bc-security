@@ -211,10 +211,23 @@ class Watchman implements Activable, Initializable
             return empty($notified_version) || \version_compare($notified_version, $plugin_update_data->new_version, '<');
         }, ARRAY_FILTER_USE_BOTH);
 
-        if (empty($plugin_updates)) {
-            return;
+        if ($plugin_updates !== []) {
+            if (apply_filters(Hooks::ALL_PLUGIN_UPDATES_IN_ONE_NOTIFICATION, false)) {
+                $this->notifyAboutPluginUpdatesAvailable($plugin_updates);
+            } else {
+                foreach ($plugin_updates as $plugin_file => $plugin_update_data) {
+                    $this->notifyAboutPluginUpdatesAvailable([$plugin_file => $plugin_update_data]);
+                }
+            }
         }
+    }
 
+
+    /**
+     * @param array<string,object> $plugin_updates Plugin file and related update object.
+     */
+    private function notifyAboutPluginUpdatesAvailable(array $plugin_updates): void
+    {
         $subject = __('Plugin updates available', 'bc-security');
         $message = new Message();
 
@@ -265,10 +278,23 @@ class Watchman implements Activable, Initializable
             return empty($last_version) || \version_compare($last_version, $theme_update_data['new_version'], '<');
         }, ARRAY_FILTER_USE_BOTH);
 
-        if (empty($theme_updates)) {
-            return;
+        if ($theme_updates !== []) {
+            if (apply_filters(Hooks::ALL_THEME_UPDATES_IN_ONE_NOTIFICATION, false)) {
+                $this->notifyAboutThemeUpdatesAvailable($theme_updates);
+            } else {
+                foreach ($theme_updates as $theme_slug => $theme_update_data) {
+                    $this->notifyAboutThemeUpdatesAvailable([$theme_slug => $theme_update_data]);
+                }
+            }
         }
+    }
 
+
+    /**
+     * @param array<string,object> $theme_updates Theme slug and related update object.
+     */
+    private function notifyAboutThemeUpdatesAvailable(array $theme_updates): void
+    {
         $subject = __('Theme updates available', 'bc-security');
         $message = new Message();
 
