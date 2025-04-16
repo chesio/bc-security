@@ -36,6 +36,19 @@ class NoMd5HashedPasswords extends Checklist\BasicCheck
     }
 
 
+    /**
+     * Check does not make sense anymore starting with WordPress 6.8
+     *
+     * @link https://make.wordpress.org/core/2025/02/17/wordpress-6-8-will-use-bcrypt-for-password-hashing/
+     *
+     * @return bool
+     */
+    public function isMeaningful(): bool
+    {
+        return !is_wp_version_compatible('6.8');
+    }
+
+
     protected function runInternal(): Checklist\CheckResult
     {
         // Get all users with old hash prefix

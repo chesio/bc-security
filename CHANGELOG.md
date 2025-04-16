@@ -2,6 +2,10 @@
 
 ## Upcoming version 0.26.0 (????-??-??)
 
+### Added
+
+* Plugin has been tested with WordPress 6.8 [#168](https://github.com/chesio/bc-security/issues/168).
+
 ### Changed
 
 * Separate plugin and theme update notification is sent for each available plugin and theme update [#167](https://github.com/chesio/bc-security/issues/167). Legacy behaviour can be enabled with following filters: `bc-security/filter:all-plugin-updates-in-one-notification` for plugins and `bc-security/filter:all-theme-updates-in-one-notification` for themes.
