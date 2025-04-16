@@ -46,7 +46,6 @@ class AdminPage extends AbstractPage
                 ),
                 AdminNotices::WARNING,
                 false, // ~ not dismissible
-                false // ~ do not escape HTML
             );
         }
 
@@ -59,7 +58,6 @@ class AdminPage extends AbstractPage
                 ),
                 AdminNotices::WARNING,
                 false, // ~ not dismissible
-                false // ~ do not escape HTML
             );
         }
     }

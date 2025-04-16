@@ -323,7 +323,7 @@ class Core implements Initializable
                 '<a href="' . get_edit_profile_url($user->ID) . '">' . esc_html__('changing your password', 'bc-security') . '</a>'
             );
 
-            AdminNotices::add($notice, AdminNotices::WARNING, false, false);
+            AdminNotices::add($notice, AdminNotices::WARNING, false);
         }
     }
 
