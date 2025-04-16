@@ -8,16 +8,19 @@ use BlueChip\Security\Modules\Checklist;
 
 class DirectoryListingDisabled extends Checklist\BasicCheck
 {
-    public function __construct()
+    public function getDescription(): string
     {
-        parent::__construct(
-            __('Directory listing disabled', 'bc-security'),
-            \sprintf(
-                /* translators: 1: link to documentation about DirectoryListings at apache.org */
-                esc_html__('A sensible security practice is to disable %1$s.', 'bc-security'),
-                '<a href="' . esc_url(__('https://wiki.apache.org/httpd/DirectoryListings', 'bc-security')) . '" rel="noreferrer">' . esc_html__('directory listings', 'bc-security') . '</a>'
-            )
+        return \sprintf(
+            /* translators: 1: link to documentation about DirectoryListings at apache.org */
+            esc_html__('A sensible security practice is to disable %1$s.', 'bc-security'),
+            '<a href="' . esc_url(__('https://wiki.apache.org/httpd/DirectoryListings', 'bc-security')) . '" rel="noreferrer">' . esc_html__('directory listings', 'bc-security') . '</a>'
         );
+    }
+
+
+    public function getName(): string
+    {
+        return __('Directory listing disabled', 'bc-security');
     }
 
 

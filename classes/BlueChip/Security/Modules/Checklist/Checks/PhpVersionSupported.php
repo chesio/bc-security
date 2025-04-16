@@ -21,16 +21,19 @@ class PhpVersionSupported extends Checklist\BasicCheck
     ];
 
 
-    public function __construct()
+    public function getDescription(): string
     {
-        parent::__construct(
-            __('PHP version is supported', 'bc-security'),
-            \sprintf(
-                /* translators: 1: link to official page on supported PHP versions */
-                esc_html__('Running an %1$s may pose a security risk.', 'bc-security'),
-                '<a href="' . esc_url(__('https://www.php.net/supported-versions.php', 'bc-security')) . '" rel="noreferrer">' . esc_html__('unsupported PHP version', 'bc-security') . '</a>'
-            )
+        return \sprintf(
+            /* translators: 1: link to official page on supported PHP versions */
+            esc_html__('Running an %1$s may pose a security risk.', 'bc-security'),
+            '<a href="' . esc_url(__('https://www.php.net/supported-versions.php', 'bc-security')) . '" rel="noreferrer">' . esc_html__('unsupported PHP version', 'bc-security') . '</a>'
         );
+    }
+
+
+    public function getName(): string
+    {
+        return __('PHP version is supported', 'bc-security');
     }
 
 

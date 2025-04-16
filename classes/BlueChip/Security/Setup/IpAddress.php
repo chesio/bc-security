@@ -27,9 +27,25 @@ abstract class IpAddress
     /**
      * Get a list of all connection types supported by the plugin.
      *
-     * @return array<string,string> Array of known (valid) connection types.
+     * @return string[] List of known (valid) connection types represented by their internal key values.
      */
-    public static function enlist(): array
+    public static function getOptions(): array
+    {
+        return [
+            self::REMOTE_ADDR,
+            self::HTTP_CF_CONNECTING_IP,
+            self::HTTP_X_FORWARDED_FOR,
+            self::HTTP_X_REAL_IP,
+        ];
+    }
+
+
+    /**
+     * Get a list of all connection types supported by the plugin.
+     *
+     * @return array<string,string> Array of supported connection types in form <internal key value> => <human-readable label>.
+     */
+    public static function listOptions(): array
     {
         return [
             self::REMOTE_ADDR => __('Direct connection to the Internet', 'bc-security'),
@@ -49,7 +65,7 @@ abstract class IpAddress
      */
     public static function get(string $type): string
     {
-        if (!\array_key_exists($type, self::enlist())) {
+        if (!\in_array($type, self::getOptions(), true)) {
             // Invalid type, fall back to direct address.
             $type = self::REMOTE_ADDR;
         }
@@ -82,7 +98,7 @@ abstract class IpAddress
      */
     public static function getRaw(string $type): string
     {
-        return \array_key_exists($type, self::enlist()) ? ($_SERVER[$type] ?? '') : '';
+        return \in_array($type, self::getOptions(), true) ? ($_SERVER[$type] ?? '') : '';
     }
 
 

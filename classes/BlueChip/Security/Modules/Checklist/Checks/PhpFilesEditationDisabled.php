@@ -8,16 +8,19 @@ use BlueChip\Security\Modules\Checklist;
 
 class PhpFilesEditationDisabled extends Checklist\BasicCheck
 {
-    public function __construct()
+    public function getDescription(): string
     {
-        parent::__construct(
-            __('PHP files editation disabled', 'bc-security'),
-            \sprintf(
-                /* translators: 1: link to article on WordPress hardening */
-                esc_html__('It is generally recommended to %1$s.', 'bc-security'),
-                '<a href="' . esc_url(__('https://wordpress.org/support/article/hardening-wordpress/#disable-file-editing', 'bc-security')) . '" rel="noreferrer">' . esc_html__('disable editation of PHP files', 'bc-security') . '</a>'
-            )
+        return \sprintf(
+            /* translators: 1: link to article on WordPress hardening */
+            esc_html__('It is generally recommended to %1$s.', 'bc-security'),
+            '<a href="' . esc_url(__('https://wordpress.org/support/article/hardening-wordpress/#disable-file-editing', 'bc-security')) . '" rel="noreferrer">' . esc_html__('disable editation of PHP files', 'bc-security') . '</a>'
         );
+    }
+
+
+    public function getName(): string
+    {
+        return __('PHP files editation disabled', 'bc-security');
     }
 
 

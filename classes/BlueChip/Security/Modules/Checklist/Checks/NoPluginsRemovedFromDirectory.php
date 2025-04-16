@@ -36,17 +36,20 @@ class NoPluginsRemovedFromDirectory extends Checklist\AdvancedCheck
     private const PLUGIN_NOTICE_REGEX = '/<div class="plugin-notice[a-z_\- ]*"><p>(.+)<\/p><\/div>/U';
 
 
-    public function __construct()
+    public function getDescription(): string
     {
-        parent::__construct(
-            __('No removed plugins installed', 'bc-security'),
-            \sprintf(
-                /* translators: 1: link to Plugins Directory, 2: link to article on Wordfence blog */
-                esc_html__('Plugins can be removed from %1$s for several reasons (including but no limited to %2$s). Use of removed plugins is discouraged.', 'bc-security'),
-                '<a href="' . esc_url(__('https://wordpress.org/plugins/', 'bc-security')) . '" rel="noreferrer">' . esc_html__('Plugins Directory', 'bc-security') . '</a>',
-                '<a href="https://www.wordfence.com/blog/2017/09/display-widgets-malware/" rel="noreferrer">' . esc_html__('security vulnerability', 'bc-security') . '</a>'
-            )
+        return \sprintf(
+            /* translators: 1: link to Plugins Directory, 2: link to article on Wordfence blog */
+            esc_html__('Plugins can be removed from %1$s for several reasons (including but no limited to %2$s). Use of removed plugins is discouraged.', 'bc-security'),
+            '<a href="' . esc_url(__('https://wordpress.org/plugins/', 'bc-security')) . '" rel="noreferrer">' . esc_html__('Plugins Directory', 'bc-security') . '</a>',
+            '<a href="https://www.wordfence.com/blog/2017/09/display-widgets-malware/" rel="noreferrer">' . esc_html__('security vulnerability', 'bc-security') . '</a>'
         );
+    }
+
+
+    public function getName(): string
+    {
+        return __('No removed plugins installed', 'bc-security');
     }
 
 

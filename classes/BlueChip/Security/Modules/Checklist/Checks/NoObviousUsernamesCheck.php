@@ -8,16 +8,19 @@ use BlueChip\Security\Modules\Checklist;
 
 class NoObviousUsernamesCheck extends Checklist\BasicCheck
 {
-    public function __construct()
+    public function getDescription(): string
     {
-        parent::__construct(
-            __('No obvious usernames exist', 'bc-security'),
-            \sprintf(
-                /* translators: 1: link to article on WordPress hardening */
-                esc_html__('Usernames like "admin" and "administrator" are often used in brute force attacks and %1$s.', 'bc-security'),
-                '<a href="' . esc_url(__('https://wordpress.org/support/article/hardening-wordpress/#security-through-obscurity', 'bc-security')) . '" rel="noreferrer">' . esc_html__('should be avoided', 'bc-security') . '</a>'
-            )
+        return \sprintf(
+            /* translators: 1: link to article on WordPress hardening */
+            esc_html__('Usernames like "admin" and "administrator" are often used in brute force attacks and %1$s.', 'bc-security'),
+            '<a href="' . esc_url(__('https://wordpress.org/support/article/hardening-wordpress/#security-through-obscurity', 'bc-security')) . '" rel="noreferrer">' . esc_html__('should be avoided', 'bc-security') . '</a>'
         );
+    }
+
+
+    public function getName(): string
+    {
+        return __('No obvious usernames exist', 'bc-security');
     }
 
 
