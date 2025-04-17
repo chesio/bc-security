@@ -21,10 +21,7 @@ class SafeBrowsing extends Checklist\AdvancedCheck
     protected const CRON_JOB_HOOK = Jobs::SAFE_BROWSING_CHECK;
 
 
-    /**
-     * @param string $google_api_key Google API key for project with Safe Browsing API enabled.
-     */
-    public function __construct(private string $google_api_key)
+    public function getDescription(): string
     {
         $description = [
             sprintf(
@@ -34,7 +31,7 @@ class SafeBrowsing extends Checklist\AdvancedCheck
             ),
         ];
 
-        if ($google_api_key === '') {
+        if ($this->google_api_key === '') {
             $description[] = sprintf(
                 /* translators: 1: link to Google Safe Browsing "Get Started" page, 2: (internal) link to plugin setup page */
                 esc_html__('Please note that this check requires an %1$s to be configured in %2$s!', 'bc-security'),
@@ -43,10 +40,21 @@ class SafeBrowsing extends Checklist\AdvancedCheck
             );
         }
 
-        parent::__construct(
-            __('Site is not blacklisted by Google', 'bc-security'),
-            implode(' ', $description)
-        );
+        return implode(' ', $description);
+    }
+
+
+    public function getName(): string
+    {
+        return __('Site is not blacklisted by Google', 'bc-security');
+    }
+
+
+    /**
+     * @param string $google_api_key Google API key for project with Safe Browsing API enabled.
+     */
+    public function __construct(private string $google_api_key)
+    {
     }
 
 

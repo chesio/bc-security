@@ -43,6 +43,6 @@ class Settings extends CoreSettings
      */
     public static function sanitizeConnectionType(string $value, string $default): string
     {
-        return \array_key_exists($value, IpAddress::enlist()) ? $value : $default;
+        return \in_array($value, IpAddress::getOptions(), true) ? $value : $default;
     }
 }

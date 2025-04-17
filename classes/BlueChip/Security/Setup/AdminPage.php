@@ -46,7 +46,6 @@ class AdminPage extends AbstractPage
                 ),
                 AdminNotices::WARNING,
                 false, // ~ not dismissible
-                false // ~ do not escape HTML
             );
         }
 
@@ -59,7 +58,6 @@ class AdminPage extends AbstractPage
                 ),
                 AdminNotices::WARNING,
                 false, // ~ not dismissible
-                false // ~ do not escape HTML
             );
         }
     }
@@ -135,7 +133,7 @@ class AdminPage extends AbstractPage
         echo '</p>';
 
         echo '<ol>';
-        foreach (IpAddress::enlist() as $type => $explanation) {
+        foreach (IpAddress::listOptions() as $type => $explanation) {
             if (($ip_address = IpAddress::getRaw($type))) {
                 echo '<li>' . \sprintf('%s: <code>$_SERVER[<strong>%s</strong>] = <em>%s</em></code>', esc_html($explanation), $type, $ip_address) . '</li>';
             }
@@ -152,7 +150,7 @@ class AdminPage extends AbstractPage
     private function getConnectionOptions(): array
     {
         $options = [];
-        foreach (IpAddress::enlist() as $type => $explanation) {
+        foreach (IpAddress::listOptions() as $type => $explanation) {
             $options[$type] = \sprintf('%s: %s', $type, $explanation);
         }
         return $options;

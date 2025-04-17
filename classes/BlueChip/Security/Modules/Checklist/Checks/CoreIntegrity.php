@@ -21,17 +21,20 @@ class CoreIntegrity extends Checklist\AdvancedCheck
     private const CHECKSUMS_API_URL = 'https://api.wordpress.org/core/checksums/1.0/';
 
 
-    public function __construct()
+    public function getDescription(): string
     {
-        parent::__construct(
-            __('WordPress core files are untouched', 'bc-security'),
-            \sprintf(
-                /* translators: 1: link to Wikipedia article about md5sum, 2: link to checksums file at WordPress.org */
-                esc_html__('By comparing %1$s of local core files with %2$s it is possible to determine whether any of core files have been modified or there are any unknown files in core directories.', 'bc-security'),
-                '<a href="' . esc_url(__('https://en.wikipedia.org/wiki/Md5sum', 'bc-security')) . '" rel="noreferrer">' . esc_html__('MD5 checksums', 'bc-security') . '</a>',
-                '<a href="' . esc_url(self::getChecksumsUrl()) . '" rel="noreferrer">' . esc_html__('checksums downloaded from WordPress.org', 'bc-security') . '</a>'
-            )
+        return \sprintf(
+            /* translators: 1: link to Wikipedia article about md5sum, 2: link to checksums file at WordPress.org */
+            esc_html__('By comparing %1$s of local core files with %2$s it is possible to determine whether any of core files have been modified or there are any unknown files in core directories.', 'bc-security'),
+            '<a href="' . esc_url(__('https://en.wikipedia.org/wiki/Md5sum', 'bc-security')) . '" rel="noreferrer">' . esc_html__('MD5 checksums', 'bc-security') . '</a>',
+            '<a href="' . esc_url(self::getChecksumsUrl()) . '" rel="noreferrer">' . esc_html__('checksums downloaded from WordPress.org', 'bc-security') . '</a>'
         );
+    }
+
+
+    public function getName(): string
+    {
+        return __('WordPress core files are untouched', 'bc-security');
     }
 
 

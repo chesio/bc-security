@@ -30,14 +30,6 @@ abstract class Check
 
 
     /**
-     * Construct the check.
-     */
-    protected function __construct(private string $name, private string $description)
-    {
-    }
-
-
-    /**
      * @return string Check unique ID. Basically name of class implementing the check.
      */
     public static function getId(): string
@@ -49,19 +41,13 @@ abstract class Check
     /**
      * @return string Check description.
      */
-    public function getDescription(): string
-    {
-        return $this->description;
-    }
+    abstract public function getDescription(): string;
 
 
     /**
      * @return string Check name (title).
      */
-    public function getName(): string
-    {
-        return $this->name;
-    }
+    abstract public function getName(): string;
 
 
     /**

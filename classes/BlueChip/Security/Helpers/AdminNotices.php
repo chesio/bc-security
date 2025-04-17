@@ -23,21 +23,11 @@ abstract class AdminNotices
      * @param string $message Message to display in admin notice.
      * @param string $type [optional] Type: 'notice-error', 'notice-warning', 'notice-success' or 'notice-info] (default).
      * @param bool $is_dismissible [optional] Should the notice be dismissible? Default is true.
-     * @param bool $escape_html [optional] Should the content of message be HTML escaped? Default is true.
      */
-    public static function add(string $message, string $type = self::INFO, bool $is_dismissible = true, bool $escape_html = true): void
+    public static function add(string $message, string $type = self::INFO, bool $is_dismissible = true): void
     {
-        if (is_wp_version_compatible('6.4')) {
-            add_action('admin_notices', function () use ($message, $type, $is_dismissible) {
-                wp_admin_notice($message, ['type' => $type, 'dismissible' => $is_dismissible,]);
-            });
-        } else {
-            $classes = \implode(' ', \array_filter(['notice', 'notice-' . $type, $is_dismissible ? 'is-dismissible' : '']));
-            add_action('admin_notices', function () use ($message, $classes, $escape_html) {
-                echo '<div class="' . $classes . '">';
-                echo '<p>' . ($escape_html ? esc_html($message) : $message) . '</p>';
-                echo '</div>';
-            });
-        }
+        add_action('admin_notices', function () use ($message, $type, $is_dismissible) {
+            wp_admin_notice($message, ['type' => $type, 'dismissible' => $is_dismissible,]);
+        });
     }
 }
