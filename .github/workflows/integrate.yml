@@ -49,7 +49,7 @@ jobs:
       - name: "Set up PHP"
         uses: "shivammathur/setup-php@v2"
         with:
-          php-version: "8.1"
+          php-version: "8.2"
           extensions: "mbstring"
           coverage: "none"
 
@@ -76,7 +76,6 @@ jobs:
           - "8.4"
           - "8.3"
           - "8.2"
-          - "8.1"
         dependencies:
           - "lowest"
           - "locked"
@@ -102,17 +101,17 @@ jobs:
         run: "composer require --dev --prefer-lowest --update-with-all-dependencies 'antecedent/patchwork:^2.1.26'"
 
       - name: "Execute unit tests"
-        if: "${{ ! (matrix.php-version == '8.1' && matrix.dependencies == 'highest') }}"
+        if: "${{ ! (matrix.php-version == '8.2' && matrix.dependencies == 'highest') }}"
         run: "composer run-script unit-tests"
 
       - name: "Execute unit tests with coverage"
-        if: "${{ matrix.php-version == '8.1' && matrix.dependencies == 'highest' }}"
+        if: "${{ matrix.php-version == '8.2' && matrix.dependencies == 'highest' }}"
         run: "composer run-script unit-tests-with-coverage"
 
       - name: "Send coverage to Coveralls"
         env:
           COVERALLS_REPO_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
-        if: "${{ env.COVERALLS_REPO_TOKEN && matrix.php-version == '8.1' && matrix.dependencies == 'highest' }}"
+        if: "${{ env.COVERALLS_REPO_TOKEN && matrix.php-version == '8.2' && matrix.dependencies == 'highest' }}"
         run: |
           wget "https://github.com/php-coveralls/php-coveralls/releases/download/v2.5.2/php-coveralls.phar"
           php ./php-coveralls.phar -v
