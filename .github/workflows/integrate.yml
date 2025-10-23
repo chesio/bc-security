@@ -32,7 +32,7 @@ jobs:
     runs-on: "ubuntu-latest"
     steps:
       - name: "Checkout code"
-        uses: "actions/checkout@v4"
+        uses: "actions/checkout@v5"
 
       - name: "Check file permissions"
         run: |
@@ -54,7 +54,7 @@ jobs:
           coverage: "none"
 
       - name: "Checkout code"
-        uses: "actions/checkout@v4"
+        uses: "actions/checkout@v5"
 
       - name: "Install dependencies"
         uses: "ramsey/composer-install@v3"
@@ -89,7 +89,7 @@ jobs:
           extensions: "mbstring"
 
       - name: "Checkout code"
-        uses: "actions/checkout@v4"
+        uses: "actions/checkout@v5"
 
       - name: "Install dependencies"
         uses: "ramsey/composer-install@v3"
@@ -131,7 +131,7 @@ jobs:
           coverage: "none"
 
       - name: "Checkout code"
-        uses: "actions/checkout@v4"
+        uses: "actions/checkout@v5"
 
       - name: "Validate Composer configuration"
         run: "composer validate --strict"
@@ -162,7 +162,7 @@ jobs:
           coverage: "none"
 
       - name: "Checkout code"
-        uses: "actions/checkout@v4"
+        uses: "actions/checkout@v5"
 
       - name: "Check EditorConfig configuration"
         run: "test -f .editorconfig"
@@ -186,7 +186,7 @@ jobs:
     runs-on: "ubuntu-latest"
     steps:
       - name: "Checkout code"
-        uses: "actions/checkout@v4"
+        uses: "actions/checkout@v5"
 
       - name: "Check exported files"
         run: |
