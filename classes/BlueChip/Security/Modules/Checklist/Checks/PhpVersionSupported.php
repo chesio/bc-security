@@ -43,11 +43,11 @@ class PhpVersionSupported extends Checklist\BasicCheck
             // PHP version is supported, but do we have end-of-life date?
             $eol_date = PhpVersion::getEndOfLifeDate();
             // Format message accordingly.
-            $message = $eol_date
+            $message = ($eol_date_timestamp = \strtotime($eol_date))
                 ? \sprintf(
                     esc_html__('You are running PHP %1$s, which is supported until %2$s.', 'bc-security'),
                     $phpVersionAsHtml,
-                    wp_date(get_option('date_format'), \strtotime($eol_date))
+                    wp_date(get_option('date_format'), $eol_date_timestamp)
                 )
                 : \sprintf(
                     esc_html__('You are running PHP %1$s, which is still supported.', 'bc-security'),

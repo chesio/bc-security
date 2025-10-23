@@ -102,7 +102,8 @@ class Bookkeeper implements Initializable, Installable
         // Get count of all unexpired failed login attempts for given IP address.
         /** @var string $query */
         $query = $this->wpdb->prepare(
-            "SELECT COUNT(*) AS retries_count FROM {$this->failed_logins_table} WHERE ip_address = %s AND date_and_time > %s",
+            'SELECT COUNT(*) AS retries_count FROM %i WHERE ip_address = %s AND date_and_time > %s',
+            $this->failed_logins_table,
             $ip_address,
             MySQLDateTime::formatDateTime($now - $this->settings->getResetTimeoutDuration())
         );
@@ -122,7 +123,8 @@ class Bookkeeper implements Initializable, Installable
         // Note: $wpdb->delete cannot be used as it does not support "<" comparison)
         /** @var string $query */
         $query = $this->wpdb->prepare(
-            "DELETE FROM {$this->failed_logins_table} WHERE date_and_time <= %s",
+            'DELETE FROM %i WHERE date_and_time <= %s',
+            $this->failed_logins_table,
             MySQLDateTime::formatDateTime($threshold)
         );
         // Execute query

@@ -116,8 +116,8 @@ class AdminPage extends AbstractPage
     private function printBlocklistForm(): void
     {
         // IP address and lock scope can be "pre-filled".
-        $ip_address = \filter_input(INPUT_GET, self::DEFAULT_IP_ADDRESS, FILTER_VALIDATE_IP);
-        $scope_value = \filter_input(INPUT_GET, self::DEFAULT_SCOPE, FILTER_VALIDATE_INT);
+        $ip_address = (string)\filter_input(INPUT_GET, self::DEFAULT_IP_ADDRESS, FILTER_VALIDATE_IP);
+        $scope_value = (int)\filter_input(INPUT_GET, self::DEFAULT_SCOPE, FILTER_VALIDATE_INT);
 
         // Default lock duration is 1 month, unless different value is provided by filter.
         $duration = apply_filters(Hooks::DEFAULT_MANUAL_LOCK_DURATION, MONTH_IN_SECONDS);
@@ -301,7 +301,7 @@ class AdminPage extends AbstractPage
         $duration_length = \filter_input(INPUT_POST, 'duration-length', FILTER_VALIDATE_INT);
         $duration_unit = \filter_input(INPUT_POST, 'duration-unit', FILTER_VALIDATE_INT);
         $scope_value = \filter_input(INPUT_POST, 'scope', FILTER_VALIDATE_INT);
-        $comment = \strip_tags(\filter_input(INPUT_POST, 'comment'));
+        $comment = \strip_tags((string)\filter_input(INPUT_POST, 'comment'));
 
         // Check whether input is formally valid.
         if (empty($ip_address) || empty($duration_length) || empty($duration_unit) || empty($scope_value)) {

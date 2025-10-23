@@ -159,7 +159,8 @@ class Manager implements Modules\Activable, Modules\Countable, Modules\Installab
     {
         /** @var string $query */
         $query = $this->wpdb->prepare(
-            "SELECT COUNT(id) AS total FROM {$this->blocklist_table} WHERE ban_time > %s",
+            'SELECT COUNT(id) AS total FROM %i WHERE ban_time > %s',
+            $this->blocklist_table,
             MySQLDateTime::formatDateTime($timestamp)
         );
 
@@ -252,7 +253,8 @@ class Manager implements Modules\Activable, Modules\Countable, Modules\Installab
         // match the where condition, so pick up the most future release time.
         /** @var string $query */
         $query = $this->wpdb->prepare(
-            "SELECT MAX(release_time) FROM {$this->blocklist_table} WHERE scope = %d AND ip_address = %s",
+            'SELECT MAX(release_time) FROM %i WHERE scope = %d AND ip_address = %s',
+            $this->blocklist_table,
             $access_scope->value,
             $ip_address
         );
@@ -327,7 +329,8 @@ class Manager implements Modules\Activable, Modules\Countable, Modules\Installab
         // Note: $wpdb->delete cannot be used as it does not support "<=" comparison)
         /** @var string $query */
         $query = $this->wpdb->prepare(
-            "DELETE FROM {$this->blocklist_table} WHERE release_time <= %s",
+            'DELETE FROM %i WHERE release_time <= %s',
+            $this->blocklist_table,
             MySQLDateTime::formatDateTime(\time())
         );
         // Execute query
@@ -386,13 +389,13 @@ class Manager implements Modules\Activable, Modules\Countable, Modules\Installab
             \implode(' OR ', \array_map(fn (int $id): string => \sprintf('id = %d', $id), $ids))
         );
         // Execute query.
-        $result = $this->wpdb->query($query);
+        $result = (int)$this->wpdb->query($query);
         // Trigger synchronization of block rules in .htaccess file.
         if ($result) {
             $this->synchronizeWithHtaccessFile();
         }
         // Return number of affected (unlocked) rows.
-        return $result ?: 0;
+        return $result;
     }
 
 
@@ -445,13 +448,13 @@ class Manager implements Modules\Activable, Modules\Countable, Modules\Installab
             \implode(' OR ', \array_map(fn (int $id): string => \sprintf('id = %d', $id), $ids))
         );
         // Execute query.
-        $result = $this->wpdb->query($query);
+        $result = (int)$this->wpdb->query($query);
         // Trigger synchronization of block rules in .htaccess file.
         if ($result) {
             $this->synchronizeWithHtaccessFile();
         }
         // Return number of affected (unlocked) rows.
-        return $result ?: 0;
+        return $result;
     }
 
 
@@ -470,7 +473,8 @@ class Manager implements Modules\Activable, Modules\Countable, Modules\Installab
         // Prepare query.
         /** @var string $query */
         $query = $this->wpdb->prepare(
-            "SELECT id FROM {$this->blocklist_table} WHERE scope = %d AND ip_address = %s AND reason = %d",
+            'SELECT id FROM %i WHERE scope = %d AND ip_address = %s AND reason = %d',
+            $this->blocklist_table,
             $access_scope->value,
             $ip_address,
             $ban_reason->value

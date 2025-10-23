@@ -291,7 +291,7 @@ class Watchman implements Activable, Initializable
 
 
     /**
-     * @param array<string,object> $theme_updates Theme slug and related update object.
+     * @param array<string,array<string,mixed>> $theme_updates Theme slug and related update object.
      */
     private function notifyAboutThemeUpdatesAvailable(array $theme_updates): void
     {
