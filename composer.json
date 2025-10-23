@@ -34,7 +34,7 @@
     "phpunit/phpunit": "^11.5",
     "slevomat/coding-standard": "^8.24",
     "squizlabs/php_codesniffer": "^4.0",
-    "szepeviktor/phpstan-wordpress": "^1.0",
+    "szepeviktor/phpstan-wordpress": "^2.0",
     "yoast/phpunit-polyfills": "^3.0"
   },
   "autoload-dev": {

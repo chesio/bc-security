@@ -47,7 +47,7 @@ class HtaccessSynchronizer
         }
 
         if (!\function_exists('extract_from_markers')) {
-            require_once ABSPATH . 'wp-admin/includes/misc.php'; // @phpstan-ignore-line
+            require_once ABSPATH . 'wp-admin/includes/misc.php';
         }
 
         $lines = extract_from_markers($this->htaccess_file, self::MARKER);
@@ -79,7 +79,7 @@ class HtaccessSynchronizer
         }
 
         if (!\function_exists('insert_with_markers')) {
-            require_once ABSPATH . 'wp-admin/includes/misc.php'; // @phpstan-ignore-line
+            require_once ABSPATH . 'wp-admin/includes/misc.php';
         }
 
         // Prepare rules for given IP addresses.

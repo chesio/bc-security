@@ -1,8 +1,6 @@
 <?php
 
-define('WPINC', '');
-define('WP_CONTENT_URL', '');
-define('WP_PLUGIN_URL', '');
-define('AUTH_COOKIE', '');
-define('SECURE_AUTH_COOKIE', '');
-define('LOGGED_IN_COOKIE', '');
+define('WPINC', 'wp-includes');
+define('AUTH_COOKIE', 'dummy-auth-cookie');
+define('SECURE_AUTH_COOKIE', 'dummy-secure-auth-cookie');
+define('LOGGED_IN_COOKIE', 'dummy-logged-in-cookie');

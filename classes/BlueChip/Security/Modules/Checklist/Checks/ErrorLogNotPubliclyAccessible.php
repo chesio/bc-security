@@ -44,7 +44,7 @@ class ErrorLogNotPubliclyAccessible extends Checklist\BasicCheck
         if (\in_array(\strtolower((string) \constant('WP_DEBUG_LOG')), ['true', '1'], true)) {
             // `WP_DEBUG_LOG` is set truthy value.
             // Path to debug.log and filename is hardcoded in `wp-includes/load.php`.
-            $url = WP_CONTENT_URL . '/debug.log';
+            $url = content_url('debug.log');
 
             // Report status.
             $status = Checklist\Helper::isAccessToUrlForbidden($url);
