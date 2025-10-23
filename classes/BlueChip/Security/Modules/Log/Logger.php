@@ -10,7 +10,6 @@ use BlueChip\Security\Modules\Cron\Jobs as CronJobs;
 use BlueChip\Security\Modules\Services\ReverseDnsLookup\Resolver;
 use BlueChip\Security\Modules\Services\ReverseDnsLookup\Response;
 use Psr\Log\AbstractLogger;
-use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
 use wpdb;
 
@@ -19,7 +18,7 @@ use wpdb;
  *
  * @link http://www.php-fig.org/psr/psr-3/
  */
-class Logger extends AbstractLogger implements LoggerInterface, Modules\Countable, Modules\Installable, Modules\Loadable, Modules\Initializable, \Countable
+class Logger extends AbstractLogger implements Modules\Countable, Modules\Installable, Modules\Loadable, Modules\Initializable, \Countable
 {
     /**
      * @var string Name of DB table where logs are stored
@@ -117,10 +116,10 @@ class Logger extends AbstractLogger implements LoggerInterface, Modules\Countabl
      * Log generic event.
      *
      * @param string $level
-     * @param string $message
+     * @param string|\Stringable $message
      * @param array<string,mixed> $context
      */
-    public function log($level, $message, array $context = [])
+    public function log($level, string|\Stringable $message, array $context = []): void
     {
         // Allow overriding of IP address via $context.
         $ip_address = $context['ip_address'] ?? $this->remote_address;
