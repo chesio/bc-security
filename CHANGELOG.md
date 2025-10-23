@@ -2,7 +2,11 @@
 
 ## Upcoming version 0.27.0 (????-??-??)
 
-...
+This release has been tested with PHP 8.5.
+
+### Added
+
+* Plugin has been tested with PHP 8.5 [#171](https://github.com/chesio/bc-security/issues/171).
 
 ## Version 0.26.0 (2025-04-17)
 
