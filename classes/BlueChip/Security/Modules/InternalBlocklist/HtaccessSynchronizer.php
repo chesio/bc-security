@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace BlueChip\Security\Modules\InternalBlocklist;
 
+use BlueChip\Security\Helpers\Is;
+
 class HtaccessSynchronizer
 {
     /**
@@ -37,12 +39,18 @@ class HtaccessSynchronizer
     }
 
 
+    public function isEnabled(): bool
+    {
+        return Is::live();
+    }
+
+
     /**
      * @return string[] List of IP addresses blocked via .htaccess file.
      */
     public function extract(): array
     {
-        if (!$this->isAvailable()) {
+        if (!$this->isEnabled() || !$this->isAvailable()) {
             return [];
         }
 
@@ -74,7 +82,7 @@ class HtaccessSynchronizer
      */
     public function insert(array $blocked_ip_addresses): bool
     {
-        if (!$this->isAvailable()) {
+        if (!$this->isEnabled() || !$this->isAvailable()) {
             return false;
         }
 

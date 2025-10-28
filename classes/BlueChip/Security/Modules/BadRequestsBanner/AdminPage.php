@@ -49,8 +49,8 @@ class AdminPage extends AbstractPage
         echo '<h1>' . esc_html($this->page_title) . '</h1>';
         echo '<p>' . esc_html__('This module enables you to automatically block remote IP addresses that are scanning your website for weaknesses. A weakness can be known vulnerable plugin file, forgotten backup file or PHP script used for administrative purposes.', 'bc-security') . '</p>';
         echo '<p>' . esc_html__('Below you can activate some pre-configured rules or you can add your own rules. The rules are checked whenever a request to the website results in 404 error. If any rule matches the request URI, remote IP address is locked from accessing the website for configured amount of time.', 'bc-security') . '</p>';
-        //
-        if (!$this->htaccess_synchronizer->isAvailable()) {
+        // Warn about htaccess synchronizer not being available due to missing markup in .htaccess.
+        if ($this->htaccess_synchronizer->isEnabled() && !$this->htaccess_synchronizer->isAvailable()) {
             echo '<p>' . sprintf(
                 /* translators: 1: bold indicator, 2: link to internal blocklist admin page */
                 esc_html__('%1$s: It is strongly recommended that you enable %2$s of internal blocklist and .htaccess file in order to prevent locked bots from accessing existing files on your webserver!', 'bc-security'),

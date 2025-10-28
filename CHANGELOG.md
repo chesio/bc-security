@@ -11,6 +11,7 @@ PHP 8.2 or newer is now required! This release has been tested with PHP 8.5.
 ### Changed
 
 * PHP 8.2 is required [#165](https://github.com/chesio/bc-security/issues/165).
+* Synchronization of internal blocklist to `.htaccess` files is only enabled in live environments [#170](https://github.com/chesio/bc-security/issues/170).
 
 ## Version 0.26.0 (2025-04-17)
 
