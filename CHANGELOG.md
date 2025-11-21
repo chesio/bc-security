@@ -7,6 +7,7 @@ PHP 8.2 or newer is now required! This release has been tested with PHP 8.5.
 ### Added
 
 * Plugin has been tested with PHP 8.5 [#171](https://github.com/chesio/bc-security/issues/171).
+* Plugin has been tested with WordPress 6.9 [#172](https://github.com/chesio/bc-security/issues/172).
 
 ### Changed
 
