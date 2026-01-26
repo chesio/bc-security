@@ -1,5 +1,19 @@
 # BC Security Changelog
 
+## Version 0.27.0 (2026-01-26)
+
+PHP 8.2 or newer is now required! This release has been tested with PHP 8.5.
+
+### Added
+
+* Plugin has been tested with PHP 8.5 [#171](https://github.com/chesio/bc-security/issues/171).
+* Plugin has been tested with WordPress 6.9 [#172](https://github.com/chesio/bc-security/issues/172).
+
+### Changed
+
+* PHP 8.2 is required [#165](https://github.com/chesio/bc-security/issues/165).
+* Synchronization of internal blocklist to `.htaccess` files is only enabled in live environments [#170](https://github.com/chesio/bc-security/issues/170).
+
 ## Version 0.26.0 (2025-04-17)
 
 ### Added

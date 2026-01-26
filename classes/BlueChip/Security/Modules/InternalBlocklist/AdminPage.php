@@ -116,8 +116,8 @@ class AdminPage extends AbstractPage
     private function printBlocklistForm(): void
     {
         // IP address and lock scope can be "pre-filled".
-        $ip_address = \filter_input(INPUT_GET, self::DEFAULT_IP_ADDRESS, FILTER_VALIDATE_IP);
-        $scope_value = \filter_input(INPUT_GET, self::DEFAULT_SCOPE, FILTER_VALIDATE_INT);
+        $ip_address = (string)\filter_input(INPUT_GET, self::DEFAULT_IP_ADDRESS, FILTER_VALIDATE_IP);
+        $scope_value = (int)\filter_input(INPUT_GET, self::DEFAULT_SCOPE, FILTER_VALIDATE_INT);
 
         // Default lock duration is 1 month, unless different value is provided by filter.
         $duration = apply_filters(Hooks::DEFAULT_MANUAL_LOCK_DURATION, MONTH_IN_SECONDS);
@@ -219,25 +219,29 @@ class AdminPage extends AbstractPage
     private function printSyncingActions(): void
     {
         echo '<h2 id="blocklist-synchronization">' . esc_html__('Blocklist synchronization', 'bc-security') . '</h2>';
-        if ($this->htaccess_synchronizer->isAvailable()) {
-            if ($this->ib_manager->isHtaccessFileInSync()) {
-                echo '<p>' . esc_html__('Everything works fine, the rules in .htaccess file are synchronized automatically.', 'bc-security') . '</p>';
+        if ($this->htaccess_synchronizer->isEnabled()) {
+            if ($this->htaccess_synchronizer->isAvailable()) {
+                if ($this->ib_manager->isHtaccessFileInSync()) {
+                    echo '<p>' . esc_html__('Everything works fine, the rules in .htaccess file are synchronized automatically.', 'bc-security') . '</p>';
+                } else {
+                    echo '<form method="post">';
+                    wp_nonce_field(self::HTACCESS_SYNC_ACTION, self::NONCE_NAME);
+                    echo '<p>' . esc_html__('The rules in .htaccess file are out of sync - you should synchronize the internal blocklist with .htaccess file manually:', 'bc-security') . '</p>';
+                    submit_button(__('Synchronize blocklist with .htaccess file', 'bc-security'), 'primary', self::HTACCESS_SYNC_ACTION, false);
+                    echo '</form>';
+                }
             } else {
-                echo '<form method="post">';
-                wp_nonce_field(self::HTACCESS_SYNC_ACTION, self::NONCE_NAME);
-                echo '<p>' . esc_html__('The rules in .htaccess file are out of sync - you should synchronize the internal blocklist with .htaccess file manually:', 'bc-security') . '</p>';
-                submit_button(__('Synchronize blocklist with .htaccess file', 'bc-security'), 'primary', self::HTACCESS_SYNC_ACTION, false);
-                echo '</form>';
+                echo '<p>' . sprintf(
+                    esc_html__('To use this feature, you have to first put following two lines at the top of root %1$s file:', 'bc-security'),
+                    '<em>.htaccess</em>'
+                ) . '</p>';
+                echo '<pre>';
+                echo $this->htaccess_synchronizer::HEADER_LINE . PHP_EOL;
+                echo $this->htaccess_synchronizer::FOOTER_LINE . PHP_EOL;
+                echo '</pre>';
             }
         } else {
-            echo '<p>' . sprintf(
-                esc_html__('To use this feature, you have to first put following two lines at the top of root %1$s file:', 'bc-security'),
-                '<em>.htaccess</em>'
-            ) . '</p>';
-            echo '<pre>';
-            echo $this->htaccess_synchronizer::HEADER_LINE . PHP_EOL;
-            echo $this->htaccess_synchronizer::FOOTER_LINE . PHP_EOL;
-            echo '</pre>';
+            echo '<p>' . esc_html__('This feature is only enabled in live environment.', 'bc-security') . '</p>';
         }
     }
 
@@ -301,7 +305,7 @@ class AdminPage extends AbstractPage
         $duration_length = \filter_input(INPUT_POST, 'duration-length', FILTER_VALIDATE_INT);
         $duration_unit = \filter_input(INPUT_POST, 'duration-unit', FILTER_VALIDATE_INT);
         $scope_value = \filter_input(INPUT_POST, 'scope', FILTER_VALIDATE_INT);
-        $comment = \strip_tags(\filter_input(INPUT_POST, 'comment'));
+        $comment = \strip_tags((string)\filter_input(INPUT_POST, 'comment'));
 
         // Check whether input is formally valid.
         if (empty($ip_address) || empty($duration_length) || empty($duration_unit) || empty($scope_value)) {

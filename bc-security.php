@@ -4,12 +4,12 @@
  * Plugin Name: BC Security
  * Plugin URI: https://github.com/chesio/bc-security
  * Description: Helps keeping WordPress websites secure.
- * Version: 0.26.0
+ * Version: 0.27.0
  * Author: Česlav Przywara <ceslav@przywara.cz>
  * Author URI: https://www.chesio.com
- * Requires PHP: 8.1
+ * Requires PHP: 8.2
  * Requires at least: 6.4
- * Tested up to: 6.8
+ * Tested up to: 6.9
  * Text Domain: bc-security
  * GitHub Plugin URI: https://github.com/chesio/bc-security
  * Update URI: https://github.com/chesio/bc-security
@@ -17,25 +17,27 @@
 
 declare(strict_types=1);
 
-if (version_compare(PHP_VERSION, '8.1', '<')) {
+if (version_compare(PHP_VERSION, '8.2', '<')) {
     // Warn user that his/her PHP version is too low for this plugin to function.
     add_action('admin_notices', function () {
         echo '<div class="notice notice-error"><p>';
         echo esc_html(
             sprintf(
-                __('BC Security plugin requires PHP 8.1 to function properly, but you have version %s installed. The plugin has been auto-deactivated.', 'bc-security'),
+                __('BC Security plugin requires PHP 8.2 to function properly, but you have version %s installed. The plugin has been auto-deactivated.', 'bc-security'),
                 PHP_VERSION
             )
         );
         echo '</p></div>';
-        // Warn user that his/her PHP version is no longer supported.
-        echo '<div class="notice notice-warning"><p>';
-        echo sprintf(
-            __('PHP version %1$s is <a href="%2$s">no longer supported</a>. You should consider upgrading PHP on your webhost.', 'bc-security'),
-            PHP_VERSION,
-            'https://www.php.net/supported-versions.php'
-        );
-        echo '</p></div>';
+        // Warn user if his/her PHP version is no longer supported.
+        if (\BlueChip\Security\Helpers\PhpVersion::isSupported() === false) {
+            echo '<div class="notice notice-warning"><p>';
+            echo sprintf(
+                __('PHP version %1$s is <a href="%2$s">no longer supported</a>. You should consider upgrading PHP on your webhost.', 'bc-security'),
+                PHP_VERSION,
+                'https://www.php.net/supported-versions.php'
+            );
+            echo '</p></div>';
+        }
         // https://make.wordpress.org/plugins/2015/06/05/policy-on-php-versions/
         if (isset($_GET['activate'])) {
             unset($_GET['activate']);

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace BlueChip\Security\Modules\InternalBlocklist;
 
+use BlueChip\Security\Helpers\Is;
+
 class HtaccessSynchronizer
 {
     /**
@@ -37,17 +39,23 @@ class HtaccessSynchronizer
     }
 
 
+    public function isEnabled(): bool
+    {
+        return Is::live();
+    }
+
+
     /**
      * @return string[] List of IP addresses blocked via .htaccess file.
      */
     public function extract(): array
     {
-        if (!$this->isAvailable()) {
+        if (!$this->isEnabled() || !$this->isAvailable()) {
             return [];
         }
 
         if (!\function_exists('extract_from_markers')) {
-            require_once ABSPATH . 'wp-admin/includes/misc.php'; // @phpstan-ignore-line
+            require_once ABSPATH . 'wp-admin/includes/misc.php';
         }
 
         $lines = extract_from_markers($this->htaccess_file, self::MARKER);
@@ -74,12 +82,12 @@ class HtaccessSynchronizer
      */
     public function insert(array $blocked_ip_addresses): bool
     {
-        if (!$this->isAvailable()) {
+        if (!$this->isEnabled() || !$this->isAvailable()) {
             return false;
         }
 
         if (!\function_exists('insert_with_markers')) {
-            require_once ABSPATH . 'wp-admin/includes/misc.php'; // @phpstan-ignore-line
+            require_once ABSPATH . 'wp-admin/includes/misc.php';
         }
 
         // Prepare rules for given IP addresses.

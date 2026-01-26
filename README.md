@@ -9,7 +9,7 @@ A WordPress plugin that helps keeping WordPress websites secure.
 
 ## Requirements
 
-* [PHP](https://www.php.net/) 8.1 or newer
+* [PHP](https://www.php.net/) 8.2 or newer
 * [WordPress](https://wordpress.org/) 6.4 or newer
 
 ## Limitations
@@ -165,7 +165,7 @@ Out-dated records are automatically removed from the list by WP-Cron job schedul
 
 **On Apache webserver in version 2.3 or newer**, block rules with "website" access scope can be automatically synchronized with `.htaccess` file. This makes access blocking much more powerful as all requests to the webserver are blocked this way and not only the ones handled by WordPress.
 
-This feature must be however set up manually - following two lines have to be added at the top of root `.htaccess` file in order for it to work:
+This feature is only enabled in *live environment* and must be set up manually - following two lines have to be added at the top of root `.htaccess` file in order for it to work:
 ```.apacheconf
 # BEGIN BC Security
 # END BC Security

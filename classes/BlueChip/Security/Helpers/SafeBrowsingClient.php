@@ -168,7 +168,7 @@ class SafeBrowsingClient
      */
     private static function getRequestBody(array $urls): array
     {
-        $threatEntries = \array_map(fn (string $url): array => ['url' => \urlencode($url)], $urls);
+        $threatEntries = \array_map(fn (string $url): array => ['url' => $url], $urls);
 
         return [
             'client' => [

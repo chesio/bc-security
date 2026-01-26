@@ -33,7 +33,7 @@ abstract class EventsManager
     public static function create(string $event_id): ?Event
     {
         $classname = self::$mapping[$event_id] ?? '';
-        return $classname ? new $classname() : null;
+        return $classname && (is_subclass_of($classname, Event::class)) ? new $classname() : null;
     }
 
 
