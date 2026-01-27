@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Psr\Log;
+namespace BlueChip\Security\Lib\Psr\Log;
 
 /**
  * This is a simple Logger implementation that other Loggers can inherit from.

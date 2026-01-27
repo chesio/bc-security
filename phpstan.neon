@@ -10,4 +10,4 @@ parameters:
         - autoload.php
     ignoreErrors:
         # We do not care about unused files in Psr\Log package.
-        - '#^Trait Psr\\Log\\\w+ is used zero times and is not analysed\.$#'
+        - '#^Trait BlueChip\\Security\\Lib\\Psr\\Log\\\w+ is used zero times and is not analysed\.$#'
