@@ -4,6 +4,12 @@
 
 ...
 
+## Version 0.27.1 (2026-01-27)
+
+### Fixed
+
+* Move `psr/log` library to plugin specific namespace to avoid collisions with `psr/log` version included with WP-CLI [#173](https://github.com/chesio/bc-security/issues/173).
+
 ## Version 0.27.0 (2026-01-26)
 
 PHP 8.2 or newer is now required! This release has been tested with PHP 8.5.

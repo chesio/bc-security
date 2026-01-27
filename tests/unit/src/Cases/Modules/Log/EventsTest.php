@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace BlueChip\Security\Tests\Unit\Cases\Modules\Log;
 
+use BlueChip\Security\Lib\Psr\Log\LogLevel;
 use BlueChip\Security\Modules\Log;
 use BlueChip\Security\Tests\Unit\TestCase;
 
@@ -30,7 +31,7 @@ final class EventsTest extends TestCase
      */
     public function testLogLevels(): void
     {
-        $reflection = new \ReflectionClass(\Psr\Log\LogLevel::class);
+        $reflection = new \ReflectionClass(LogLevel::class);
         $log_levels = $reflection->getConstants();
 
         $event_instances = Log\EventsManager::getInstances();

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Psr\Log;
+namespace BlueChip\Security\Lib\Psr\Log;
 
 /**
  * Describes a logger-aware instance.

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace BlueChip\Security\Modules\Log\Events;
 
+use BlueChip\Security\Lib\Psr\Log\LogLevel;
 use BlueChip\Security\Modules\Access\Scope;
 use BlueChip\Security\Modules\ExternalBlocklist\Source;
 use BlueChip\Security\Modules\Log\Event;
@@ -31,7 +32,7 @@ class BlocklistHit extends Event
     /**
      * @var string Event log level.
      */
-    protected const LOG_LEVEL = \Psr\Log\LogLevel::NOTICE;
+    protected const LOG_LEVEL = LogLevel::NOTICE;
 
     /**
      * __('Blocklist type')
