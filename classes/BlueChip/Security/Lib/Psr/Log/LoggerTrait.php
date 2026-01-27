@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Psr\Log;
+namespace BlueChip\Security\Lib\Psr\Log;
 
 /**
  * This is a simple Logger trait that classes unable to extend AbstractLogger
@@ -94,7 +94,7 @@ trait LoggerTrait
      *
      * @param mixed $level
      *
-     * @throws \Psr\Log\InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     abstract public function log($level, string|\Stringable $message, array $context = []): void;
 }

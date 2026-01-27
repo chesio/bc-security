@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace BlueChip\Security\Modules\Log;
 
 use BlueChip\Security\Helpers\MySQLDateTime;
+use BlueChip\Security\Lib\Psr\Log\AbstractLogger;
+use BlueChip\Security\Lib\Psr\Log\LogLevel;
 use BlueChip\Security\Modules;
 use BlueChip\Security\Modules\Cron\Jobs as CronJobs;
 use BlueChip\Security\Modules\Services\ReverseDnsLookup\Resolver;
 use BlueChip\Security\Modules\Services\ReverseDnsLookup\Response;
-use Psr\Log\AbstractLogger;
-use Psr\Log\LogLevel;
 use wpdb;
 
 /**

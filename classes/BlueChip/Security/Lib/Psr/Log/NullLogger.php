@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Psr\Log;
+namespace BlueChip\Security\Lib\Psr\Log;
 
 /**
  * This Logger can be used to avoid conditional log calls.
@@ -19,7 +19,7 @@ class NullLogger extends AbstractLogger
      *
      * @param mixed[] $context
      *
-     * @throws \Psr\Log\InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function log($level, string|\Stringable $message, array $context = []): void
     {

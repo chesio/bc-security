@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace BlueChip\Security\Modules\Log\Events;
 
+use BlueChip\Security\Lib\Psr\Log\LogLevel;
 use BlueChip\Security\Modules\Log\Event;
 
 class BadRequestBan extends Event
@@ -16,7 +17,7 @@ class BadRequestBan extends Event
     /**
      * @var string Event log level.
      */
-    protected const LOG_LEVEL = \Psr\Log\LogLevel::WARNING;
+    protected const LOG_LEVEL = LogLevel::WARNING;
 
     /**
      * __('Ban rule')
