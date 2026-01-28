@@ -4,6 +4,12 @@
 
 ...
 
+## Version 0.27.2 (2026-01-28)
+
+### Fixed
+
+* Fix regression in "Display of PHP errors is off" check [#175](https://github.com/chesio/bc-security/issues/175).
+
 ## Version 0.27.1 (2026-01-27)
 
 ### Fixed
