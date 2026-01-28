@@ -43,7 +43,7 @@ class DisplayOfPhpErrorsIsOff extends Checklist\BasicCheck
         $name = \sprintf('bc-security-checklist-test-error-display-%s.php', \md5((string) \rand()));
 
         // The file is going to be created in wp-content directory.
-        $path = content_url($name);
+        $path = WP_CONTENT_DIR . '/' . $name;
         $url = content_url($name);
 
         // Note: we rely on the fact that empty('0') is true here.
