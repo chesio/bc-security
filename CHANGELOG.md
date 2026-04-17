@@ -4,6 +4,12 @@
 
 ...
 
+## Version 0.27.3 (2026-04-17)
+
+### Fixed
+
+* Sanitize update transients to avoid errors caused by some upstream code corrupting the update data [#176](https://github.com/chesio/bc-security/issues/176).
+
 ## Version 0.27.2 (2026-01-28)
 
 ### Fixed

@@ -206,17 +206,31 @@ class Watchman implements Activable, Initializable
         }
 
         // Filter out any updates for which notification has been sent already.
-        $plugin_updates = \array_filter($update_transient->response, function ($plugin_update_data, $plugin_file) {
-            $notified_version = Transients::getForSite('update-notifications', 'plugin', $plugin_file);
-            return empty($notified_version) || \version_compare($notified_version, $plugin_update_data->new_version, '<');
-        }, ARRAY_FILTER_USE_BOTH);
+        $new_plugin_updates = \array_filter(
+            // Sanitize update data first.
+            \array_map(Update::createFromObject(...), $update_transient->response),
+            function (?Update $update_data, string $plugin_file): bool {
+                if ($update_data === null) {
+                    // Update data sanitization failed, skip.
+                    return false;
+                }
 
-        if ($plugin_updates !== []) {
+                $notified_version = Transients::getForSite('update-notifications', 'plugin', $plugin_file);
+                if (empty($notified_version)) {
+                    return true;
+                }
+
+                return \version_compare($notified_version, $update_data->new_version, '<');
+            },
+            ARRAY_FILTER_USE_BOTH
+        );
+
+        if ($new_plugin_updates !== []) {
             if (apply_filters(Hooks::ALL_PLUGIN_UPDATES_IN_ONE_NOTIFICATION, false)) {
-                $this->notifyAboutPluginUpdatesAvailable($plugin_updates);
+                $this->notifyAboutPluginUpdatesAvailable($new_plugin_updates);
             } else {
-                foreach ($plugin_updates as $plugin_file => $plugin_update_data) {
-                    $this->notifyAboutPluginUpdatesAvailable([$plugin_file => $plugin_update_data]);
+                foreach ($new_plugin_updates as $plugin_file => $update_data) {
+                    $this->notifyAboutPluginUpdatesAvailable([$plugin_file => $update_data]);
                 }
             }
         }
@@ -224,19 +238,19 @@ class Watchman implements Activable, Initializable
 
 
     /**
-     * @param array<string,object> $plugin_updates Plugin file and related update object.
+     * @param array<string,Update> $plugin_updates Plugin file and related update object.
      */
     private function notifyAboutPluginUpdatesAvailable(array $plugin_updates): void
     {
         $subject = __('Plugin updates available', 'bc-security');
         $message = new Message();
 
-        foreach ($plugin_updates as $plugin_file => $plugin_update_data) {
+        foreach ($plugin_updates as $plugin_file => $update_data) {
             $plugin_data = Plugin::getPluginData($plugin_file);
             $plugin_message = \sprintf(
                 __('Plugin "%1$s" has an update to version %2$s available.', 'bc-security'),
                 $plugin_data['Name'],
-                $plugin_update_data->new_version
+                $update_data->new_version
             );
 
             if (!empty($plugin_changelog_url = Plugin::getChangelogUrl($plugin_file, $plugin_data))) {
@@ -252,9 +266,9 @@ class Watchman implements Activable, Initializable
 
         // Send notification.
         if ($this->notify($subject, $message) !== false) {
-            foreach ($plugin_updates as $plugin_file => $plugin_update_data) {
+            foreach ($plugin_updates as $plugin_file => $update_data) {
                 // No further notifications for this plugin version.
-                Transients::setForSite($plugin_update_data->new_version, 'update-notifications', 'plugin', $plugin_file);
+                Transients::setForSite($update_data->new_version, 'update-notifications', 'plugin', $plugin_file);
             }
         }
     }
@@ -273,17 +287,31 @@ class Watchman implements Activable, Initializable
         }
 
         // Filter out any updates for which notification has been sent already.
-        $theme_updates = \array_filter($update_transient->response, function ($theme_update_data, $theme_slug) {
-            $last_version = Transients::getForSite('update-notifications', 'theme', $theme_slug);
-            return empty($last_version) || \version_compare($last_version, $theme_update_data['new_version'], '<');
-        }, ARRAY_FILTER_USE_BOTH);
+        $new_theme_updates = \array_filter(
+            // Sanitize update data first.
+            \array_map(Update::createFromArray(...), $update_transient->response),
+            function (?Update $update_data, string $theme_slug) {
+                if ($update_data === null) {
+                    // Update data sanitization failed, skip.
+                    return false;
+                }
 
-        if ($theme_updates !== []) {
+                $notified_version = Transients::getForSite('update-notifications', 'theme', $theme_slug);
+                if (empty($notified_version)) {
+                    return true;
+                }
+
+                return \version_compare($notified_version, $update_data->new_version, '<');
+            },
+            ARRAY_FILTER_USE_BOTH
+        );
+
+        if ($new_theme_updates !== []) {
             if (apply_filters(Hooks::ALL_THEME_UPDATES_IN_ONE_NOTIFICATION, false)) {
-                $this->notifyAboutThemeUpdatesAvailable($theme_updates);
+                $this->notifyAboutThemeUpdatesAvailable($new_theme_updates);
             } else {
-                foreach ($theme_updates as $theme_slug => $theme_update_data) {
-                    $this->notifyAboutThemeUpdatesAvailable([$theme_slug => $theme_update_data]);
+                foreach ($new_theme_updates as $theme_slug => $update_data) {
+                    $this->notifyAboutThemeUpdatesAvailable([$theme_slug => $update_data]);
                 }
             }
         }
@@ -291,29 +319,29 @@ class Watchman implements Activable, Initializable
 
 
     /**
-     * @param array<string,array<string,mixed>> $theme_updates Theme slug and related update object.
+     * @param array<string,Update> $theme_updates Theme slug and related update object.
      */
     private function notifyAboutThemeUpdatesAvailable(array $theme_updates): void
     {
         $subject = __('Theme updates available', 'bc-security');
         $message = new Message();
 
-        foreach ($theme_updates as $theme_slug => $theme_update_data) {
+        foreach ($theme_updates as $theme_slug => $update_data) {
             $theme = wp_get_theme($theme_slug);
             $message->addLine(
                 \sprintf(
                     __('Theme "%1$s" has an update to version %2$s available.', 'bc-security'),
                     $theme,
-                    $theme_update_data['new_version'],
+                    $update_data->new_version,
                 )
             );
         }
 
         // Send notification.
         if ($this->notify($subject, $message) !== false) {
-            foreach ($theme_updates as $theme_slug => $theme_update_data) {
+            foreach ($theme_updates as $theme_slug => $update_data) {
                 // No further notifications for this theme version.
-                Transients::setForSite($theme_update_data['new_version'], 'update-notifications', 'theme', $theme_slug);
+                Transients::setForSite($update_data->new_version, 'update-notifications', 'theme', $theme_slug);
             }
         }
     }
