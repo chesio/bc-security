@@ -10,7 +10,7 @@ use BlueChip\Security\Modules\Log\Event;
 class BadRequestBan extends Event
 {
     /**
-     * @var string Static event identificator.
+     * @var string Static event identifier.
      */
     public const ID = 'bad_request_ban';
 

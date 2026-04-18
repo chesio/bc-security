@@ -11,7 +11,7 @@ use WP_Error;
 class LoginFailure extends Event
 {
     /**
-     * @var string Static event identificator.
+     * @var string Static event identifier.
      */
     public const ID = 'login_failure';
 

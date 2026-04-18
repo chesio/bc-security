@@ -10,7 +10,7 @@ namespace BlueChip\Security\Modules\Log;
 abstract class Event
 {
     /**
-     * @var string Static event identificator.
+     * @var string Static event identifier.
      */
     public const ID = '';
 
