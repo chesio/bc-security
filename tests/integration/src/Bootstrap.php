@@ -32,7 +32,7 @@ class Bootstrap
 
 
     /**
-     * Construct the bootstraper.
+     * Construct the bootstrapper.
      */
     public function __construct()
     {

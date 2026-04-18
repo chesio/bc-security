@@ -26,7 +26,7 @@ final class EventsMonitorTest extends TestCase
     {
         Actions\expectDone(Log\Action::EVENT)->once()->with(\Mockery::type(Log\Events\AuthBadCookie::class));
 
-        $this->runUnaccessibleMethod($this->monitor, 'logBadCookie', ['username' => 'test-user']);
+        $this->runInaccessibleMethod($this->monitor, 'logBadCookie', ['username' => 'test-user']);
     }
 
 
@@ -39,7 +39,7 @@ final class EventsMonitorTest extends TestCase
             'get_error_message' => 'Test error message.',
         ]);
 
-        $this->runUnaccessibleMethod($this->monitor, 'logFailedLogin', 'test-user', $wp_error);
+        $this->runInaccessibleMethod($this->monitor, 'logFailedLogin', 'test-user', $wp_error);
     }
 
 
@@ -47,7 +47,7 @@ final class EventsMonitorTest extends TestCase
     {
         Actions\expectDone(Log\Action::EVENT)->once()->with(\Mockery::type(Log\Events\LoginLockout::class));
 
-        $this->runUnaccessibleMethod($this->monitor, 'logLockoutEvent', '4.3.2.1', 'test-user', 600);
+        $this->runInaccessibleMethod($this->monitor, 'logLockoutEvent', '4.3.2.1', 'test-user', 600);
     }
 
 
@@ -55,6 +55,6 @@ final class EventsMonitorTest extends TestCase
     {
         Actions\expectDone(Log\Action::EVENT)->once()->with(\Mockery::type(Log\Events\LoginSuccessful::class));
 
-        $this->runUnaccessibleMethod($this->monitor, 'logSuccessfulLogin', 'test-user');
+        $this->runInaccessibleMethod($this->monitor, 'logSuccessfulLogin', 'test-user');
     }
 }

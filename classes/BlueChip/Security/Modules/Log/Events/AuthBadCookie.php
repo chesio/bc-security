@@ -10,7 +10,7 @@ use BlueChip\Security\Modules\Log\Event;
 class AuthBadCookie extends Event
 {
     /**
-     * @var string Static event identificator.
+     * @var string Static event identifier.
      */
     public const ID = 'auth_bad_cookie';
 
